@@ -957,7 +957,7 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     story_verified_lines(root, &mut record, id, &receipts)?;
     // REQ-history-006 (F10b): the bugs the session's checkpoint holds, after What was
     // verified, each with its title and status, linked to its record.
-    let bugs = crate::bugs::story_lines(root, &session.bugs);
+    let bugs = crate::bugs::story_lines(root, &crate::bugs::of_session(root, session));
     let bugs = if bugs.is_empty() {
         "None.\n".to_string()
     } else {

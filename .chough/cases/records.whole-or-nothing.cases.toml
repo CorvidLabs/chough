@@ -1,0 +1,41 @@
+profile = "chough-testing/1"
+module = "records"
+
+# #260: a write cut off by a full disk or a file-size limit left a 0-byte or cut-off
+# record that wedged or misled every reader.
+
+[[case]]
+id = "TC-records-a-cut-off-write-leaves-no-record"
+title = "bug add and journal add stopped by a file-size limit leave no file at the new record's name and no temporary file, and bug list, status, next and library index --check then pass"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/records.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::a_write_cut_off_by_a_size_limit_leaves_no_record passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "a_write_cut_off_by_a_size_limit_leaves_no_record"
+
+[[case]]
+id = "TC-records-an-empty-record-is-named-as-empty"
+title = "An empty record file is named as empty with the way out, not as a record missing its --- line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/markdown.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::an_empty_record_is_named_as_empty passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "an_empty_record_is_named_as_empty"

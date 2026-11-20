@@ -1,0 +1,94 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #382 and #395: bug add records the session on the bug and never writes the session (R2a, bug-add-leaves-the-session).
+
+[[case]]
+id = "TC-cli-bug-add-leaves-the-session-record"
+title = "bug add in an active session, with and without --observation, records the session on the new bug and leaves the session record byte-identical; checkpoint lists both bugs in filing order and context names them"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5", "DRIVE-12"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "src/checkpoint.rs", "src/main.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::bug_add_in_a_session_records_the_session_and_leaves_its_record passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "bug_add_in_a_session_records_the_session_and_leaves_its_record"
+
+[[case]]
+id = "TC-cli-bug-adds-on-two-branches-merge-cleanly"
+title = "Two branches that each file a bug while the same session is active merge with no conflict; the merged checkpoint lists both, and a blocking one that names nothing is a blocking bug of the session"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5", "DRIVE-12"]
+requirements = ["REQ-cli-012", "REQ-cli-054"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::bug_adds_on_two_branches_in_one_session_merge_cleanly passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "bug_adds_on_two_branches_in_one_session_merge_cleanly"
+
+[[case]]
+id = "TC-cli-bug-add-files-a-bug-beside-a-full-checkpoint"
+title = "With the checkpoint holding its 200 bug links, bug add files the bug in the session, writing only the bug record, and checkpoint lists it after the 200"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "src/checkpoint.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::bug_add_files_the_bug_in_a_session_whose_checkpoint_holds_200_bugs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "bug_add_files_the_bug_in_a_session_whose_checkpoint_holds_200_bugs"
+
+[[case]]
+id = "TC-cli-an-update-leaves-a-filed-bug-unjoined"
+title = "Filing a bug and then bug update --observation naming an entry of the active session leaves the session record unchanged, and checkpoint lists the bug once"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5", "DRIVE-12"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::an_update_naming_an_active_entry_leaves_a_filed_bug_unjoined passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "an_update_naming_an_active_entry_leaves_a_filed_bug_unjoined"
+
+[[case]]
+id = "TC-cli-a-bug-of-an-archived-or-missing-session-is-no-ones"
+title = "A bug whose session names an archived session or one that no longer exists is listed by no open checkpoint, stops no session, and gives no error or doctor finding"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-012", "REQ-cli-054"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_bug_of_an_archived_or_missing_session_is_listed_nowhere_and_raises_nothing passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_bug_of_an_archived_or_missing_session_is_listed_nowhere_and_raises_nothing"

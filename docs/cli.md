@@ -251,7 +251,14 @@ replaces the front matter, appends list items to the end of a named section, or 
 a missing named section at the end of the body, and does nothing else to an existing
 body, so a person's edit to a Goal, a bug's Steps or an entry's body survives. Files
 are written with LF line endings by an atomic replace under the writer lock, or by
-create-new for a new record.
+create-new for a new record. A new record is written whole or not at all: to a
+temporary file in `.chough/local/`, synced, then given its name without replacing
+anything, so a full disk or a file-size limit leaves no file at the name; where the file
+system cannot rename that way, it is created at its name and removed again on any error.
+No hard link is used, so a volume without them, such as exFAT, works (#260, #424). The
+folder that holds the new name is not synced after the move, so a power loss just after a
+write can still lose the name; the record is then missing, never partial. An empty
+record file is named as empty, with the way out.
 
 | Record | Bound |
 |---|---|
@@ -486,7 +493,8 @@ Each bug is one Markdown record, `.chough/bugs/<id>.md` (REQ-cli-012). Its front
 gives `kind: bug`, `id`, `aliases`, `title`, `status`, `classification`, `scope`,
 `impact`, `criteria`, `requirements`, `cases`, `evidence` (the linked evidence IDs),
 `receipts`, `regression_baseline`, `fixture`, `environment`, `revision`, `found_by`
-(the acting agent), `fixed_in`, `duplicate_of`, `related`, `created` and `updated`.
+(the acting agent), `session` (the session active when the bug was filed, written
+only then), `fixed_in`, `duplicate_of`, `related`, `created` and `updated`.
 Its body gives `# <title>` and the paragraphs What happened (with the actual
 behaviour as its own `Actual:` paragraph when it differs from the symptom), Steps (led
 by `Trigger:` and the trigger, then each step), Expected, Why it matters and Fix, then
@@ -503,16 +511,23 @@ update --fix <text>` sets it, which the Log records too; marking a bug verified 
 its Fix still says `Not fixed yet.` replaces that with a line naming the passing
 observation and its revision.
 
-`bug add` while a session is active also adds the new bug to that session's
-checkpoint, as `checkpoint --bug` does, once, with or without `--observation`, so the
-session's story names the bugs found in it and a blocking bug filed in it stops it
-leaving test (#329). When that session cannot take another bug, as with its 200 bug
-links held, `bug add` refuses before writing anything, naming the session, so a bug is
-never left out of the session it was filed in. With no session active, it joins no checkpoint: a blocking bug
+`bug add` while a session is active records that session as the new bug's `session`,
+with or without `--observation`, and never writes the session's record (#382, #395).
+So two branches that each file a bug in one session merge without a conflict, and
+filing costs the same however many observations the session holds. A session's bugs
+are the bugs its checkpoint holds (`checkpoint --bug`) followed by the bugs filed in
+it, in the order they were filed, each once: `chough checkpoint` and `chough context`
+list them, the story names them, and a blocking one stops the session leaving test
+(#329). A checkpoint already holding its 200 bug links does not stop a new bug from
+being filed. A bug whose `session` names an archived session, or one that no longer
+exists, is one of no open session's bugs: nothing lists it and nothing reports an
+error for it, while an archived story keeps naming the bugs that were its session's
+when it closed. With no session active, a new bug gets no `session`: a blocking bug
 filed then stops no session, and `chough next` names it under "Other blocking bugs"
 as not blocking this session. `bug update` given `--observation` with an evidence entry
-of the active session also adds the bug to that session's checkpoint; an entry of
-another session, or a receipt, leaves the active checkpoint unchanged.
+of the active session adds the bug to that session's checkpoint, unless the bug was
+filed in that session; an entry of another session, or a receipt, leaves the active
+checkpoint unchanged.
 
 Manual `bug add` and automatic failure capture both name a new bug `<date>-<title
 slug>` by create-new (see [Record names](#record-names)). An update never renames the
