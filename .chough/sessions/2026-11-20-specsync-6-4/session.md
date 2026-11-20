@@ -5,7 +5,7 @@ aliases: [specsync-6-4]
 objective: "Chough moves to SpecSync 6.4.0: change ready asks SpecSync's approval dry run and stops copying its delta-set rule, spec history is recorded in fragments with no spec merge line, and change ready leaves .specsync/hashes.json alone (#404, #406, #307)"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -61,9 +61,17 @@ observations:
   - 2026-11-20-tc-cli-change-ready-missing-specsync-ed7d72
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
+    holds: accept
+    drives: review
+    opened: 2026-11-20T23:43:49Z
 run_consents: []
-next: "Gate \"Re-approval of specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments with a whole-project scope leaving nothing out (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Continue accept
+title: Chough moves to SpecSync 6.4.0, and change ready asks its dry run
+summary:
+  - "chough change ready names what SpecSync 6.4.0's approval dry run refuses, in its words, in place of its own delta-set rule (#406, #307); it leaves SpecSync's own untracked change.lock and workflow-v2-baseline.json and another active change's work out of the paths check, a whole-project scope leaving nothing out; it no longer touches .specsync/hashes.json, which 6.4.0 keeps outside the work tree. Every pin names 6.4.0, and the spec merge line goes since 6.4.0 records history in fragments (#404)."
+  - "Verified: the tester's PASS on 66 real changes at d4f520f6; tester2's recheck at d1f953a4; corvid-agent's approval at d1f953a4; main 51352d33 merged in, own lines the same; full lane green with 6.4.0 at 7eb2db10."
 ---
 # Chough moves to SpecSync 6.4.0: change ready asks SpecSync's approval dry run and stops copying its delta-set rule, spec history is recorded in fragments with no spec merge line, and change ready leaves .specsync/hashes.json alone (#404, #406, #307)
 
@@ -292,4 +300,20 @@ Chough moves to SpecSync 6.4.0: change ready asks SpecSync's approval dry run an
     - recorded_by: t4c
     - native: specsync change approve specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
     - actor: 0xLeif
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T23:43:49Z · advance · build → test · native:verifying ^t-b07151
+  - native_change: specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
+  - gate: native:verifying
+  - revision: 7eb2db10031f5d2b254b117103f2a2986e40eddc
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T23:43:49Z · advance · test → accept · native:verifying ^t-0a139e
+  - native_change: specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
+  - gate: native:verifying
+  - revision: 7eb2db10031f5d2b254b117103f2a2986e40eddc
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T23:43:49Z · gate-opened · accept → accept · Implementation review of specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments ^t-6aab8c
+  - native_change: specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
+  - revision: 7eb2db10031f5d2b254b117103f2a2986e40eddc
+  - holds: accept
+  - drives: review
   - by: t4c (claude-opus-5-5, hc t4c)

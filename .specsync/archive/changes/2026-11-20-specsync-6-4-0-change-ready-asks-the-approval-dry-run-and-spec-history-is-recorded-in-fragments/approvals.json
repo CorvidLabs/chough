@@ -275,6 +275,13 @@
         "where": "Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 22:02Z, to: 'Chough #404, an edge case the tester found in NFTMix. Under your Q2 \"A\", the paths check leaves out another active change's declared paths. But one NFTMix change declares the whole project (\".\"), so every other change's \"outside the declared paths\" findings disappear. Fix: a declared path that covers the whole project (\".\") leaves nothing out, since it doesn't show any file is that change's work. Narrower ones like \"src/\" still work as approved. That's one clause and one criterion in REQ-cli-067, through a send-back with a red test first.' Recorded by t4c",
         "recorded_by": "t4c"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795218250,
+      "digest": "a4de7cc939681e11e167c7fed4d94ee47084ddef4a6e2a68eb500ee4859538b3",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],

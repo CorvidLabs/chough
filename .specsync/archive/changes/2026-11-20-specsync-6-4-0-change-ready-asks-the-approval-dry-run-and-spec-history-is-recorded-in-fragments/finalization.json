@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments",
+  "implementation_commit": "7eb2db10031f5d2b254b117103f2a2986e40eddc",
+  "implementation_tree": "918f3a26f5d05ecd3f0fef6e5f66d144a36886bb",
+  "contract_digest": "f10e25af09515a77f3d5447c3fdf55f65f2da4eeffa3a22628ef8904b1993fc4",
+  "workspace_digest": "17dd97449b9ea72463ef13124f5cbbe78313940066ca702bb3e5fa44aef4d511",
+  "closing_digest": "a4de7cc939681e11e167c7fed4d94ee47084ddef4a6e2a68eb500ee4859538b3",
+  "review_digest": "3b00bd666a4f12235f76b4202967e8d77f20d0759b75f504213cbd0e6d291dea",
+  "finalization_digest": "333f45f80cf94b172ad2aa1e6f0d488ffe1facf171141e8781b33a0af7f9c9a0",
+  "timestamp": 1795218250
+}
