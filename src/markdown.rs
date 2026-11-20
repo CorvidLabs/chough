@@ -1054,7 +1054,7 @@ fn fence_closes_with(line: &str, mark: char, run: usize) -> bool {
 /// hides its lines up to and including its closing line, and a fence that never closes
 /// hides nothing after it, so a heading after it is still read. The one rule the section
 /// reader and the bug merge driver share.
-pub(crate) fn fenced_lines(lines: &[&str]) -> Vec<bool> {
+pub(super) fn fenced_lines(lines: &[&str]) -> Vec<bool> {
     // One backward pass finds, for each opening line, the nearest line after it that
     // closes it, so the scan stays linear however many fences never close (#356's
     // bound): `next[slot][r]` is the nearest closing line seen so far whose run is at
@@ -1084,8 +1084,8 @@ pub(crate) fn fenced_lines(lines: &[&str]) -> Vec<bool> {
                 .take_while(|ch| *ch == mark)
                 .count();
             if run >= 3 && fence_closes_with(lines[index], mark, run) {
-                for slot_run in 3..=run.min(CAP) {
-                    next[slot][slot_run] = Some(index);
+                for nearest in next[slot].iter_mut().take(run.min(CAP) + 1).skip(3) {
+                    *nearest = Some(index);
                 }
                 if run > CAP {
                     long[slot].push((index, run));
@@ -1129,12 +1129,13 @@ mod tests {
             fenced_lines(&lines),
             vec![false, false, true, true, true, false]
         );
-        let mut many: Vec<&str> = vec!["`````\n"; 20_000];
+        let mut many: Vec<&str> = vec!["`````x\n"; 20_000];
         many.extend(vec!["```\n"; 20_000]);
         let started = std::time::Instant::now();
         let hidden = fenced_lines(&many);
         assert!(started.elapsed() < std::time::Duration::from_secs(2));
-        // The short closers pair up among themselves; no long opener is ever closed.
+        // The openers carry an info string, so none closes another; the short closers
+        // pair up among themselves; no long opener is ever closed.
         assert!(hidden[..20_000].iter().all(|line| !line));
         assert!(hidden[20_000..].iter().all(|line| *line));
     }
