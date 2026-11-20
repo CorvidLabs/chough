@@ -96,7 +96,8 @@ pub(super) fn run(root: &Path, command: JournalCommand) -> Result<()> {
             for (given, link) in given_links.iter().zip(&links) {
                 ensure!(
                     is_url(link) || tracked(root, link_path(link)),
-                    "--link {given:?} is neither an http(s) URL nor a project path Git tracks"
+                    "--link {} is neither an http(s) URL nor a project path Git tracks",
+                    crate::leaks::shown("--link", given)
                 );
             }
             let labelled: Vec<Link> = links
@@ -178,6 +179,10 @@ fn post_for_story(root: &Path, id: &str, kind: &str) -> Result<Option<String>> {
     } else {
         cut_at_sentence(&summary.join("\n\n"), room)
     };
+    // REQ-records-016 (#366): a post holds the story's text as it is printed, so a
+    // control character a story holds is escaped, never written raw or refused.
+    let title = crate::leaks::printable(&title, true).into_owned();
+    let body = crate::leaks::printable(&body, false).into_owned();
     write_post(
         root,
         &dir,
@@ -249,7 +254,9 @@ fn read_story(root: &Path, id: &str) -> Result<(String, Record)> {
     let path = local_path(root, &story)?;
     ensure!(
         path.is_file(),
-        "no archived story {id}: {story} does not exist, so nothing was written; name a story under .chough/archive/sessions/ by its ID"
+        "no archived story {}: {} does not exist, so nothing was written; name a story under .chough/archive/sessions/ by its ID",
+        crate::leaks::shown("--record", id),
+        crate::leaks::shown("--record", &story)
     );
     let text = read_bounded_record(&path, Kind::Story.bound())?;
     let record = markdown::parse(&story, &text)?;
@@ -261,14 +268,16 @@ fn read_story(root: &Path, id: &str) -> Result<(String, Record)> {
 fn story_links(root: &Path, record: &Record, story: &str) -> (Vec<Link>, Vec<String>) {
     let mut links: Vec<Link> = vec![];
     let mut targets = vec![];
+    // REQ-cli-007 (#353): only a pull request number or an http(s) URL; a stored value
+    // that is neither, as an earlier release could write, is left out.
     if let Some(pr) = record
         .scalar("pr")
         .map(str::trim)
-        .filter(|pr| !pr.is_empty())
+        .and_then(crate::checkpoint::pull_request)
     {
-        targets.push(pr.to_string());
-        if is_url(pr) {
-            links.push(("the pull request".to_string(), Some(pr.to_string())));
+        targets.push(pr.clone());
+        if is_url(&pr) {
+            links.push(("the pull request".to_string(), Some(pr)));
         } else {
             links.push((format!("the pull request {pr}"), None));
         }
@@ -657,7 +666,8 @@ fn write_post(
     let (story, when) = story.map_or((None, None), |(story, when)| (Some(story), when));
     ensure!(
         KINDS.contains(&kind),
-        "--kind {kind:?} is not a journal kind; use one of {}",
+        "--kind {} is not a journal kind; use one of {}",
+        crate::leaks::shown("--kind", kind),
         KINDS.join(", ")
     );
     let title = title.trim();
@@ -704,6 +714,9 @@ fn write_post(
             record.set("actor", actor.front_value())?;
         }
         let local = crate::leaks::Local::current();
+        // A control character in a given title or body is refused under `--redact` too
+        // (REQ-records-016); a story's text arrives already printable.
+        record.check_controls(None)?;
         if crate::leaks::redacting() {
             record.redact_leaks(local);
         } else {
@@ -779,8 +792,12 @@ fn is_date(text: &str) -> bool {
         })
 }
 
+/// `text` for the feed: printed as Chough prints it, so a control character, which XML
+/// cannot hold, is escaped and the feed stays well-formed (REQ-records-016), then with
+/// XML's own characters escaped.
 fn xml(text: &str) -> String {
-    text.replace('&', "&amp;")
+    crate::leaks::printable(text, true)
+        .replace('&', "&amp;")
         .replace('<', "&lt;")
         .replace('>', "&gt;")
         .replace('"', "&quot;")

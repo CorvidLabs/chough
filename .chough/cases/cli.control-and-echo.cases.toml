@@ -1,0 +1,58 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #353: checkpoint --pr's forms, where the pull request shows, and the journal post's link (L2, control-and-echo).
+
+[[case]]
+id = "TC-cli-the-pull-request-shows-in-every-view"
+title = "With pr set, next, status, context and the checkpoint view each show it in text and JSON, and a session holding pr: \"\" shows none"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "LIFE-3"]
+requirements = ["REQ-cli-007"]
+paths = ["src/main.rs", "src/context.rs", "src/checkpoint.rs", "tests/checkpoint.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/checkpoint.rs::the_pull_request_shows_in_next_status_context_and_the_checkpoint_view passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "checkpoint"
+test = "the_pull_request_shows_in_next_status_context_and_the_checkpoint_view"
+
+[[case]]
+id = "TC-cli-every-session-writer-keeps-the-pull-request-form"
+title = "Every writer of a session file keeps the pull request double-quoted and keeps a cleared one out, and the story a close writes quotes it too"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "LIFE-3"]
+requirements = ["REQ-cli-007"]
+paths = ["src/checkpoint.rs", "src/markdown.rs", "src/sessions.rs", "tests/checkpoint.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/checkpoint.rs::every_session_writer_keeps_the_pull_request_quoted_and_a_cleared_one_out passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "checkpoint"
+test = "every_session_writer_keeps_the_pull_request_quoted_and_a_cleared_one_out"
+
+[[case]]
+id = "TC-cli-the-post-links-only-a-pull-request-form"
+title = "A stored pr that is neither a pull request number nor an http(s) URL is left out of the journal post, and pr: \"\" links none"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "LIFE-3"]
+requirements = ["REQ-cli-007"]
+paths = ["src/journal.rs", "src/checkpoint.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::a_stored_pr_that_is_neither_form_is_left_out_of_the_post passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "journal"
+test = "a_stored_pr_that_is_neither_form_is_left_out_of_the_post"

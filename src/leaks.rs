@@ -220,8 +220,21 @@ pub(crate) fn redacting() -> bool {
 }
 
 /// Check `value` for `field`, or redact it in place under `--redact`; returns how many
-/// matches were redacted.
+/// matches were redacted. A value a person gives holding a control character is refused
+/// first, under `--redact` too, and a Windows line break in it is stored as a line feed
+/// (REQ-records-016).
 pub(crate) fn guard(local: &Local, field: &str, value: &mut String) -> Result<usize> {
+    if value.contains("\r\n") {
+        *value = value.replace("\r\n", "\n");
+    }
+    check_controls(field, value, true)?;
+    guard_kept(local, field, value)
+}
+
+/// As [`guard`], for a value the stored record already holds: a control character in
+/// it, written by hand or by an earlier release, never blocks a save; it is escaped when
+/// printed (REQ-records-016).
+pub(super) fn guard_kept(local: &Local, field: &str, value: &mut String) -> Result<usize> {
     if redacting() {
         let (text, found) = redact(local, value);
         if found > 0 {
@@ -229,12 +242,78 @@ pub(crate) fn guard(local: &Local, field: &str, value: &mut String) -> Result<us
         }
         return Ok(found);
     }
-    check(local, field, value)?;
+    check_leaks_in(local, field, value)?;
     Ok(0)
 }
 
-/// Refuse a value that leaks, naming the field and the kinds, never the text.
+/// Whether `character` is a control character (REQ-records-016): a C0 control, DEL, a
+/// C1 control, or a bidirectional override or isolate.
+pub(super) fn control(character: char) -> bool {
+    matches!(
+        character,
+        '\u{0}'..='\u{1f}' | '\u{7f}'..='\u{9f}' | '\u{202a}'..='\u{202e}' | '\u{2066}'..='\u{2069}'
+    )
+}
+
+/// The first control character in `value`, a line feed aside where `line_breaks` allows
+/// one, and a carriage return directly before it with it.
+fn first_control(value: &str, line_breaks: bool) -> Option<char> {
+    let mut characters = value.chars().peekable();
+    while let Some(character) = characters.next() {
+        let allowed = line_breaks
+            && (character == '\n' || (character == '\r' && characters.peek() == Some(&'\n')));
+        if control(character) && !allowed {
+            return Some(character);
+        }
+    }
+    None
+}
+
+/// Refuse a value a person gives that holds a control character (REQ-records-016, #366),
+/// naming the field and the character's code point, never the value. `line_breaks` says
+/// whether the field takes a line break.
+pub(super) fn check_controls(field: &str, value: &str, line_breaks: bool) -> Result<()> {
+    if let Some(character) = first_control(value, line_breaks) {
+        bail!(
+            "refused:control-character: {field} holds U+{:04X}, a control character a terminal can act on or hide; remove it; nothing was written",
+            character as u32
+        );
+    }
+    Ok(())
+}
+
+/// `text` as Chough prints it (REQ-records-016, #366): each control character escaped as
+/// `\u` and four lowercase hex digits, the form JSON uses, so no terminal acts on it; a
+/// line feed stays where the text is shown on several lines and is `\n` where
+/// `one_line`.
+pub(super) fn printable(text: &str, one_line: bool) -> std::borrow::Cow<'_, str> {
+    if !text
+        .chars()
+        .any(|character| control(character) && (one_line || character != '\n'))
+    {
+        return std::borrow::Cow::Borrowed(text);
+    }
+    let mut out = String::with_capacity(text.len() + 8);
+    for character in text.chars() {
+        match character {
+            '\n' if one_line => out.push_str("\\n"),
+            '\n' => out.push('\n'),
+            other if control(other) => out.push_str(&format!("\\u{:04x}", other as u32)),
+            other => out.push(other),
+        }
+    }
+    std::borrow::Cow::Owned(out)
+}
+
+/// Refuse a value that leaks or holds a control character, naming the field and what it
+/// holds, never the text (REQ-records-006, REQ-records-016).
 pub(crate) fn check(local: &Local, field: &str, value: &str) -> Result<()> {
+    check_controls(field, value, true)?;
+    check_leaks_in(local, field, value)
+}
+
+/// Refuse a value that leaks, naming the field and the kinds, never the text.
+pub(super) fn check_leaks_in(local: &Local, field: &str, value: &str) -> Result<()> {
     let found = find(local, value);
     if found.is_empty() {
         return Ok(());
@@ -616,7 +695,9 @@ fn user_names(user: &str, value: &str, all: &mut Vec<Match>) {
         let at_root = start > 0
             && bytes[start - 1] == b'/'
             && (start == 1
-                || (!name_byte(bytes[start - 2]) && !matches!(bytes[start - 2], b'/' | b'~')))
+                || (!name_byte(bytes[start - 2]) && !matches!(bytes[start - 2], b'/' | b'~'))
+                // The path a local file URL carries, as in `file:///dev/null`.
+                || value[..start - 1].to_ascii_lowercase().ends_with("file://"))
             && ROOT_FOLDERS.contains(&user);
         let in_path = start > 0
             && !at_root
@@ -662,6 +743,11 @@ fn in_absolute_path(bytes: &[u8], at: usize) -> bool {
         start -= 1;
     }
     let token = &bytes[start..at];
+    // A local file URL is checked like the path it carries (REQ-records-006); a web URL
+    // holds no user name.
+    if token.to_ascii_lowercase().starts_with(b"file://") {
+        return true;
+    }
     if token.windows(3).any(|window| window == b"://") {
         return false;
     }

@@ -1,0 +1,202 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #366 and #367 (in part): control characters refused at write and escaped on print, and the remaining echo sites (L2, control-and-echo).
+
+[[case]]
+id = "TC-records-a-control-character-is-refused-at-write"
+title = "ESC, BEL, DEL, U+009B, U+202E and U+2066 in an objective, a decision, a reason, a --pr, an evidence summary, environment and limitation, a bug title, an inbox entry and relayed --words are refused as refused:control-character naming the field and the code point, with every file unchanged, under --redact too"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-016"]
+paths = ["src/leaks.rs", "src/markdown.rs", "src/checkpoint.rs", "src/bugs.rs", "tests/output_safety.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/output_safety.rs::a_control_character_is_refused_at_write_in_every_field passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "output_safety"
+test = "a_control_character_is_refused_at_write_in_every_field"
+
+[[case]]
+id = "TC-records-a-line-feed-is-kept-where-a-field-takes-one"
+title = "A decision and an evidence summary holding a line feed are written, a tab is refused naming U+0009, a CRLF is stored as LF, --title and --pr holding a line feed are refused, a stored tab prints as \\u0009 and a reason holding a line feed shows on next as \\n"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-016"]
+paths = ["src/leaks.rs", "src/markdown.rs", "src/main.rs", "tests/output_safety.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/output_safety.rs::a_line_feed_is_kept_where_a_field_takes_one_and_a_tab_is_refused passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "output_safety"
+test = "a_line_feed_is_kept_where_a_field_takes_one_and_a_tab_is_refused"
+
+[[case]]
+id = "TC-records-no-command-prints-a-stored-control-character-raw"
+title = "Every command in chough --help's tree, over records holding each control character in every record kind, prints none raw in text or JSON, and each JSON output parses"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-016"]
+paths = ["src/leaks.rs", "src/records.rs", "src/main.rs", "src/context.rs", "src/bugs.rs", "src/timing.rs", "tests/output_safety.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/output_safety.rs::no_command_prints_a_stored_control_character_raw passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "output_safety"
+test = "no_command_prints_a_stored_control_character_raw"
+
+[[case]]
+id = "TC-records-generated-files-hold-text-as-printed"
+title = "With a session and a journal post from an earlier release holding each control character, the story and the post hold none raw, and library index writes a feed that parses as XML and an index holding none raw"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-016"]
+paths = ["src/journal.rs", "src/library.rs", "src/sessions.rs", "src/markdown.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::generated_files_hold_stored_control_characters_as_printed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "journal"
+test = "generated_files_hold_stored_control_characters_as_printed"
+
+[[case]]
+id = "TC-records-reserved-words-are-written-quoted"
+title = "null, ~, true, false, yes, no, on and off in any letter case are written double-quoted in an objective, a reason and a blocker and read back as text; a decision true or yes reads back as text; another word stays plain"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-016"]
+paths = ["src/markdown.rs", "tests/checkpoint.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/checkpoint.rs::yaml_reserved_words_are_written_quoted_and_read_back_as_text passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "checkpoint"
+test = "yaml_reserved_words_are_written_quoted_and_read_back_as_text"
+
+[[case]]
+id = "TC-records-flags-stay-booleans"
+title = "An inbox entry's recorded flag stays a YAML boolean, and one written plain by 0.6.1 or quoted by hand both still read and fold"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-016"]
+paths = ["src/markdown.rs", "src/sessions.rs", "tests/checkpoint.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/checkpoint.rs::flags_stay_booleans_and_either_form_still_reads passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "checkpoint"
+test = "flags_stay_booleans_and_either_form_still_reads"
+
+[[case]]
+id = "TC-records-no-command-echoes-a-given-value"
+title = "Every value slot of every command in chough --help's tree, given a token and an escape sequence, shows neither in any output or error, each naming the field and what it holds instead"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-006"]
+paths = ["src/leaks.rs", "src/prefs.rs", "src/skill.rs", "src/stage.rs", "src/validate.rs", "src/library.rs", "src/cases.rs", "src/main.rs", "tests/output_safety.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/output_safety.rs::no_command_echoes_a_value_given_on_the_command_line passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "output_safety"
+test = "no_command_echoes_a_value_given_on_the_command_line"
+
+[[case]]
+id = "TC-records-a-file-url-is-checked-like-its-path"
+title = "With the user named dev, file:///opt/dev/x is refused as a user-name leak while https://example.com/dev/guide is written, and USER, LOGNAME and USERNAME naming three users are each refused inside an absolute path"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-006"]
+paths = ["src/leaks.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::a_file_url_is_checked_like_its_path_and_username_counts passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "a_file_url_is_checked_like_its_path_and_username_counts"
+
+[[case]]
+id = "TC-records-a-stored-inbox-entry-folds-printable"
+title = "An inbox entry an earlier release wrote with a control character folds as it is printed, and the story session close writes holds none raw"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-016"]
+paths = ["src/sessions.rs", "src/leaks.rs", "tests/output_safety.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/output_safety.rs::a_stored_inbox_entry_with_a_control_character_folds_and_the_story_holds_none_raw passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "output_safety"
+test = "a_stored_inbox_entry_with_a_control_character_folds_and_the_story_holds_none_raw"
+
+[[case]]
+id = "TC-records-bug-merge-never-shows-a-leaking-path"
+title = "bug merge given a file whose path holds a token, which is not a bug record, prints the token nowhere, its cause included"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-006"]
+paths = ["src/bugs.rs", "tests/output_safety.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/output_safety.rs::bug_merge_never_shows_a_path_holding_a_token passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "output_safety"
+test = "bug_merge_never_shows_a_path_holding_a_token"
+
+[[case]]
+id = "TC-records-a-fragment-of-a-stored-control-line-is-refused"
+title = "A fragment of a session body line holding a hand-written control character, given to --objective, --decision or --blocker, is refused with the file byte-identical, and a save giving no new control character still works"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-016"]
+paths = ["src/checkpoint.rs", "tests/output_safety.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/output_safety.rs::a_fragment_of_a_stored_control_line_is_still_refused passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "output_safety"
+test = "a_fragment_of_a_stored_control_line_is_still_refused"

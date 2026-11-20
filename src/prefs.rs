@@ -101,7 +101,8 @@ fn key_definition(key: &str) -> Result<(&'static [&'static str], &'static str)> 
         .map(|(_, values, default)| (*values, *default))
         .with_context(|| {
             format!(
-                "unknown preference {key}; known: {}",
+                "unknown preference {}; known: {}",
+                crate::leaks::shown("key", key),
                 KEYS.iter()
                     .map(|(name, _, _)| *name)
                     .collect::<Vec<_>>()
@@ -276,7 +277,7 @@ pub(super) fn consent(root: &Path, command: ConsentCommand) -> Result<()> {
             let before = session.run_consents.len();
             session.run_consents.retain(|consent| consent.key != key);
             if session.run_consents.len() == before {
-                bail!("no run consent for {key}");
+                bail!("no run consent for {}", crate::leaks::shown("key", &key));
             }
             save_checkpoint(root, &mut session)?;
         }

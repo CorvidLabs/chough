@@ -1,0 +1,22 @@
+profile = "chough-testing/1"
+module = "reporting"
+
+# GitHub #366: chough timing prints stored text escaped (L2, control-and-echo).
+
+[[case]]
+id = "TC-reporting-timing-prints-stored-text-escaped"
+title = "With a stage move's reason and a gate's name holding ESC and U+202E, timing prints neither raw in text or JSON, and its JSON parses back to the stored gate name"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10", "LIFE-3"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::timing_prints_a_stored_control_character_escaped passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "timing_prints_a_stored_control_character_escaped"

@@ -317,14 +317,15 @@ pub(super) fn correct(root: &Path, args: CorrectArgs) -> Result<()> {
         None => match args.entry.strip_prefix('^') {
             Some(id) => (crate::sessions::checkpoint_path(root)?, id.to_string()),
             None => anyhow::bail!(
-                "refused: name the entry as ^<entry id> in the active session, or <session>#^<entry id>; got {:?}, so nothing was written",
-                args.entry
+                "refused: name the entry as ^<entry id> in the active session, or <session>#^<entry id>; got {}, so nothing was written",
+                crate::leaks::shown("entry", &args.entry)
             ),
         },
     };
     ensure!(
         session_md::valid_entry_id(&target),
-        "refused: ^{target} is not a Timeline entry ID (t- and 6 lowercase hexadecimal digits); nothing was written"
+        "refused: ^{} is not a Timeline entry ID (t- and 6 lowercase hexadecimal digits); nothing was written",
+        crate::leaks::shown("entry", &target)
     );
     let mut statement = args.reason.trim().to_string();
     ensure!(
