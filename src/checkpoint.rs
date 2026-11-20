@@ -406,18 +406,11 @@ fn checkpoint_lock_path(root: &Path) -> Result<PathBuf> {
             .context("the lock directory has no parent")?,
     )?;
     if !ignore.exists() {
-        // Write it whole to a temp, then link it into place: a crash never leaves an empty
-        // `.gitignore`, an existing one is never replaced, and a writer that loses the
-        // race to create it carries on (#94 review).
-        let temporary = ignore.with_file_name(format!(".gitignore.{}.tmp", std::process::id()));
-        fs::write(&temporary, b"*\n").context("writing .chough/local/.gitignore")?;
-        let linked = fs::hard_link(&temporary, &ignore);
-        let _ = fs::remove_file(&temporary);
-        match linked {
-            Ok(()) => {}
-            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
-            Err(error) => return Err(error).context("creating .chough/local/.gitignore"),
-        }
+        // Whole or not at all, never replacing one, and a writer that loses the race to
+        // create it carries on (#94 review), through the create-new every new record uses,
+        // which needs no hard link, so a volume without them, such as exFAT, works (#424).
+        crate::records::write_new_bytes(root, ".chough/local/.gitignore", b"*\n")
+            .context("creating .chough/local/.gitignore")?;
     }
     local_path(root, ".chough/local/checkpoint.lock")
 }
