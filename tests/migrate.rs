@@ -627,6 +627,18 @@ fn a_weakened_archive_restores_every_removed_file_and_refuses() {
             .unwrap_or_else(|_| panic!("{path} was not restored"));
         assert_eq!(&sha256(&bytes), sha.as_str().unwrap(), "{path}");
     }
+    // F3: the 0.5.x index comes back by its own name, not inside the new index's file.
+    let names: Vec<String> = std::fs::read_dir(fixture.root().join("knowledge"))
+        .unwrap()
+        .flatten()
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .collect();
+    assert!(names.contains(&"INDEX.md".to_string()), "{names:?}");
+    assert!(!names.contains(&"index.md".to_string()), "{names:?}");
+    assert!(
+        !names.iter().any(|name| name.ends_with(".aside")),
+        "{names:?}"
+    );
     // Two rounds of twenty reads, never more than eight at once.
     let counts: Vec<usize> = fixture
         .read(".stub-concurrency")

@@ -884,13 +884,14 @@ fn aside_of(path: &Path) -> std::path::PathBuf {
 /// to a temporary file, each 0.5.x file is moved aside, then the temporary file takes
 /// the planned name, which no spelling holds by then. The name, the bytes and every
 /// aside file are checked; on any failure the 0.5.x files are moved back and the
-/// temporary file is removed. Returns the aside files, for the removals.
+/// temporary file is removed. Returns each aside file with the path it came from, for
+/// the removals and for a restore.
 fn write_with_asides(
     root: &Path,
     written: &Planned,
     sources: &[(String, Vec<u8>)],
     written_now: &mut Vec<String>,
-) -> Result<Vec<std::path::PathBuf>> {
+) -> Result<Vec<(std::path::PathBuf, std::path::PathBuf)>> {
     let path = local_path(root, &written.path)?;
     let folder = path.parent().context("a planned file has no folder")?;
     let name = path
@@ -915,7 +916,13 @@ fn write_with_asides(
         let from = local_path(root, removed)?;
         let aside = aside_of(&from);
         if std::fs::symlink_metadata(&aside).is_ok() {
-            failure = Some(format!("{} is already there", aside.display()));
+            let shown = aside.strip_prefix(root).map_or_else(
+                |_| aside.display().to_string(),
+                |path| path.display().to_string(),
+            );
+            failure = Some(format!(
+                "{shown} is already there, left by an apply that was stopped; remove it, or move it back to {removed} if {removed} is missing"
+            ));
             break;
         }
         if let Err(error) = std::fs::rename(&from, &aside) {
@@ -944,7 +951,10 @@ fn write_with_asides(
     }
     let Some(failure) = failure else {
         written_now.push(written.path.clone());
-        return Ok(moved.into_iter().map(|(_, aside, _, _)| aside).collect());
+        return Ok(moved
+            .into_iter()
+            .map(|(from, aside, _, _)| (aside, from))
+            .collect());
     };
     // Put every 0.5.x file back and say what is on disk.
     let _ = std::fs::remove_file(&temporary);
@@ -988,6 +998,9 @@ fn write_with_asides(
 /// The note a preview and a refused apply give while an apply that was stopped between
 /// moving a 0.5.x file aside and the last rename left the aside file, and its 0.5.x name
 /// is missing (#338): each with the command that moves it back. Not part of the digest.
+/// It looks only at the top of the knowledge folder, since `knowledge/index.md` beside
+/// `knowledge/INDEX.md` is the only write that collides by case; `files_0_5` skips aside
+/// names in every folder.
 fn stopped_asides(root: &Path) -> Result<Vec<String>> {
     let dir = crate::prefs::effective(root, "library-dir")?.0;
     let dir = dir.trim_end_matches('/').to_string();
@@ -1553,7 +1566,8 @@ fn apply(
     // and the 0.5.x bytes it replaces are kept in memory to be listed as removed and
     // restored.
     let mut replaced_by_case: Vec<(String, Vec<u8>)> = vec![];
-    let mut asides: Vec<std::path::PathBuf> = vec![];
+    // Each 0.5.x file moved aside, where it was, and the planned file that took its name.
+    let mut asides: Vec<(std::path::PathBuf, std::path::PathBuf, std::path::PathBuf)> = vec![];
     for written in plan
         .files
         .iter()
@@ -1591,7 +1605,10 @@ fn apply(
             write_by_rename(root, written, &mut written_now)
                 .map_err(|error| error.context("no 0.5.x file was removed"))?;
         } else {
-            asides.extend(write_with_asides(root, written, &before, &mut written_now)?);
+            let planned = local_path(root, &written.path)?;
+            for (aside, from) in write_with_asides(root, written, &before, &mut written_now)? {
+                asides.push((aside, from, planned.clone()));
+            }
             replaced_by_case.extend(before);
         }
     }
@@ -1619,10 +1636,8 @@ fn apply(
         std::fs::remove_file(&local)?;
         kept_bytes.push((path.clone(), bytes));
     }
-    // The 0.5.x files moved aside for a case-colliding write go with the other removals.
-    for aside in &asides {
-        std::fs::remove_file(aside)?;
-    }
+    // The 0.5.x files moved aside for a case-colliding write stay on disk until the
+    // archives have read valid again, so a restore can give each back by its name.
     let after = validity(root, &affected)?;
     let weakened: Vec<&String> = affected
         .iter()
@@ -1632,7 +1647,20 @@ fn apply(
         })
         .collect();
     if !weakened.is_empty() {
+        // F3: first each 0.5.x file moved aside goes back by rename, once the planned file
+        // that took its name is gone, so knowledge/INDEX.md returns spelled so; then the
+        // other removed files are written back from memory.
+        let mut renamed_back: Vec<std::path::PathBuf> = vec![];
+        for (aside, from, planned) in &asides {
+            let _ = std::fs::remove_file(planned);
+            if std::fs::rename(aside, from).is_ok() {
+                renamed_back.push(from.clone());
+            }
+        }
         for (path, bytes) in &kept_bytes {
+            if renamed_back.contains(&local_path(root, path)?) {
+                continue;
+            }
             let local = local_path(root, path)?;
             if let Some(parent) = local.parent() {
                 std::fs::create_dir_all(parent)?;
@@ -1647,6 +1675,9 @@ fn apply(
                 .collect::<Vec<_>>()
                 .join(", ")
         );
+    }
+    for (aside, _, _) in &asides {
+        std::fs::remove_file(aside)?;
     }
     // On a case-insensitive file system a case-only rename, such as knowledge/INDEX.md
     // to knowledge/index.md, is one file, and Git keeps its index entry under the old
