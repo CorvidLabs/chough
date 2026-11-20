@@ -10,7 +10,7 @@ stage_status: active
 iteration: 1
 callers: []
 native_change: bug-add-leaves-the-session
-pr: ""
+pr: "422"
 criteria: [LIFE-5, DRIVE-12]
 requirements: [REQ-cli-012, REQ-cli-054, REQ-history-006]
 cases: []
