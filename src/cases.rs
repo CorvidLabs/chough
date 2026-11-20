@@ -774,7 +774,7 @@ pub(super) fn find(root: &Path, id: &str) -> Result<Located> {
     load(root)?
         .into_iter()
         .find(|located| located.case.id == id)
-        .with_context(|| format!("unknown case: {id}"))
+        .with_context(|| format!("unknown case: {}", crate::leaks::shown("case ID", id)))
 }
 
 fn summary(located: &Located) -> Result<Value> {

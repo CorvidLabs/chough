@@ -3653,3 +3653,78 @@ fn a_move_refused_for_lacking_a_change_offers_both_paths() {
         assert!(lifecycle.contains("--no-native-change"), "{copy}");
     }
 }
+
+/// REQ-cli-007 (#401): a `no_native_change` edited into the session file by hand that
+/// holds only white space, a `<placeholder>`, or sits beside a native change is refused
+/// by every reader and by every save, naming the file, the field and the edit, so the
+/// ungated move cannot be unlocked by hand; every file stays byte-identical, `session
+/// list` still lists the session as not readable, `doctor` still runs, and another open
+/// session is unaffected.
+#[cfg(unix)]
+#[test]
+fn a_hand_edited_no_native_change_cannot_unlock_the_ungated_move() {
+    for (case, native, value) in [
+        ("white space", "\"\"", "\" \""),
+        ("placeholder", "\"\"", "\"<reason>\""),
+        ("both fields", "fix-401", "\"SYNTHETIC no change needed\""),
+    ] {
+        let fixture = Fixture::new();
+        fixture.stubs();
+        fixture.native("draft");
+        fixture.init();
+        fixture.ok(&[
+            "stage",
+            "reset",
+            "--json",
+            "--to",
+            "plan",
+            "--reason",
+            "Plan the change",
+        ]);
+        fixture.commit("at plan");
+        let file = fixture.session_file();
+        let id = fixture.active_id();
+        fixture.set_front("native_change", native);
+        fixture.set_front("no_native_change", value);
+        let before = fixture.read(&file);
+        for args in [
+            &["next"][..],
+            &["checkpoint", "--next-action", "SYNTHETIC write the plan"][..],
+            &["stage", "advance"][..],
+        ] {
+            let refused = fixture.fails(args);
+            assert!(refused.contains(&file), "{case}, {args:?}: {refused}");
+            assert!(
+                refused.contains("no_native_change"),
+                "{case}, {args:?}: {refused}"
+            );
+            assert_eq!(fixture.read(&file), before, "{case}, {args:?}");
+        }
+        let list = fixture.ok(&["session", "list"]);
+        let listed = list["sessions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|session| session["id"] == id.as_str())
+            .unwrap_or_else(|| panic!("{case}: {list}"));
+        assert_eq!(listed["readable"], false, "{case}: {listed}");
+        assert!(
+            listed["reason"]
+                .as_str()
+                .unwrap()
+                .contains("no_native_change"),
+            "{case}: {listed}"
+        );
+        assert!(fixture.run(&["doctor"]).status.code().is_some(), "{case}");
+        // Another open session works as without it.
+        fixture.ok(&[
+            "session",
+            "new",
+            "other",
+            "--objective",
+            "SYNTHETIC other work",
+        ]);
+        fixture.ok(&["next", "--json"]);
+        assert_eq!(fixture.read(&file), before, "{case}");
+    }
+}

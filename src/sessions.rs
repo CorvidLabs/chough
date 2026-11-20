@@ -307,7 +307,7 @@ pub(super) fn resolve_any(root: &Path, name: &str) -> Result<String> {
         Ok(id) => return Ok(session_file(&id)),
         Err(error) => {
             let message = error.to_string();
-            if message != format!("no session {name}") && !message.ends_with("is archived") {
+            if !message.starts_with("no session ") && !message.ends_with("is archived") {
                 return Err(error);
             }
         }
@@ -332,20 +332,7 @@ pub(super) fn resolve_any(root: &Path, name: &str) -> Result<String> {
 }
 
 pub(super) fn resolve_open(root: &Path, name: &str) -> Result<String> {
-    let ids = open_ids(root)?;
-    if ids.iter().any(|id| id == name) {
-        return Ok(name.to_string());
-    }
-    let mut found: Vec<String> = vec![];
-    for id in &ids {
-        let aliases = read_at(root, &session_file(id))
-            .map(|session| session.meta.aliases)
-            .unwrap_or_default();
-        let bare = id.get(11..).unwrap_or_default();
-        if aliases.iter().any(|alias| alias == name) || bare == name {
-            found.push(id.clone());
-        }
-    }
+    let found = open_matches(root, name)?;
     match found.as_slice() {
         [id] => Ok(id.clone()),
         [] => {
@@ -357,16 +344,40 @@ pub(super) fn resolve_open(root: &Path, name: &str) -> Result<String> {
                     || id.get(11..) == Some(name)
                     || aliases.iter().any(|alias| alias == name)
                 {
-                    bail!("session {name} is archived");
+                    // REQ-records-006 (#367): a name is shown only when clean.
+                    bail!(
+                        "session {} is archived",
+                        crate::leaks::shown("session name", name)
+                    );
                 }
             }
-            bail!("no session {name}")
+            bail!("no session {}", crate::leaks::shown("session name", name))
         }
         _ => bail!(
             "{name} names more than one open session ({}); use the full ID",
             found.join(", ")
         ),
     }
+}
+
+/// The open sessions `name` names: itself when it is an open session's ID, otherwise
+/// each open session that has it as an alias or bare slug.
+pub(super) fn open_matches(root: &Path, name: &str) -> Result<Vec<String>> {
+    let ids = open_ids(root)?;
+    if ids.iter().any(|id| id == name) {
+        return Ok(vec![name.to_string()]);
+    }
+    let mut found: Vec<String> = vec![];
+    for id in &ids {
+        let aliases = read_at(root, &session_file(id))
+            .map(|session| session.meta.aliases)
+            .unwrap_or_default();
+        let bare = id.get(11..).unwrap_or_default();
+        if aliases.iter().any(|alias| alias == name) || bare == name {
+            found.push(id.clone());
+        }
+    }
+    Ok(found)
 }
 
 pub(super) fn pointer(root: &Path) -> Result<Option<String>> {
@@ -722,10 +733,14 @@ pub(super) fn create(
     let mut session = checkpoint::new_checkpoint(objective, intent_scope, modules);
     session.meta.aliases = vec![key.to_string()];
     crate::stage::log_start(root, &mut session, &start)?;
+    // How many leaks `--redact` replaced, said once the session is written.
+    let redacted = std::cell::Cell::new(0);
     let render = |id: &str| -> Result<String> {
         let mut draft = session.clone();
         draft.meta.id = id.to_string();
-        Ok(checkpoint::render_checkpoint(&draft)?.render())
+        let (record, count) = checkpoint::render_counted(&draft)?;
+        redacted.set(count);
+        Ok(record.render())
     };
     let id = if local_path(root, &archive_file(&name))?.exists() {
         // An archived session's ID is never reused: one suffix is drawn, and a second
@@ -753,6 +768,12 @@ pub(super) fn create(
             render,
         )?
     };
+    if crate::leaks::redacting() && redacted.get() > 0 {
+        eprintln!(
+            "chough: redacted {} value(s) in the session record (--redact)",
+            redacted.get()
+        );
+    }
     point(root, &id)?;
     Ok(id)
 }
@@ -833,7 +854,24 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
         SessionCommand::Close { key, reason } => print_json(&close_session(root, &key, &reason)?),
         SessionCommand::Shelve { key } => {
             lock_project(root)?;
-            shelve(root, &key)
+            // REQ-cli-037 (#372): a session folder's name is that folder; any other key
+            // resolves as `session use` resolves it, by alias or bare slug.
+            let folder =
+                if valid_change_id(&key) && local_path(root, &format!("{DIR}/{key}"))?.is_dir() {
+                    key
+                } else {
+                    // A key that names several sessions is refused as `session use`
+                    // refuses it; one that names none falls through to the folder check.
+                    match open_matches(root, &key)?.as_slice() {
+                        [id] => id.clone(),
+                        [] => key,
+                        // Several: refused with `session use`'s own message. Should the two
+                        // reads ever disagree, the session it resolves is shelved, never a
+                        // panic.
+                        _ => resolve_open(root, &key)?,
+                    }
+                };
+            shelve(root, &folder)
         }
     }
 }
@@ -890,7 +928,7 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     // line links its file and becomes its receipt line below, never a bare ID beside it.
     let mut linked = session.clone();
     linked.evidence_links = checkpoint::evidence_links(root, &linked);
-    let mut record = checkpoint::render_checkpoint(&linked)?;
+    let (mut record, redacted) = checkpoint::render_counted(&linked)?;
     // REQ-history-006 (#344): when the objective changed after the Goal was filled, the
     // story says so in one line after the Goal paragraph; nothing is rewritten.
     let objective = session
@@ -960,6 +998,11 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
         written == text,
         "{story} did not read back as written; nothing was removed"
     );
+    // REQ-records-006: under `--redact`, the count of what the story's write replaced,
+    // once the story is written, as `session close` over a stored leak needs.
+    if crate::leaks::redacting() && redacted > 0 {
+        eprintln!("chough: redacted {redacted} value(s) in the archived story {story} (--redact)");
+    }
     let mut kept = crate::evidence::move_screenshots_at_finish(root, id)?;
     // A screenshot that is not committed yet is kept by both steps; list it once.
     for file in remove_committed(root, &format!("{DIR}/{id}"))? {
@@ -1371,7 +1414,11 @@ fn shelve(root: &Path, key: &str) -> Result<()> {
     ensure_key(key)?;
     let source = format!("{DIR}/{key}");
     let from = local_path(root, &source)?;
-    ensure!(from.is_dir(), "no session folder {source} to shelve");
+    ensure!(
+        from.is_dir(),
+        "no session folder {} to shelve",
+        crate::leaks::shown("session folder", &source)
+    );
     let target = format!("{SHELVED}/{key}");
     let note = format!("{target}/{SHELVED_NOTE}");
     ensure!(
@@ -1554,8 +1601,12 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             // entries, so taking it here means the entry is either seen by that archive
             // (the session stays open) or refused below; never stranded (#98).
             lock_project(root)?;
-            let session = resolve_open(root, &session)
-                .map_err(|_| anyhow::anyhow!("no open session {session}"))?;
+            let session = resolve_open(root, &session).map_err(|_| {
+                anyhow::anyhow!(
+                    "no open session {}",
+                    crate::leaks::shown("session name", &session)
+                )
+            })?;
             validate_entry(&from, kind, &text)?;
             // REQ-records-006: an inbox entry is committed with the session; its values
             // pass the leak guard, refused or redacted under --redact.
@@ -1609,7 +1660,12 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             print_json(&added)
         }
         InboxCommand::List => {
-            let key = active(root)?;
+            // REQ-history-009 (#393): the pinned session, as `inbox fold` resolves it.
+            let relative = checkpoint_path(root)?;
+            let key = match id_of(&relative) {
+                Some(key) => key,
+                None => active(root)?,
+            };
             let mut entries = vec![];
             for (_, entry) in pending(root, &key)? {
                 let recorded = (entry.kind == Kind::Observation.name())

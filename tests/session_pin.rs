@@ -277,3 +277,130 @@ fn a_pinned_session_before_any_session_names_session_new() {
     assert!(text.contains("drop --session"), "{text}");
     assert_eq!(tree(fixture.root()), before);
 }
+
+/// REQ-history-009 (#393): `inbox list` honors the pin as `inbox fold` does. With the
+/// pointer on one session and `--session` or `CHOUGH_SESSION` naming another, it lists
+/// the named session's entries and names that session.
+#[test]
+fn inbox_list_lists_the_pinned_session() {
+    let (fixture, first, other) = two_sessions();
+    for (session, text) in [
+        (&first, "SYNTHETIC for first"),
+        (&other, "SYNTHETIC for other"),
+    ] {
+        fixture.ok(&[
+            "inbox",
+            "add",
+            "--session",
+            session,
+            "--kind",
+            "decision",
+            "--text",
+            text,
+            "--from",
+            "SYNTHETIC-agent",
+        ]);
+    }
+    let by_option = fixture.ok(&["--session", &other, "inbox", "list"]);
+    let output = fixture.run_with_env(&["inbox", "list"], &[("CHOUGH_SESSION", &other)]);
+    assert!(output.status.success(), "{}", said(&output));
+    let by_variable: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    for listed in [&by_option, &by_variable] {
+        assert_eq!(listed["session"], other.as_str(), "{listed}");
+        let texts: Vec<&str> = listed["entries"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(|entry| entry["text"].as_str())
+            .collect();
+        assert_eq!(texts, ["SYNTHETIC for other"], "{listed}");
+    }
+}
+
+/// REQ-cli-037 (#372): `session use` and `session new` still ignore the pin, but say
+/// on standard error when `--session` or `CHOUGH_SESSION` still names another open
+/// session; with neither set, or when it names the session made active, they say
+/// nothing.
+#[test]
+fn session_use_and_new_say_when_a_pin_still_names_another_session() {
+    let (fixture, first, other) = two_sessions();
+    let stderr =
+        |output: &std::process::Output| String::from_utf8_lossy(&output.stderr).into_owned();
+    let used = fixture.run_with_env(&["session", "use", &other], &[("CHOUGH_SESSION", &first)]);
+    assert!(used.status.success(), "{}", said(&used));
+    assert_eq!(fixture.active_id(), other);
+    let note = stderr(&used);
+    assert!(
+        note.contains("CHOUGH_SESSION") && note.contains(&first),
+        "{note}"
+    );
+    let by_option = fixture.run(&["--session", &first, "session", "use", &other]);
+    let note = stderr(&by_option);
+    assert!(
+        note.contains("--session") && note.contains(&first),
+        "{note}"
+    );
+    let made = fixture.run_with_env(
+        &["session", "new", "SYNTHETIC-third", "--objective", "Third"],
+        &[("CHOUGH_SESSION", &first)],
+    );
+    assert!(made.status.success(), "{}", said(&made));
+    assert!(stderr(&made).contains(&first), "{}", stderr(&made));
+    // Unset, or naming the session made active: nothing said.
+    let quiet = fixture.run(&["session", "use", &first]);
+    assert_eq!(stderr(&quiet), "");
+    let same = fixture.run_with_env(&["session", "use", &other], &[("CHOUGH_SESSION", &other)]);
+    assert_eq!(stderr(&same), "");
+}
+
+/// REQ-records-006, REQ-history-006 (#367), TC-records-errors-show-a-value-only-when-clean:
+/// a session name from `CHOUGH_SESSION`, `--session` or `session use` that holds a token
+/// or a control character is refused naming the variable or option and what it holds,
+/// never the name: the output holds neither the token nor the escape. A clean unknown
+/// name is still named. Each holds with no session open and with one open.
+#[test]
+fn a_session_name_is_shown_only_when_clean() {
+    let token = concat!("x ghp_", "abcdefghij0123456789", "abcdefghij0123 y");
+    let escape = "a\u{1b}[31mb";
+    for open in [false, true] {
+        let fixture = Fixture::new();
+        if open {
+            fixture.init();
+        } else {
+            fixture.ok(&["init"]);
+        }
+        let before = tree(fixture.root());
+        for (value, held) in [(token, "token"), (escape, "control characters")] {
+            for output in [
+                fixture.run_with_env(&["next"], &[("CHOUGH_SESSION", value)]),
+                fixture.run(&["next", "--session", value]),
+                fixture.run(&["session", "use", value]),
+            ] {
+                let text = said(&output);
+                assert!(!output.status.success(), "{text}");
+                assert!(!text.contains("ghp_"), "the token was shown: {text}");
+                assert!(!text.contains('\u{1b}'), "the escape was shown: {text:?}");
+            }
+            // With sessions to look in, `session use` says what the name holds; with
+            // none, it names no value at all.
+            if open {
+                let text = said(&fixture.run(&["session", "use", value]));
+                assert!(text.contains(&format!("holding {held}")), "{text}");
+            }
+            let text = said(&fixture.run_with_env(&["next"], &[("CHOUGH_SESSION", value)]));
+            assert!(
+                text.contains(&format!("CHOUGH_SESSION holds {held}")),
+                "{text}"
+            );
+            let text = said(&fixture.run(&["next", "--session", value]));
+            assert!(text.contains(&format!("--session holds {held}")), "{text}");
+        }
+        let text = said(&fixture.run_with_env(&["next"], &[("CHOUGH_SESSION", "alpha")]));
+        assert!(text.contains("CHOUGH_SESSION names alpha"), "{text}");
+        if open {
+            let text = said(&fixture.run(&["session", "use", "alpha"]));
+            assert!(text.contains("no session alpha"), "{text}");
+        }
+        assert_eq!(tree(fixture.root()), before);
+    }
+}
