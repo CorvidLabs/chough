@@ -406,7 +406,7 @@ fn a_blocking_bug_stops_only_a_session_it_is_related_to() {
             ("evidence", "[]"),
         ],
     );
-    // Filed in `other`, it is on that session's bugs list and stops it.
+    // Filed in `other`, it is one of that session's bugs and stops it.
     assert!(
         fixture.session()["bugs"]
             .as_array()
@@ -495,7 +495,7 @@ fn a_blocking_bug_stops_only_a_session_it_is_related_to() {
 
 /// REQ-cli-012, REQ-cli-054 (#329), TC-cli-bug-add-joins-the-active-session: a blocking
 /// bug added while a session is active, with no observation, criterion, requirement or
-/// case, is on that session's bugs list and stops it leaving test.
+/// case, is one of that session's bugs and stops it leaving test.
 #[test]
 fn a_blocking_bug_added_in_a_session_stops_it() {
     let fixture = Fixture::new();
@@ -2374,10 +2374,10 @@ fn verifying_a_bug_with_no_fix_names_the_passing_observation_and_its_revision() 
 }
 
 /// REQ-cli-012, F8 of the second fresh-eyes round and #329: `bug add` while a session is
-/// active adds the bug to that session's checkpoint once, with or without
-/// `--observation`, and `bug update` given `--observation` with an entry of the active
-/// session does too, so its archived story names the bugs found in it; an update naming
-/// another session's entry leaves the active checkpoint unchanged.
+/// active makes the bug one of that session's bugs, listed by its checkpoint once, with
+/// or without `--observation`, and `bug update` given `--observation` with an entry of
+/// the active session keeps it so, so its archived story names the bugs found in it; an
+/// update naming another session's entry leaves the active checkpoint unchanged.
 #[test]
 fn a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story() {
     let fixture = Fixture::new();
@@ -2841,17 +2841,15 @@ fn bug_add_files_the_bug_in_a_session_whose_checkpoint_holds_200_bugs() {
         .map(|n| format!("2026-01-01-held-bug-{n}"))
         .collect();
     fixture.set_front("bugs", &format!("[{}]", held.join(", ")));
-    let session_file = fixture.session_file();
-    let before = fixture.read(&session_file);
+    let before = tree(fixture.root());
     let id = json(&add_bug(&fixture, &[]))["id"]
         .as_str()
         .unwrap()
         .to_string();
-    assert_eq!(
-        fixture.read(&session_file),
-        before,
-        "bug add wrote the session"
-    );
+    // Only the new bug's record is written; the session's record is unchanged.
+    let mut after = tree(fixture.root());
+    assert!(after.remove(&bug_path(&id)).is_some());
+    assert_eq!(after, before, "bug add wrote more than its record");
     assert!(
         fixture
             .read(&bug_path(&id))

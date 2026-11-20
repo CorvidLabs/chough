@@ -343,7 +343,10 @@ fn run() -> Result<()> {
             hosts,
         } => init(&root, objective, session, intent_scope, modules, hosts)?,
         Commands::Context { json: as_json } => {
-            let session = read_session(&root)?;
+            let mut session = read_session(&root)?;
+            // REQ-cli-012: the session's bugs include those filed in it.
+            let Session::V2(held) = &mut session;
+            held.bugs = bugs::of_session(&root, held);
             let sections = context::context(&root, &session, as_json)?;
             if as_json {
                 let mut session_value = session.to_value()?;
