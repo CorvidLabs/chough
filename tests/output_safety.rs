@@ -650,15 +650,6 @@ fn no_command_prints_a_stored_control_character_raw() {
     assert!(problems.is_empty(), "{}", problems.join("\n"));
 }
 
-/// The `src/change.rs` sites #412 makes stop echoing (the description SpecSync repeats,
-/// an answer, and `change ship`'s `--close-gate` text): not this change's (#367 closes
-/// when both are merged). #412 removes this list.
-const FOR_412: [(&str, &str); 3] = [
-    ("change new", "DESCRIPTION"),
-    ("change answer", "ANSWER"),
-    ("change ship", "--close-gate"),
-];
-
 /// REQ-records-006, TC-records-no-command-echoes-a-given-value: every value slot of every
 /// command in `chough --help`'s tree, each option that takes a value and each argument,
 /// given a token and an escape sequence, prints neither, in any output or error (#367).
@@ -697,22 +688,15 @@ fn no_command_echoes_a_value_given_on_the_command_line() {
         let copy: PathBuf = scratch.path().join(format!("e{index}"));
         copy_tree(fixture.root(), &copy);
         let base = &invocations(leaf, &ids)[0];
-        let command = leaf.path.join(" ");
         let mut tries: Vec<Vec<String>> = vec![];
         // Each argument slot in turn.
-        for (slot, name) in leaf.positionals.iter().enumerate() {
-            if FOR_412.contains(&(command.as_str(), name.as_str())) {
-                continue;
-            }
+        for slot in 0..leaf.positionals.len() {
             let mut args = base.clone();
             args[leaf.path.len() + slot] = value.clone();
             tries.push(args);
         }
         // Each option that takes a value, in place of its filler when it is required.
         for option in &leaf.options {
-            if FOR_412.contains(&(command.as_str(), option.as_str())) {
-                continue;
-            }
             let mut args: Vec<String> = vec![];
             let mut words = base.iter();
             while let Some(word) = words.next() {
@@ -836,4 +820,41 @@ fn a_fragment_of_a_stored_control_line_is_still_refused() {
     fixture.ok(&["checkpoint", "--next-action", "SYNTHETIC next step"]);
     let after = fixture.read(&file);
     assert_eq!(after.matches('\u{1b}').count(), 1, "{after:?}");
+}
+
+/// REQ-records-006 (#367, #412), TC-records-an-explicit-evidence-id-is-named-by-what-it-holds:
+/// an explicit evidence ID that is not a valid name and holds a token is refused naming
+/// the field and what it holds, never the value.
+#[test]
+fn an_explicit_evidence_id_is_named_by_what_it_holds() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let id = concat!(
+        "2026-01-01-x ghp_",
+        "abcdefghij0123456789",
+        "abcdefghij0123"
+    );
+    let output = fixture.run(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--kind",
+        "product-test",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "SYNTHETIC summary",
+        id,
+    ]);
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!output.status.success(), "{said}");
+    assert!(said.contains("<evidence ID holding"), "{said}");
+    assert!(!said.contains("ghp_"), "{said}");
 }

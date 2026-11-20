@@ -1,6 +1,6 @@
 ---
 module: records
-version: 25
+version: 26
 status: active
 files:
   - src/markdown.rs
@@ -234,3 +234,4 @@ use this one for every record they write.
 | 23 | 2026-11-20 | control-and-echo: Control and echo |
 | 24 | 2026-11-20 | fix-260-a-new-record-is-written-whole-or-not-at-all: Fix 260: a new record is written whole or not at all |
 | 25 | 2026-11-20 | fix-394-a-code-fence-that-never-closes-hides-no-section: Fix 394: a code fence that never closes hides no section |
+| 26 | 2026-11-20 | change-leaks: Change leaks |

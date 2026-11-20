@@ -367,6 +367,21 @@ fn tracked(root: &Path) -> Result<Vec<String>> {
     Ok(found)
 }
 
+/// The files the leak scan reads (REQ-records-006): `tracked`, and the files Git tracks
+/// under `.specsync/changes/` (#412) but each change's `deltas/`, which hold requirement
+/// text as `specs/` does. SpecSync's archive is its authenticated history and is not read.
+fn leak_scanned(root: &Path, tracked: &[String]) -> Vec<String> {
+    let mut files = tracked.to_vec();
+    files.extend(
+        paths_of(git(root, &["ls-files", "-z", "--", ".specsync/changes"]))
+            .into_iter()
+            .filter(|path| !path.split('/').any(|part| part == "deltas")),
+    );
+    files.sort();
+    files.dedup();
+    files
+}
+
 /// The text of a tracked regular file, or None for a link, a missing file or one that is
 /// not UTF-8 (an image: its metadata is stripped when it is written, REQ-records-013).
 fn tracked_text(root: &Path, path: &str) -> Option<String> {
@@ -431,6 +446,21 @@ fn leak_findings(root: &Path, files: &[String]) -> Vec<Finding> {
                     false,
                 );
                 finding.detail = Some(json!({"line": number + 1, "match": kind}));
+                // REQ-records-006 (#412): SpecSync's record of an open change is never
+                // redacted, since rewriting it would leave the change's approval invalid.
+                if let Some(change) = path
+                    .strip_prefix(".specsync/changes/")
+                    .and_then(|rest| rest.split('/').next())
+                {
+                    let change = crate::leaks::shown("change", change);
+                    finding.fix = format!(
+                        "none: reword it with `chough change answer {change} <question> <answer>`, or by a send-back for an approved change"
+                    );
+                    finding.blocked = Some(format!(
+                        "line {} is SpecSync's record of change {change}, which `--redact` never rewrites since that would leave its approval invalid",
+                        number + 1
+                    ));
+                }
                 // REQ-history-012 (#320): an ID is never redacted; the finding names
                 // the recovery instead.
                 if ids.contains(&number) {
@@ -1628,7 +1658,7 @@ fn merge_driver_outdated(root: &Path) -> Option<Finding> {
 /// The findings the verify lane's `leaks` step fails on: `leak` and `oversize`.
 fn leak_and_oversize(root: &Path) -> Result<Vec<Finding>> {
     let files = tracked(root)?;
-    let mut found = leak_findings(root, &files);
+    let mut found = leak_findings(root, &leak_scanned(root, &files));
     found.extend(oversize_findings(root, &files)?);
     Ok(found)
 }
@@ -1640,7 +1670,7 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     let migrated = unmigrated.is_none();
     found.extend(unmigrated);
     let files = tracked(root)?;
-    found.extend(leak_findings(root, &files));
+    found.extend(leak_findings(root, &leak_scanned(root, &files)));
     // A 0.5.x tree has no 0.6.0 sessions to check; `chough migrate` comes first.
     if migrated && sessions::enabled(root)? {
         found.extend(session_findings(root, args)?);

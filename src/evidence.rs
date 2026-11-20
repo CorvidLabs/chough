@@ -795,7 +795,11 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
     let _redact_guard = RedactGuard::new(args.redact);
     crate::checkpoint::observation_room(root)?;
     if let Some(id) = &args.id {
-        ensure!(valid_name(id), "invalid evidence ID");
+        ensure!(
+            valid_name(id),
+            "invalid evidence ID: {}",
+            crate::leaks::shown("evidence ID", id)
+        );
         identity::require_explicit_observation_id(id)?;
     }
     ensure!(
