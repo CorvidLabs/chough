@@ -5,7 +5,7 @@ aliases: [skill-and-create-races]
 objective: "Skill and create-new batch: skill update writes CRLF copies and names a file it cannot write (#373), parallel skill update and init runs all succeed (#386), a host folder that cannot be inspected is skipped and reported while the rest update (#403), and doctor reads an uncommitted session that fails validation (#408)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -57,13 +57,9 @@ observations:
   - 2026-11-20-tc-cli-release-name-byte-matching-6874f7
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of skill-and-create-races
-    holds: accept
-    drives: review
-    opened: 2026-11-20T15:30:49Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # Skill and create-new batch: skill update writes CRLF copies and names a file it cannot write (#373), parallel skill update and init runs all succeed (#386), a host folder that cannot be inspected is skipped and reported while the rest update (#403), and doctor reads an uncommitted session that fails validation (#408)
 
@@ -78,6 +74,7 @@ Skill and create-new batch: skill update writes CRLF copies and names a file it 
 - 0xLeif decided "Approve the scope of skill-and-create-races": "Approve" (Claude Code chat answer, relayed by his planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-19 about 14:12Z, on D2 skill-and-create-races at 2bf6318 with the four recommended choices; recorded at the batch start on that text, the draft carried onto main 056cbb80 by a merge with no delta word changed); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve skill-and-create-races as 0xLeif
 - 0xLeif decided "Add tests/skill_releases.rs to skill-and-create-races's scope by one send-back, run by the fixer": "Yes (Recommended)" (Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 14:13Z, relayed by hc t4c through fable-lead (hc t53); the question as shown: 'Chough D2: ... May D2's scope add tests/skill_releases.rs so the test can follow your rule? No wording changes.'; add tests/skill_releases.rs to D2's scope by one send-back the fixer runs, no sentence change); recorded by chough-fixer-t4g; a relayed claim, not authenticated
 - 0xLeif decided "Re-approval of skill-and-create-races with tests/skill_releases.rs added": "Yes (Recommended)" (Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 14:13Z, relayed by hc t4c through fable-lead (hc t53); the question as shown: 'Chough D2: ... May D2's scope add tests/skill_releases.rs so the test can follow your rule? No wording changes.'; on this text: tests/skill_releases.rs joins the declared paths (11 to 12) with no sentence change, the deltas byte-identical to those approved at f37fc73); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve skill-and-create-races as 0xLeif
+- 0xLeif decided "Implementation review of skill-and-create-races": "Go" (Standing OK 6(b): Leif's 'Go' to t4c's six rules (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19), under which the builder records his implementation review of a batch with a tester PASS whose build changes no approved sentence (t4c's ruling of 2026-11-19: the review only; every merge still needs his yes after CI). For #420 at 3b5890ae: the testers' PASS (the tester on macOS at 802537b6 with the 22 real repositories identical to main, and at 0dde9150, 90 of 90 rounds; tester2 on Linux at 0dde9150, 0 of 200 runs failing) and the tester's harness rerun by the fixer at 3b5890ae (38 of 38: 11 D2 rows fixed against main 7bf110dc, the 22 real repositories unchanged); corvid-agent APPROVED 3b5890ae (2026-11-20 about 15:10Z); fable-lead's read of the source at 802537b6, its finding D2-1 fixed. Every sentence change in this batch carries Leif's own words: the scope approval, and his 'Yes (Recommended)' for tests/skill_releases.rs, which changed no sentence. fable-lead is paused until about 2026-11-23, so t4c is told after.); recorded by chough-fixer-t4n; a relayed claim, not authenticated; ran specsync change review skill-and-create-races as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -213,4 +210,20 @@ Skill and create-new batch: skill update writes CRLF copies and names a file it 
   - revision: 3b5890ae3edd848815a9271832beaaa2d846512a
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T15:33:27Z · gate-closed · accept → accept · Implementation review of skill-and-create-races ^t-3d4ebb
+  - native_change: skill-and-create-races
+  - revision: 7a45e876c456ad4b4171c952c97c0f894710979a
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Go
+    - where: Standing OK 6(b): Leif's 'Go' to t4c's six rules (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19), under which the builder records his implementation review of a batch with a tester PASS whose build changes no approved sentence (t4c's ruling of 2026-11-19: the review only; every merge still needs his yes after CI). For #420 at 3b5890ae: the testers' PASS (the tester on macOS at 802537b6 with the 22 real repositories identical to main, and at 0dde9150, 90 of 90 rounds; tester2 on Linux at 0dde9150, 0 of 200 runs failing) and the tester's harness rerun by the fixer at 3b5890ae (38 of 38: 11 D2 rows fixed against main 7bf110dc, the 22 real repositories unchanged); corvid-agent APPROVED 3b5890ae (2026-11-20 about 15:10Z); fable-lead's read of the source at 802537b6, its finding D2-1 fixed. Every sentence change in this batch carries Leif's own words: the scope approval, and his 'Yes (Recommended)' for tests/skill_releases.rs, which changed no sentence. fable-lead is paused until about 2026-11-23, so t4c is told after.
+    - recorded_by: chough-fixer-t4n
+    - native: specsync change review skill-and-create-races
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T15:33:30Z · advance · accept → done · native:archived ^t-1d9419
+  - native_change: skill-and-create-races
+  - gate: native:archived
+  - revision: 7a45e876c456ad4b4171c952c97c0f894710979a
   - by: chough-fixer (claude-opus-5-5, hc t4n)
