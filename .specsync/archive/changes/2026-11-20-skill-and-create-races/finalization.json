@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "skill-and-create-races",
+  "implementation_commit": "3b5890ae3edd848815a9271832beaaa2d846512a",
+  "implementation_tree": "1c31eed34c711ee874f1cb70955cb5bca28fb876",
+  "contract_digest": "39bd5415dd0a175da7b7f8e001f31331188a1bb98c8c638fd03f398cdc378f35",
+  "workspace_digest": "eb933f8e6565860ed56030e09af72c853a4a40d18ac655f096ffe0afe68bbab2",
+  "closing_digest": "059257f952e24027400301d26668c017d34bf3dfa54830b6543b7cda5c04b7ec",
+  "review_digest": "8b28b30fc817706154532d04828291f9ed3640d2582efd38f43027cd4da74ce1",
+  "finalization_digest": "80bbf14bb7782a7f73acd54bd3d8dd5c268c2695a7cfccfa65ef44d581509f3b",
+  "timestamp": 1795188718
+}

@@ -580,16 +580,22 @@ pub(super) fn write_new_bounded(
 pub(super) fn write_new_bytes(root: &Path, relative: &str, content: &[u8]) -> Result<bool> {
     let path = local_path(root, relative)?;
     if path.exists() {
-        ensure!(path.is_file(), "expected a file: {}", path.display());
+        ensure!(path.is_file(), "expected a file: {relative}");
         return Ok(false);
     }
-    fs::create_dir_all(path.parent().context("file has no parent")?)?;
+    fs::create_dir_all(path.parent().context("file has no parent")?)
+        .with_context(|| format!("cannot create the folder of {relative}"))?;
     local_path(root, relative)?;
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&path)?;
-    file.write_all(content)?;
+    // #386: another run may create the file between the check above and this open; then
+    // it exists, as the check would have found. Every other error names the file,
+    // relative to the project.
+    let mut file = match OpenOptions::new().write(true).create_new(true).open(&path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => return Ok(false),
+        Err(error) => bail!("cannot write {relative}: {error}"),
+    };
+    file.write_all(content)
+        .with_context(|| format!("cannot write {relative}"))?;
     Ok(true)
 }
 
