@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "fix-260-a-new-record-is-written-whole-or-not-at-all",
+  "slug": "fix-260-a-new-record-is-written-whole-or-not-at-all",
+  "title": "Fix 260: a new record is written whole or not at all",
+  "description": "Fix 260: a new record is written whole or not at all",
+  "kind": "bug_fix",
+  "state": "draft",
+  "base_commit": "056cbb8029f6535ff74f866a0523893916f682db",
+  "created_at": 1795172541,
+  "updated_at": 1795172568,
+  "affected_specs": [
+    "records",
+    "cli"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "src/main.rs",
+    "src/markdown.rs",
+    "tests/records.rs",
+    "docs/cli.md",
+    "specs/records/requirements.md",
+    "specs/records/records.spec.md",
+    "specs/cli/requirements.md",
+    "specs/cli/cli.spec.md",
+    "changelog.d/",
+    ".chough/cases/records.whole-or-nothing.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A new record whose write fails or is cut off, by a full disk or a file-size limit, leaves no file at its name and no temporary file, the command exits non-zero naming the record, and bug list, status, next and library index --check work as before; an empty record file is named as empty; on exFAT, bug add and journal add still write whole records."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "research",
+    "plan"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "records and cli lessons apply: no hard link (exFAT, #313); no new refusal and no approved sentence changed; every record writer holds the writer lock, which the fallback rename relies on",
+    "public_contract": "no"
+  }
+}
