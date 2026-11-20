@@ -899,10 +899,7 @@ fn write_by_rename(root: &Path, written: &Planned, written_now: &mut Vec<String>
         }
         if let Err(error) = std::fs::rename(&temporary, &path) {
             let _ = std::fs::remove_file(&temporary);
-            bail!(
-                "{} could not take its name ({error}); no 0.5.x file was removed",
-                written.path
-            );
+            bail!("{} could not take its name ({error})", written.path);
         }
         // On a file system that folds case the rename replaces the file's bytes but can
         // keep its old spelling, as `knowledge/INDEX.md`; a case-only rename then gives it
@@ -929,7 +926,7 @@ fn write_by_rename(root: &Path, written: &Planned, written_now: &mut Vec<String>
             }
             ensure!(
                 listed_exactly(&path),
-                "{} could not be given its name in that letter case; no 0.5.x file was removed",
+                "{} could not be given its name in that letter case",
                 written.path
             );
         }
@@ -937,10 +934,7 @@ fn write_by_rename(root: &Path, written: &Planned, written_now: &mut Vec<String>
     }
     match at_target(root, &written.path)? {
         AtTarget::Bytes(back) if back == written.bytes => Ok(()),
-        _ => bail!(
-            "{} did not read back as planned; no 0.5.x file was removed",
-            written.path
-        ),
+        _ => bail!("{} did not read back as planned", written.path),
     }
 }
 
@@ -1422,7 +1416,30 @@ fn apply(
                 before.push((removed.clone(), bytes));
             }
         }
-        write_by_rename(root, written, &mut written_now)?;
+        // A failure after the rename has happened, on a file system that folds case, has
+        // already replaced the 0.5.x file of another letter case: say so, and how to get
+        // it back from the last commit, since no other 0.5.x file was removed (F2).
+        if let Err(error) = write_by_rename(root, written, &mut written_now) {
+            let replaced: Vec<&String> = before
+                .iter()
+                .map(|(removed, _)| removed)
+                .filter(|removed| {
+                    local_path(root, removed).is_ok_and(|path| !listed_exactly(&path))
+                })
+                .collect();
+            if replaced.is_empty() {
+                return Err(error.context("no 0.5.x file was removed"));
+            }
+            return Err(error.context(format!(
+                "on this file system, which folds case, that write replaced {}; no other 0.5.x file was removed. Get it back from the last commit with `git restore -- {}`, then run `chough migrate` again",
+                replaced.iter().map(|path| path.as_str()).collect::<Vec<_>>().join(", "),
+                replaced
+                    .iter()
+                    .map(|path| crate::sessions::shell_quoted(path))
+                    .collect::<Vec<_>>()
+                    .join(" ")
+            )));
+        }
         for (removed, bytes) in before {
             if !listed_exactly(&local_path(root, &removed)?) {
                 replaced_by_case.push((removed, bytes));
