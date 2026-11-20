@@ -53,7 +53,129 @@
         "where": "Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), from a Claude Code chat message on 2026-11-19 at about 14:37Z, on docs-387-no-git-while-agents-write at 0892b125: the one sentence and criterion in REQ-cli-040 and the skill digest in src/skill.rs, approved as drafted",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795135249,
+      "digest": "1c6a9ce030191ac7afa97bf77c5182bef3dda644f5032a44cad1ff8db1614af8",
+      "note": "Approved by 0xLeif at the Chough gate \"One send-back of docs-387-no-git-while-agents-write to correct its stale acceptance-criteria answer, run by t4b\": \"a, all yes.. im back\" (Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 00:38Z on 2026-11-20, answering t4c's eight-item round; item 7: yes to one send-back of #387 before any code, run by t4b, correcting only the acceptance-criteria answer to match the delta he approved at 0892b125 (git pull named; a lone agent may run Git between its own commands), with no delta word changed). Relayed and recorded by fable-t4b at 2026-11-20T00:40:48Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "docs-387-no-git-while-agents-write",
+        "title": "Docs 387 no git while agents write",
+        "description": "docs 387 no git while agents write",
+        "kind": "documentation",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/checkpoint.md",
+          ".chough/cases/cli.no-git-while-agents-write.cases.toml",
+          "changelog.d/",
+          "docs/cli.md",
+          "skills/chough-workflow/references/checkpoint.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "src/skill.rs",
+          "tests/docs.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "The workflow skill's checkpoint reference, in the bundle and in an installed copy, and docs/cli.md each tell agents not to run git merge, rebase, checkout or stash in a worktree while Chough writers run there, and why"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "cli lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval; a changed skill file needs its released digest in KNOWN_PREVIOUS so an older install updates.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "b8512f382f07dae8fbac01b237bb80fa8d3de5eb77cf39ada44cc9b30fe9c2a7"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-040": "ed9827aeb41412feac72c23a1f86027fe43179fffdcedc83b86db701de451bc4"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "a, all yes.. im back",
+        "where": "Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 00:38Z on 2026-11-20, answering t4c's eight-item round; item 7: yes to one send-back of #387 before any code, run by t4b, correcting only the acceptance-criteria answer to match the delta he approved at 0892b125 (git pull named; a lone agent may run Git between its own commands), with no delta word changed",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795135421,
+      "digest": "b62cb6c7cd4bf9ff160f919c0734005df34e3d936641c6e0099b56f624b58a57",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of docs-387-no-git-while-agents-write with its corrected acceptance-criteria answer (native approval)\": \"Yes, record it\" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval. Scope: his 'Yes I approve' of the delta at 0892b125 (relayed by hc t4c through fable-lead, 2026-11-19), delta unchanged. Send-back: his 'a, all yes.. im back' (relayed the same way, about 00:38Z on 2026-11-20, item 7), one send-back by t4b correcting only the acceptance-criteria answer). Relayed and recorded by fable-t4b at 2026-11-20T00:43:41Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "docs-387-no-git-while-agents-write",
+        "title": "Docs 387 no git while agents write",
+        "description": "docs 387 no git while agents write",
+        "kind": "documentation",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/checkpoint.md",
+          ".chough/cases/cli.no-git-while-agents-write.cases.toml",
+          "changelog.d/",
+          "docs/cli.md",
+          "skills/chough-workflow/references/checkpoint.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "src/skill.rs",
+          "tests/docs.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "The workflow skill's checkpoint reference, in the bundle and in an installed copy, and `docs/cli.md` each say not to run `git pull`, `git merge`, `git rebase`, `git checkout` or `git stash` in a worktree while another agent works there, why, and that a lone agent may run one between its own commands."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "cli lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval; a changed skill file needs its released digest in KNOWN_PREVIOUS so an older install updates.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "b8512f382f07dae8fbac01b237bb80fa8d3de5eb77cf39ada44cc9b30fe9c2a7"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-040": "ed9827aeb41412feac72c23a1f86027fe43179fffdcedc83b86db701de451bc4"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes, record it",
+        "where": "His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval. Scope: his 'Yes I approve' of the delta at 0892b125 (relayed by hc t4c through fable-lead, 2026-11-19), delta unchanged. Send-back: his 'a, all yes.. im back' (relayed the same way, about 00:38Z on 2026-11-20, item 7), one send-back by t4b correcting only the acceptance-criteria answer",
+        "recorded_by": "fable-t4b"
+      }
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "docs-387-no-git-while-agents-write",
+      "actor": "0xLeif",
+      "reason": "The recorded acceptance-criteria answer is stale: it predates 0892b125 and omits git pull and the lone-agent allowance that the approved delta carries; only that answer is corrected, no delta word changes (run by t4b on Leif's relayed word, via t4c, 2026-11-20)",
+      "timestamp": 1795135260,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 2,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
+    }
+  ]
 }

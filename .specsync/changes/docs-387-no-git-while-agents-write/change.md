@@ -17,7 +17,7 @@ docs 387 no git while agents write
 
 ## Acceptance Criteria
 
-- The workflow skill's checkpoint reference, in the bundle and in an installed copy, and docs/cli.md each tell agents not to run git merge, rebase, checkout or stash in a worktree while Chough writers run there, and why
+- The workflow skill's checkpoint reference, in the bundle and in an installed copy, and `docs/cli.md` each say not to run `git pull`, `git merge`, `git rebase`, `git checkout` or `git stash` in a worktree while another agent works there, why, and that a lone agent may run one between its own commands.
 
 ## No-spec Rationale
 

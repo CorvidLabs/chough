@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Scope approval of docs-387-no-git-while-agents-write\" closed (approved); run `chough stage advance` to move on."
+next: "Gate \"Scope approval of docs-387-no-git-while-agents-write with its corrected acceptance-criteria answer (native approval)\" closed (approved); run `chough stage advance` to move on."
 ---
 # The docs and the workflow skill tell agents not to run git merge, rebase, checkout or stash in a worktree while Chough writers run there, since Git can drop writes that already exited 0 (#387)
 
@@ -34,6 +34,8 @@ The docs and the workflow skill tell agents not to run git merge, rebase, checko
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of docs-387-no-git-while-agents-write": "Yes I approve" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), from a Claude Code chat message on 2026-11-19 at about 14:37Z, on docs-387-no-git-while-agents-write at 0892b125: the one sentence and criterion in REQ-cli-040 and the skill digest in src/skill.rs, approved as drafted); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve docs-387-no-git-while-agents-write as 0xLeif
+- 0xLeif decided "One send-back of docs-387-no-git-while-agents-write to correct its stale acceptance-criteria answer, run by t4b": "a, all yes.. im back" (Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 00:38Z on 2026-11-20, answering t4c's eight-item round; item 7: yes to one send-back of #387 before any code, run by t4b, correcting only the acceptance-criteria answer to match the delta he approved at 0892b125 (git pull named; a lone agent may run Git between its own commands), with no delta word changed); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve docs-387-no-git-while-agents-write as 0xLeif
+- 0xLeif decided "Scope approval of docs-387-no-git-while-agents-write with its corrected acceptance-criteria answer (native approval)": "Yes, record it" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval. Scope: his 'Yes I approve' of the delta at 0892b125 (relayed by hc t4c through fable-lead, 2026-11-19), delta unchanged. Send-back: his 'a, all yes.. im back' (relayed the same way, about 00:38Z on 2026-11-20, item 7), one send-back by t4b correcting only the acceptance-criteria answer); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve docs-387-no-git-while-agents-write as 0xLeif
 
 ## What was verified
 
@@ -63,6 +65,51 @@ The docs and the workflow skill tell agents not to run git merge, rebase, checko
     - decided_by: 0xLeif
     - words: Yes I approve
     - where: Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), from a Claude Code chat message on 2026-11-19 at about 14:37Z, on docs-387-no-git-while-agents-write at 0892b125: the one sentence and criterion in REQ-cli-040 and the skill digest in src/skill.rs, approved as drafted
+    - recorded_by: fable-t4b
+    - native: specsync change approve docs-387-no-git-while-agents-write
+    - actor: 0xLeif
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T00:40:48Z · gate-opened · plan → plan · One send-back of docs-387-no-git-while-agents-write to correct its stale acceptance-criteria answer, run by t4b ^t-828be7
+  - native_change: docs-387-no-git-while-agents-write
+  - revision: 90f0c2263c81d737eace1d28583d9f2b9e372a2f
+  - holds: plan
+  - drives: approve
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T00:40:48Z · gate-closed · plan → plan · One send-back of docs-387-no-git-while-agents-write to correct its stale acceptance-criteria answer, run by t4b ^t-dbaead
+  - native_change: docs-387-no-git-while-agents-write
+  - revision: 90f0c2263c81d737eace1d28583d9f2b9e372a2f
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: a, all yes.. im back
+    - where: Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 00:38Z on 2026-11-20, answering t4c's eight-item round; item 7: yes to one send-back of #387 before any code, run by t4b, correcting only the acceptance-criteria answer to match the delta he approved at 0892b125 (git pull named; a lone agent may run Git between its own commands), with no delta word changed
+    - recorded_by: fable-t4b
+    - native: specsync change approve docs-387-no-git-while-agents-write
+    - actor: 0xLeif
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T00:43:41Z · gate-opened · plan → plan · Scope approval of docs-387-no-git-while-agents-write with its corrected acceptance-criteria answer (native approval) ^t-6e0dd8
+  - native_change: docs-387-no-git-while-agents-write
+  - revision: 90f0c2263c81d737eace1d28583d9f2b9e372a2f
+  - holds: plan
+  - drives: approve
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T00:43:41Z · direct-native-write · plan → plan · docs-387-no-git-while-agents-write's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state approved → draft ^t-100594
+  - native_change: docs-387-no-git-while-agents-write
+  - revision: 90f0c2263c81d737eace1d28583d9f2b9e372a2f
+  - direct_write:
+    - change: docs-387-no-git-while-agents-write
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: approved
+    - after_state: draft
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T00:43:41Z · gate-closed · plan → plan · Scope approval of docs-387-no-git-while-agents-write with its corrected acceptance-criteria answer (native approval) ^t-71bf21
+  - native_change: docs-387-no-git-while-agents-write
+  - revision: 90f0c2263c81d737eace1d28583d9f2b9e372a2f
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, record it
+    - where: His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval. Scope: his 'Yes I approve' of the delta at 0892b125 (relayed by hc t4c through fable-lead, 2026-11-19), delta unchanged. Send-back: his 'a, all yes.. im back' (relayed the same way, about 00:38Z on 2026-11-20, item 7), one send-back by t4b correcting only the acceptance-criteria answer
     - recorded_by: fable-t4b
     - native: specsync change approve docs-387-no-git-while-agents-write
     - actor: 0xLeif
