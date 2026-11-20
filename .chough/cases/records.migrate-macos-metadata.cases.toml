@@ -6,7 +6,7 @@ module = "records"
 
 [[case]]
 id = "TC-records-migrate-skips-macos-metadata"
-title = "A 0.5.x project with ._* and .DS_Store files beside its bugs, sessions, archived sessions, inbox entries, evidence, history events and knowledge notes previews with the same plan digest as without them, the apply succeeds, and every one of them is still there after"
+title = "A 0.5.x project with ._* and .DS_Store files beside its bugs, sessions, archived sessions, inbox entries, evidence, history events and knowledge notes previews with the same plan digest as without them, the apply of that digest succeeds, each folder the migration emptied of its records is gone with the metadata files it held and is named in the apply's output, and each such file beside records that stay is still there"
 status = "active"
 track = "functional"
 method = "automated"

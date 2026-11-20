@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# #376: right after an in-place migration doctor --fix removed a pointer that named an
+# open session by its 0.5.x alias.
+
+[[case]]
+id = "TC-cli-doctor-keeps-a-migrated-alias-pointer"
+title = "On a tree just migrated in place whose active pointer holds a 0.5.x session name, chough doctor --fix reports no stale_pointer, leaves the pointer byte-identical, and chough next still shows that session"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-cli-055"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_fix_keeps_a_pointer_that_names_an_open_session_by_alias passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_fix_keeps_a_pointer_that_names_an_open_session_by_alias"

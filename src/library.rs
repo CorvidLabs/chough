@@ -264,6 +264,21 @@ fn files_0_5(root: &Path, relative: &str, found: &mut Vec<(String, bool)>) -> Re
             continue;
         }
         let name = format!("{relative}/{}", entry.file_name().to_string_lossy());
+        // The generated files 0.6.0 writes are not 0.5.x notes: the migration replaces
+        // a regular one, refuses anything else there, and never opens one in a way that
+        // can wait (REQ-records-009, #337).
+        if is_generated(root, &name)? {
+            continue;
+        }
+        // The temporary file of a write a stopped apply left is not a 0.5.x note either;
+        // the next apply removes it (#338).
+        let file_name = entry.file_name().to_string_lossy().into_owned();
+        if file_name.starts_with('.')
+            && (file_name.ends_with(crate::migrate::MIGRATING)
+                || file_name.ends_with(crate::migrate::ASIDE))
+        {
+            continue;
+        }
         let kind = entry.file_type()?;
         if kind.is_dir() {
             files_0_5(root, &name, found)?;
@@ -272,6 +287,15 @@ fn files_0_5(root: &Path, relative: &str, found: &mut Vec<(String, bool)>) -> Re
         }
     }
     Ok(())
+}
+
+/// Whether `relative` is one of the files Chough generates in the knowledge directory,
+/// `index.md` and `journal/feed.xml` (REQ-cli-043), by its exact name.
+pub(super) fn is_generated(root: &Path, relative: &str) -> Result<bool> {
+    let dir = prefs::effective(root, "library-dir")?.0;
+    let dir = dir.trim_end_matches('/');
+    Ok(relative == format!("{dir}/index.md")
+        || relative == format!("{}/{}", crate::journal::dir_of(dir), crate::journal::FEED))
 }
 
 /// A vault file's bytes; a link is not read, so nothing outside the tree is.

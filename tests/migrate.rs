@@ -51,13 +51,20 @@ fn files(root: &Path) -> BTreeMap<String, Vec<u8>> {
             } else {
                 format!("{relative}/{}", entry.file_name().to_string_lossy())
             };
-            if name == ".git" {
+            // The Git-ignored writer lock is not a write of the migration (REQ-records-009).
+            if name == ".git" || name == ".chough/local" {
                 continue;
             }
             if entry.path().is_dir() {
                 walk(root, &name, out);
+            } else if entry.file_type().is_ok_and(|kind| kind.is_file()) {
+                // A file without read permission is named, never read.
+                let bytes =
+                    std::fs::read(entry.path()).unwrap_or_else(|_| b"<unreadable>".to_vec());
+                out.insert(name, bytes);
             } else {
-                out.insert(name, std::fs::read(entry.path()).unwrap());
+                // A FIFO or other special file is named, never opened, so no read waits.
+                out.insert(name, b"<special>".to_vec());
             }
         }
     }
@@ -620,6 +627,18 @@ fn a_weakened_archive_restores_every_removed_file_and_refuses() {
             .unwrap_or_else(|_| panic!("{path} was not restored"));
         assert_eq!(&sha256(&bytes), sha.as_str().unwrap(), "{path}");
     }
+    // F3: the 0.5.x index comes back by its own name, not inside the new index's file.
+    let names: Vec<String> = std::fs::read_dir(fixture.root().join("knowledge"))
+        .unwrap()
+        .flatten()
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .collect();
+    assert!(names.contains(&"INDEX.md".to_string()), "{names:?}");
+    assert!(!names.contains(&"index.md".to_string()), "{names:?}");
+    assert!(
+        !names.iter().any(|name| name.ends_with(".aside")),
+        "{names:?}"
+    );
     // Two rounds of twenty reads, never more than eight at once.
     let counts: Vec<usize> = fixture
         .read(".stub-concurrency")
@@ -681,8 +700,9 @@ fn an_interrupted_apply_completes_to_the_uninterrupted_result() {
     assert_eq!(first["plan_digest"], plan["plan_digest"]);
     // The stop: every planned file but the last written, with its planned bytes. A
     // file that differs only in case from a planned removal (knowledge/index.md for
-    // knowledge/INDEX.md) is written after the removals, so a stop before them has not
-    // written it.
+    // knowledge/INDEX.md) is written last of all, after the receipt, since on a file
+    // system that folds case that write is the removal; a stop before it has not written
+    // it.
     let removals: Vec<String> = plan["removed"]
         .as_object()
         .unwrap()
@@ -1814,8 +1834,9 @@ fn the_preview_names_the_sessions_doctor_reports_after_the_apply() {
 /// REQ-records-015 (#314 review), TC-records-migrate-skips-macos-metadata: the
 /// `.DS_Store` and AppleDouble `._*` files macOS writes beside 0.5.x records, in
 /// `.chough/` and in the knowledge directory, are not records, so `chough migrate`
-/// neither reads, carries nor removes them: the preview gives the same plan digest as
-/// without them, that digest applies, and every one of them is still there after.
+/// neither reads, carries nor lists them: the preview gives the same plan digest as
+/// without them and that digest applies. A folder the migration emptied of its records
+/// goes with the metadata it held and is named; metadata beside what stays stays (#375).
 #[test]
 fn migrate_skips_macos_metadata_beside_0_5_records() {
     let fixture = migrate_project("adopted", &[(".chough/bugs/BUG-0001.json", LEGACY_BUG)]);
@@ -1856,18 +1877,59 @@ fn migrate_skips_macos_metadata_beside_0_5_records() {
     assert_eq!(plan["unaccounted"], serde_json::json!([]), "{plan:#}");
     let applied = fixture.ok(&["migrate", "--apply", &digest, "--consent", CONSENT]);
     assert_eq!(applied["applied"], true, "{applied:#}");
-    // Nothing removed them, not even with a folder the migration emptied of its 0.5.x
-    // records: macOS's rmdir would delete orphaned `._*` files along with it.
-    for path in metadata {
+    // #375: a folder the migration emptied of its 0.5.x records, left holding only such
+    // files, is removed with them and named in the output with how many it held; such a
+    // file beside a record or folder that stays, stays.
+    let emptied: Vec<(String, u64)> = applied["emptied_folders"]
+        .as_array()
+        .unwrap_or_else(|| panic!("no emptied_folders: {applied:#}"))
+        .iter()
+        .map(|entry| {
+            (
+                entry["folder"].as_str().unwrap().to_string(),
+                entry["metadata_files"].as_u64().unwrap(),
+            )
+        })
+        .collect();
+    // `.chough/evidence` held no record in this fixture, so the migration did not empty
+    // it and it stays with its metadata.
+    assert!(fixture.root().join(".chough/evidence/.DS_Store").is_file());
+    for folder in [".chough/history", ".chough/sessions/archive"] {
         assert!(
-            fixture.root().join(path).is_file(),
-            "{path} was removed by the migration"
+            !fixture.root().join(folder).exists(),
+            "{folder} stayed with only metadata in it"
+        );
+        assert!(
+            emptied
+                .iter()
+                .any(|(named, count)| named == folder && *count > 0),
+            "{folder} is not named: {emptied:?}"
         );
     }
-    assert!(
-        fixture.root().join(metadata_folder).is_dir(),
-        "{metadata_folder} was removed by the migration"
-    );
+    for path in [
+        ".chough/.DS_Store",
+        ".chough/bugs/.DS_Store",
+        ".chough/bugs/._BUG-0001.json",
+        ".chough/sessions/.DS_Store",
+        ".chough/sessions/._open-one.json",
+        "knowledge/.DS_Store",
+        "knowledge/._rules.md",
+    ] {
+        assert!(
+            fixture.root().join(path).is_file(),
+            "{path} beside records that stay was removed"
+        );
+    }
+    for path in metadata {
+        let gone_with = emptied
+            .iter()
+            .any(|(folder, _)| path.starts_with(&format!("{folder}/")));
+        assert_eq!(
+            fixture.root().join(path).is_file(),
+            !gone_with,
+            "{path}: removed without its folder being named, or kept in a removed folder"
+        );
+    }
     // The migrated tree reads with the metadata files still beside its records.
     for args in [&["session", "list"][..], &["bug", "list"][..]] {
         let output = fixture.run(args);
@@ -1911,7 +1973,8 @@ fn migrate_refuses_a_plan_whose_files_would_hold_conflict_markers() {
     );
     let text = String::from_utf8_lossy(&fixture.run(&["migrate"]).stdout).into_owned();
     assert!(
-        text.contains("The apply refuses now (refused:conflict-markers)") && text.contains(entry),
+        text.contains("The apply would refuse now (refused:conflict-markers)")
+            && text.contains(entry),
         "{text}"
     );
     // A plan the apply would refuse is not offered to apply.
@@ -1988,7 +2051,7 @@ fn a_receipt_name_taken_after_the_preview_refuses_before_any_write() {
     let receipt = plan["receipt"].as_str().unwrap().to_string();
     fixture.write(
         &receipt,
-        "---\nkind: receipt\nplan_digest: SYNTHETIC-another-plan\n---\n",
+        "---\nkind: receipt\nplan_digest: SYNTHETIC-another-plan\n---\n\n# Migration from Chough 0.5.x\n\n## Before\n\nnone\n",
     );
     let before = files(fixture.root());
     let refused = fixture.fails(&[
@@ -2013,4 +2076,700 @@ fn a_receipt_name_taken_after_the_preview_refuses_before_any_write() {
             .read(&receipt)
             .contains("plan_digest: SYNTHETIC-another-plan")
     );
+}
+
+/// The adopted fixture, migrated with consent and committed, with the receipt's path.
+fn migrated_adopted() -> (Fixture, String) {
+    let fixture = migrate_project("adopted", &[]);
+    let (_, applied) = migrate(&fixture, Some(CONSENT));
+    fixture.commit("migrated");
+    let receipt = applied["receipt"].as_str().unwrap().to_string();
+    (fixture, receipt)
+}
+
+/// The 0.5.x file at `path` of the adopted fixture, as it was before the migration.
+fn adopted_bytes(path: &str) -> String {
+    std::fs::read_to_string(fixture_dir("adopted").join(path)).unwrap()
+}
+
+/// A preview that refuses: non-zero, no plan digest on standard output, and its refusal.
+fn refused_preview(fixture: &Fixture) -> String {
+    let output = fixture.run(&["migrate"]);
+    let stdout = String::from_utf8_lossy(&output.stdout).into_owned();
+    assert!(
+        !output.status.success(),
+        "the preview did not refuse: {stdout}"
+    );
+    assert!(
+        !stdout.contains("Plan digest"),
+        "a refused preview gave a plan: {stdout}"
+    );
+    String::from_utf8_lossy(&output.stderr).into_owned()
+}
+
+/// An apply of an arbitrary digest that refuses, with its refusal.
+fn refused_apply(fixture: &Fixture) -> String {
+    fixture.fails(&["migrate", "--apply", &"0".repeat(64), "--consent", CONSENT])
+}
+
+/// Puts something at a path for a test: a directory, a file, a FIFO.
+type Place = fn(&Path);
+
+const OPEN_ONE: &str = ".chough/sessions/open-one.json";
+const EVENT: &str =
+    ".chough/history/cycles/CYC-35b47ded993bd490850611ba/EVT-4edf61033f58689200e93314.json";
+
+/// #370 (REQ-records-009), TC-records-migrate-judges-returning-files-by-the-receipt: on a
+/// migrated tree, a 0.5.x open session file that comes back with an edited objective
+/// makes the preview and the apply refuse, naming the file, the receipt that lists it and
+/// the way on, with nothing written and no second session; once its removal is committed
+/// there is nothing to migrate.
+#[test]
+fn a_returning_edited_session_is_refused_naming_it_and_its_receipt() {
+    let (fixture, receipt) = migrated_adopted();
+    let sessions_before = fixture.open_ids();
+    fixture.write(
+        OPEN_ONE,
+        &adopted_bytes(OPEN_ONE).replace("Open work one", "Open work one, edited on a branch"),
+    );
+    fixture.commit("a 0.5.x session returns, edited");
+    let before = files(fixture.root());
+    for refusal in [refused_preview(&fixture), refused_apply(&fixture)] {
+        assert!(
+            refusal.contains("refused:already-migrated")
+                && refusal.contains(OPEN_ONE)
+                && refusal.contains(&receipt)
+                && refusal.contains("by hand")
+                && refusal.contains("`chough migrate` again"),
+            "{refusal}"
+        );
+        assert!(!refusal.contains("appeared"), "{refusal}");
+    }
+    assert_eq!(
+        files(fixture.root()),
+        before,
+        "a refused migrate changed a file"
+    );
+    assert_eq!(fixture.open_ids(), sessions_before);
+    fixture.git(&["rm", "-q", OPEN_ONE]);
+    fixture.commit("the returning file removed");
+    let text = fixture.ok_text(&["migrate"]);
+    assert!(text.contains("Nothing to migrate"), "{text}");
+}
+
+/// #370: a returning history event with other bytes is refused the same way, not planned
+/// as removed; two returning files are named in one refusal.
+#[test]
+fn returning_files_with_other_bytes_are_all_named_in_one_refusal() {
+    let (fixture, receipt) = migrated_adopted();
+    fixture.write(EVENT, &format!("{} ", adopted_bytes(EVENT)));
+    fixture.commit("an event returns, edited");
+    let refusal = refused_preview(&fixture);
+    assert!(
+        refusal.contains("refused:already-migrated")
+            && refusal.contains(EVENT)
+            && refusal.contains(&receipt),
+        "{refusal}"
+    );
+    fixture.write(
+        OPEN_ONE,
+        &adopted_bytes(OPEN_ONE).replace("Open work one", "Open work one, edited"),
+    );
+    fixture.commit("a session returns too");
+    let refusal = refused_preview(&fixture);
+    assert!(
+        refusal.contains(EVENT) && refusal.contains(OPEN_ONE),
+        "{refusal}"
+    );
+    assert_eq!(refusal.matches("refused:").count(), 1, "{refusal}");
+}
+
+/// #370: a returning 0.5.x file with the bytes its receipt lists is planned as removed as
+/// already migrated, naming the receipt, and the apply removes it without carrying it
+/// again, so no second session is made.
+#[test]
+fn a_returning_file_with_its_receipt_bytes_is_removed_as_already_migrated() {
+    let (fixture, receipt) = migrated_adopted();
+    let sessions_before = fixture.open_ids();
+    fixture.write(OPEN_ONE, &adopted_bytes(OPEN_ONE));
+    fixture.commit("a 0.5.x session returns unchanged");
+    let plan = fixture.ok(&["migrate", "--json"]);
+    let why = plan["removed"][OPEN_ONE].as_str().unwrap_or_default();
+    assert!(
+        why.contains("already migrated") && why.contains(&receipt),
+        "{plan:#}"
+    );
+    let sessions_written: Vec<String> = written(&plan)
+        .into_iter()
+        .filter(|path| {
+            path.starts_with(".chough/sessions/") || path.starts_with(".chough/archive/sessions/")
+        })
+        .collect();
+    assert!(sessions_written.is_empty(), "{sessions_written:?}");
+    let digest = plan["plan_digest"].as_str().unwrap();
+    let applied = fixture.ok(&["migrate", "--apply", digest, "--consent", CONSENT]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+    assert!(!fixture.exists(OPEN_ONE));
+    assert_eq!(fixture.open_ids(), sessions_before);
+}
+
+/// #370: a committed receipt changed on disk and not committed makes the preview and the
+/// apply refuse while a 0.5.x file is present, naming it and saying to commit it or
+/// restore it; once restored, the migration judges by it again.
+#[test]
+fn an_edited_committed_receipt_is_refused_until_committed_or_restored() {
+    let (fixture, receipt) = migrated_adopted();
+    fixture.write(OPEN_ONE, &adopted_bytes(OPEN_ONE));
+    fixture.commit("a 0.5.x session returns unchanged");
+    let committed = fixture.read(&receipt);
+    fixture.write(&receipt, &format!("{committed}\nA hand edit.\n"));
+    let before = files(fixture.root());
+    for refusal in [refused_preview(&fixture), refused_apply(&fixture)] {
+        assert!(
+            refusal.contains("refused:migration-receipt")
+                && refusal.contains(&receipt)
+                && refusal.contains("commit")
+                && refusal.contains("restore"),
+            "{refusal}"
+        );
+    }
+    assert_eq!(files(fixture.root()), before);
+    // T4 (rule 3): the way out runs as printed. The refusal names the restore command
+    // with the receipt's path quoted as one shell word; run it as printed.
+    let refusal = refused_preview(&fixture);
+    let command = refusal
+        .split('`')
+        .find(|part| part.starts_with("git restore -- "))
+        .unwrap_or_else(|| panic!("no git restore command: {refusal}"))
+        .to_string();
+    assert!(
+        !command.contains('<'),
+        "a placeholder is left in: {command}"
+    );
+    let restored = std::process::Command::new("sh")
+        .args(["-c", &command])
+        .current_dir(fixture.root())
+        .status()
+        .unwrap();
+    assert!(restored.success(), "{command} failed");
+    assert_eq!(
+        fixture.read(&receipt),
+        committed,
+        "{command} did not restore the receipt"
+    );
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert!(
+        plan["removed"][OPEN_ONE]
+            .as_str()
+            .is_some_and(|why| why.contains("already migrated")),
+        "{plan:#}"
+    );
+}
+
+/// #370 (guard): a receipt Git has never held is this migration's own, left by an apply
+/// stopped once it was written; the preview plans nothing as already migrated and the
+/// next apply completes as an uninterrupted one. Once that receipt is committed with the
+/// 0.5.x files it lists still there, they are planned as removed as already migrated.
+#[test]
+fn an_uncommitted_receipt_judges_nothing_and_a_committed_one_does() {
+    let done = migrate_project("adopted", &[]);
+    let (_, applied) = migrate(&done, Some(CONSENT));
+    let receipt = applied["receipt"].as_str().unwrap().to_string();
+    let fixture = migrate_project("adopted", &[]);
+    fixture.write(&receipt, &done.read(&receipt));
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert!(
+        !plan.to_string().contains("already migrated"),
+        "an uncommitted receipt judged a file: {plan:#}"
+    );
+    fixture.commit("the receipt committed with the 0.5.x files");
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert!(
+        plan["removed"][OPEN_ONE]
+            .as_str()
+            .is_some_and(|why| why.contains("already migrated")),
+        "{plan:#}"
+    );
+}
+
+/// #337 (REQ-records-009): an entry named `*.md` in `.chough/archive/migrations/` that is
+/// not a receipt Chough can read makes the preview refuse without waiting, naming it and
+/// saying to move or remove it, and the apply refuses naming it, with nothing written and
+/// no "appeared while migrating". A `.DS_Store`, a `._` file and a `.gitkeep` there change
+/// neither the plan nor its digest.
+#[test]
+fn an_entry_in_the_receipt_folder_that_is_no_receipt_is_refused_without_waiting() {
+    let name = ".chough/archive/migrations/2026-01-01-from-0-5.md";
+    let kinds: [(&str, Place); 5] = [
+        ("a directory", |path| std::fs::create_dir_all(path).unwrap()),
+        ("unreadable", |path| {
+            std::fs::write(path, "# receipt\n").unwrap();
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o000)).unwrap();
+            }
+        }),
+        ("not UTF-8", |path| {
+            std::fs::write(path, b"# receipt \xff\xfe\n").unwrap()
+        }),
+        ("a FIFO", |path| {
+            #[cfg(unix)]
+            assert!(
+                std::process::Command::new("mkfifo")
+                    .arg(path)
+                    .status()
+                    .unwrap()
+                    .success()
+            );
+        }),
+        ("no list of files read", |path| {
+            std::fs::write(path, "# Migration receipt\n\nNo list here.\n").unwrap()
+        }),
+    ];
+    for (kind, place) in kinds {
+        let fixture = migrate_project("adopted", &[]);
+        let path = fixture.root().join(name);
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+        place(&path);
+        let started = std::time::Instant::now();
+        let preview = refused_preview(&fixture);
+        assert!(
+            started.elapsed().as_secs() < 10,
+            "{kind}: the preview waited"
+        );
+        let apply = refused_apply(&fixture);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            if kind == "unreadable" {
+                std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644)).unwrap();
+            }
+        }
+        for refusal in [&preview, &apply] {
+            assert!(
+                refusal.contains("refused:migration-receipt")
+                    && refusal.contains(name)
+                    && refusal.contains("move or remove it")
+                    && !refusal.contains("appeared"),
+                "{kind}: {refusal}"
+            );
+        }
+        assert!(
+            preview.contains("the apply would refuse"),
+            "{kind}: {preview}"
+        );
+        assert!(fixture.exists(OPEN_ONE), "{kind}: a 0.5.x file went");
+        assert!(
+            fixture.open_ids().is_empty(),
+            "{kind}: a 0.6.0 session was written"
+        );
+    }
+    let plain = migrate_project("adopted", &[]);
+    let with_metadata = migrate_project("adopted", &[]);
+    for metadata in [".DS_Store", "._2026-01-01-from-0-5.md", ".gitkeep"] {
+        with_metadata.write(&format!(".chough/archive/migrations/{metadata}"), "x");
+    }
+    let plain = plain.ok(&["migrate", "--json"]);
+    let with = with_metadata.ok(&["migrate", "--json"]);
+    assert_eq!(plain["plan_digest"], with["plan_digest"], "{with:#}");
+    migrate(&with_metadata, Some(CONSENT));
+}
+
+/// #337 (REQ-records-009), TC-records-migrate-a-special-target-refuses-before-writing:
+/// with a directory, a file without read permission or a FIFO at `knowledge/index.md`,
+/// the preview returns without waiting and says the apply would refuse, and the apply
+/// refuses naming the project-relative path, with every 0.5.x file still there and no
+/// 0.6.0 file or receipt written.
+#[test]
+fn a_directory_unreadable_file_or_fifo_at_a_target_is_refused_without_waiting() {
+    let kinds: [(&str, Place); 3] = [
+        ("a directory", |path| std::fs::create_dir_all(path).unwrap()),
+        ("unreadable", |path| {
+            std::fs::write(path, "# x\n").unwrap();
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o000)).unwrap();
+            }
+        }),
+        ("a FIFO", |path| {
+            #[cfg(unix)]
+            assert!(
+                std::process::Command::new("mkfifo")
+                    .arg(path)
+                    .status()
+                    .unwrap()
+                    .success()
+            );
+        }),
+    ];
+    for (kind, place) in kinds {
+        let fixture = migrate_project("adopted", &[]);
+        // On a file system that folds case INDEX.md is index.md, so the 0.5.x index goes
+        // first, and the entry is placed at the target itself.
+        fixture.git(&["rm", "-q", "knowledge/INDEX.md"]);
+        fixture.commit("no 0.5.x index");
+        let plan = fixture.ok(&["migrate", "--json"]);
+        planned(&plan, "knowledge/index.md");
+        let target = fixture.root().join("knowledge/index.md");
+        place(&target);
+        let before = files(fixture.root());
+        let started = std::time::Instant::now();
+        let preview = fixture.run(&["migrate"]);
+        assert!(
+            started.elapsed().as_secs() < 10,
+            "{kind}: the preview waited"
+        );
+        let text = String::from_utf8_lossy(&preview.stdout).into_owned();
+        assert!(
+            text.contains("would refuse") && text.contains("knowledge/index.md"),
+            "{kind}: {text}"
+        );
+        let digest = fixture.ok(&["migrate", "--json"])["plan_digest"]
+            .as_str()
+            .unwrap()
+            .to_string();
+        let refused = fixture.fails(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+        let after = files(fixture.root());
+        #[cfg(unix)]
+        if kind == "unreadable" {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o644)).unwrap();
+        }
+        assert!(
+            refused.contains("refused:target-exists")
+                && refused.contains("knowledge/index.md")
+                && !refused.contains(&fixture.root().display().to_string())
+                && !refused.contains("appeared"),
+            "{kind}: {refused}"
+        );
+        assert_eq!(after, before, "{kind}: the refused apply changed a file");
+    }
+}
+
+/// #378 (REQ-records-009, REQ-cli-040), TC-records-migrate-one-of-several-applies: three
+/// applies of one digest started together leave one receipt holding one consent; each of
+/// the other two refuses or reports that nothing is left to migrate, and none of them
+/// reports `applied: true`.
+#[test]
+fn of_three_applies_of_one_digest_only_one_applies() {
+    for round in 0..5 {
+        let fixture = migrate_project("adopted", &[]);
+        let digest = fixture.ok(&["migrate", "--json"])["plan_digest"]
+            .as_str()
+            .unwrap()
+            .to_string();
+        let barrier = std::sync::Arc::new(std::sync::Barrier::new(3));
+        let root = fixture.root().to_path_buf();
+        let outputs: Vec<std::process::Output> = (0..3)
+            .map(|agent| {
+                let barrier = barrier.clone();
+                let root = root.clone();
+                let digest = digest.clone();
+                std::thread::spawn(move || {
+                    let mut command = std::process::Command::new(env!("CARGO_BIN_EXE_chough"));
+                    command.arg("--root").arg(&root).args([
+                        "migrate",
+                        "--apply",
+                        &digest,
+                        "--consent",
+                        &format!("SYNTHETIC agent {agent} consent"),
+                    ]);
+                    barrier.wait();
+                    command.output().unwrap()
+                })
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .map(|handle| handle.join().unwrap())
+            .collect();
+        let applied = outputs
+            .iter()
+            .filter(|output| String::from_utf8_lossy(&output.stdout).contains("\"applied\": true"))
+            .count();
+        assert_eq!(applied, 1, "round {round}: {outputs:#?}");
+        let receipts: Vec<String> = std::fs::read_dir(root.join(".chough/archive/migrations"))
+            .unwrap()
+            .flatten()
+            .map(|entry| entry.file_name().to_string_lossy().into_owned())
+            .filter(|name| name.ends_with(".md"))
+            .collect();
+        assert_eq!(receipts.len(), 1, "round {round}: {receipts:?}");
+        let receipt = fixture.read(&format!(".chough/archive/migrations/{}", receipts[0]));
+        assert_eq!(
+            receipt.matches("SYNTHETIC agent").count(),
+            1,
+            "round {round}: {receipt}"
+        );
+    }
+}
+
+/// #370: on a migrated tree, a 0.5.x bug the tree never held migrates as a new record,
+/// and `knowledge/index.md`, a regular file with other bytes now, is listed under
+/// `replaces` and rebuilt in place, spelled so.
+#[test]
+fn a_new_0_5_x_bug_on_a_migrated_tree_migrates_with_the_index_rebuilt_in_place() {
+    let (fixture, _) = migrated_adopted();
+    fixture.write(".chough/bugs/BUG-0001.json", LEGACY_BUG);
+    fixture.commit("a new 0.5.x bug from an old branch");
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(
+        plan["replaces"],
+        serde_json::json!(["knowledge/index.md"]),
+        "{plan:#}"
+    );
+    let bug = written(&plan)
+        .into_iter()
+        .find(|path| path.starts_with(".chough/bugs/") && path.ends_with(".md"))
+        .unwrap_or_else(|| panic!("no bug planned: {plan:#}"));
+    let index = planned(&plan, "knowledge/index.md");
+    let digest = plan["plan_digest"].as_str().unwrap();
+    let applied = fixture.ok(&["migrate", "--apply", digest, "--consent", CONSENT]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+    assert!(fixture.exists(&bug));
+    let written = sha256(fixture.read(&index).as_bytes());
+    let wanted = plan["writes"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|write| write["path"] == index.as_str())
+        .unwrap()["sha256"]
+        .clone();
+    assert_eq!(serde_json::json!(written), wanted);
+    let names: Vec<String> = std::fs::read_dir(fixture.root().join("knowledge"))
+        .unwrap()
+        .flatten()
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .collect();
+    assert!(names.contains(&"index.md".to_string()), "{names:?}");
+}
+
+/// #370 (REQ-records-003): a 0.5.x record at another path whose ID a 0.6.0 record
+/// already holds as an alias makes the preview and the apply refuse, naming that record,
+/// so no second record takes the alias.
+#[test]
+fn a_0_5_x_record_whose_id_a_record_holds_as_an_alias_is_refused() {
+    let fixture = migrate_project("adopted", &[(".chough/bugs/BUG-0001.json", LEGACY_BUG)]);
+    let (plan, _) = migrate(&fixture, Some(CONSENT));
+    fixture.commit("migrated");
+    let holder = written(&plan)
+        .into_iter()
+        .find(|path| path.starts_with(".chough/bugs/") && path.ends_with(".md"))
+        .unwrap_or_else(|| panic!("no bug planned: {plan:#}"));
+    fixture.write(
+        ".chough/bugs/BUG-a-copy-under-another-name.json",
+        LEGACY_BUG,
+    );
+    fixture.commit("the same bug ID at another path");
+    let before = files(fixture.root());
+    for refusal in [refused_preview(&fixture), refused_apply(&fixture)] {
+        assert!(
+            refusal.contains("refused:alias-held")
+                && refusal.contains("BUG-0001")
+                && refusal.contains(&holder),
+            "{refusal}"
+        );
+    }
+    assert_eq!(files(fixture.root()), before);
+}
+
+/// #370: a `.chough/session.json` that returns holding a different session than the one
+/// migrated is refused with the way on naming a new session, and no second session is
+/// created.
+#[test]
+fn a_returning_legacy_checkpoint_holding_another_session_is_refused() {
+    let fixture = sessions_project("v0.3.0");
+    let plan = fixture.ok(&["migrate", "--json"]);
+    let digest = plan["plan_digest"].as_str().unwrap();
+    let applied = fixture.ok(&["migrate", "--apply", digest, "--consent", CONSENT]);
+    let receipt = applied["receipt"].as_str().unwrap().to_string();
+    fixture.commit("migrated");
+    let sessions = fixture.open_ids();
+    let other = std::fs::read_to_string(
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/releases/v0.2.0/.chough/session.json"),
+    )
+    .unwrap();
+    fixture.write(".chough/session.json", &other);
+    fixture.commit("session.json returns holding another session");
+    for refusal in [refused_preview(&fixture), refused_apply(&fixture)] {
+        assert!(
+            refusal.contains("refused:already-migrated")
+                && refusal.contains(".chough/session.json")
+                && refusal.contains(&receipt)
+                && refusal.contains("chough session new"),
+            "{refusal}"
+        );
+    }
+    assert_eq!(fixture.open_ids(), sessions);
+}
+
+/// #338 (REQ-records-009), TC-records-migrate-a-failed-write-removes-nothing: an apply
+/// whose planned write fails leaves every 0.5.x file in place byte for byte, and the
+/// next preview has the same digest. The write that fails is `knowledge/journal/feed.xml`,
+/// after `knowledge/index.md` in path order: on a file system that folds case,
+/// `knowledge/index.md` is `knowledge/INDEX.md`, and writing it is that file's removal,
+/// so it comes last.
+#[cfg(unix)]
+#[test]
+fn an_apply_whose_planned_write_fails_leaves_every_0_5_x_file() {
+    use std::os::unix::fs::PermissionsExt;
+    let fixture = migrate_project("adopted", &[]);
+    let sources = |fixture: &Fixture| -> BTreeMap<String, Vec<u8>> {
+        files(fixture.root())
+            .into_iter()
+            .filter(|(path, _)| path.starts_with(".chough/") || path.starts_with("knowledge/"))
+            .collect()
+    };
+    let before = sources(&fixture);
+    let plan = fixture.ok(&["migrate", "--json"]);
+    let digest = plan["plan_digest"].as_str().unwrap().to_string();
+    planned(&plan, "knowledge/journal/feed.xml");
+    let blocked = fixture.root().join("knowledge/journal");
+    std::fs::create_dir_all(&blocked).unwrap();
+    std::fs::set_permissions(&blocked, std::fs::Permissions::from_mode(0o555)).unwrap();
+    let output = fixture.run(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    std::fs::set_permissions(&blocked, std::fs::Permissions::from_mode(0o755)).unwrap();
+    std::fs::remove_dir(&blocked).unwrap();
+    assert!(
+        !output.status.success(),
+        "the apply succeeded with knowledge/journal read-only"
+    );
+    let after = sources(&fixture);
+    for (path, bytes) in &before {
+        assert_eq!(
+            after.get(path),
+            Some(bytes),
+            "{path} changed although a planned write failed"
+        );
+    }
+    let again = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(
+        again["plan_digest"],
+        digest.as_str(),
+        "the failed apply changed the plan"
+    );
+}
+
+/// #338 (REQ-records-009): on a migrated tree with a new 0.5.x bug, where the plan
+/// replaces `knowledge/index.md`, an apply whose write of the new bug fails leaves the
+/// 0.5.x bug and the index byte for byte, and the next preview has the same digest, so
+/// the consented one still applies.
+#[cfg(unix)]
+#[test]
+fn a_failed_write_before_a_replacement_keeps_the_plan() {
+    use std::os::unix::fs::PermissionsExt;
+    let (fixture, _) = migrated_adopted();
+    fixture.write(".chough/bugs/BUG-0001.json", LEGACY_BUG);
+    fixture.commit("a new 0.5.x bug from an old branch");
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(
+        plan["replaces"],
+        serde_json::json!(["knowledge/index.md"]),
+        "{plan:#}"
+    );
+    let digest = plan["plan_digest"].as_str().unwrap().to_string();
+    let (bug, index) = (
+        fixture.read(".chough/bugs/BUG-0001.json"),
+        fixture.read("knowledge/index.md"),
+    );
+    let blocked = fixture.root().join(".chough/bugs");
+    std::fs::set_permissions(&blocked, std::fs::Permissions::from_mode(0o555)).unwrap();
+    let output = fixture.run(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    std::fs::set_permissions(&blocked, std::fs::Permissions::from_mode(0o755)).unwrap();
+    assert!(
+        !output.status.success(),
+        "the apply succeeded with .chough/bugs read-only"
+    );
+    assert_eq!(fixture.read(".chough/bugs/BUG-0001.json"), bug);
+    assert_eq!(
+        fixture.read("knowledge/index.md"),
+        index,
+        "the index was replaced before a failed write"
+    );
+    let again = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(
+        again["plan_digest"],
+        digest.as_str(),
+        "the failed apply changed the plan"
+    );
+    let applied = fixture.ok(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+}
+
+/// #338 (REQ-records-009): the temporary file of a planned write that a stopped apply
+/// left beside `knowledge/index.md` is no 0.5.x note: it changes neither the plan nor its
+/// digest, and the next apply removes it.
+#[test]
+fn a_leftover_temporary_file_changes_nothing_and_the_apply_clears_it() {
+    let plain = migrate_project("adopted", &[]);
+    let fixture = migrate_project("adopted", &[]);
+    fixture.write(
+        "knowledge/.index.md.migrating",
+        "SYNTHETIC half-written index\n",
+    );
+    let digest = plain.ok(&["migrate", "--json"])["plan_digest"].clone();
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(plan["plan_digest"], digest, "{plan:#}");
+    let applied = fixture.ok(&[
+        "migrate",
+        "--apply",
+        plan["plan_digest"].as_str().unwrap(),
+        "--consent",
+        CONSENT,
+    ]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+    assert!(!fixture.exists("knowledge/.index.md.migrating"));
+}
+
+/// #338 (REQ-records-009): an apply stopped after it moved the 0.5.x
+/// `knowledge/INDEX.md` aside, and before the new index took its name, leaves
+/// `knowledge/.INDEX.md.aside`. The preview, in text and JSON, and the refused apply of
+/// the consented digest each say so with the command that moves it back; after that
+/// command, run as printed, the consented digest applies.
+#[test]
+fn a_file_a_stopped_apply_moved_aside_is_named_with_the_command_that_moves_it_back() {
+    let fixture = migrate_project("adopted", &[]);
+    let digest = fixture.ok(&["migrate", "--json"])["plan_digest"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let original = fixture.read("knowledge/INDEX.md");
+    std::fs::rename(
+        fixture.root().join("knowledge/INDEX.md"),
+        fixture.root().join("knowledge/.INDEX.md.aside"),
+    )
+    .unwrap();
+    let plan = fixture.ok(&["migrate", "--json"]);
+    let note = plan["stopped_apply"][0]
+        .as_str()
+        .unwrap_or_default()
+        .to_string();
+    assert!(
+        note.contains("knowledge/.INDEX.md.aside") && note.contains("knowledge/INDEX.md"),
+        "{plan:#}"
+    );
+    let text = fixture.ok_text(&["migrate"]);
+    assert!(text.contains(&note), "{text}");
+    let refused = fixture.fails(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    assert!(
+        refused.contains("refused:plan-digest") && refused.contains(&note),
+        "{refused}"
+    );
+    let command = note
+        .split('`')
+        .find(|part| part.starts_with("mv -- "))
+        .unwrap_or_else(|| panic!("no mv command: {note}"))
+        .to_string();
+    let moved = std::process::Command::new("sh")
+        .args(["-c", &command])
+        .current_dir(fixture.root())
+        .status()
+        .unwrap();
+    assert!(moved.success(), "{command} failed");
+    assert_eq!(fixture.read("knowledge/INDEX.md"), original);
+    let applied = fixture.ok(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+    assert!(!fixture.exists("knowledge/.INDEX.md.aside"));
 }

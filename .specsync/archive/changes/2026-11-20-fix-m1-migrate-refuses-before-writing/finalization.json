@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-m1-migrate-refuses-before-writing",
+  "implementation_commit": "75264e0039a3957affd98dca1708de2819c2af13",
+  "implementation_tree": "f21a8de7d4d1a43e9b4f921a031893733dfa25a2",
+  "contract_digest": "15813525ef23940a6ee1c909b02dc89e3dee084d362b0eec887f287058b3883a",
+  "workspace_digest": "2a4d0bfb49211d41d042120928a9fd6a2d0aa69eeb861db62e7cee6c24a2169f",
+  "closing_digest": "b2fda32efbcf5e11a29386d0cdb1e0bb148f684f90f0d8cd75e0d6eb97d63d33",
+  "review_digest": "5fd41671862c036fe81a8be0177fca3dfc883b99f7eebbdaf8eaabd966d098c4",
+  "finalization_digest": "7ec4053663572f325f0eabad5639057eee5172142d77fac0e685d364e470d2bf",
+  "timestamp": 1795155860
+}

@@ -1693,3 +1693,63 @@ fn the_spec_walk_follows_no_link_and_is_bounded() {
         "{init:#}"
     );
 }
+
+/// A project holding `tests/fixtures/migrate/<name>`, committed.
+fn migrate_fixture(name: &str) -> Fixture {
+    fn copy(from: &Path, to: &Path) {
+        fs::create_dir_all(to).unwrap();
+        for entry in fs::read_dir(from).unwrap().flatten() {
+            let target = to.join(entry.file_name());
+            if entry.path().is_dir() {
+                copy(&entry.path(), &target);
+            } else {
+                fs::copy(entry.path(), target).unwrap();
+            }
+        }
+    }
+    let fixture = Fixture::new();
+    copy(
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/migrate")
+            .join(name),
+        fixture.root(),
+    );
+    fixture
+}
+
+/// #376 (REQ-cli-055, REQ-history-006), TC-cli-doctor-keeps-a-migrated-alias-pointer:
+/// on a tree just migrated in place whose active pointer still holds a 0.5.x session
+/// name, `chough doctor --fix` reports no `stale_pointer`, leaves the pointer
+/// byte-identical, and `chough next` still shows that session.
+#[test]
+fn doctor_fix_keeps_a_pointer_that_names_an_open_session_by_alias() {
+    let fixture = migrate_fixture("adopted");
+    fixture.write(".chough/local/active-session", "open-one\n");
+    fixture.commit("a 0.5.x project");
+    let plan = fixture.ok(&["migrate", "--json"]);
+    let digest = plan["plan_digest"].as_str().unwrap().to_string();
+    let applied = fixture.ok(&[
+        "migrate",
+        "--apply",
+        &digest,
+        "--consent",
+        "SYNTHETIC-human said migrate it (fixture)",
+    ]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+    fixture.commit("migrated");
+    let pointer = fs::read(fixture.root().join(".chough/local/active-session")).unwrap();
+    let (_, report) = doctor(&fixture, &["--fix"]);
+    assert!(
+        !findings(&report)
+            .iter()
+            .any(|(kind, _, _)| kind == "stale_pointer"),
+        "{report:#}"
+    );
+    assert_eq!(
+        fs::read(fixture.root().join(".chough/local/active-session")).ok(),
+        Some(pointer),
+        "doctor --fix changed or removed the pointer"
+    );
+    let next = fixture.ok_text(&["next"]);
+    assert!(next.contains("Open work one"), "{next}");
+}

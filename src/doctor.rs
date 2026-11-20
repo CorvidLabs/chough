@@ -685,6 +685,28 @@ fn records_in(
         .collect()
 }
 
+/// Each ID that is the `id` or an alias of a bug, story or open session record, with the
+/// records that hold it, for `chough migrate` (REQ-records-003, REQ-records-009).
+pub(super) fn alias_holders(root: &Path) -> BTreeMap<String, Vec<String>> {
+    let mut holders: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    for (path, record) in records_in(root, crate::bugs::BUGS_DIR, false)
+        .into_iter()
+        .chain(records_in(root, STORIES, false))
+        .chain(records_in(root, sessions::DIR, true))
+    {
+        let mut names: Vec<String> = record.list("aliases");
+        if let Some(id) = record.scalar("id").filter(|id| !id.is_empty()) {
+            names.push(id.to_string());
+        }
+        names.sort();
+        names.dedup();
+        for name in names {
+            holders.entry(name).or_default().push(path.clone());
+        }
+    }
+    holders
+}
+
 /// Each ID that is the `id` or an alias of two records of one kind (REQ-records-003).
 fn alias_findings(root: &Path) -> Vec<Finding> {
     let mut groups: Vec<Vec<(String, crate::markdown::Record)>> = vec![
@@ -2255,8 +2277,10 @@ pub(super) fn run(root: &Path, args: DoctorArgs) -> Result<bool> {
         }
         found.extend(extra);
         // A pointer to a session this run archived is stale now.
+        // #376 (REQ-history-006): only a pointer that names no open session by ID, alias
+        // or bare slug is stale, so a pointer an in-place migration kept stays.
         if let Ok(Some(key)) = sessions::pointer(root)
-            && !local_path(root, &sessions::session_file(&key))?.is_file()
+            && sessions::open_matches(root, &key)?.is_empty()
         {
             std::fs::remove_file(local_path(root, sessions::POINTER)?)?;
             let mut cleared = Finding::new(

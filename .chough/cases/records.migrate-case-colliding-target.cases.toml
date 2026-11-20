@@ -2,11 +2,14 @@ profile = "chough-testing/1"
 module = "records"
 
 # GitHub #263: on a case-sensitive file system a separate knowledge/index.md passed the
-# pre-write check, and the apply removed the 0.5.x files before failing on it.
+# pre-write check, and the apply removed the 0.5.x files before failing on it. Since
+# M1 (#338, Leif's "A" of 2026-11-20) a regular one is replaced by the rebuilt index,
+# only as the plan the human consented to says; no 0.5.x file is removed before the
+# planned files are written.
 
 [[case]]
 id = "TC-records-migrate-refuses-a-separate-case-colliding-target"
-title = "On a case-sensitive file system, migrate --apply refuses a separate knowledge/index.md with other bytes as refused:target-exists and writes, removes and changes nothing"
+title = "On a case-sensitive file system, a separate knowledge/index.md that appears after the preview makes migrate --apply refuse as refused:plan-digest with nothing written, removed or changed, and one present at the preview is listed under replaces and replaced by the rebuilt index"
 status = "active"
 track = "functional"
 method = "automated"
@@ -15,9 +18,9 @@ requirements = ["REQ-records-009"]
 paths = ["src/migrate.rs", "tests/migrate_knowledge.rs"]
 environments = ["local-linux-aarch64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/migrate_knowledge.rs::a_separate_file_at_a_case_colliding_target_refuses_before_any_write passes on a case-sensitive file system"]
+expected = ["tests/migrate_knowledge.rs::a_separate_case_colliding_target_is_replaced_only_as_previewed passes on a case-sensitive file system"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "migrate_knowledge"
-test = "a_separate_file_at_a_case_colliding_target_refuses_before_any_write"
+test = "a_separate_case_colliding_target_is_replaced_only_as_previewed"

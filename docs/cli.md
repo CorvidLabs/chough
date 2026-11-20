@@ -1078,6 +1078,10 @@ any refusal the apply would give now, then the plan digest and the apply command
 - `writes`: each 0.6.0 file it would write;
 - `receipt`: the receipt the apply writes, named when the plan is built and so part of
   its digest;
+- `replaces`: each generated file, `knowledge/index.md` or `knowledge/journal/feed.xml`,
+  that is a regular file with other bytes now, which the apply replaces with the
+  rebuilt one as `chough library index` does; it is part of the digest, so such a file
+  that appears after the preview makes the apply refuse as `refused:plan-digest`;
 - `redactions`: every value it would redact, by file, field and kind;
 - `removed`: every file it would remove without carrying it, with why;
 - `kept`: each open bug's fixture under `.chough/artifacts/`, kept byte for byte, with
@@ -1088,9 +1092,29 @@ any refusal the apply would give now, then the plan digest and the apply command
   line per field, which the receipt lists under Not carried;
 - `unaccounted`, `aliases` (old ID to new), `follow_ups` and `git_history`;
 - `plan_digest`, the plan's SHA-256, and `apply`, the exact apply command;
-- `apply_refused`, only while a native change in the project is not archived: the
-  refusal `refused:change-open` that `--apply` would give, each open change by name
-  and why. It is not part of the digest.
+- `stopped_apply`, only while an apply that was stopped left a 0.5.x file moved aside,
+  as `knowledge/.INDEX.md.aside` with `knowledge/INDEX.md` missing: each with the `mv`
+  command that moves it back, which the refused apply names too. It is not part of the
+  digest;
+- `apply_refused`, only while the apply would refuse now: `refused:change-open` while a
+  native change in the project is not archived, each by name; `refused:target-exists`
+  while anything at a path it would write is in the way, named project-relative; or
+  `refused:conflict-markers`; with why. It is not part of the digest.
+
+While any 0.5.x file is present, the preview first reads every `.md` entry of
+`.chough/archive/migrations/` as a receipt of an earlier migration, leaving out
+`.DS_Store` and `._` files and any other name, without waiting on any of them. A
+receipt Git holds committed with the bytes on disk is an earlier migration's: a 0.5.x
+file it lists with the same bytes is removed as already migrated, named with that
+receipt, and never carried again, whether or not the record it became is still there.
+A receipt Git has never held is this migration's own, left by an interrupted apply, and
+judges nothing. The preview and the apply refuse, writing nothing, when:
+
+| Refusal | When |
+|---|---|
+| `refused:migration-receipt` | An `.md` entry there is not a receipt Chough can read (a directory or special file, unreadable, not UTF-8, over the receipt bound, or with no list of files read): move or remove it. Or a receipt Git holds differs on disk from its last commit: commit it or restore it |
+| `refused:already-migrated` | A 0.5.x file a receipt lists came back with other bytes, each named with its receipt and the way on: carry what you want into the record it became by hand (for `.chough/session.json`, as a new session), remove the file, commit and migrate again |
+| `refused:alias-held` | A 0.5.x record holds an ID a 0.6.0 record already holds as an alias, naming that record, so no second record takes the alias |
 
 On a tree with no 0.5.x record, migrated already or never 0.5.x, the preview says
 there is nothing to migrate (only `nothing_to_do` under `--json`), with no plan digest
@@ -1104,7 +1128,11 @@ not apply here and is refused as `refused:plan-digest`. The consent is recorded 
 receipt as a relayed claim;
 a standing `migration` preference (`chough pref set migration standing --source
 "<their words>"`) gives it instead. Chough never infers consent from the digest or
-another record. Before writing anything, `--apply` refuses:
+another record. The apply holds the writer lock (REQ-cli-040) from before it reads the
+records it plans from until it has finished, so of two applies of one digest the second
+finds nothing left to migrate and says so; the Git-ignored lock file under
+`.chough/local/` is not a write of the migration. Before writing anything, `--apply`
+refuses:
 
 | Refusal | When |
 |---|---|
@@ -1113,10 +1141,17 @@ another record. Before writing anything, `--apply` refuses:
 | `refused:change-open` | A native change in the project is not archived, named; the upgrade never runs while a change is open |
 | `refused:no-consent` | Neither `--consent` nor a standing `migration` preference gives the human's consent |
 | `refused:uncommitted` | A 0.5.x file it would remove differs from its bytes at HEAD or is untracked, named, so Git holds every byte it removes |
-| `refused:target-exists` | A file it would write, the receipt included, already exists with other bytes; every target is checked before any is written |
+| `refused:target-exists` | Anything at a path it would write, the receipt included, but the planned bytes, a generated file the plan `replaces`, or this plan's own receipt: a file with other bytes, a directory, a link, a FIFO or another special file, or a file it cannot read, named project-relative and never opened in a way that can wait; every target is checked before any is written |
 
 It then writes the 0.6.0 tree by create-new only, reads each file back and compares
-its digest, and writes the receipt the plan names as `receipt`,
+its digest, and writes the receipt the plan names as `receipt`; it removes no 0.5.x file
+until every planned file and the receipt hold their planned bytes on disk. A file whose
+name differs only in case from a 0.5.x file it removes, as `knowledge/index.md` beside
+`knowledge/INDEX.md`, and a generated file it `replaces`, is written under a temporary
+name in its folder and takes its name by rename, so a file system that folds case ends
+with `knowledge/index.md` spelled so (#338). There the 0.5.x file is first moved aside,
+as `knowledge/.INDEX.md.aside`, so the new file takes a name no spelling holds; on any
+failure it is moved back, and these writes come last, after the receipt. The receipt is
 `.chough/archive/migrations/<date>-from-0-5.md`. A second migration on the same day,
 for a 0.5.x record written into an already migrated tree, names
 `<date>-from-0-5-2.md` (then `-3`, and so on), keeps the first receipt as it is, and
@@ -1134,7 +1169,11 @@ interrupted apply wrote with the planned bytes counts as done on the next apply,
 second apply on a migrated tree reports nothing to do.
 
 The apply prints `applied`, `plan_digest`, the `receipt` path, `written`, `removed`,
-`archives_checked` (the archives whose validity it read), `unstaged` and `git_history`.
+`archives_checked` (the archives whose validity it read), `unstaged`, `emptied_folders`
+and `git_history`. `emptied_folders` names each folder the apply emptied of its 0.5.x
+records that then held only macOS metadata (`.DS_Store`, `._` files), removed with it,
+with the number of such files it held (`folder`, `metadata_files`); such a file beside a
+record or folder that stays, stays (REQ-records-015, #375).
 `unstaged` names each 0.5.x file whose name differs from a file it writes only by case,
 such as `knowledge/INDEX.md` and `knowledge/index.md`: on a case-insensitive file system
 those are one file, so it drops the old name from Git's index (never from the work
