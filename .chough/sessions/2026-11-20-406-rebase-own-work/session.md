@@ -10,7 +10,7 @@ stage_status: active
 iteration: 1
 callers: []
 native_change: fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main
-pr: 419
+pr: "419"
 criteria: []
 requirements: []
 cases: []
@@ -25,6 +25,10 @@ observations:
   - 2026-11-20-tc-cli-change-ready-counts-only-own-work-after-a-squash-merge-c155e2
   - 2026-11-20-tc-cli-change-ready-on-the-default-branch-names-own-files-e4c078
   - 2026-11-20-tc-cli-change-ready-names-a-missing-base-plainly-1a346c
+  - 2026-11-20-tc-cli-change-ready-counts-only-own-work-after-a-rebase-20e93e
+  - 2026-11-20-tc-cli-change-ready-counts-only-own-work-after-a-squash-merge-ebe4e2
+  - 2026-11-20-tc-cli-change-ready-on-the-default-branch-names-own-files-368cdf
+  - 2026-11-20-tc-cli-change-ready-names-a-missing-base-plainly-e3d8cf
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -53,6 +57,10 @@ chough change ready counts only the change's own work after a rebase onto main o
 - [Ran cargo test --locked --test ready -- --exact after_a_squash_merge_of_main_only_the_change_s_own_files_are_named for TC-cli-change-ready-counts-only-own-work-after-a-squash-merge: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-change-ready-counts-only-own-work-after-a-squash-merge-c155e2.md)
 - [Ran cargo test --locked --test ready -- --exact on_the_default_branch_itself_the_change_s_files_are_still_named for TC-cli-change-ready-on-the-default-branch-names-own-files: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-change-ready-on-the-default-branch-names-own-files-e4c078.md)
 - [Ran cargo test --locked --test ready -- --exact a_base_commit_the_repository_lacks_is_named_plainly for TC-cli-change-ready-names-a-missing-base-plainly: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-change-ready-names-a-missing-base-plainly-1a346c.md)
+- [Ran cargo test --locked --test ready -- --exact after_a_rebase_onto_main_only_the_change_s_own_files_are_named for TC-cli-change-ready-counts-only-own-work-after-a-rebase: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-change-ready-counts-only-own-work-after-a-rebase-20e93e.md)
+- [Ran cargo test --locked --test ready -- --exact after_a_squash_merge_of_main_only_the_change_s_own_files_are_named for TC-cli-change-ready-counts-only-own-work-after-a-squash-merge: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-change-ready-counts-only-own-work-after-a-squash-merge-ebe4e2.md)
+- [Ran cargo test --locked --test ready -- --exact on_the_default_branch_itself_the_change_s_files_are_still_named for TC-cli-change-ready-on-the-default-branch-names-own-files: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-change-ready-on-the-default-branch-names-own-files-368cdf.md)
+- [Ran cargo test --locked --test ready -- --exact a_base_commit_the_repository_lacks_is_named_plainly for TC-cli-change-ready-names-a-missing-base-plainly: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-change-ready-names-a-missing-base-plainly-e3d8cf.md)
 
 ## Open threads
 
