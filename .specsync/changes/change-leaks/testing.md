@@ -7,7 +7,7 @@ artifact: testing
 
 Failing tests first, each red on main:
 - `tests/change.rs`: each leak kind in a description, a `--rationale` and an answer is refused before SpecSync runs (the stub records no argv), naming the argument and kind, with nothing under `.specsync/` changed; with `--redact` the stub receives `<redacted:<kind>>` and the count line is printed; a control character is refused under `--redact` too.
-- `tests/leaks.rs`: a token committed in an open change's `context.md` gives a `leak` finding with file, line and kind and exit 1; `--fix --redact` leaves it byte-identical and names the way out; a leak under `.specsync/archive/` gives no finding.
+- `tests/leaks.rs`: a token committed in an open change's `context.md` gives a `leak` finding with file, line and kind and exit 1; `--fix --redact` leaves it byte-identical and names the way out; a home path in an open change's delta and a leak under `.specsync/archive/` give no finding.
 - `tests/output_safety.rs`: FOR_412 is removed, so the sweep covers `change new`'s description, `change answer`'s answer and `change ship --close-gate`; an explicit evidence ID holding a token is named by what it holds.
 
 Cases: `.chough/cases/cli.change-leaks.cases.toml` (REQ-cli-057) and `.chough/cases/records.change-leaks.cases.toml` (REQ-records-006).
