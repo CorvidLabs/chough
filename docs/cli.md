@@ -1067,6 +1067,10 @@ any refusal the apply would give now, then the plan digest and the apply command
   line per field, which the receipt lists under Not carried;
 - `unaccounted`, `aliases` (old ID to new), `follow_ups` and `git_history`;
 - `plan_digest`, the plan's SHA-256, and `apply`, the exact apply command;
+- `stopped_apply`, only while an apply that was stopped left a 0.5.x file moved aside,
+  as `knowledge/.INDEX.md.aside` with `knowledge/INDEX.md` missing: each with the `mv`
+  command that moves it back, which the refused apply names too. It is not part of the
+  digest;
 - `apply_refused`, only while the apply would refuse now: `refused:change-open` while a
   native change in the project is not archived, each by name; `refused:target-exists`
   while anything at a path it would write is in the way, named project-relative; or
@@ -1120,7 +1124,9 @@ until every planned file and the receipt hold their planned bytes on disk. A fil
 name differs only in case from a 0.5.x file it removes, as `knowledge/index.md` beside
 `knowledge/INDEX.md`, and a generated file it `replaces`, is written under a temporary
 name in its folder and takes its name by rename, so a file system that folds case ends
-with `knowledge/index.md` spelled so (#338). The receipt is
+with `knowledge/index.md` spelled so (#338). There the 0.5.x file is first moved aside,
+as `knowledge/.INDEX.md.aside`, so the new file takes a name no spelling holds; on any
+failure it is moved back, and these writes come last, after the receipt. The receipt is
 `.chough/archive/migrations/<date>-from-0-5.md`. A second migration on the same day,
 for a 0.5.x record written into an already migrated tree, names
 `<date>-from-0-5-2.md` (then `-3`, and so on), keeps the first receipt as it is, and

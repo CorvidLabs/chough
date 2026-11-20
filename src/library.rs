@@ -270,7 +270,10 @@ fn files_0_5(root: &Path, relative: &str, found: &mut Vec<(String, bool)>) -> Re
         // The temporary file of a write a stopped apply left is not a 0.5.x note either;
         // the next apply removes it (#338).
         let file_name = entry.file_name().to_string_lossy().into_owned();
-        if file_name.starts_with('.') && file_name.ends_with(crate::migrate::MIGRATING) {
+        if file_name.starts_with('.')
+            && (file_name.ends_with(crate::migrate::MIGRATING)
+                || file_name.ends_with(crate::migrate::ASIDE))
+        {
             continue;
         }
         let kind = entry.file_type()?;

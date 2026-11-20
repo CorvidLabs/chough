@@ -2710,3 +2710,54 @@ fn a_leftover_temporary_file_changes_nothing_and_the_apply_clears_it() {
     assert_eq!(applied["applied"], true, "{applied:#}");
     assert!(!fixture.exists("knowledge/.index.md.migrating"));
 }
+
+/// #338 (REQ-records-009): an apply stopped after it moved the 0.5.x
+/// `knowledge/INDEX.md` aside, and before the new index took its name, leaves
+/// `knowledge/.INDEX.md.aside`. The preview, in text and JSON, and the refused apply of
+/// the consented digest each say so with the command that moves it back; after that
+/// command, run as printed, the consented digest applies.
+#[test]
+fn a_file_a_stopped_apply_moved_aside_is_named_with_the_command_that_moves_it_back() {
+    let fixture = migrate_project("adopted", &[]);
+    let digest = fixture.ok(&["migrate", "--json"])["plan_digest"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let original = fixture.read("knowledge/INDEX.md");
+    std::fs::rename(
+        fixture.root().join("knowledge/INDEX.md"),
+        fixture.root().join("knowledge/.INDEX.md.aside"),
+    )
+    .unwrap();
+    let plan = fixture.ok(&["migrate", "--json"]);
+    let note = plan["stopped_apply"][0]
+        .as_str()
+        .unwrap_or_default()
+        .to_string();
+    assert!(
+        note.contains("knowledge/.INDEX.md.aside") && note.contains("knowledge/INDEX.md"),
+        "{plan:#}"
+    );
+    let text = fixture.ok_text(&["migrate"]);
+    assert!(text.contains(&note), "{text}");
+    let refused = fixture.fails(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    assert!(
+        refused.contains("refused:plan-digest") && refused.contains(&note),
+        "{refused}"
+    );
+    let command = note
+        .split('`')
+        .find(|part| part.starts_with("mv -- "))
+        .unwrap_or_else(|| panic!("no mv command: {note}"))
+        .to_string();
+    let moved = std::process::Command::new("sh")
+        .args(["-c", &command])
+        .current_dir(fixture.root())
+        .status()
+        .unwrap();
+    assert!(moved.success(), "{command} failed");
+    assert_eq!(fixture.read("knowledge/INDEX.md"), original);
+    let applied = fixture.ok(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+    assert!(!fixture.exists("knowledge/.INDEX.md.aside"));
+}

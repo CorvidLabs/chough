@@ -508,6 +508,11 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
         None => {
             let mut view = plan.view();
             view["plan_digest"] = json!(digest);
+            // #338: a 0.5.x file an apply moved aside and was stopped before putting back.
+            let stopped = stopped_asides(root)?;
+            if !stopped.is_empty() {
+                view["stopped_apply"] = json!(stopped);
+            }
             view["apply"] = json!(format!(
                 "chough migrate --apply {digest} --consent \"<who consented, their words and where>\""
             ));
@@ -758,6 +763,9 @@ fn preview_text(view: &Value) -> String {
         list("follow_ups").iter().map(text).collect(),
     );
     out.push_str(&format!("\n{}\n", text(&view["git_history"])));
+    for note in list("stopped_apply") {
+        out.push_str(&format!("\nNote: {}\n", text(&note)));
+    }
     if view["apply_refused"].is_object() {
         out.push_str(&format!(
             "\nThe apply would refuse now ({}): {}\n",
@@ -857,6 +865,156 @@ fn target_refusal(root: &Path, plan: &Plan, digest: &str) -> Result<Option<Strin
         "{}, and the migration writes only where nothing is, so nothing was written. Move or remove it, then run `chough migrate` again.",
         problems.join("; ")
     )))
+}
+
+/// The suffix of the name a 0.5.x file is moved aside to, in its own folder, before a
+/// file of another letter case takes its place (#338).
+pub(super) const ASIDE: &str = ".aside";
+
+/// The name `path` is moved aside to: `.<its name>.aside` in its folder.
+fn aside_of(path: &Path) -> std::path::PathBuf {
+    let name = path
+        .file_name()
+        .map(|name| name.to_string_lossy().into_owned())
+        .unwrap_or_default();
+    path.with_file_name(format!(".{name}{ASIDE}"))
+}
+
+/// Write `written` where 0.5.x files of another letter case are (#338): the new bytes go
+/// to a temporary file, each 0.5.x file is moved aside, then the temporary file takes
+/// the planned name, which no spelling holds by then. The name, the bytes and every
+/// aside file are checked; on any failure the 0.5.x files are moved back and the
+/// temporary file is removed. Returns the aside files, for the removals.
+fn write_with_asides(
+    root: &Path,
+    written: &Planned,
+    sources: &[(String, Vec<u8>)],
+    written_now: &mut Vec<String>,
+) -> Result<Vec<std::path::PathBuf>> {
+    let path = local_path(root, &written.path)?;
+    let folder = path.parent().context("a planned file has no folder")?;
+    let name = path
+        .file_name()
+        .map(|name| name.to_string_lossy().into_owned())
+        .unwrap_or_default();
+    let temporary = folder.join(format!(".{name}{MIGRATING}"));
+    if std::fs::symlink_metadata(&temporary).is_ok_and(|meta| meta.is_file()) {
+        std::fs::remove_file(&temporary)?;
+    }
+    {
+        let mut file = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&temporary)?;
+        std::io::Write::write_all(&mut file, &written.bytes)?;
+        file.sync_all()?;
+    }
+    let mut moved: Vec<(std::path::PathBuf, std::path::PathBuf, &Vec<u8>, &String)> = vec![];
+    let mut failure: Option<String> = None;
+    for (removed, bytes) in sources {
+        let from = local_path(root, removed)?;
+        let aside = aside_of(&from);
+        if std::fs::symlink_metadata(&aside).is_ok() {
+            failure = Some(format!("{} is already there", aside.display()));
+            break;
+        }
+        if let Err(error) = std::fs::rename(&from, &aside) {
+            failure = Some(format!("{removed} could not be moved aside ({error})"));
+            break;
+        }
+        moved.push((from, aside, bytes, removed));
+    }
+    if failure.is_none() {
+        if let Err(error) = std::fs::rename(&temporary, &path) {
+            failure = Some(format!(
+                "{} could not take its name ({error})",
+                written.path
+            ));
+        } else if !listed_exactly(&path)
+            || !matches!(at_target(root, &written.path)?, AtTarget::Bytes(back) if back == written.bytes)
+            || moved.iter().any(
+                |(_, aside, bytes, _)| !matches!(std::fs::read(aside), Ok(now) if now == **bytes),
+            )
+        {
+            failure = Some(format!(
+                "{} did not end spelled so with its planned bytes beside the 0.5.x files moved aside",
+                written.path
+            ));
+        }
+    }
+    let Some(failure) = failure else {
+        written_now.push(written.path.clone());
+        return Ok(moved.into_iter().map(|(_, aside, _, _)| aside).collect());
+    };
+    // Put every 0.5.x file back and say what is on disk.
+    let _ = std::fs::remove_file(&temporary);
+    let mut stuck = vec![];
+    for (from, aside, bytes, removed) in moved.iter().rev() {
+        let back = std::fs::rename(aside, from).is_ok()
+            && listed_exactly(from)
+            && matches!(std::fs::read(from), Ok(now) if now == **bytes);
+        if !back {
+            stuck.push((removed.to_string(), aside.clone()));
+        }
+    }
+    if stuck.is_empty() {
+        bail!("{failure}; every 0.5.x file was put back, so no 0.5.x file was removed");
+    }
+    let relative = |path: &Path| {
+        path.strip_prefix(root).map_or_else(
+            |_| path.display().to_string(),
+            |path| path.display().to_string(),
+        )
+    };
+    bail!(
+        "{failure}; {} could not be put back: move it back with {}, then run `chough migrate` again",
+        stuck
+            .iter()
+            .map(|(removed, _)| removed.as_str())
+            .collect::<Vec<_>>()
+            .join(", "),
+        stuck
+            .iter()
+            .map(|(removed, aside)| format!(
+                "`mv -- {} {}`",
+                crate::sessions::shell_quoted(&relative(aside)),
+                crate::sessions::shell_quoted(removed)
+            ))
+            .collect::<Vec<_>>()
+            .join(" and ")
+    )
+}
+
+/// The note a preview and a refused apply give while an apply that was stopped between
+/// moving a 0.5.x file aside and the last rename left the aside file, and its 0.5.x name
+/// is missing (#338): each with the command that moves it back. Not part of the digest.
+fn stopped_asides(root: &Path) -> Result<Vec<String>> {
+    let dir = crate::prefs::effective(root, "library-dir")?.0;
+    let dir = dir.trim_end_matches('/').to_string();
+    let Ok(entries) = std::fs::read_dir(local_path(root, &dir)?) else {
+        return Ok(vec![]);
+    };
+    let mut notes = vec![];
+    for entry in entries.flatten() {
+        let name = entry.file_name().to_string_lossy().into_owned();
+        let Some(original) = name
+            .strip_prefix('.')
+            .and_then(|rest| rest.strip_suffix(ASIDE))
+        else {
+            continue;
+        };
+        if original.is_empty() || listed_exactly(&local_path(root, &format!("{dir}/{original}"))?) {
+            continue;
+        }
+        let (aside, original) = (format!("{dir}/{name}"), format!("{dir}/{original}"));
+        notes.push(format!(
+            "an apply that was stopped left {aside}, which is {original}; move it back with `mv -- {} {}`, then run `chough migrate` again",
+            crate::sessions::shell_quoted(&aside),
+            crate::sessions::shell_quoted(&original)
+        ));
+    }
+    notes.sort();
+    Ok(notes)
 }
 
 /// The suffix of the temporary file a planned file is written to before its rename.
@@ -1256,10 +1414,17 @@ fn apply(
             &json!({"schema_version": 1, "applied": false, "nothing_to_do": "no 0.5.x record is left; the project is migrated"}),
         );
     }
-    ensure!(
-        wanted == digest,
-        "refused:plan-digest: the plan Chough builds now has digest {digest}, not {wanted}, so nothing was written; nothing is migrated that was not previewed first.\nRun `chough migrate` to preview the current plan, then apply its digest."
-    );
+    if wanted != digest {
+        let stopped = stopped_asides(root)?;
+        let note = if stopped.is_empty() {
+            String::new()
+        } else {
+            format!("\nNote: {}.", stopped.join(".\nNote: "))
+        };
+        bail!(
+            "refused:plan-digest: the plan Chough builds now has digest {digest}, not {wanted}, so nothing was written; nothing is migrated that was not previewed first.\nRun `chough migrate` to preview the current plan, then apply its digest.{note}"
+        );
+    }
     let unaccounted = plan.unaccounted();
     ensure!(
         unaccounted.is_empty(),
@@ -1388,6 +1553,7 @@ fn apply(
     // and the 0.5.x bytes it replaces are kept in memory to be listed as removed and
     // restored.
     let mut replaced_by_case: Vec<(String, Vec<u8>)> = vec![];
+    let mut asides: Vec<std::path::PathBuf> = vec![];
     for written in plan
         .files
         .iter()
@@ -1416,38 +1582,17 @@ fn apply(
                 before.push((removed.clone(), bytes));
             }
         }
-        // A failure after the rename has happened, on a file system that folds case, has
-        // already replaced the 0.5.x file of another letter case: say so, and how to get
-        // it back from the last commit, since no other 0.5.x file was removed (F2).
-        // Whether a 0.5.x file was replaced is told by its bytes, read before the rename
-        // and now, whichever spelling the folder lists: on a Docker Desktop mount the
-        // entry can keep the name `INDEX.md` while holding the new bytes.
-        let still_there = |removed: &str, bytes: &[u8]| -> bool {
-            matches!(at_target(root, removed), Ok(AtTarget::Bytes(now)) if now == bytes)
-        };
-        if let Err(error) = write_by_rename(root, written, &mut written_now) {
-            let replaced: Vec<&String> = before
-                .iter()
-                .filter(|(removed, bytes)| !still_there(removed, bytes))
-                .map(|(removed, _)| removed)
-                .collect();
-            if replaced.is_empty() {
-                return Err(error.context("no 0.5.x file was removed"));
-            }
-            return Err(error.context(format!(
-                "on this file system, which folds case, that write replaced {}; no other 0.5.x file was removed. Get it back from the last commit with `git restore -- {}`, then run `chough migrate` again",
-                replaced.iter().map(|path| path.as_str()).collect::<Vec<_>>().join(", "),
-                replaced
-                    .iter()
-                    .map(|path| crate::sessions::shell_quoted(path))
-                    .collect::<Vec<_>>()
-                    .join(" ")
-            )));
-        }
-        for (removed, bytes) in before {
-            if !still_there(&removed, &bytes) {
-                replaced_by_case.push((removed, bytes));
-            }
+        // The 0.5.x file of another letter case is moved aside to a name of its own first,
+        // so the fresh file takes a name no spelling holds: a rename onto the same file
+        // under its other spelling can be a no-op that reports success, as on a Docker
+        // Desktop mount of a macOS folder (tester2's probes). The 0.5.x bytes stay on disk
+        // until the removals; any failure moves them back (#338).
+        if before.is_empty() {
+            write_by_rename(root, written, &mut written_now)
+                .map_err(|error| error.context("no 0.5.x file was removed"))?;
+        } else {
+            asides.extend(write_with_asides(root, written, &before, &mut written_now)?);
+            replaced_by_case.extend(before);
         }
     }
     // Never weaken an archive: read the validity of every archived change whose
@@ -1473,6 +1618,10 @@ fn apply(
         }
         std::fs::remove_file(&local)?;
         kept_bytes.push((path.clone(), bytes));
+    }
+    // The 0.5.x files moved aside for a case-colliding write go with the other removals.
+    for aside in &asides {
+        std::fs::remove_file(aside)?;
     }
     let after = validity(root, &affected)?;
     let weakened: Vec<&String> = affected
