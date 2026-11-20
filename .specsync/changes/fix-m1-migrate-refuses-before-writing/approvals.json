@@ -1,4 +1,69 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795135499,
+      "digest": "087a50c59e8dd4e4051075da76d0a0ca7edf3fb0c9c4a0a73eb30ed7f0ec0f62",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-m1-migrate-refuses-before-writing (native approval)\": \"Approve with the 3 choices\" (Scope: his 'Approve with the 3 choices' of the draft at a82f0e4e (Claude Code chat message relayed by hc t4c through fable-lead, hc t53, 2026-11-19). The one path tests/fixtures/migrate/ added on his 'a, all yes.. im back' (relayed the same way, about 00:38Z on 2026-11-20, item 8). Recording confirmed by his direct answer 'Yes, record it' in t4b's Claude Code session, 2026-11-20). Relayed and recorded by fable-t4b at 2026-11-20T00:44:58Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-m1-migrate-refuses-before-writing",
+        "title": "Fix m1 migrate refuses before writing",
+        "description": "fix m1 migrate refuses before writing",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.doctor-keeps-alias-pointer.cases.toml",
+          ".chough/cases/records.migrate-refuses.cases.toml",
+          "changelog.d/",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/records/records.spec.md",
+          "specs/records/requirements.md",
+          "src/bugs.rs",
+          "src/doctor.rs",
+          "src/library.rs",
+          "src/migrate.rs",
+          "tests/doctor.rs",
+          "tests/fixtures/migrate/",
+          "tests/migrate.rs",
+          "tests/migrate_bugs.rs",
+          "tests/migrate_knowledge.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "doctor --fix after an in-place migration keeps a pointer that names an open session by alias; any entry at a migration target or receipt name counts as taken, the preview never waits and says the apply would refuse, and refusals name relative paths with nothing written; a returning 0.5.x record whose ID is already held is refused by name, and the generated index and feed are rebuilt in place; of several applies of one digest only one applies and records its consent"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "records and cli lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval, so each sentence was tried against the binary first. File boundary from the lead's plan: in doctor.rs only the stale-pointer check after a fix is touched. #375 and #338 are left out until Leif chooses.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "08bf8d75715dad4e7570c4a1125bef1b065a0f8c277bb1c84257dd73de8d4e98",
+        "records": "835fcc1b54e9c11bd1d4bcc36f236c2b7874128035eda848807048978b48b007"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "b47f0d70bf523998e236696369699fb0ffa688bf44cecb966e20401ad334de14",
+        "records: REQUIREMENT REQ-records-009": "49a0b563cb02a8f2e9089d25fd9def927a10bc47c3f4e1d72c3aed6455ec9f62",
+        "records: REQUIREMENT REQ-records-015": "4e73641bf1b285d81f27ce8fa004bafd52ea6ba12ca81dbc44a44b276d7d6604"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve with the 3 choices",
+        "where": "Scope: his 'Approve with the 3 choices' of the draft at a82f0e4e (Claude Code chat message relayed by hc t4c through fable-lead, hc t53, 2026-11-19). The one path tests/fixtures/migrate/ added on his 'a, all yes.. im back' (relayed the same way, about 00:38Z on 2026-11-20, item 8). Recording confirmed by his direct answer 'Yes, record it' in t4b's Claude Code session, 2026-11-20",
+        "recorded_by": "fable-t4b"
+      }
+    }
+  ],
   "reopenings": []
 }

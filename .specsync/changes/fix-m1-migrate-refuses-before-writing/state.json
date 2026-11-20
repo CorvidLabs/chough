@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "fix-m1-migrate-refuses-before-writing",
   "slug": "fix-m1-migrate-refuses-before-writing",
   "title": "Fix m1 migrate refuses before writing",
   "description": "fix m1 migrate refuses before writing",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
   "created_at": 1795068669,
-  "updated_at": 1795068714,
+  "updated_at": 1795135499,
   "affected_specs": [
     "records",
     "cli"
@@ -31,7 +31,8 @@
     "specs/cli/requirements.md",
     "specs/cli/cli.spec.md",
     ".chough/cases/records.migrate-refuses.cases.toml",
-    ".chough/cases/cli.doctor-keeps-alias-pointer.cases.toml"
+    ".chough/cases/cli.doctor-keeps-alias-pointer.cases.toml",
+    "tests/fixtures/migrate/"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
