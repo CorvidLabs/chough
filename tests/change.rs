@@ -2010,3 +2010,75 @@ fn an_unreadable_change_folder_tree_is_never_read_as_absent() {
         assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
     }
 }
+
+/// REQ-cli-057 (#412), TC-cli-a-leaking-description-rationale-or-answer-is-refused: a
+/// description, a `--rationale` and an answer holding a leak are refused before SpecSync
+/// runs, naming the argument and the kind and never the value; under `--redact` SpecSync
+/// gets the value redacted and one line says how many were replaced; a control character
+/// is refused under `--redact` too.
+#[test]
+fn a_leaking_description_rationale_or_answer_is_refused_before_specsync_runs() {
+    let fixture = fixture();
+    let token = concat!("x ghp_", "abcdefghij0123456789", "abcdefghij0123 y");
+    let cases: Vec<(Vec<&str>, &str)> = vec![
+        (vec!["change", "new", token], "description"),
+        (
+            vec![
+                "change",
+                "new",
+                "SYNTHETIC work",
+                "--no-spec-change",
+                "--rationale",
+                token,
+            ],
+            "rationale",
+        ),
+        (
+            vec![
+                "change",
+                "answer",
+                "free-shipping",
+                "acceptance_criteria",
+                token,
+            ],
+            "answer",
+        ),
+    ];
+    for (args, named) in cases {
+        let _ = fs::remove_file(fixture.root().join(".stub-argv"));
+        let output = run_env(&fixture, &args, &[]);
+        let said = format!(
+            "{}{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(!output.status.success(), "{named}: {said}");
+        assert!(
+            said.contains("refused:leak") && said.contains(named),
+            "{named}: {said}"
+        );
+        assert!(!said.contains("ghp_"), "{named}: {said}");
+        assert!(!fixture.exists(".stub-argv"), "{named}: specsync ran");
+        let mut redacting = args.clone();
+        redacting.insert(0, "--redact");
+        let output = run_env(&fixture, &redacting, &[]);
+        let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+        assert!(output.status.success(), "{named}: {stderr}");
+        let passed = argv(&fixture).join("\n");
+        assert!(
+            passed.contains("<redacted:") && !passed.contains("ghp_"),
+            "{named}: {passed}"
+        );
+        assert!(stderr.contains("redacted 1"), "{named}: {stderr}");
+    }
+    let _ = fs::remove_file(fixture.root().join(".stub-argv"));
+    let output = run_env(
+        &fixture,
+        &["--redact", "change", "new", "SYNTHETIC \u{1b}[31m red"],
+        &[],
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(!output.status.success(), "{stderr}");
+    assert!(stderr.contains("refused:control-character"), "{stderr}");
+    assert!(!fixture.exists(".stub-argv"), "specsync ran");
+}

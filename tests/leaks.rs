@@ -1540,3 +1540,56 @@ fn closing_a_session_with_a_stored_leak_redacts_the_story_and_says_so() {
         "{story}"
     );
 }
+
+/// REQ-records-006 (#412), TC-records-doctor-scans-the-open-changes: a token committed in
+/// an open change's `context.md` is a `leak` finding with its file, and doctor exits 1;
+/// `--fix --redact` skips it, naming the way out, and leaves the file byte-identical. A
+/// home path in an open change's delta, and a token under `.specsync/archive/`, give no
+/// finding.
+#[test]
+fn doctor_scans_the_open_changes_but_not_their_deltas_or_the_archive() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let token = concat!("ghp_", "abcdefghij0123456789", "abcdefghij0123");
+    let context = ".specsync/changes/a5/context.md";
+    fixture.write(context, &format!("Seen in a run: {token}\n"));
+    fixture.write(
+        ".specsync/changes/a5/deltas/cli.md",
+        "## MODIFIED\n\nA path such as /Users/SYNTHETIC-person/src is an example.\n",
+    );
+    fixture.write(
+        ".specsync/archive/changes/2026-01-01-old/context.md",
+        &format!("Old: {token}\n"),
+    );
+    fixture.commit("an open change, its delta and an archived change");
+    let leaks = |args: &[&str]| -> Vec<serde_json::Value> {
+        let output = run(&fixture, args);
+        let report: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "leak")
+            .cloned()
+            .collect()
+    };
+    let found = leaks(&["doctor", "--leaks"]);
+    let targets: Vec<&str> = found
+        .iter()
+        .map(|finding| finding["target"].as_str().unwrap())
+        .collect();
+    assert_eq!(targets, vec![context], "{found:#?}");
+    assert_eq!(run(&fixture, &["doctor", "--leaks"]).status.code(), Some(1));
+    let before = fixture.read(context);
+    let fixed = leaks(&["doctor", "--fix", "--redact"]);
+    let finding = fixed
+        .iter()
+        .find(|finding| finding["target"] == context)
+        .expect("the open change's finding");
+    assert_eq!(finding["status"], "skipped", "{fixed:#?}");
+    assert!(
+        finding.to_string().contains("chough change answer"),
+        "{finding:#}"
+    );
+    assert_eq!(fixture.read(context), before);
+}

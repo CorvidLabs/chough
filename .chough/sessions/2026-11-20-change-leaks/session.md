@@ -5,7 +5,7 @@ aliases: [change-leaks]
 objective: "A change's description, rationale and answers pass the leak check before SpecSync writes them, doctor --leaks scans the open changes, and the last echo sites name what a value holds (#412, rest of #367)"
 intent_scope: ""
 modules: [cli, records]
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Approve the scope of change-leaks\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # A change's description, rationale and answers pass the leak check before SpecSync writes them, doctor --leaks scans the open changes, and the last echo sites name what a value holds (#412, rest of #367)
 
@@ -66,4 +66,9 @@ A change's description, rationale and answers pass the leak check before SpecSyn
     - recorded_by: chough-fixer-t4n
     - native: specsync change approve change-leaks
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T16:50:32Z · advance · plan → build · native:approved ^t-1ea9cc
+  - native_change: change-leaks
+  - gate: native:approved
+  - revision: f6536ca4bd92c7fd83642f0028b4f954a641254c
   - by: chough-fixer (claude-opus-5-5, hc t4n)
