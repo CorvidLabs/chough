@@ -10,7 +10,7 @@
   "state": "draft",
   "base_commit": "1fb67c29295cc2472285bbd03b6a10cf8c5f6c40",
   "created_at": 1795147565,
-  "updated_at": 1795147619,
+  "updated_at": 1795147641,
   "affected_specs": [
     "cli"
   ],
@@ -39,6 +39,7 @@
   "dependencies": [],
   "answers": {
     "architecture_risk": "no",
+    "constraints": "cli lessons apply: the delta is frozen at approval, so each sentence is tried against Git first; the report stays read-only and adds no refusal; prefer a filter on the existing list over a new rule (rule 5)",
     "public_contract": "yes"
   }
 }
