@@ -10,7 +10,7 @@
   "state": "approved",
   "base_commit": "de49485fc5fb93f05bb15db7cd471023beebd8a8",
   "created_at": 1795199292,
-  "updated_at": 1795200732,
+  "updated_at": 1795201726,
   "affected_specs": [
     "cli"
   ],
@@ -36,7 +36,11 @@
     "specs/cli/history/",
     "changelog.d/",
     ".chough/cases/cli.specsync-6-4.cases.toml",
-    ".chough/cases/cli.specsync-merge-driver.cases.toml"
+    ".chough/cases/cli.specsync-merge-driver.cases.toml",
+    ".chough/cases/cli.change-ready.cases.toml",
+    "skills/chough-workflow/references/lifecycle.md",
+    ".agents/skills/chough-workflow/references/lifecycle.md",
+    "docs/exercises/feature-bug-loop.md"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
