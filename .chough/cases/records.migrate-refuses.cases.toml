@@ -1,0 +1,221 @@
+profile = "chough-testing/1"
+module = "records"
+
+# M1: migrate refuses before it writes and judges returning 0.5.x files by the receipt
+# of an earlier migration (#337, #370, #378, #338, REQ-records-009).
+
+[[case]]
+id = "TC-records-migrate-judges-returning-files-by-the-receipt"
+title = "On a migrated tree, a 0.5.x session file that comes back with other bytes makes the preview and the apply refuse as refused:already-migrated, naming it, its receipt and the way on, with nothing written and no second session; once its removal is committed there is nothing to migrate"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_returning_edited_session_is_refused_naming_it_and_its_receipt passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_returning_edited_session_is_refused_naming_it_and_its_receipt"
+
+[[case]]
+id = "TC-records-migrate-names-every-returning-file-in-one-refusal"
+title = "A returning history event with other bytes is refused rather than planned as removed, and two returning files are named in one refusal"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::returning_files_with_other_bytes_are_all_named_in_one_refusal passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "returning_files_with_other_bytes_are_all_named_in_one_refusal"
+
+[[case]]
+id = "TC-records-migrate-removes-a-returning-file-as-already-migrated"
+title = "A returning 0.5.x file with the bytes its receipt lists is planned as removed as already migrated, naming the receipt, and is not carried again"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_returning_file_with_its_receipt_bytes_is_removed_as_already_migrated passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_returning_file_with_its_receipt_bytes_is_removed_as_already_migrated"
+
+[[case]]
+id = "TC-records-migrate-refuses-an-edited-committed-receipt"
+title = "A committed receipt changed on disk makes the preview and the apply refuse as refused:migration-receipt, saying to commit or restore it; once restored it judges again"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::an_edited_committed_receipt_is_refused_until_committed_or_restored passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "an_edited_committed_receipt_is_refused_until_committed_or_restored"
+
+[[case]]
+id = "TC-records-migrate-an-uncommitted-receipt-judges-nothing"
+title = "A receipt Git has never held judges nothing; once committed with the 0.5.x files it lists, they are planned as removed as already migrated"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::an_uncommitted_receipt_judges_nothing_and_a_committed_one_does passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "an_uncommitted_receipt_judges_nothing_and_a_committed_one_does"
+
+[[case]]
+id = "TC-records-migrate-refuses-an-entry-that-is-no-receipt"
+title = "A directory, an unreadable file, a non-UTF-8 file, a FIFO or a file with no list of files read named *.md in .chough/archive/migrations/ makes the preview refuse without waiting and the apply refuse, naming it, with nothing written; metadata files there change neither the plan nor its digest"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::an_entry_in_the_receipt_folder_that_is_no_receipt_is_refused_without_waiting passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "an_entry_in_the_receipt_folder_that_is_no_receipt_is_refused_without_waiting"
+
+[[case]]
+id = "TC-records-migrate-a-special-target-refuses-before-writing"
+title = "A directory, an unreadable file or a FIFO at knowledge/index.md: the preview returns without waiting and says the apply would refuse, and the apply refuses as refused:target-exists naming the project-relative path, with nothing written"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_directory_unreadable_file_or_fifo_at_a_target_is_refused_without_waiting passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_directory_unreadable_file_or_fifo_at_a_target_is_refused_without_waiting"
+
+[[case]]
+id = "TC-records-migrate-one-of-several-applies"
+title = "Three applies of one digest started together, over five rounds, leave one receipt holding one consent, and only one reports applied: true"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::of_three_applies_of_one_digest_only_one_applies passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "of_three_applies_of_one_digest_only_one_applies"
+
+[[case]]
+id = "TC-records-migrate-a-new-bug-rebuilds-the-index-in-place"
+title = "On a migrated tree, a 0.5.x bug the tree never held migrates as a new record, and knowledge/index.md is listed under replaces and rebuilt in place, spelled so"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_new_0_5_x_bug_on_a_migrated_tree_migrates_with_the_index_rebuilt_in_place passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_new_0_5_x_bug_on_a_migrated_tree_migrates_with_the_index_rebuilt_in_place"
+
+[[case]]
+id = "TC-records-migrate-refuses-a-record-whose-id-is-held"
+title = "A 0.5.x record whose ID a 0.6.0 record already holds as an alias makes the preview and the apply refuse as refused:alias-held, naming that record"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_0_5_x_record_whose_id_a_record_holds_as_an_alias_is_refused passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_0_5_x_record_whose_id_a_record_holds_as_an_alias_is_refused"
+
+[[case]]
+id = "TC-records-migrate-refuses-a-returning-legacy-checkpoint"
+title = "A .chough/session.json that returns holding another session is refused with the way on naming a new session, and no second session is created"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_returning_legacy_checkpoint_holding_another_session_is_refused passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_returning_legacy_checkpoint_holding_another_session_is_refused"
+
+[[case]]
+id = "TC-records-migrate-a-failed-write-removes-nothing"
+title = "An apply whose planned write fails leaves every 0.5.x file in place"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::an_apply_whose_planned_write_fails_leaves_every_0_5_x_file passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "an_apply_whose_planned_write_fails_leaves_every_0_5_x_file"
