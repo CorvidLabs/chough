@@ -1,0 +1,92 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-next-names-finishing-the-archive"
+title = "next names committing the archive, then doctor --fix, then a new session once the folder is gone (#371)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/sessions.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_names_finishing_the_archive_until_the_folder_is_gone passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_names_finishing_the_archive_until_the_folder_is_gone"
+
+[[case]]
+id = "TC-cli-next-names-the-archive-with-a-session-open"
+title = "With a session open, next names an unfinished archive on the line below the objective and as unfinished_archive (#371)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/sessions.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_with_a_session_open_names_an_unfinished_archive_first passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_with_a_session_open_names_an_unfinished_archive_first"
+
+[[case]]
+id = "TC-cli-the-finish-command-quotes-each-path"
+title = "The finish command quotes each path and leaves macOS metadata out of the commit (#371)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/sessions.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::the_finish_command_quotes_each_path_and_leaves_metadata_out passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "the_finish_command_quotes_each_path_and_leaves_metadata_out"
+
+[[case]]
+id = "TC-cli-the-archive-line-runs-as-printed"
+title = "What follows Run: on the Archive line runs as printed with other archives waiting (#371)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/sessions.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::the_archive_line_runs_as_printed_with_other_archives_waiting passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "the_archive_line_runs_as_printed_with_other_archives_waiting"
+
+[[case]]
+id = "TC-cli-the-printed-command-commits-the-story"
+title = "The printed command commits the story with and without a journal post (#371)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/sessions.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::the_printed_command_commits_the_story_with_or_without_a_journal_post passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "the_printed_command_commits_the_story_with_or_without_a_journal_post"

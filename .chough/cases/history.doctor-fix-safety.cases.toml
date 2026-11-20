@@ -1,0 +1,398 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-the-archive-finish-keeps-what-the-story-does-not-hold"
+title = "doctor --fix keeps an evidence entry and an inbox entry the archived story does not hold, and names the way out for each (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012", "REQ-history-006"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::the_archive_finish_keeps_what_the_story_does_not_hold passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "the_archive_finish_keeps_what_the_story_does_not_hold"
+
+[[case]]
+id = "TC-history-an-entry-that-differs-from-its-receipt-is-kept"
+title = "doctor --fix keeps an evidence entry whose receipt differs from the one the story holds (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012", "REQ-history-006"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_entry_that_differs_from_its_receipt_is_kept passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_entry_that_differs_from_its_receipt_is_kept"
+
+[[case]]
+id = "TC-history-macos-metadata-never-blocks-the-archive-finish"
+title = "Uncommitted .DS_Store and ._* files never block the archive finish, which removes them (#377)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::macos_metadata_never_blocks_the_archive_finish passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "macos_metadata_never_blocks_the_archive_finish"
+
+[[case]]
+id = "TC-history-next-names-finishing-the-archive"
+title = "next names committing the archive then doctor --fix, then doctor --fix alone, then session new once the folder is gone (#371)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-006"]
+paths = ["src/main.rs", "src/sessions.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_names_finishing_the_archive_until_the_folder_is_gone passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_names_finishing_the_archive_until_the_folder_is_gone"
+
+[[case]]
+id = "TC-history-a-front-matter-conflict-is-named"
+title = "A Git conflict in a record's front matter gives conflict_markers for each marker line, and unreadable names resolving the conflict, not shelving (#374)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/records.rs", "src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::a_front_matter_conflict_is_named_and_resolved_not_shelved passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "a_front_matter_conflict_is_named_and_resolved_not_shelved"
+
+[[case]]
+id = "TC-history-a-redacted-timeline-entry-is-not-rewritten"
+title = "A Timeline entry doctor --fix --redact redacted is not timeline_rewritten; a hand edit writing a redaction marker still is (#374)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::a_redacted_timeline_entry_is_not_rewritten_but_a_hand_edit_is passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "a_redacted_timeline_entry_is_not_rewritten_but_a_hand_edit_is"
+
+[[case]]
+id = "TC-history-a-story-an-earlier-release-wrote-still-holds-its-entries"
+title = "A story whose receipts lack the fields #342 added still holds its entries, so doctor --fix finishes the archive"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_story_an_earlier_release_wrote_still_holds_its_entries passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_story_an_earlier_release_wrote_still_holds_its_entries"
+
+[[case]]
+id = "TC-history-an-unreadable-file-never-stops-doctor"
+title = "An empty or cut-off entry or an oversize story in an archived folder leaves doctor reporting, removing nothing and naming no absolute path"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_unreadable_file_in_an_archived_folder_never_stops_doctor passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_unreadable_file_in_an_archived_folder_never_stops_doctor"
+
+[[case]]
+id = "TC-history-the-finish-waits-until-the-story-is-committed"
+title = "doctor --fix removes nothing while the story or its journal post is not committed, naming each to commit, then removes the folder (#389)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::the_finish_waits_until_the_story_and_post_are_committed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "the_finish_waits_until_the_story_and_post_are_committed"
+
+[[case]]
+id = "TC-history-a-story-edited-after-its-commit-holds-the-finish"
+title = "A story edited after its commit holds the archive finish until the edit is committed (#389)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_story_edited_after_its_commit_holds_the_finish passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_story_edited_after_its_commit_holds_the_finish"
+
+[[case]]
+id = "TC-history-an-ignored-story-holds-the-finish"
+title = "A story Git ignores holds the archive finish, and the finding names git add -f (#389)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_ignored_story_holds_the_finish_and_names_git_add_f passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_ignored_story_holds_the_finish_and_names_git_add_f"
+
+[[case]]
+id = "TC-history-an-ignored-journal-post-does-not-hold-the-finish"
+title = "A journal post Git ignores, as in a project that keeps its vault out of Git, does not hold the archive finish (#389, option B)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_ignored_journal_post_does_not_hold_the_finish passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_ignored_journal_post_does_not_hold_the_finish"
+
+[[case]]
+id = "TC-history-a-failed-git-read-holds-the-finish"
+title = "When Git cannot read HEAD the archive finish removes nothing and says why (#389)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_failed_git_read_holds_the_finish_and_says_so passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_failed_git_read_holds_the_finish_and_says_so"
+
+[[case]]
+id = "TC-history-an-unreadable-entry-is-dropped-by-the-printed-commands"
+title = "After a first fix with an unreadable entry, next's command and the finding's drop command run as printed and finish the archive (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/main.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_unreadable_entry_is_dropped_by_the_printed_commands passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_unreadable_entry_is_dropped_by_the_printed_commands"
+
+[[case]]
+id = "TC-history-a-redacting-save-leaves-no-timeline-rewrite"
+title = "A save under --redact redacts an older Timeline leak in place, and doctor reports no timeline_rewritten (#374)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::a_redacting_save_leaves_no_timeline_rewrite passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "a_redacting_save_leaves_no_timeline_rewrite"
+
+[[case]]
+id = "TC-history-a-kept-entry-is-kept-by-its-file"
+title = "A kept entry renamed or with its id edited stays kept by its file, and the folder does not go (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "src/main.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_kept_entry_is_kept_by_its_file_whatever_its_id passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_kept_entry_is_kept_by_its_file_whatever_its_id"
+
+[[case]]
+id = "TC-history-next-finishes-an-ignored-story-as-printed"
+title = "With the story ignored, next prints the finding's git add -f command, and running it as printed finishes the archive (#389)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "src/main.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::next_finishes_an_ignored_story_as_printed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "next_finishes_an_ignored_story_as_printed"
+
+[[case]]
+id = "TC-history-the-way-out-names-the-open-sessions"
+title = "With open sessions but none active, the way out names them to pick one, not session new (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "src/main.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::the_way_out_names_the_open_sessions_when_none_is_active passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "the_way_out_names_the_open_sessions_when_none_is_active"
+
+[[case]]
+id = "TC-history-an-untracked-kept-entry-is-committed-first"
+title = "An entry the story does not hold that Git does not track holds the finish and is named in the commit, so its way out runs as printed (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_untracked_kept_entry_is_committed_first_so_its_way_out_runs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_untracked_kept_entry_is_committed_first_so_its_way_out_runs"
+
+[[case]]
+id = "TC-history-an-inbox-entry-is-kept-whatever-its-name"
+title = "Every file in an archived session's inbox is kept, a name with a dot or a capital letter included (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_inbox_entry_is_kept_whatever_its_name passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_inbox_entry_is_kept_whatever_its_name"
+
+[[case]]
+id = "TC-history-a-folded-inbox-entry-does-not-hold-the-finish"
+title = "An entry inbox fold moved into folded/ goes with the archived folder; only an unfolded one is kept (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_folded_inbox_entry_does_not_hold_the_finish passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_folded_inbox_entry_does_not_hold_the_finish"
+
+[[case]]
+id = "TC-history-an-inbox-file-inbox-add-would-not-take-is-only-dropped"
+title = "A kept inbox file inbox add would not take again is named as such and only dropped, as printed (#381, rule 3)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_inbox_file_inbox_add_would_not_take_is_only_dropped passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_inbox_file_inbox_add_would_not_take_is_only_dropped"
