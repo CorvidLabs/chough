@@ -230,7 +230,11 @@ fn ensure_ids(label: &str, values: &[String], limit: usize) -> Result<()> {
         _ => valid_name,
     };
     for value in values {
-        ensure!(valid(value), "invalid {label} ID: {value}");
+        ensure!(
+            valid(value),
+            "invalid {label} ID: {}",
+            crate::leaks::shown(&format!("{label} ID"), value)
+        );
     }
     Ok(())
 }
@@ -265,7 +269,7 @@ fn validate_as(session: &Checkpoint, story: bool) -> Result<()> {
     ensure!(
         stage::is_stage(&session.stage.current),
         "unknown stage: {}",
-        session.stage.current
+        crate::leaks::shown("stage", &session.stage.current)
     );
     ensure!(
         matches!(session.stage.status.as_str(), "active" | "paused")
@@ -281,7 +285,7 @@ fn validate_as(session: &Checkpoint, story: bool) -> Result<()> {
         ensure!(
             stage::is_stage(&caller.stage),
             "unknown caller stage: {}",
-            caller.stage
+            crate::leaks::shown("stage", &caller.stage)
         );
     }
     ensure!(
@@ -291,7 +295,25 @@ fn validate_as(session: &Checkpoint, story: bool) -> Result<()> {
     if let Some(change) = &session.native_change {
         ensure!(
             valid_change_id(change),
-            "invalid native change ID: {change}"
+            "invalid native change ID: {}",
+            crate::leaks::shown("native change ID", change)
+        );
+    }
+    // REQ-cli-007 (#401): the same rules as `checkpoint --no-native-change`, on every
+    // read and every save, so a hand edit of the file cannot allow the ungated move.
+    if let Some(reason) = &session.no_native_change {
+        let reason = reason.trim();
+        ensure!(
+            !reason.is_empty(),
+            "no_native_change holds no reason: write the real reason in its place, or remove the no_native_change line"
+        );
+        ensure!(
+            !(reason.starts_with('<') && reason.ends_with('>')),
+            "no_native_change holds a placeholder: write the real reason in its place, or remove the no_native_change line"
+        );
+        ensure!(
+            session.native_change.is_none(),
+            "no_native_change and native_change are both recorded: remove one of the two lines"
         );
     }
     ensure_ids("criterion", &session.references.criteria, MAX_ITEMS)?;
@@ -356,7 +378,7 @@ pub(super) fn observation_room(root: &Path) -> Result<()> {
     if session.observations.len() >= MAX_OBSERVATIONS {
         bail!(observations_full(root, session.observations.len(), 1)?);
     }
-    guard_leaks(&mut (*session).clone())?;
+    guard_leaks(&mut (*session).clone(), "")?;
     Ok(())
 }
 
@@ -562,8 +584,21 @@ pub(super) fn read_checkpoint_unlocked(root: &Path) -> Result<Checkpoint> {
 /// Every value this checkpoint writes, checked for leaks or redacted under `--redact`
 /// (REQ-records-006); returns how many matches were redacted. Prose a person wrote in
 /// the body is theirs and is not rewritten.
-fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
-    use crate::leaks::{Local, guard};
+fn guard_leaks(session: &mut Checkpoint, stored: &str) -> Result<usize> {
+    use crate::leaks::Local;
+    // A value the stored body already holds is counted by the body's redaction, so a
+    // stored leak a save redacts is counted once (#407).
+    let guard = |local: &Local, field: &str, value: &mut String| -> Result<usize> {
+        let original = value.clone();
+        let found = crate::leaks::guard(local, field, value)?;
+        Ok(
+            if found > 0 && !stored.is_empty() && stored.contains(original.as_str()) {
+                0
+            } else {
+                found
+            },
+        )
+    };
     let local = Local::current();
     let mut count = 0;
     count += guard(local, "objective", &mut session.objective)?;
@@ -585,6 +620,10 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
             count += guard(local, name, value)?;
         }
     }
+    // REQ-records-006 (#364): each answer to a question is a written value too.
+    for answer in session.answers.values_mut() {
+        count += guard(local, "answer", answer)?;
+    }
     for consent in &mut session.run_consents {
         count += guard(local, "consent source", &mut consent.source)?;
         count += guard(local, "consent objective", &mut consent.objective)?;
@@ -601,6 +640,8 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
         }
     }
     for (name, list) in [
+        // A module name is an ID SpecSync reads, so it is checked, never redacted (#368).
+        ("module", &session.modules),
         ("criterion", &session.references.criteria),
         ("requirement", &session.references.requirements),
         ("case", &session.references.cases),
@@ -662,11 +703,30 @@ fn check_id(local: &crate::leaks::Local, session: &str, field: &str, value: &str
 /// The session record `session` saves as, within its bound (REQ-records-001), with
 /// every value Chough writes checked for leaks first (REQ-records-006).
 pub(super) fn render_checkpoint(session: &Checkpoint) -> Result<crate::markdown::Record> {
+    render_counted(session).map(|(record, _)| record)
+}
+
+/// As [`render_checkpoint`], with how many leaks `--redact` replaced in it: each leak in
+/// the stored body, replaced where it stands, and each in a value the body does not
+/// already hold, so a stored leak is counted once, and a value an earlier write already
+/// redacted, or text that only quotes `<redacted:<kind>>`, counts nothing (#407). The
+/// writer says the count once its write has succeeded.
+pub(super) fn render_counted(session: &Checkpoint) -> Result<(crate::markdown::Record, usize)> {
     validate_v2(session)?;
     let mut guarded = session.clone();
-    let redacted = guard_leaks(&mut guarded)?;
-    if redacted > 0 {
-        eprintln!("chough: redacted {redacted} value(s) in the session record (--redact)");
+    let stored = guarded
+        .source
+        .as_ref()
+        .map(|source| source.body().to_string())
+        .unwrap_or_default();
+    let mut redacted = guard_leaks(&mut guarded, &stored)?;
+    // REQ-records-006: under `--redact`, a leak already stored in the record's body, such
+    // as a decision an older Chough wrote, is replaced where it stands, so the save adds no
+    // redacted copy beside the original and the next plain save is not refused for it.
+    if crate::leaks::redacting()
+        && let Some(source) = guarded.source.as_mut()
+    {
+        redacted += source.redact_body(crate::leaks::Local::current());
     }
     let session = &guarded;
     let record = crate::session_md::render(session, crate::records::now()?)?;
@@ -677,7 +737,7 @@ pub(super) fn render_checkpoint(session: &Checkpoint) -> Result<crate::markdown:
         content.len(),
         session.meta.id
     );
-    Ok(record)
+    Ok((record, redacted))
 }
 
 /// Each referenced observation that resolves to an open session's entry, as a link
@@ -721,17 +781,21 @@ pub(super) fn save_checkpoint(root: &Path, session: &mut Checkpoint) -> Result<(
     lock_checkpoint(root)?;
     remove_orphaned_session_temps(root)?;
     session.evidence_links = evidence_links(root, session);
-    let record = render_checkpoint(session)?;
+    let (record, redacted) = render_counted(session)?;
     write_replace_bounded(
         root,
         &crate::sessions::checkpoint_path(root)?,
         &record.render(),
         SESSION_LIMIT,
     )?;
+    // REQ-records-006: the count, once the write has succeeded.
+    if crate::leaks::redacting() && redacted > 0 {
+        eprintln!("chough: redacted {redacted} value(s) in the session record (--redact)");
+    }
     // Under `--redact` the checkpoint then holds the values saved, so what a command
     // prints is what the session record says (REQ-records-006).
     if crate::leaks::redacting() {
-        guard_leaks(session)?;
+        guard_leaks(session, "")?;
     }
     session.source = Some(record);
     session.pending.clear();
@@ -1187,23 +1251,39 @@ fn relayed_decision(session: &Checkpoint, args: &CheckpointArgs) -> Result<Optio
                 given.join(", "),
                 stage::CLOSE_GATE_COMMAND
             ),
+            // REQ-records-006 (#367): the gate a person typed is shown only when clean.
             RelayProblem::Incomplete(gate, missing) => anyhow::anyhow!(
-                "refused:relay-incomplete: closing gate \"{gate}\" on a human's behalf needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing was saved.\nRun `chough checkpoint --close-gate \"{gate}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
+                "refused:relay-incomplete: closing gate \"{}\" on a human's behalf needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing was saved.\nRun `chough checkpoint --close-gate \"{}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
+                crate::leaks::shown("gate", &gate),
                 missing.join(", "),
-                if missing.len() == 1 { "is" } else { "are" }
+                if missing.len() == 1 { "is" } else { "are" },
+                gate_to_type(&gate)
             ),
             RelayProblem::NotOpen(gate, closest) => anyhow::anyhow!(
-                "refused:gate-not-open: no open gate has the exact text \"{gate}\", so nothing was saved.{}\nRun `chough next` to list the open gates, then close one by its exact text.",
+                "refused:gate-not-open: no open gate has the exact text \"{}\", so nothing was saved.{}\nRun `chough next` to list the open gates, then close one by its exact text.",
+                crate::leaks::shown("gate", &gate),
                 closest
                     .map(|closest| format!(" Did you mean \"{closest}\"?"))
                     .unwrap_or_default()
             ),
             RelayProblem::TooLong(gate, length) => anyhow::anyhow!(
-                "refused:relay-too-long: the decision for gate \"{gate}\" would be {length} bytes, over the {}-byte checkpoint text bound, so nothing was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{gate}\"` with the four values again.",
-                stage::RELAY_TEXT_LIMIT
+                "refused:relay-too-long: the decision for gate \"{}\" would be {length} bytes, over the {}-byte checkpoint text bound, so nothing was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{}\"` with the four values again.",
+                crate::leaks::shown("gate", &gate),
+                stage::RELAY_TEXT_LIMIT,
+                gate_to_type(&gate)
             ),
         }
     })
+}
+
+/// The gate text a recovery command tells the person to type: the gate when it is clean,
+/// otherwise a `<gate>` placeholder, so the hint never repeats a value an error would not
+/// show (REQ-records-006, #367).
+fn gate_to_type(gate: &str) -> String {
+    match crate::leaks::unshowable(gate) {
+        None => gate.to_string(),
+        Some(_) => "<gate>".to_string(),
+    }
 }
 
 /// Queue a gate-closed entry for each of `cleared` and a gate-opened entry for each of
@@ -1556,7 +1636,8 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
     if let Some(holds) = &args.holds {
         ensure!(
             stage::is_stage(holds),
-            "--holds must name a stage (a main stage, release or a side stage); got {holds:?}, so nothing was saved"
+            "--holds must name a stage (a main stage, release or a side stage); got {}, so nothing was saved",
+            crate::leaks::shown("--holds", holds)
         );
     }
     let mut changed = false;
@@ -1653,6 +1734,9 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
     );
     if let (Some(answer), [question]) = (&args.answer, args.resolved.as_slice()) {
         ensure!(!answer.trim().is_empty(), "--answer must not be blank");
+        // REQ-records-006 (#364): bounded like every other text the checkpoint takes; the
+        // save's leak guard checks it.
+        ensure_text("answer", answer)?;
         session.answers.insert(question.clone(), answer.clone());
     }
     for resolved in &args.resolved {
@@ -1662,14 +1746,18 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             .retain(|question| question != resolved);
         ensure!(
             session.open_questions.len() < before,
-            "no open question has that exact text: {resolved}"
+            "no open question has that exact text: {}",
+            crate::leaks::shown("question", resolved)
         );
         changed = true;
     }
     for removed in &args.remove_completed {
         let position = session.completed.iter().position(|entry| entry == removed);
         let Some(position) = position else {
-            bail!("no completed entry has that exact text: {removed}");
+            bail!(
+                "no completed entry has that exact text: {}",
+                crate::leaks::shown("completed entry", removed)
+            );
         };
         session.completed.remove(position);
         changed = true;

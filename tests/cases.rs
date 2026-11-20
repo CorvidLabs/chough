@@ -3004,7 +3004,7 @@ fn cases_check_names_a_conflict_marker_in_a_definition() {
     let refused = fixture.fails(&["cases", "check"]);
     assert!(
         refused.contains(&format!(
-            ".chough/cases/cli.cases.toml line {line} holds the Git conflict marker `<<<<<<< HEAD`"
+            ".chough/cases/cli.cases.toml line {line} holds the Git conflict marker `<<<<<<<`"
         )),
         "{refused}"
     );

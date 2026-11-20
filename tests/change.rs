@@ -1378,3 +1378,635 @@ fn ship_runs_with_a_leftover_file_of_an_archived_change() {
     assert!(output.status.success(), "the ship did not run: {said}");
     assert_eq!(ship_calls(&fixture), ["change", "ship", SHIP_ID], "{said}");
 }
+
+/// The full commit id of HEAD in `fixture`.
+fn head_of(fixture: &Fixture) -> String {
+    let output = std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args(["rev-parse", "HEAD"])
+        .output()
+        .unwrap();
+    String::from_utf8_lossy(&output.stdout).trim().to_string()
+}
+
+/// REQ-cli-059 (#400): the history check covers every commit from the change's base
+/// to HEAD, however many: a commit holding a change both open and archived, followed by
+/// 1,001 more commits, is still refused, with nothing run. A recorded base commit the
+/// repository does not hold is refused as `refused:history-unchecked`, never passed.
+#[test]
+fn ship_checks_the_whole_history_and_goes_on_without_a_base() {
+    let fixture = shipping_session_at("accept");
+    let base = head_of(&fixture);
+    std::fs::remove_dir_all(
+        fixture
+            .root()
+            .join(".specsync/archive/changes/2026-11-01-a5"),
+    )
+    .unwrap();
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.commit("a5 in progress");
+    fixture.write(
+        ".specsync/changes/old/state.json",
+        "{\"id\": \"old\", \"state\": \"verifying\"}\n",
+    );
+    fixture.write(
+        ".specsync/archive/changes/2026-11-01-old/state.json",
+        "{\"id\": \"old\", \"state\": \"archived\"}\n",
+    );
+    fixture.commit("merge main, keeping both copies of old");
+    std::fs::remove_dir_all(fixture.root().join(".specsync/changes/old")).unwrap();
+    fixture.commit("drop the duplicate copy of old");
+    empty_commits(&fixture, 1001);
+    let record = format!(".chough/sessions/{}/session.md", fixture.active_id());
+    let before = fixture.read(&record);
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!output.status.success(), "the ship ran: {said}");
+    assert!(said.contains("refused:corrupt-history"), "{said}");
+    assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
+    assert_eq!(fixture.read(&record), before);
+
+    // A complete clone whose recorded base commit is not an object, as after a squash
+    // merge removed it: there is no range to read, so the ship says so and goes on.
+    let fixture = shipping_session_at("accept");
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!(
+            "{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{}\"}}\n",
+            "3".repeat(40)
+        ),
+    );
+    fixture.commit("a5 with a base the squash merge removed");
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(output.status.success(), "{stderr}");
+    assert!(
+        stderr.contains("could not be checked") && stderr.contains("3333333333"),
+        "{stderr}"
+    );
+    assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
+}
+
+/// REQ-cli-059 (#400): in a shallow clone that lacks the change's base commit, the ship
+/// refuses as `refused:history-unchecked`, naming `git fetch --unshallow`, with nothing
+/// run and nothing written.
+#[cfg(unix)]
+#[test]
+fn ship_in_a_shallow_clone_without_the_base_names_fetch_unshallow() {
+    let fixture = shipping_session_at("accept");
+    let base = head_of(&fixture);
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.commit("a5 in progress");
+    fixture.write("notes.txt", "later work\n");
+    fixture.commit("later work");
+    let clone = tempfile::tempdir().unwrap();
+    let shallow = clone.path().join("shallow");
+    let cloned = std::process::Command::new("git")
+        .args(["clone", "-q", "--depth", "1"])
+        .arg(format!("file://{}", fixture.root().display()))
+        .arg(&shallow)
+        .output()
+        .unwrap();
+    assert!(
+        cloned.status.success(),
+        "{}",
+        String::from_utf8_lossy(&cloned.stderr)
+    );
+    // The machine-local files a clone does not carry: the identity and the pointer.
+    let local = fixture.root().join(".chough/local");
+    std::fs::create_dir_all(shallow.join(".chough/local")).unwrap();
+    for entry in std::fs::read_dir(&local).unwrap().flatten() {
+        if entry.path().is_file() {
+            std::fs::copy(
+                entry.path(),
+                shallow.join(".chough/local").join(entry.file_name()),
+            )
+            .unwrap();
+        }
+    }
+    let record = format!(".chough/sessions/{}/session.md", fixture.active_id());
+    let before = std::fs::read_to_string(shallow.join(&record)).unwrap();
+    let mut paths = vec![shallow.join("bin")];
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_chough"))
+        .arg("--root")
+        .arg(&shallow)
+        .args(ship_with(SHIP_ID, &review_relay()))
+        .env("PATH", std::env::join_paths(paths).unwrap())
+        .env("CHOUGH_ACTOR", "SYNTHETIC-agent")
+        .output()
+        .unwrap();
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "the ship ran: {stderr}");
+    assert!(stderr.contains("refused:history-unchecked"), "{stderr}");
+    assert!(stderr.contains("git fetch --unshallow"), "{stderr}");
+    assert!(!shallow.join(".stub-ship-calls").exists(), "SpecSync ran");
+    assert_eq!(
+        std::fs::read_to_string(shallow.join(&record)).unwrap(),
+        before
+    );
+}
+
+/// Add `count` empty commits on the current branch in one `git fast-import` run.
+fn empty_commits(fixture: &Fixture, count: usize) {
+    use std::io::Write as _;
+    let branch = {
+        let output = std::process::Command::new("git")
+            .current_dir(fixture.root())
+            .args(["symbolic-ref", "HEAD"])
+            .output()
+            .unwrap();
+        String::from_utf8_lossy(&output.stdout).trim().to_string()
+    };
+    let mut stream = String::new();
+    for n in 0..count {
+        let message = format!("later {n}\n");
+        stream.push_str(&format!(
+            "commit {branch}\ncommitter Test <test@example.invalid> {} +0000\ndata {}\n{message}",
+            1_700_000_000 + n,
+            message.len()
+        ));
+        if n == 0 {
+            stream.push_str(&format!("from {}\n", head_of(fixture)));
+        }
+        stream.push('\n');
+    }
+    let mut child = std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args(["fast-import", "--quiet", "--force"])
+        .stdin(std::process::Stdio::piped())
+        .spawn()
+        .unwrap();
+    child
+        .stdin
+        .take()
+        .unwrap()
+        .write_all(stream.as_bytes())
+        .unwrap();
+    assert!(child.wait().unwrap().success());
+}
+
+/// REQ-cli-059 (#369): with the pointer on another session, `chough change ship <id>
+/// --session <s>` closes the gate and moves the stage in `<s>`, and the pointer's
+/// session file is byte-identical.
+#[test]
+fn ship_closes_the_gate_and_moves_the_stage_in_the_pinned_session() {
+    let fixture = shipping_session_at("accept");
+    let shipping = fixture.active_id();
+    fixture.ok(&[
+        "session",
+        "new",
+        "SYNTHETIC-elsewhere",
+        "--objective",
+        "Other work",
+    ]);
+    let elsewhere = fixture.active_id();
+    assert_ne!(elsewhere, shipping);
+    fixture.commit("another session holds the pointer");
+    let other_file = format!(".chough/sessions/{elsewhere}/session.md");
+    let before = fixture.read(&other_file);
+    let mut args = vec!["--session", shipping.as_str()];
+    args.extend(ship_with(SHIP_ID, &review_relay()));
+    let output = fixture.run(&args);
+    assert!(
+        output.status.success(),
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let shipped = ship_session(&fixture);
+    assert_eq!(shipped["stage"]["current"], "done", "{shipped}");
+    assert_eq!(fixture.read(&other_file), before);
+}
+
+/// REQ-cli-059 (#369, fable-lead's review): an unpinned ship resolves its session once.
+/// A `git` on PATH that moves the shared pointer to another session while the history
+/// check runs changes nothing: the gate close and the move into done still land in the
+/// session the ship started from, and the other session's file is byte-identical.
+#[cfg(unix)]
+#[test]
+fn ship_keeps_the_session_it_started_from_when_the_pointer_moves() {
+    let fixture = shipping_session_at("accept");
+    let shipping = fixture.active_id();
+    // A recorded base commit, so the history check runs Git.
+    let base = head_of(&fixture);
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.ok(&[
+        "session",
+        "new",
+        "SYNTHETIC-elsewhere",
+        "--objective",
+        "Other work",
+    ]);
+    let elsewhere = fixture.active_id();
+    fixture.ok(&["session", "use", &shipping]);
+    let git = std::str::from_utf8(
+        &std::process::Command::new("sh")
+            .args(["-c", "command -v git"])
+            .output()
+            .unwrap()
+            .stdout,
+    )
+    .unwrap()
+    .trim()
+    .to_string();
+    fixture.write(
+        "bin/git",
+        &format!(
+            "#!/bin/sh\nfor arg in \"$@\"; do\n  if [ \"$arg\" = rev-list ]; then\n    printf '%s\\n' {elsewhere} > \"{}/.chough/local/active-session\"\n  fi\ndone\nexec {git} \"$@\"\n",
+            fixture.root().display()
+        ),
+    );
+    fixture.executable("bin/git");
+    fixture.commit("two sessions, the pointer on the shipping one");
+    let other_file = format!(".chough/sessions/{elsewhere}/session.md");
+    let before = fixture.read(&other_file);
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    assert!(
+        output.status.success(),
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        fixture.read(".chough/local/active-session").trim(),
+        elsewhere,
+        "the pointer was not moved during the ship, so the test proves nothing"
+    );
+    assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
+    assert_eq!(fixture.read(&other_file), before);
+}
+
+/// REQ-cli-057 (G1, #367): before SpecSync runs, `chough change` refuses an id, kind,
+/// spec, path or question argument that holds a credential or a control character,
+/// naming the argument and what it holds and showing none of the value, with or
+/// without `--redact`, since SpecSync, not Chough, would write or echo it.
+#[test]
+fn change_commands_refuse_a_leaking_argument_before_specsync_runs() {
+    let fixture = fixture();
+    let token = concat!("x ghp_", "abcdefghij0123456789", "abcdefghij0123 y");
+    let escape = "fix-\u{1b}[31m";
+    let cases: Vec<(Vec<&str>, &str, &str)> = vec![
+        (
+            vec!["change", "new", "SYNTHETIC work", "--path", token],
+            "path",
+            "ghp_",
+        ),
+        (
+            vec!["change", "new", "SYNTHETIC work", "--spec", token],
+            "spec",
+            "ghp_",
+        ),
+        (
+            vec!["change", "new", "SYNTHETIC work", "--kind", token],
+            "kind",
+            "ghp_",
+        ),
+        (vec!["change", "status", token], "id", "ghp_"),
+        (vec!["change", "check", escape], "id", "\u{1b}"),
+        (
+            vec!["change", "answer", "free-shipping", token, "an answer"],
+            "question",
+            "ghp_",
+        ),
+    ];
+    for (args, named, hidden) in cases {
+        for redact in [false, true] {
+            let _ = std::fs::remove_file(fixture.root().join(".stub-argv"));
+            let mut args = args.clone();
+            if redact {
+                args.insert(0, "--redact");
+            }
+            let output = run_env(&fixture, &args, &[]);
+            let said = format!(
+                "{}{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            assert_eq!(output.status.code(), Some(1), "{args:?}: {said}");
+            assert!(said.contains(named), "{args:?}: {said}");
+            assert!(!said.contains(hidden), "{args:?} shows the value: {said}");
+            assert!(!fixture.exists(".stub-argv"), "{args:?}: SpecSync ran");
+        }
+    }
+}
+
+/// REQ-records-006 (G1, #367): `chough change ship` never echoes an id that holds a
+/// credential. The refusals an id can reach before it is checked against the session,
+/// `refused:no-native-change` and `refused:other-change`, name it as `<id holding …>`.
+#[test]
+fn ship_refusals_do_not_echo_a_credential_id() {
+    let token = concat!("x ghp_", "abcdefghij0123456789", "abcdefghij0123 y");
+    for native in [false, true] {
+        let fixture = shipping_session("accept", native, &[REVIEW_GATE]);
+        let output = fixture.run(&ship_with(token, &[]));
+        let said = format!(
+            "{}{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(!output.status.success(), "{said}");
+        let refusal = if native {
+            "refused:other-change"
+        } else {
+            "refused:no-native-change"
+        };
+        assert!(said.contains(refusal), "{said}");
+        assert!(!said.contains("ghp_"), "the id is echoed: {said}");
+        assert!(said.contains("<id holding"), "{said}");
+    }
+}
+
+/// REQ-cli-059 (#400, the tester's run of G1): when Git cannot read a commit in the
+/// change's history, the ship refuses as `refused:history-unchecked`, naming the
+/// command that fetches every object again, with nothing run.
+#[cfg(unix)]
+#[test]
+fn ship_with_an_unreadable_commit_names_fetch_refetch() {
+    let fixture = shipping_session_at("accept");
+    let base = head_of(&fixture);
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.commit("a5 in progress");
+    let lost = head_of(&fixture);
+    fixture.write("notes.txt", "later work\n");
+    fixture.commit("later work");
+    // Lose the middle commit's object, as a damaged or partly fetched repository can.
+    let object = fixture
+        .root()
+        .join(".git/objects")
+        .join(&lost[..2])
+        .join(&lost[2..]);
+    std::fs::remove_file(&object).unwrap();
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "the ship ran: {stderr}");
+    assert!(stderr.contains("refused:history-unchecked"), "{stderr}");
+    // The commit Git cannot read is named, not only the range.
+    assert!(stderr.contains(&lost[..12]), "{stderr}");
+    // No remote at all in this fixture: the generic form, which names the remote to give.
+    assert!(stderr.contains("git remote add <name> <url>"), "{stderr}");
+    assert!(stderr.contains("git fetch --refetch -- <name>"), "{stderr}");
+    assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
+}
+
+/// REQ-cli-059 (#400, fable-lead's read of #413): a recorded base commit that is not a
+/// Git object id, such as a hand edit holding a multi-byte character or other text,
+/// never panics. There is no range to read, so the ship says so without printing the
+/// value and goes on, as for a base commit that is gone.
+#[test]
+fn ship_with_a_base_commit_that_is_not_an_object_id_goes_on() {
+    for base in [
+        "abc\u{e9}\u{e9}\u{e9}\u{e9}\u{e9}\u{e9}\u{e9}\u{e9}\u{e9}\u{e9}",
+        "SYNTHETIC-not-a-commit",
+    ] {
+        let fixture = shipping_session_at("accept");
+        fixture.write(
+            ".specsync/changes/a5/state.json",
+            &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+        );
+        fixture.commit("a5 with a base_commit that is not an object id");
+        let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+        let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+        assert_ne!(
+            output.status.code(),
+            Some(101),
+            "{base:?} panicked: {stderr}"
+        );
+        assert!(output.status.success(), "{base:?}: {stderr}");
+        assert!(
+            stderr.contains("could not be checked"),
+            "{base:?}: {stderr}"
+        );
+        // Byte 12 of the first falls inside a character; no part of either is shown.
+        assert!(
+            !stderr.contains(&base[..3]),
+            "{base:?} printed raw: {stderr}"
+        );
+        assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
+    }
+}
+
+/// REQ-cli-059 (#400, the tester's recheck of #413): the refusal for a commit Git
+/// cannot read names the remote that holds the history by its real name, so the
+/// printed command pastes as it is. With one remote named `upstream`, running what is
+/// printed brings the object back and the ship goes on.
+#[cfg(unix)]
+#[test]
+fn the_refetch_command_names_the_real_remote_and_works() {
+    for name in ["upstream", "it's", "-x", "a&b"] {
+        refetch_with_a_remote_named(name);
+    }
+}
+
+fn refetch_with_a_remote_named(name: &str) {
+    let fixture = shipping_session_at("accept");
+    let base = head_of(&fixture);
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.commit("a5 in progress");
+    let lost = head_of(&fixture);
+    fixture.write("notes.txt", "later work\n");
+    fixture.commit("later work");
+    let remote = tempfile::tempdir().unwrap();
+    let bare = remote.path().join("upstream.git");
+    let cloned = std::process::Command::new("git")
+        .args(["clone", "-q", "--bare"])
+        .arg(fixture.root())
+        .arg(&bare)
+        .output()
+        .unwrap();
+    assert!(
+        cloned.status.success(),
+        "{}",
+        String::from_utf8_lossy(&cloned.stderr)
+    );
+    fixture.git(&["remote", "add", "--", name, &bare.display().to_string()]);
+    let object = fixture
+        .root()
+        .join(".git/objects")
+        .join(&lost[..2])
+        .join(&lost[2..]);
+    std::fs::remove_file(&object).unwrap();
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "{name}: the ship ran: {stderr}");
+    let line = stderr
+        .lines()
+        .find(|line| line.contains("git fetch --refetch"))
+        .unwrap_or_else(|| panic!("{name}: no refetch command: {stderr}"));
+    let command = line.split('`').nth(1).unwrap().to_string();
+    // Pasted into a shell exactly as printed.
+    let fetched = std::process::Command::new("sh")
+        .args(["-c", &command])
+        .current_dir(fixture.root())
+        .env("GIT_TERMINAL_PROMPT", "0")
+        .output()
+        .unwrap();
+    assert!(
+        fetched.status.success(),
+        "{name}: `{command}`: {}",
+        String::from_utf8_lossy(&fetched.stderr)
+    );
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    assert!(
+        output.status.success(),
+        "{name}: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+/// REQ-cli-059 (#400, fable-lead's read of #413): with several remotes and none that
+/// the branch tracks, the refusal names them, quoted, and says to pick the one that
+/// holds the history; it does not say to add a remote. Filling in one name works.
+#[cfg(unix)]
+#[test]
+fn several_untracked_remotes_are_named_to_choose_from() {
+    let fixture = shipping_session_at("accept");
+    let base = head_of(&fixture);
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.commit("a5 in progress");
+    let lost = head_of(&fixture);
+    fixture.write("notes.txt", "later work\n");
+    fixture.commit("later work");
+    let remote = tempfile::tempdir().unwrap();
+    let bare = remote.path().join("upstream.git");
+    let cloned = std::process::Command::new("git")
+        .args(["clone", "-q", "--bare"])
+        .arg(fixture.root())
+        .arg(&bare)
+        .output()
+        .unwrap();
+    assert!(cloned.status.success());
+    for name in ["upstream", "fork"] {
+        fixture.git(&["remote", "add", name, &bare.display().to_string()]);
+    }
+    let object = fixture
+        .root()
+        .join(".git/objects")
+        .join(&lost[..2])
+        .join(&lost[2..]);
+    std::fs::remove_file(&object).unwrap();
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "the ship ran: {stderr}");
+    assert!(
+        stderr.contains("'fork'") && stderr.contains("'upstream'"),
+        "{stderr}"
+    );
+    assert!(!stderr.contains("git remote add"), "{stderr}");
+    let line = stderr
+        .lines()
+        .find(|line| line.contains("git fetch --refetch"))
+        .unwrap();
+    let command = line
+        .split('`')
+        .nth(1)
+        .unwrap()
+        .replace("<remote>", "'upstream'");
+    let fetched = std::process::Command::new("sh")
+        .args(["-c", &command])
+        .current_dir(fixture.root())
+        .env("GIT_TERMINAL_PROMPT", "0")
+        .output()
+        .unwrap();
+    assert!(
+        fetched.status.success(),
+        "`{command}`: {}",
+        String::from_utf8_lossy(&fetched.stderr)
+    );
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+/// REQ-cli-059 (#400, corvid-agent's review of #413): a change folder whose tree object
+/// Git cannot read is not an absent folder. With the `.specsync/changes` tree of the
+/// commit that holds a change both open and archived deleted, the ship refuses as
+/// `refused:history-unchecked`, naming that commit, with no ship call; the control,
+/// with nothing deleted, refuses as `refused:corrupt-history`.
+#[cfg(unix)]
+#[test]
+fn an_unreadable_change_folder_tree_is_never_read_as_absent() {
+    for delete in [false, true] {
+        let fixture = shipping_session_at("accept");
+        let base = head_of(&fixture);
+        std::fs::remove_dir_all(
+            fixture
+                .root()
+                .join(".specsync/archive/changes/2026-11-01-a5"),
+        )
+        .unwrap();
+        fixture.write(
+            ".specsync/changes/a5/state.json",
+            &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+        );
+        fixture.commit("a5 in progress");
+        fixture.write(
+            ".specsync/changes/old/state.json",
+            "{\"id\": \"old\", \"state\": \"verifying\"}\n",
+        );
+        fixture.write(
+            ".specsync/archive/changes/2026-11-01-old/state.json",
+            "{\"id\": \"old\", \"state\": \"archived\"}\n",
+        );
+        fixture.commit("merge main, keeping both copies of old");
+        let both = head_of(&fixture);
+        std::fs::remove_dir_all(fixture.root().join(".specsync/changes/old")).unwrap();
+        fixture.commit("drop the duplicate copy of old");
+        if delete {
+            let tree = std::process::Command::new("git")
+                .current_dir(fixture.root())
+                .args(["rev-parse", &format!("{both}:.specsync/changes")])
+                .output()
+                .unwrap();
+            let tree = String::from_utf8_lossy(&tree.stdout).trim().to_string();
+            std::fs::remove_file(
+                fixture
+                    .root()
+                    .join(".git/objects")
+                    .join(&tree[..2])
+                    .join(&tree[2..]),
+            )
+            .unwrap();
+        }
+        let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+        let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+        assert!(
+            !output.status.success(),
+            "delete={delete}: the ship ran: {stderr}"
+        );
+        if delete {
+            assert!(stderr.contains("refused:history-unchecked"), "{stderr}");
+            assert!(stderr.contains(&both[..12]), "{stderr}");
+        } else {
+            assert!(stderr.contains("refused:corrupt-history"), "{stderr}");
+        }
+        assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
+    }
+}

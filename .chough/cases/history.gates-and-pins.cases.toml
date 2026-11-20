@@ -1,0 +1,22 @@
+profile = "chough-testing/1"
+module = "history"
+
+# G1, gates and pins fail closed (#393).
+
+[[case]]
+id = "TC-history-inbox-list-lists-the-pinned-session"
+title = "With the pointer on one session and --session or CHOUGH_SESSION naming another, inbox list lists the named session's entries and names that session"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "DRIVE-24"]
+requirements = ["REQ-history-009"]
+paths = ["src/sessions.rs", "tests/session_pin.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/session_pin.rs::inbox_list_lists_the_pinned_session passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "session_pin"
+test = "inbox_list_lists_the_pinned_session"

@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-g1-gates-and-pins-fail-closed",
+  "implementation_commit": "41d486ebb63ffd6909f439780d13fb5940d4af28",
+  "implementation_tree": "1c2c094795af5a2e7801f4c834410bf885ac53c7",
+  "contract_digest": "a15e34e272d322d03c0769ea565f6c20080b2c332c291fd4e99ccd86521e0c62",
+  "workspace_digest": "95c382ca2ebe07814576401fd9f89303c99b42b0f77a525fa241b8111d733dac",
+  "closing_digest": "302aacca8d84424117768643563d1b19fcaeb04b90a02490ef6033eb144cd8b2",
+  "review_digest": "ebb298d0b70c7f307f0de70c3d9cca12bfdebc3be828528c609a6ef4b37efaad",
+  "finalization_digest": "3b2b2f641b7b205d916468dcb0a052cbe3e78c8f192968c6144ee6d05d66beb7",
+  "timestamp": 1795117422
+}
