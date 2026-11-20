@@ -522,17 +522,26 @@ fn init(
     // REQ-cli-047: the merge attributes and drivers, so two branches merge clean.
     let mut merge = library::merge_at_init(root);
     // REQ-cli-001 (#386): several inits at once contend for Git's config lock. A driver
-    // another run set meanwhile is current; one still missing is set once more.
+    // another run set meanwhile is current; one still missing is set again, a few times
+    // with a short wait, before a refusal is reported.
     if merge["drivers"]["status"] == "refused" {
-        let missing = library::missing_merge_drivers(root);
-        merge["drivers"] = if missing.is_empty() {
-            json!({"status": "current"})
-        } else {
-            match library::set_merge_drivers(root, &missing) {
-                Ok(()) => json!({"status": "set", "set": missing}),
-                Err(error) => json!({"status": "refused", "reason": format!("{error:#}")}),
+        for attempt in 1..=5u64 {
+            let missing = library::missing_merge_drivers(root);
+            if missing.is_empty() {
+                merge["drivers"] = json!({"status": "current"});
+                break;
             }
-        };
+            match library::set_merge_drivers(root, &missing) {
+                Ok(()) => {
+                    merge["drivers"] = json!({"status": "set", "set": missing});
+                    break;
+                }
+                Err(error) if attempt == 5 => {
+                    merge["drivers"] = json!({"status": "refused", "reason": format!("{error:#}")});
+                }
+                Err(_) => std::thread::sleep(std::time::Duration::from_millis(25 * attempt)),
+            }
+        }
     }
     let mut output = json!({
         "schema_version": 1,
