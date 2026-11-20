@@ -5,7 +5,7 @@ aliases: [control-and-echo]
 objective: "Control and echo batch: control characters refused at write and escaped on print (#366), --pr takes a number or an http(s) URL and is shown in next, status, context and the checkpoint view (#353), the remaining sites echo no value (part of #367), and a file URL holds the user name"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -141,9 +141,13 @@ observations:
   - 2026-11-20-tc-records-tabs-in-values-read-back-dfcbc2
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of control-and-echo
+    holds: accept
+    drives: review
+    opened: 2026-11-20T07:32:33Z
 run_consents: []
-next: "Gate \"Re-approval of control-and-echo with tests/spec_split.rs added\" closed (approved); run `chough stage advance` to move on."
+next: Continue accept
 ---
 # Control and echo batch: control characters refused at write and escaped on print (#366), --pr takes a number or an http(s) URL and is shown in next, status, context and the checkpoint view (#353), the remaining sites echo no value (part of #367), and a file URL holds the user name
 
@@ -422,4 +426,20 @@ Control and echo batch: control characters refused at write and escaped on print
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve control-and-echo
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T07:32:26Z · advance · build → test · native:verifying ^t-443c44
+  - native_change: control-and-echo
+  - gate: native:verifying
+  - revision: 7c1b9f03cb0f8bc52d3402732cf11095ad9810cb
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T07:32:28Z · advance · test → accept · native:verifying ^t-af1f08
+  - native_change: control-and-echo
+  - gate: native:verifying
+  - revision: 7c1b9f03cb0f8bc52d3402732cf11095ad9810cb
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T07:32:32Z · gate-opened · accept → accept · Implementation review of control-and-echo ^t-d3fe66
+  - native_change: control-and-echo
+  - revision: 7c1b9f03cb0f8bc52d3402732cf11095ad9810cb
+  - holds: accept
+  - drives: review
   - by: chough-fixer (claude-opus-5-5, hc t4n)

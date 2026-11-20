@@ -257,6 +257,13 @@
         "where": "Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 04:09Z, on this text: tests/spec_split.rs, which pins REQ-reporting-001's wording, joins the declared paths, with no delta word. The reading is t4c's, recorded with his words at t4c's request: go ahead with t4c's recommendations it is at least 95% sure of, items 1 to 4, item 3 being 'Chough L2: add the one test file (tests/spec_split.rs) and widen the standing OK to cover tests that only pin a requirement's wording?'. The earlier approvals stand for the rest: 'Approve the recommended set', standing OK (d) for REQ-cli-007, 'Ok' (item 2) for the four paths, and standing OK 6(a) for REQ-reporting-001's example",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795159984,
+      "digest": "b055f87b924b40a0ddede439198040b72b325826a4b68e058ac1ed5e39cbb31f",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],
