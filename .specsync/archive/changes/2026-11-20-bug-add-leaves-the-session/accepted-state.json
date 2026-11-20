@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "bug-add-leaves-the-session",
+  "slug": "bug-add-leaves-the-session",
+  "title": "Bug add leaves the session",
+  "description": "bug add leaves the session",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "056cbb8029f6535ff74f866a0523893916f682db",
+  "created_at": 1795173572,
+  "updated_at": 1795194230,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/bugs.rs",
+    "src/checkpoint.rs",
+    "src/main.rs",
+    "src/sessions.rs",
+    "tests/bugs.rs",
+    "docs/cli.md",
+    "changelog.d/2026-11-20-bug-add-leaves-the-session.md",
+    ".chough/cases/cli.bug-add-leaves-the-session.cases.toml",
+    ".chough/cases/history.bug-add-leaves-the-session.cases.toml",
+    ".chough/cases/cli.bug-joins-the-active-session.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A bug added while a session is active, with or without --observation, records that session as its session key and leaves the session's record byte-identical; chough checkpoint and chough context list it after the bugs the checkpoint holds, the archived story names it, and a blocking one stops the session (#382, #395). Two branches that each add a bug in the same session merge without a conflict and the merged checkpoint lists both (#382). bug add takes about the same time at 400 observations as at 3 (#395), and with 200 bug links held it still files the bug in the session. A bug updated with --observation naming an entry of the active session joins its checkpoint unless it was filed in that session. A bug whose session key names an archived session or one that no longer exists is one of no open session's bugs: no checkpoint, context or blocking check lists it, and no command reports an error for it."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs",
+    "research",
+    "plan"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "The issues set the scope: #382 and #395 (tester2's 62-F6 and 62-F13), both from #343, which implemented Leif's auto-link decision for #329; this keeps that decision's outcomes (a bug filed in a session is the session's, its story names it, a blocking one stops it) and moves where the link is stored, which changes sentences he approved in REQ-cli-012 and REQ-cli-054, so it waits for his word. Rule 5: prefer a fix that removes a rule; this removes bug add's full-session refusal and adds none. DRIVE-12: no hand-resolved conflict in a file Chough writes. Older readers (v0.6.1 and main) read the new bug key. Based on main 056cbb80; no other open batch modifies these requirements. No new dependency. Failing tests first.",
+    "public_contract": "yes"
+  }
+}

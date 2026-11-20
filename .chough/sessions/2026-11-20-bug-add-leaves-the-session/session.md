@@ -5,7 +5,7 @@ aliases: [bug-add-leaves-the-session]
 objective: "bug add records the session on the new bug and never writes the session, so parallel filing merges and filing costs the same at any size (#382, #395)"
 intent_scope: ""
 modules: [cli, history]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -33,9 +33,13 @@ observations:
   - 2026-11-20-tc-cli-bug-add-joins-the-active-session-0df608
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of bug-add-leaves-the-session
+    holds: accept
+    drives: review
+    opened: 2026-11-20T17:03:34Z
 run_consents: []
-next: Continue build
+next: Continue accept
 ---
 # bug add records the session on the new bug and never writes the session, so parallel filing merges and filing costs the same at any size (#382, #395)
 
@@ -100,4 +104,20 @@ bug add records the session on the new bug and never writes the session, so para
   - native_change: bug-add-leaves-the-session
   - gate: native:approved
   - revision: 5db3b73de910f88edf637f2a58ca014405030f5c
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T17:03:12Z · advance · build → test · native:verifying ^t-a60cb1
+  - native_change: bug-add-leaves-the-session
+  - gate: native:verifying
+  - revision: 97c4c1ed4f6d16c11f45b84b24b17fd5e16daf5f
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T17:03:13Z · advance · test → accept · native:verifying ^t-1fd996
+  - native_change: bug-add-leaves-the-session
+  - gate: native:verifying
+  - revision: 97c4c1ed4f6d16c11f45b84b24b17fd5e16daf5f
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T17:03:34Z · gate-opened · accept → accept · Implementation review of bug-add-leaves-the-session ^t-ba5c14
+  - native_change: bug-add-leaves-the-session
+  - revision: 97c4c1ed4f6d16c11f45b84b24b17fd5e16daf5f
+  - holds: accept
+  - drives: review
   - by: chough-fixer (claude-opus-5-5, hc t4n)

@@ -56,6 +56,13 @@
         "where": "Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 14:13Z, relayed by hc t4c through fable-lead (hc t53); the question as shown: 'Chough R2a (#382, #395, two regressions from #343). Where should a bug's \"filed in this session\" link live?'; on R2a bug-add-leaves-the-session at 51a848c6 with choice A",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795194230,
+      "digest": "f8db81b98b003fe9cf9d46f01d8948d7e09ac73420826a06516c4f4e51585eac",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

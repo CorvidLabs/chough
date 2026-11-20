@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "bug-add-leaves-the-session",
+  "implementation_commit": "97c4c1ed4f6d16c11f45b84b24b17fd5e16daf5f",
+  "implementation_tree": "6d6fcf9fed552a64a91c4a8fbf0787ac9a6fe85f",
+  "contract_digest": "fa3cec7af8e7f1bdd363035c2021d1da0f43fbf88b1dd7dea769d6f4e061893b",
+  "workspace_digest": "747d9c23ba7f4bdca7a2f3e3b29e8a575475fd09bec09347a46c1096d60a00c5",
+  "closing_digest": "f8db81b98b003fe9cf9d46f01d8948d7e09ac73420826a06516c4f4e51585eac",
+  "review_digest": "d65b9d0719ebf22ceb09703a077c1fa054fef4dca8516f59b6dc57dda8f7e15c",
+  "finalization_digest": "f59b1c6ec8076ccc59d62f67a6a92509e9e1f29fcc0ead60b43bb0dd697765f9",
+  "timestamp": 1795194230
+}
