@@ -5,7 +5,7 @@ aliases: [260-whole-or-nothing]
 objective: "A new record is written whole or not at all, so a full disk or a file-size limit never leaves a 0-byte or cut-off record at its name, and an empty record is named as such (#260, #352)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -25,13 +25,9 @@ observations:
   - 2026-11-20-tc-records-an-empty-record-is-named-as-empty-113250
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-260-a-new-record-is-written-whole-or-not-at-all
-    holds: accept
-    drives: review
-    opened: 2026-11-20T18:57:21Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: A new record is written whole or not at all
 summary:
   - "chough bug add and journal add write a new record to .chough/local/ first, sync it, and give it its name without replacing anything, so a full disk or a file-size limit leaves no file at the name; where the file system cannot rename that way it is created at its name and removed on any error. No hard link is used, so exFAT works (#260, #424). An empty record is named as empty, with the way out."
@@ -50,6 +46,7 @@ A new record is written whole or not at all, so a full disk or a file-size limit
 - 0xLeif decided "Scope approval of fix-260-a-new-record-is-written-whole-or-not-at-all (native approval)": "Standing OK, tell me after" (Leif's standing OK for scope approvals (2026-11-20 dialog, relayed via t4c): his answer 'Standing OK, tell me after' in a Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 04:17Z. Confirmed by t4c for this change on fable-lead's summary (one criterion added to each changed requirement, nothing removed, no refusal). Recorded by t4c itself, at the draft b7550830); recorded by t4c; a relayed claim, not authenticated; ran specsync change approve fix-260-a-new-record-is-written-whole-or-not-at-all as 0xLeif
 - 0xLeif decided "One send-back of fix-260-a-new-record-is-written-whole-or-not-at-all to add src/checkpoint.rs to its paths": "Standing OK, tell me after" (Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this path-only addition: src/checkpoint.rs joins #260's paths so its approved exFAT criterion holds, and #260 also closes #424; no delta word changes, no new refusal. Recorded by t4c); recorded by t4c; a relayed claim, not authenticated
 - 0xLeif decided "Re-approval of fix-260-a-new-record-is-written-whole-or-not-at-all with src/checkpoint.rs added to its paths (native approval)": "Standing OK, tell me after" (Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this path-only addition: src/checkpoint.rs joins #260's paths so its approved exFAT criterion holds, and #260 also closes #424; no delta word changes, no new refusal. Recorded by t4c); recorded by t4c; a relayed claim, not authenticated; ran specsync change approve fix-260-a-new-record-is-written-whole-or-not-at-all as 0xLeif
+- 0xLeif decided "Implementation review of fix-260-a-new-record-is-written-whole-or-not-at-all": "Go" (Standing OK 6(b): Leif's 'Go' to the six rules (Claude Code chat message of 2026-11-19, relayed by his planning session hc t4c), recording his implementation review of a batch with a tester PASS that changes no approved sentence. The tester's PASS at 829d479b (0 cut-off records against main's 130 of 544; real repositories byte-identical; the full set 3 fixed, 0 new); corvid-agent's approval at 829d479b with its Linux run. Then corvid-agent's four notes at 73145abd: the temporary file goes through the symlink guard (a unit test red on 829d479b), a comment on the signal guard, a docs sentence on the unsynced folder, and the history row's order; no approved sentence changed. Main de49485f (#422) merged in at 50f0fd0c: t4b's script shows its own changed lines byte-identical before and after, the cli spec only renumbered to 130, and the full lane green at 34fd2a92. Recorded by t4c); recorded by t4c; a relayed claim, not authenticated; ran specsync change review fix-260-a-new-record-is-written-whole-or-not-at-all as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -155,4 +152,20 @@ A new record is written whole or not at all, so a full disk or a file-size limit
   - revision: 34fd2a92d1ad9a81db575af01bbd7430d9acd8e7
   - holds: accept
   - drives: review
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T18:58:06Z · gate-closed · accept → accept · Implementation review of fix-260-a-new-record-is-written-whole-or-not-at-all ^t-f6b88a
+  - native_change: fix-260-a-new-record-is-written-whole-or-not-at-all
+  - revision: af015ccb56f710f6946cf99878980cbf74b41360
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Go
+    - where: Standing OK 6(b): Leif's 'Go' to the six rules (Claude Code chat message of 2026-11-19, relayed by his planning session hc t4c), recording his implementation review of a batch with a tester PASS that changes no approved sentence. The tester's PASS at 829d479b (0 cut-off records against main's 130 of 544; real repositories byte-identical; the full set 3 fixed, 0 new); corvid-agent's approval at 829d479b with its Linux run. Then corvid-agent's four notes at 73145abd: the temporary file goes through the symlink guard (a unit test red on 829d479b), a comment on the signal guard, a docs sentence on the unsynced folder, and the history row's order; no approved sentence changed. Main de49485f (#422) merged in at 50f0fd0c: t4b's script shows its own changed lines byte-identical before and after, the cli spec only renumbered to 130, and the full lane green at 34fd2a92. Recorded by t4c
+    - recorded_by: t4c
+    - native: specsync change review fix-260-a-new-record-is-written-whole-or-not-at-all
+    - actor: 0xLeif
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T18:58:07Z · advance · accept → done · native:archived ^t-919eab
+  - native_change: fix-260-a-new-record-is-written-whole-or-not-at-all
+  - gate: native:archived
+  - revision: af015ccb56f710f6946cf99878980cbf74b41360
   - by: t4c (claude-opus-5-5, hc t4c)
