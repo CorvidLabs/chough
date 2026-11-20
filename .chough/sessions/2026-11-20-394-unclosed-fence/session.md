@@ -23,6 +23,8 @@ observations:
   - 2026-11-20-tc-cli-an-unclosed-fence-keeps-the-bug-log-mergeable-308929
   - 2026-11-20-tc-records-an-unclosed-fence-hides-no-section-f16c0f
   - 2026-11-20-tc-cli-an-unclosed-fence-keeps-the-bug-log-mergeable-33356b
+  - 2026-11-20-tc-records-an-unclosed-fence-hides-no-section-444636
+  - 2026-11-20-tc-cli-an-unclosed-fence-keeps-the-bug-log-mergeable-07de99
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -49,6 +51,8 @@ A code fence that never closes hides nothing after it, so saving a session never
 - [Ran cargo test --locked --test bugs -- --exact a_bug_with_an_unclosed_fence_still_merges_both_log_entries for TC-cli-an-unclosed-fence-keeps-the-bug-log-mergeable: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-an-unclosed-fence-keeps-the-bug-log-mergeable-308929.md)
 - [Ran cargo test --locked --test records -- --exact a_code_fence_that_never_closes_hides_no_section for TC-records-an-unclosed-fence-hides-no-section: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-an-unclosed-fence-hides-no-section-f16c0f.md)
 - [Ran cargo test --locked --test bugs -- --exact a_bug_with_an_unclosed_fence_still_merges_both_log_entries for TC-cli-an-unclosed-fence-keeps-the-bug-log-mergeable: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-an-unclosed-fence-keeps-the-bug-log-mergeable-33356b.md)
+- [Ran cargo test --locked --test records -- --exact a_code_fence_that_never_closes_hides_no_section for TC-records-an-unclosed-fence-hides-no-section: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-an-unclosed-fence-hides-no-section-444636.md)
+- [Ran cargo test --locked --test bugs -- --exact a_bug_with_an_unclosed_fence_still_merges_both_log_entries for TC-cli-an-unclosed-fence-keeps-the-bug-log-mergeable: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-an-unclosed-fence-keeps-the-bug-log-mergeable-07de99.md)
 
 ## Open threads
 
