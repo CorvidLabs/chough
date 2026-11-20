@@ -10,7 +10,7 @@ decides lifecycle gates.
 Before changing behavior, read [INTENT.md](INTENT.md), the relevant `hi/` criteria,
 [docs/FRD.md](docs/FRD.md) and the affected contract and companions under `specs/`.
 Use Fledge first: `fledge run fmt`, `fledge run test`, `fledge run lint`, `fledge
-lanes run verify`. Match tool versions to CI: hi 0.8.0, fledge 1.8.0, specsync 6.3.0.
+lanes run verify`. Match tool versions to CI: hi 0.8.0, fledge 1.8.0, specsync 6.4.0.
 On Linux, `fledge run linux-image` builds the test images from `tools/linux/` with those
 pins, and `fledge run linux-verify` runs the verify lane in them; rebuild the images
 with `linux-image` after a Docker reset.
@@ -52,15 +52,16 @@ template under `integrations/`:
 - Set up Chough's two merge drivers once per clone:
   `git config --local merge.chough-bug.driver "chough bug merge %O %A %B"` and
   `git config --local merge.chough-generated.driver "chough library merge %O %A %B"`.
-  Also run `specsync merge --install` once, so `specs/**/*.spec.md` and
-  `specs/**/requirements.md` merge through SpecSync's driver (#291).
+  Also run `specsync merge --install` once, so `specs/**/requirements.md` merges
+  through SpecSync's driver (#291). A module's spec file needs none: SpecSync 6.4.0
+  records each change in its own history fragment, `specs/<module>/history/<id>.md`,
+  in place of a Change Log row and a `version:` bump (#404).
   Sessions need no merge driver: each is its own folder.
 - Rebuild the generated `knowledge/index.md` and its feed with `chough library index`
   and commit `knowledge/` when preparing a release, before the version bump is tagged;
   the release task then runs `chough library index --check` before that branch merges.
-- Still conflicting, until SpecSync fixes it: a module's spec change log and
-  `requirements.md` (CorvidLabs/spec-sync#862). Keep both sides' rows, renumber yours
-  after main's, set `version:` to the last row, and keep requirement IDs unique.
+- Still conflicting, until SpecSync fixes it: `requirements.md` (CorvidLabs/spec-sync#862).
+  Keep both sides' requirements and keep requirement IDs unique.
 
 HI owns human wording and criterion IDs. SpecSync owns contracts, companions,
 changes, approval, verification, review and archives; meaningful files need an active

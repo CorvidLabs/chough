@@ -1,0 +1,149 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# #404, #406, #307: Chough moves to SpecSync 6.4.0, and change ready asks its approval
+# dry run.
+
+[[case]]
+id = "TC-cli-ready-names-the-approval-dry-run-s-refusals"
+title = "A check SpecSync's approval dry run refuses is named in SpecSync's words with its fix, or chough change ready when it gives none"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/ready.rs::a_refusal_of_the_approval_dry_run_is_named_with_its_fix passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "a_refusal_of_the_approval_dry_run_is_named_with_its_fix"
+
+[[case]]
+id = "TC-cli-ready-leaves-the-delta-set-to-specsync"
+title = "A missing delta is named once, by SpecSync's dry run, with no delta-set rule of ready's own"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/ready.rs::a_missing_delta_is_named_by_specsync_alone passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "a_missing_delta_is_named_by_specsync_alone"
+
+[[case]]
+id = "TC-cli-ready-without-a-dry-run-names-6-4-0"
+title = "A SpecSync with no dry run makes ready name the approval unchecked with the 6.4.0 install command"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/ready.rs::a_specsync_without_the_dry_run_names_the_install_command passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "a_specsync_without_the_dry_run_names_the_install_command"
+
+[[case]]
+id = "TC-cli-ready-leaves-out-specsync-s-own-files"
+title = "SpecSync's own untracked change.lock and workflow-v2-baseline.json are not outside the declared paths"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/ready.rs::specsync_s_own_untracked_files_are_not_outside_the_declared_paths passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "specsync_s_own_untracked_files_are_not_outside_the_declared_paths"
+
+[[case]]
+id = "TC-cli-ready-leaves-out-another-change-s-work"
+title = "Another active change's folder and declared files are not named for this change"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/ready.rs::another_active_change_s_work_is_not_this_change_s passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "another_active_change_s_work_is_not_this_change_s"
+
+[[case]]
+id = "TC-cli-ready-makes-no-hash-file"
+title = "In a project with no .specsync/hashes.json, the SpecSync check ready runs finds none"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/ready.rs::ready_makes_no_hash_file_for_specsync_to_find passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "ready_makes_no_hash_file_for_specsync_to_find"
+
+[[case]]
+id = "TC-cli-every-specsync-pin-names-6-4-0"
+title = "Every place Chough names its SpecSync names 6.4.0"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::every_specsync_pin_names_6_4_0 passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "every_specsync_pin_names_6_4_0"
+
+[[case]]
+id = "TC-cli-ready-a-whole-project-scope-leaves-nothing-out"
+title = "Another active change declaring the whole project leaves nothing out of the paths check"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/ready.rs::another_change_declaring_the_whole_project_leaves_nothing_out passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "another_change_declaring_the_whole_project_leaves_nothing_out"

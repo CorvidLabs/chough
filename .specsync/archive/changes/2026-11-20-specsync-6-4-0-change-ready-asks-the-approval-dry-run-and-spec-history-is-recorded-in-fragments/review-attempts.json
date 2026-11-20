@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "7eb2db10031f5d2b254b117103f2a2986e40eddc",
+      "contract_digest": "f10e25af09515a77f3d5447c3fdf55f65f2da4eeffa3a22628ef8904b1993fc4",
+      "execution_digest": "e68f3b4e5214b81c00db8e109c67ee69e24ca4e8a5782004b85c0bb357be072f",
+      "workspace_digest": "17dd97449b9ea72463ef13124f5cbbe78313940066ca702bb3e5fa44aef4d511",
+      "timestamp": 1795218235,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Go",
+        "where": "Standing OK 6(b): Leif's 'Go' to the six rules (Claude Code chat message of 2026-11-19, relayed by his planning session hc t4c), recording his implementation review of a batch with tester PASSes. The tester's rule-3 PASS of change ready on the 66 real open changes at d4f520f6; its NFTMix case (a change declaring '.') led to Leif's own 'A: . leaves nothing out' of 2026-11-20 about 22:02Z, recorded by t4c through a send-back that added exactly one clause and one criterion to REQ-cli-067 (f4b9df1d), built test first (d69a7c44). tester2's recheck PASS at d1f953a4: NFTMix's 32 findings back, the 66 changes matching the tester's run plus those 32, nothing new over main. corvid-agent approved #429 at a2500c4e and again at d1f953a4; its three notes answered (a docs line taken, two left as approved). Main e895943c and then 51352d33 merged in, each cleanly, t4b's script showing the 28 declared paths' own lines the same; the full lane green with SpecSync 6.4.0 at 7eb2db10. No approved sentence changed beyond Leif's '.' answer. Recorded by t4c",
+        "recorded_by": "t4c"
+      }
+    }
+  ]
+}

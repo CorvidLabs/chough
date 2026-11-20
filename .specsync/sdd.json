@@ -30,8 +30,7 @@
     ".specsync/version"
   ],
   "ignored_paths": [
-    ".specsync/",
-    "specs/"
+    ".specsync/"
   ],
   "verification_ignored_paths": [
     ".chough/archive/",

@@ -112,7 +112,8 @@ test = "a_changed_file_outside_the_declared_paths_is_named"
 [[case]]
 id = "TC-cli-change-ready-no-spec-change"
 title = "Every delta on a change that declares no spec change is named for removal"
-status = "active"
+status = "retired"
+notes = "Retired: change ready has no delta-set rule of its own since #404 (Leif's Q1 A); SpecSync's approval dry run names such a delta, as TC-cli-ready-names-the-approval-dry-run-s-refusals shows."
 track = "functional"
 method = "automated"
 criteria = ["DRIVE-29"]

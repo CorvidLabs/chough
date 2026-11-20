@@ -11,23 +11,33 @@ use std::process::Command;
 const ID: &str = "demo";
 const STUB: &str = r#"#!/bin/sh
 set -eu
+# SpecSync 6.4.0's approval dry run (#406): the change's dry-run.json when it has one,
+# exiting 1 when it refuses; otherwise an accepting document. READY_TEST_DRY_RUN=none
+# plays a SpecSync without the dry run.
+if [ "${1:-}" = --json ] && [ "${2:-}" = change ] && [ "${3:-}" = approve ]; then
+  if [ "${READY_TEST_DRY_RUN:-}" = none ]; then
+    echo "error: unexpected argument '--dry-run' found" >&2
+    exit 2
+  fi
+  if [ -f ".specsync/changes/$4/dry-run.json" ]; then
+    cat ".specsync/changes/$4/dry-run.json"
+    if grep -q '"would_approve":false' ".specsync/changes/$4/dry-run.json"; then
+      exit 1
+    fi
+    exit 0
+  fi
+  printf '{"id":"%s","dry_run":true,"would_approve":true,"checks":[]}\n' "$4"
+  exit 0
+fi
 if [ "${1:-}" = change ] && [ "${2:-}" = show ]; then
   cat ".specsync/changes/$3/show.json"
   exit 0
 fi
 if [ "${1:-}" = check ]; then
-  printf 'dirty\n' >.specsync/hashes.json
-  # Another process replacing the cache while the check runs (the review of #311).
-  case "${READY_TEST_CACHE:-}" in
-    regular)
-      printf 'SECOND_WRITER\n' >.specsync/second
-      mv .specsync/second .specsync/hashes.json
-      ;;
-    symlink)
-      rm .specsync/hashes.json
-      ln -s ../specs/cli/requirements.md .specsync/hashes.json
-      ;;
-  esac
+  # Whether a hash file was there when the check started (#404).
+  if [ -n "${READY_TEST_SEEN:-}" ]; then
+    if [ -e .specsync/hashes.json ]; then echo present; else echo absent; fi >>"$READY_TEST_SEEN"
+  fi
   name=$(ls -1 .specsync/changes | head -n 1)
   cat ".specsync/changes/$name/check.json"
   exit 0
@@ -203,20 +213,23 @@ fn a_draft_names_each_missing_fix_and_passes_once_they_are_fixed() {
         "{\"questions\":[{\"id\":\"acceptance_criteria\"}]}\n",
     );
     fixture.write(&format!(".specsync/changes/{ID}/context.md"), "TODO\n");
+    // #404 (Q1 A): the missing and the extra delta come from SpecSync's dry run.
+    let deltas =
+        "semantic delta modules must exactly match affected specs (missing: cli; extra: notes)";
+    fixture.write(
+        &format!(".specsync/changes/{ID}/dry-run.json"),
+        &refusing("deltas", deltas, None),
+    );
     assert_report(
         &fixture,
         &[
             (
-                "missing delta for cli",
-                "write .specsync/changes/demo/deltas/cli.md",
-            ),
-            (
-                "extra delta notes.md",
-                "remove .specsync/changes/demo/deltas/notes.md",
-            ),
-            (
                 "unanswered question acceptance_criteria",
                 "chough change answer demo acceptance_criteria \"<answer>\"",
+            ),
+            (
+                &format!("the approval's deltas check refuses: {deltas}"),
+                "chough change ready demo",
             ),
             (
                 ".specsync/changes/demo/context.md is still a TODO placeholder",
@@ -224,6 +237,12 @@ fn a_draft_names_each_missing_fix_and_passes_once_they_are_fixed() {
             ),
         ],
     );
+    std::fs::remove_file(
+        fixture
+            .root()
+            .join(format!(".specsync/changes/{ID}/dry-run.json")),
+    )
+    .unwrap();
     fixture.write(
         &format!(".specsync/changes/{ID}/deltas/cli.md"),
         "## ADDED\n\n### REQUIREMENT REQ-cli-067\n\nReadiness.\n",
@@ -341,20 +360,6 @@ fn a_changed_file_outside_the_declared_paths_is_named() {
 }
 
 #[test]
-fn a_no_spec_change_names_every_delta_for_removal() {
-    let fixture = project(OLD_REQ, &["src/"]);
-    let base = head(&fixture);
-    write_change(&fixture, &base, "draft", &["src/"], true);
-    assert_report(
-        &fixture,
-        &[(
-            "delta cli.md is present on a change that declares no spec change",
-            "remove .specsync/changes/demo/deltas/cli.md",
-        )],
-    );
-}
-
-#[test]
 fn an_unknown_change_names_status() {
     let fixture = Fixture::new();
     for id in ["missing", "../secret"] {
@@ -388,23 +393,17 @@ fn a_missing_specsync_names_the_install_command() {
     let stderr = String::from_utf8(output.stderr).unwrap();
     assert_eq!(
         stdout,
-        report(&[
-            (
-                "missing delta for cli",
-                "write .specsync/changes/demo/deltas/cli.md",
-            ),
-            (
-                "specsync cannot be started, so interview questions and undocumented exports were not read",
-                "cargo install --locked specsync@6.3.0",
-            ),
-        ]),
+        report(&[(
+            "specsync cannot be started, so the approval, interview questions and undocumented exports were not checked",
+            "cargo install --locked specsync@6.4.0",
+        )]),
         "stderr:\n{stderr}"
     );
     assert!(stderr.is_empty(), "{stderr}");
     assert_eq!(output.status.code(), Some(1));
     assert_eq!(
         stdout
-            .matches("cargo install --locked specsync@6.3.0")
+            .matches("cargo install --locked specsync@6.4.0")
             .count(),
         1
     );
@@ -511,56 +510,6 @@ fn an_invalid_id_is_not_echoed() {
     );
 }
 
-/// REQ-cli-067 (the review of #311): the report restores only the cache its own
-/// SpecSync runs wrote. A cache another process replaced meanwhile, by a regular file
-/// or by a symlink to a tracked file, stays as that process left it, nothing is written
-/// through the symlink, and the report says the cache was left.
-#[cfg(unix)]
-#[test]
-fn a_cache_replaced_while_the_report_runs_is_left_alone() {
-    // Said on stderr, not as a finding: REQ-cli-067 lists the findings, and no other.
-    let left =
-        ".specsync/hashes.json was replaced while this report ran, so it was left as it is now\n";
-    for kind in ["regular", "symlink"] {
-        let fixture = project(OLD_REQ, &["src/"]);
-        let output = fixture.run_with_env(&["change", "ready", ID], &[("READY_TEST_CACHE", kind)]);
-        let stdout = String::from_utf8(output.stdout).unwrap();
-        assert_eq!(String::from_utf8(output.stderr).unwrap(), left, "{kind}");
-        assert!(!stdout.contains("was replaced"), "{kind}: {stdout}");
-        let cache = fixture.root().join(".specsync/hashes.json");
-        // The tracked file the symlink points to keeps its text either way.
-        assert_eq!(fixture.read("specs/cli/requirements.md"), OLD_REQ, "{kind}");
-        if kind == "regular" {
-            assert_eq!(std::fs::read_to_string(&cache).unwrap(), "SECOND_WRITER\n");
-        } else {
-            assert!(
-                std::fs::symlink_metadata(&cache)
-                    .unwrap()
-                    .file_type()
-                    .is_symlink(),
-                "the replacement symlink stays"
-            );
-        }
-    }
-}
-
-/// REQ-cli-067 (the review of #311): with no cache before the report, a cache another
-/// process puts there while the check runs is not the report's own, so it stays, and
-/// stderr says the cache was left.
-#[cfg(unix)]
-#[test]
-fn a_cache_another_process_made_while_the_report_ran_is_kept() {
-    let fixture = project(OLD_REQ, &["src/"]);
-    let cache = fixture.root().join(".specsync/hashes.json");
-    std::fs::remove_file(&cache).unwrap();
-    let output = fixture.run_with_env(&["change", "ready", ID], &[("READY_TEST_CACHE", "regular")]);
-    assert_eq!(
-        String::from_utf8(output.stderr).unwrap(),
-        ".specsync/hashes.json was replaced while this report ran, so it was left as it is now\n"
-    );
-    assert_eq!(std::fs::read_to_string(&cache).unwrap(), "SECOND_WRITER\n");
-}
-
 /// REQ-cli-067 (the review of #311): a delta item whose body holds a short `### `
 /// heading, such as `### Notes`, gives a report; the heading is body text, and the
 /// command does not panic.
@@ -581,18 +530,6 @@ fn a_short_heading_inside_a_delta_item_gives_a_report() {
     );
     assert!(matches!(output.status.code(), Some(0 | 1)), "{stderr}");
     assert!(!stderr.contains("panicked"), "{stderr}");
-}
-
-/// REQ-cli-067: with no cache before the report, the one SpecSync wrote is removed.
-#[test]
-fn a_cache_the_report_made_is_removed() {
-    let fixture = project(OLD_REQ, &["src/"]);
-    let cache = fixture.root().join(".specsync/hashes.json");
-    std::fs::remove_file(&cache).unwrap();
-    let output = fixture.run(&["change", "ready", ID]);
-    let stdout = String::from_utf8(output.stdout).unwrap();
-    assert!(!stdout.contains("was replaced"), "{stdout}");
-    assert!(!cache.exists());
 }
 
 /// A remote `origin` whose `main` and `HEAD` name `rev`, with no fetch: the default
@@ -770,4 +707,187 @@ fn a_base_commit_the_repository_lacks_is_named_plainly() {
         "{stdout}"
     );
     assert_eq!(output.status.code(), Some(1));
+}
+
+/// A dry-run document refusing `check` with `message`, and `fix` when given (#406).
+fn refusing(check: &str, message: &str, fix: Option<&str>) -> String {
+    let mut entry = serde_json::json!({"check": check, "result": "refused", "message": message});
+    if let Some(fix) = fix {
+        entry["fix"] = fix.into();
+    }
+    serde_json::json!({
+        "id": ID,
+        "dry_run": true,
+        "would_approve": false,
+        "checks": [
+            {"check": "change", "result": "passed"},
+            entry,
+            {"check": "approval_record", "result": "skipped", "skipped_because": check},
+        ],
+    })
+    .to_string()
+}
+
+/// REQ-cli-067 (#406, #307), TC-cli-ready-names-the-approval-dry-run-s-refusals: a check
+/// SpecSync's approval dry run refuses is named in SpecSync's words with SpecSync's fix,
+/// shown and never run; a refused check without one names `chough change ready` again;
+/// a skipped check is not a finding.
+#[test]
+fn a_refusal_of_the_approval_dry_run_is_named_with_its_fix() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    let message = "no declared module canonically owns these affected paths: src/free.rs";
+    let fix = "specsync change answer demo affected_specs \"<modules>\"";
+    fixture.write(
+        &format!(".specsync/changes/{ID}/dry-run.json"),
+        &refusing("ownership", message, Some(fix)),
+    );
+    assert_report(
+        &fixture,
+        &[(
+            &format!("the approval's ownership check refuses: {message}"),
+            fix,
+        )],
+    );
+    let message = "the semantic delta for cli has no SHALL";
+    fixture.write(
+        &format!(".specsync/changes/{ID}/dry-run.json"),
+        &refusing("deltas", message, None),
+    );
+    assert_report(
+        &fixture,
+        &[(
+            &format!("the approval's deltas check refuses: {message}"),
+            "chough change ready demo",
+        )],
+    );
+}
+
+/// REQ-cli-067 (#406, Q1 A), TC-cli-ready-leaves-the-delta-set-to-specsync: a missing
+/// delta is named once, by SpecSync's dry run; ready has no delta-set rule of its own.
+#[test]
+fn a_missing_delta_is_named_by_specsync_alone() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    std::fs::remove_file(
+        fixture
+            .root()
+            .join(format!(".specsync/changes/{ID}/deltas/cli.md")),
+    )
+    .unwrap();
+    let message =
+        "semantic delta modules must exactly match affected specs (missing: cli; extra: none)";
+    fixture.write(
+        &format!(".specsync/changes/{ID}/dry-run.json"),
+        &refusing("deltas", message, None),
+    );
+    assert_report(
+        &fixture,
+        &[(
+            &format!("the approval's deltas check refuses: {message}"),
+            "chough change ready demo",
+        )],
+    );
+}
+
+/// REQ-cli-067 (#406), TC-cli-ready-without-a-dry-run-names-6-4-0: a SpecSync that gives
+/// no dry-run document names the approval as unchecked with the 6.4.0 install command,
+/// and the report never says that nothing is missing.
+#[test]
+fn a_specsync_without_the_dry_run_names_the_install_command() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    let output = fixture.run_with_env(&["change", "ready", ID], &[("READY_TEST_DRY_RUN", "none")]);
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert_eq!(output.status.code(), Some(1), "{stdout}");
+    assert!(!stdout.contains("Nothing is missing."), "{stdout}");
+    assert!(
+        stdout.contains("the approval could not be checked")
+            && stdout.contains("Fix: `cargo install --locked specsync@6.4.0`"),
+        "{stdout}"
+    );
+}
+
+/// REQ-cli-067 (#406), TC-cli-ready-leaves-out-specsync-s-own-files: in a project that never
+/// ran SpecSync's adoption, its own untracked `.specsync/change.lock` and
+/// `.specsync/workflow-v2-baseline.json` are not outside the declared paths; another
+/// untracked file there still is.
+#[test]
+fn specsync_s_own_untracked_files_are_not_outside_the_declared_paths() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    fixture.write(".specsync/change.lock", "");
+    fixture.write(".specsync/workflow-v2-baseline.json", "{}\n");
+    fixture.write(".specsync/other.json", "{}\n");
+    assert_report(
+        &fixture,
+        &[(
+            "changed file .specsync/other.json is outside the declared paths",
+            "chough change answer demo affected_paths \"src/,.specsync/other.json\"",
+        )],
+    );
+}
+
+/// REQ-cli-067 (#406, Q2 A), TC-cli-ready-leaves-out-another-change-s-work: with two active
+/// changes on one branch, the other change's folder and the files it declares are not
+/// named for this one; a file neither declares still is.
+#[test]
+fn another_active_change_s_work_is_not_this_change_s() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    let base = head(&fixture);
+    fixture.write(
+        ".specsync/changes/other/state.json",
+        &format!(
+            "{{\"state\":\"draft\",\"base_commit\":\"{base}\",\"affected_specs\":[],\"affected_paths\":[\"docs/other.md\"],\"no_spec_change\":true,\"selected_artifacts\":[]}}\n"
+        ),
+    );
+    fixture.write("docs/other.md", "the other change's work\n");
+    fixture.write("docs/neither.md", "nobody's\n");
+    fixture.commit("two changes' work");
+    assert_report(
+        &fixture,
+        &[(
+            "changed file docs/neither.md is outside the declared paths",
+            "chough change answer demo affected_paths \"src/,docs/neither.md\"",
+        )],
+    );
+}
+
+/// REQ-cli-067 (#406, the tester's NFTMix case, Leif's "A"), TC-cli-ready-a-whole-project-scope-leaves-nothing-out:
+/// another active change that declares the whole project (`.`) shows no file is its work,
+/// so a file outside this change's paths is still named; that change's own folder is
+/// still left out.
+#[test]
+fn another_change_declaring_the_whole_project_leaves_nothing_out() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    let base = head(&fixture);
+    fixture.write(
+        ".specsync/changes/other/state.json",
+        &format!(
+            "{{\"state\":\"draft\",\"base_commit\":\"{base}\",\"affected_specs\":[],\"affected_paths\":[\".\"],\"no_spec_change\":true,\"selected_artifacts\":[]}}\n"
+        ),
+    );
+    fixture.write("docs/outside.md", "outside this change's paths\n");
+    fixture.commit("another change declares the whole project");
+    assert_report(
+        &fixture,
+        &[(
+            "changed file docs/outside.md is outside the declared paths",
+            "chough change answer demo affected_paths \"src/,docs/outside.md\"",
+        )],
+    );
+}
+
+/// REQ-cli-067 (#404), TC-cli-ready-makes-no-hash-file: in a project with no
+/// `.specsync/hashes.json`, the SpecSync check ready runs finds none.
+#[test]
+fn ready_makes_no_hash_file_for_specsync_to_find() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    std::fs::remove_file(fixture.root().join(".specsync/hashes.json")).unwrap();
+    fixture.commit("no hash file");
+    let base = head(&fixture);
+    write_change(&fixture, &base, "draft", &["src/"], false);
+    let seen = tempfile::tempdir().unwrap();
+    let log = seen.path().join("seen");
+    let _ = fixture.run_with_env(
+        &["change", "ready", ID],
+        &[("READY_TEST_SEEN", log.to_str().unwrap())],
+    );
+    assert_eq!(std::fs::read_to_string(&log).unwrap(), "absent\n");
 }

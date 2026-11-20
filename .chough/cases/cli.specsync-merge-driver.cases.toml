@@ -3,7 +3,7 @@ module = "cli"
 
 [[case]]
 id = "TC-cli-specsync-merge-driver-wired"
-title = "This repository routes spec files to SpecSync's merge driver and AGENTS.md names its setup"
+title = "This repository routes requirements files, and no spec file, to SpecSync's merge driver, and AGENTS.md names its setup with no Change Log renumbering advice"
 status = "active"
 track = "functional"
 method = "automated"
@@ -12,9 +12,9 @@ requirements = ["REQ-cli-047"]
 paths = [".gitattributes", "AGENTS.md", "tests/package.rs"]
 environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["the package test spec_files_merge_through_specsync_s_driver_in_this_repository passes"]
+expected = ["the package test requirements_merge_through_specsync_s_driver_and_spec_files_need_none passes"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "package"
-test = "spec_files_merge_through_specsync_s_driver_in_this_repository"
+test = "requirements_merge_through_specsync_s_driver_and_spec_files_need_none"
