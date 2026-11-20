@@ -1158,74 +1158,59 @@ fn fence_open(line: &str) -> Option<(char, usize)> {
     Some((mark, run))
 }
 
-/// Whether `line` closes a fence of `mark` opened with a run of `run`: at most three
-/// spaces of indent, at least as long a run of the same character, nothing else.
-fn fence_closes_with(line: &str, mark: char, run: usize) -> bool {
-    let content = line.trim_end_matches('\n').trim_end_matches('\r');
-    let trimmed = content.trim_start_matches(' ');
-    if content.len() - trimmed.len() > 3 {
-        return false;
-    }
-    let length = trimmed.chars().take_while(|ch| *ch == mark).count();
-    length >= run && trimmed[length..].trim().is_empty()
-}
-
 /// For each line, whether a closed code fence hides it (REQ-records-001, #394): a fence
 /// hides its lines up to and including its closing line, and a fence that never closes
 /// hides nothing after it, so a heading after it is still read. The one rule the section
 /// reader and the bug merge driver share.
 pub(super) fn fenced_lines(lines: &[&str]) -> Vec<bool> {
     // One backward pass finds, for each opening line, the nearest line after it that
-    // closes it, so the scan stays linear however many fences never close (#356's
-    // bound): `next[slot][r]` is the nearest closing line seen so far whose run is at
-    // least `r`, for runs up to `CAP`; a longer opener checks the runs past `CAP` itself.
-    const CAP: usize = 16;
-    let mut next: [[Option<usize>; CAP + 1]; 2] = [[None; CAP + 1]; 2];
-    let mut long: [Vec<(usize, usize)>; 2] = [vec![], vec![]];
+    // closes it. Per fence character the candidate closes are kept nearest last, each
+    // longer than every nearer one, as `records::fence_closes` keeps them (#356): each
+    // line is pushed and popped once, and each opener is a binary search, so the scan
+    // stays linear however many fences never close, whatever their length.
     let mut close_of: Vec<Option<usize>> = vec![None; lines.len()];
+    let mut candidates: [Vec<(usize, usize)>; 2] = [vec![], vec![]];
     for index in (0..lines.len()).rev() {
         if let Some((mark, run)) = fence_open(lines[index]) {
-            let slot = usize::from(mark == '~');
-            close_of[index] = if run <= CAP {
-                next[slot][run]
-            } else {
-                long[slot]
-                    .iter()
-                    .rev()
-                    .find(|(_, length)| *length >= run)
-                    .map(|(line, _)| *line)
-            };
+            let stack = &candidates[usize::from(mark == '~')];
+            let longer = stack.partition_point(|&(_, length)| length >= run);
+            close_of[index] = longer.checked_sub(1).map(|at| stack[at].0);
         }
-        for (slot, mark) in ['`', '~'].into_iter().enumerate() {
-            let content = lines[index].trim_end_matches('\n').trim_end_matches('\r');
-            let run = content
-                .trim_start_matches(' ')
-                .chars()
-                .take_while(|ch| *ch == mark)
-                .count();
-            if run >= 3 && fence_closes_with(lines[index], mark, run) {
-                for nearest in next[slot].iter_mut().take(run.min(CAP) + 1).skip(3) {
-                    *nearest = Some(index);
-                }
-                if run > CAP {
-                    long[slot].push((index, run));
-                }
+        if let Some((mark, run)) = fence_close_run(lines[index]) {
+            let stack = &mut candidates[usize::from(mark == '~')];
+            while stack.last().is_some_and(|&(_, farther)| farther <= run) {
+                stack.pop();
             }
+            stack.push((index, run));
         }
     }
     let mut hidden = vec![false; lines.len()];
     let mut index = 0;
     while index < lines.len() {
         if let Some(close) = close_of[index] {
-            for line in hidden.iter_mut().take(close + 1).skip(index) {
-                *line = true;
-            }
+            hidden[index..=close].fill(true);
             index = close + 1;
-            continue;
+        } else {
+            index += 1;
         }
-        index += 1;
     }
     hidden
+}
+
+/// A line that can close a fence: at most three spaces of indent, then a run of three
+/// or more backticks or tildes and nothing else. Returns the character and the run.
+fn fence_close_run(line: &str) -> Option<(char, usize)> {
+    let content = line.trim_end_matches('\n').trim_end_matches('\r');
+    let trimmed = content.trim_start_matches(' ');
+    if content.len() - trimmed.len() > 3 {
+        return None;
+    }
+    let mark = trimmed
+        .chars()
+        .next()
+        .filter(|mark| *mark == '`' || *mark == '~')?;
+    let run = trimmed.chars().take_while(|ch| *ch == mark).count();
+    (run >= 3 && trimmed[run..].trim().is_empty()).then_some((mark, run))
 }
 
 #[cfg(test)]
@@ -1280,6 +1265,16 @@ mod tests {
             fenced_lines(&lines),
             vec![false, false, true, true, true, false]
         );
+        // corvid-agent's case on #423: openers longer than any short-run cap, above
+        // closers one shorter, in bounded time too.
+        let long_opener = format!("{}x\n", "`".repeat(18));
+        let long_closer = format!("{}\n", "`".repeat(17));
+        let mut long: Vec<&str> = vec![long_opener.as_str(); 20_000];
+        long.extend(vec![long_closer.as_str(); 20_000]);
+        let started = std::time::Instant::now();
+        let hidden = fenced_lines(&long);
+        assert!(started.elapsed() < std::time::Duration::from_secs(2));
+        assert!(hidden[..20_000].iter().all(|line| !line));
         let mut many: Vec<&str> = vec!["`````x\n"; 20_000];
         many.extend(vec!["```\n"; 20_000]);
         let started = std::time::Instant::now();
