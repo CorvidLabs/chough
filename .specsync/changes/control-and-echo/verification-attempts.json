@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1795144926,
+      "commit": "25455e6b71f3b84352500134219e4d30ae05f1a1",
+      "contract_digest": "",
+      "workspace_digest": "",
+      "passed": false,
+      "commands": [],
+      "requirement_ids": [],
+      "refusal": "tasks.md contains incomplete tasks: finish the 5 open tasks in `.specsync/changes/control-and-echo/tasks.md` (line 8: \"#366 at write: refuse control characters in the guard, store CRLF as LF, quote Y...\"; line 9: \"#366 on print: escape in 'print_json' and every text view that prints stored tex...\"; line 10: \"#353: the '--pr' forms, '--pr ''' removes it, 'next', 'status', 'context' and th...\"; line 11: \"#367: the remaining error sites and the normal-output echoes use 'shown', with a...\"; line 12: \"REQ-records-006: a 'file:' URL is checked like its path.\") and mark each one `[x]`, then re-run `specsync change check control-and-echo --commit`"
+    },
+    {
+      "timestamp": 1795144940,
+      "commit": "f8b961bfab455f590a9696496a2504bdc78262f5",
+      "contract_digest": "42ca242d8de6dff7da73be19f3440eff4c3bf118d0684e74b71cf467d80911e7",
+      "execution_digest": "57d06047054304b938276b4aa0e14e33828b4f6df592ef8f441bf9021281ed7d",
+      "workspace_digest": "8519a2a134583a110b0bd8f4e24705cae501af9215a06d7d8ad5b0886d07d0ba",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec history --spec records --spec reporting",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-007",
+        "REQ-history-015",
+        "REQ-records-006",
+        "REQ-records-016",
+        "REQ-reporting-001"
+      ]
+    }
+  ]
+}
