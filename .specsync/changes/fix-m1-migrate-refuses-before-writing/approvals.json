@@ -127,6 +127,71 @@
         "where": "His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval under standing OK (d): his 'yes to both' (relayed by hc t4c through fable-lead, hc t53, about 15:02Z on 2026-11-19) lets a delta stale only because main changed the same requirement be rebased onto main's text with exactly the same added and removed words, checked by fable-lead's script, which passed on 2026-11-20 (delta sha256 15ebb4b32eec2b93...). Scope as approved by his 'Approve with the 3 choices' (2026-11-19) with tests/fixtures/migrate/ added (item 8, 2026-11-20); answers and the 17 paths unchanged",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795138416,
+      "digest": "4d4c94a15d5bc426e89019a4a938807ecc9025863f66436a6d3ad418219a8151",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of fix-m1-migrate-refuses-before-writing with the #263 case file added to its paths (native approval)\": \"Yes, record it\" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval after his relayed 'A' (hc t4c through fable-lead, about 01:24Z on 2026-11-20): keep what he approved, the file gets replaced, the preview says so, #263's test is updated to match, one test file added through a send-back t4b runs, no wording change. The one path added is .chough/cases/records.migrate-case-colliding-target.cases.toml; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 (2026-11-20) and standing OK (d), as recorded before). Relayed and recorded by fable-t4b at 2026-11-20T01:33:33Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-m1-migrate-refuses-before-writing",
+        "title": "Fix m1 migrate refuses before writing",
+        "description": "fix m1 migrate refuses before writing",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.doctor-keeps-alias-pointer.cases.toml",
+          ".chough/cases/records.migrate-case-colliding-target.cases.toml",
+          ".chough/cases/records.migrate-refuses.cases.toml",
+          "changelog.d/",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/records/records.spec.md",
+          "specs/records/requirements.md",
+          "src/bugs.rs",
+          "src/doctor.rs",
+          "src/library.rs",
+          "src/migrate.rs",
+          "tests/doctor.rs",
+          "tests/fixtures/migrate/",
+          "tests/migrate.rs",
+          "tests/migrate_bugs.rs",
+          "tests/migrate_knowledge.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "doctor --fix after an in-place migration keeps a pointer that names an open session by alias; any entry at a migration target or receipt name counts as taken, the preview never waits and says the apply would refuse, and refusals name relative paths with nothing written; a returning 0.5.x record whose ID is already held is refused by name, and the generated index and feed are rebuilt in place; of several applies of one digest only one applies and records its consent"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "records and cli lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval, so each sentence was tried against the binary first. File boundary from the lead's plan: in doctor.rs only the stale-pointer check after a fix is touched. #375 and #338 are left out until Leif chooses.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "77f0cec39b981506673bd3dbe6ccaef9eb4c029f68428f5fd2093d9f93594458",
+        "records": "835fcc1b54e9c11bd1d4bcc36f236c2b7874128035eda848807048978b48b007"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "cf2bfff972cac9bad9c6e2db63460390bcb4d2830e09605f9f6abdc490b74440",
+        "records: REQUIREMENT REQ-records-009": "49a0b563cb02a8f2e9089d25fd9def927a10bc47c3f4e1d72c3aed6455ec9f62",
+        "records: REQUIREMENT REQ-records-015": "4e73641bf1b285d81f27ce8fa004bafd52ea6ba12ca81dbc44a44b276d7d6604"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes, record it",
+        "where": "His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval after his relayed 'A' (hc t4c through fable-lead, about 01:24Z on 2026-11-20): keep what he approved, the file gets replaced, the preview says so, #263's test is updated to match, one test file added through a send-back t4b runs, no wording change. The one path added is .chough/cases/records.migrate-case-colliding-target.cases.toml; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 (2026-11-20) and standing OK (d), as recorded before",
+        "recorded_by": "fable-t4b"
+      }
     }
   ],
   "reopenings": [],
@@ -140,6 +205,18 @@
       "from_state": "approved",
       "to_state": "draft",
       "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
+    },
+    {
+      "schema_version": 1,
+      "change_id": "fix-m1-migrate-refuses-before-writing",
+      "actor": "0xLeif",
+      "reason": "Add the #263 case file .chough/cases/records.migrate-case-colliding-target.cases.toml to the paths, since the approved exception replaces #263's refusal of a separate regular knowledge/index.md and its test and case are updated to match; no delta word changes (run by t4b on Leif's relayed word, via t4c, 2026-11-20)",
+      "timestamp": 1795137921,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 2,
       "cancelled_review_attempts": 0,
       "canonical_applied": false
     }

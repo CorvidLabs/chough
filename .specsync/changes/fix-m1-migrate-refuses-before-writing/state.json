@@ -10,7 +10,7 @@
   "state": "approved",
   "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
   "created_at": 1795068669,
-  "updated_at": 1795137385,
+  "updated_at": 1795138416,
   "affected_specs": [
     "records",
     "cli"
@@ -32,7 +32,8 @@
     "specs/cli/cli.spec.md",
     ".chough/cases/records.migrate-refuses.cases.toml",
     ".chough/cases/cli.doctor-keeps-alias-pointer.cases.toml",
-    "tests/fixtures/migrate/"
+    "tests/fixtures/migrate/",
+    ".chough/cases/records.migrate-case-colliding-target.cases.toml"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
