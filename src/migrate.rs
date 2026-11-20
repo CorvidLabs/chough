@@ -1419,13 +1419,17 @@ fn apply(
         // A failure after the rename has happened, on a file system that folds case, has
         // already replaced the 0.5.x file of another letter case: say so, and how to get
         // it back from the last commit, since no other 0.5.x file was removed (F2).
+        // Whether a 0.5.x file was replaced is told by its bytes, read before the rename
+        // and now, whichever spelling the folder lists: on a Docker Desktop mount the
+        // entry can keep the name `INDEX.md` while holding the new bytes.
+        let still_there = |removed: &str, bytes: &[u8]| -> bool {
+            matches!(at_target(root, removed), Ok(AtTarget::Bytes(now)) if now == bytes)
+        };
         if let Err(error) = write_by_rename(root, written, &mut written_now) {
             let replaced: Vec<&String> = before
                 .iter()
+                .filter(|(removed, bytes)| !still_there(removed, bytes))
                 .map(|(removed, _)| removed)
-                .filter(|removed| {
-                    local_path(root, removed).is_ok_and(|path| !listed_exactly(&path))
-                })
                 .collect();
             if replaced.is_empty() {
                 return Err(error.context("no 0.5.x file was removed"));
@@ -1441,7 +1445,7 @@ fn apply(
             )));
         }
         for (removed, bytes) in before {
-            if !listed_exactly(&local_path(root, &removed)?) {
+            if !still_there(&removed, &bytes) {
                 replaced_by_case.push((removed, bytes));
             }
         }
