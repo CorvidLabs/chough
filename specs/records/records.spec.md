@@ -1,6 +1,6 @@
 ---
 module: records
-version: 22
+version: 23
 status: active
 files:
   - src/markdown.rs

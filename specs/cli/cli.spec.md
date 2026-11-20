@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 125
+version: 126
 status: active
 files:
   - src/main.rs
