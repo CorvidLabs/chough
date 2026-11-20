@@ -1754,6 +1754,71 @@ fn doctor_fix_keeps_a_pointer_that_names_an_open_session_by_alias() {
     assert!(next.contains("Open work one"), "{next}");
 }
 
+/// G2, #389 (REQ-history-012): after the move into done with the librarian on, the
+/// `unfinished_archive` fix names the session's journal post with the folder's files and
+/// the story; once the commit it names is made, `doctor --fix` finishes the archive and
+/// the post is committed, not left untracked behind a clean report.
+#[test]
+fn the_unfinished_archive_fix_names_the_journal_post() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["session", "new", "five", "--objective", "Five"]);
+    fixture.commit("session");
+    // Single moves into done: no `--to`, so no reason is needed without SpecSync.
+    // intent, design, plan, build, test, accept, done: six moves.
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    let post = fs::read_dir(fixture.root().join("knowledge/journal"))
+        .unwrap()
+        .flatten()
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .find(|name| name.ends_with("-five.md"))
+        .expect("a journal post for the session");
+    let (_, report) = doctor(&fixture, &[]);
+    let finding = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|finding| finding["kind"] == "unfinished_archive")
+        .unwrap_or_else(|| panic!("{report:#}"))
+        .clone();
+    let fix = finding["fix"].as_str().unwrap_or_default().to_string();
+    assert!(fix.contains(&post), "{fix}");
+    let command = fix
+        .split('`')
+        .find(|part| part.starts_with("git add"))
+        .unwrap_or_else(|| panic!("no commit command in {fix}"))
+        .to_string();
+    // The command as printed, with the test's identity and no signing.
+    let ran = std::process::Command::new("sh")
+        .args(["-c", &command])
+        .envs([
+            ("GIT_AUTHOR_NAME", "Test"),
+            ("GIT_AUTHOR_EMAIL", "test@example.invalid"),
+            ("GIT_COMMITTER_NAME", "Test"),
+            ("GIT_COMMITTER_EMAIL", "test@example.invalid"),
+            ("GIT_CONFIG_COUNT", "1"),
+            ("GIT_CONFIG_KEY_0", "commit.gpgsign"),
+            ("GIT_CONFIG_VALUE_0", "false"),
+        ])
+        .current_dir(fixture.root())
+        .status()
+        .unwrap();
+    assert!(ran.success(), "{command}");
+    doctor(&fixture, &["--fix"]);
+    let status = std::process::Command::new("git")
+        .args(["status", "--porcelain", "--", "knowledge/journal"])
+        .current_dir(fixture.root())
+        .output()
+        .unwrap();
+    assert!(
+        String::from_utf8_lossy(&status.stdout).trim().is_empty(),
+        "the post is still not committed: {}",
+        String::from_utf8_lossy(&status.stdout)
+    );
+}
+
 /// REQ-history-016 (#408), TC-history-doctor-reads-uncommitted-records: an uncommitted
 /// session whose stage is unknown, an uncommitted 0-byte evidence entry and an uncommitted
 /// bug cut off inside its front matter each give an `unreadable` finding naming the file
