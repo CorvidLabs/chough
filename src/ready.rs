@@ -4,7 +4,7 @@
 //! It does not approve, check, or rewrite a tracked file. SpecSync's gitignored hash
 //! cache is restored when an export check writes it.
 
-use anyhow::{Context, Result, anyhow};
+use anyhow::{Context, Result};
 use serde::Deserialize;
 use serde_json::Value;
 use sha2::{Digest, Sha256};
@@ -647,7 +647,9 @@ fn restore_cache(path: &Path, before: &Cache) -> bool {
 }
 
 fn case_findings(root: &Path, change: &Change) -> Vec<Finding> {
-    let changed = changed_files(root, &change.base_commit).unwrap_or_default();
+    let changed = changed_files(root, &change.base_commit)
+        .map(|listing| listing.files)
+        .unwrap_or_default();
     let mut names = BTreeSet::new();
     if let Ok(entries) = fs::read_dir(root.join(".chough/cases")) {
         for entry in entries.flatten() {
@@ -744,14 +746,19 @@ fn requirement_owner(id: &str) -> Option<String> {
 
 fn path_findings(root: &Path, change: &Change) -> Vec<Finding> {
     let changed = match changed_files(root, &change.base_commit) {
-        Ok(changed) => changed,
-        Err(error) => {
+        Ok(listing) => {
+            for note in &listing.notes {
+                eprintln!("note: {note}");
+            }
+            listing.files
+        }
+        Err(Unlisted { text, fix }) => {
             return vec![Finding {
                 text: format!(
-                    "changed files since {} could not be listed ({error})",
+                    "changed files since {} could not be listed: {text}",
                     change.base_commit
                 ),
-                fix: "chough change status".into(),
+                fix,
             }];
         }
     };
@@ -819,20 +826,139 @@ fn ignored_prefixes(root: &Path) -> Vec<String> {
         .unwrap_or_default()
 }
 
-fn changed_files(root: &Path, base: &str) -> Result<BTreeSet<String>> {
-    if base.is_empty() {
-        return Err(anyhow!("the change records no base commit"));
+/// The files that are the change's own work, and what the report says about how it
+/// counted them (REQ-cli-067).
+struct Listing {
+    files: BTreeSet<String>,
+    notes: Vec<String>,
+}
+
+/// Why the changed files could not be listed, and the one command that fixes it.
+struct Unlisted {
+    text: String,
+    fix: String,
+}
+
+/// The output of a Git command that must succeed, or what it said, never shown raw.
+fn git_out(root: &Path, args: &[&str]) -> Option<Vec<u8>> {
+    let output = git(root, args).ok()?;
+    output.status.success().then_some(output.stdout)
+}
+
+/// One line of a Git command's output, trimmed.
+fn git_line(root: &Path, args: &[&str]) -> Option<String> {
+    git_out(root, args)
+        .map(|out| String::from_utf8_lossy(&out).trim().to_string())
+        .filter(|line| !line.is_empty())
+}
+
+/// Whether `rev` names a commit in the repository.
+fn has_commit(root: &Path, rev: &str) -> bool {
+    git_out(root, &["cat-file", "-e", &format!("{rev}^{{commit}}")]).is_some()
+}
+
+/// The default branch the report compares with (REQ-cli-067, #406, as spec-sync #1081
+/// settled it): the remote-tracking branch `refs/remotes/origin/HEAD` names, unless it
+/// names no existing ref or the branch HEAD is on, by the same name or as its upstream;
+/// then `refs/remotes/origin/main`; a local `main` only when there is no remote at all.
+fn default_branch(root: &Path) -> Option<String> {
+    let on = git_line(root, &["symbolic-ref", "-q", "--short", "HEAD"]);
+    let upstream = git_line(
+        root,
+        &["rev-parse", "-q", "--symbolic-full-name", "@{upstream}"],
+    );
+    if let Some(target) = git_line(root, &["symbolic-ref", "-q", "refs/remotes/origin/HEAD"])
+        && has_commit(root, &target)
+        && on
+            .as_ref()
+            .is_none_or(|branch| target != format!("refs/remotes/origin/{branch}"))
+        && upstream.as_ref() != Some(&target)
+    {
+        return Some(target);
     }
-    let run = |args: &[&str]| -> Result<BTreeSet<String>> {
-        let output = git(root, args)?;
-        if !output.status.success() {
-            let detail = String::from_utf8_lossy(&output.stderr);
-            return Err(anyhow!(detail.trim().to_string()));
-        }
-        Ok(names(&output.stdout))
+    if has_commit(root, "refs/remotes/origin/main") {
+        return Some("refs/remotes/origin/main".into());
+    }
+    let remotes = git_line(root, &["remote"]);
+    if remotes.is_none() && has_commit(root, "refs/heads/main") {
+        return Some("refs/heads/main".into());
+    }
+    None
+}
+
+/// Each path in `rev`'s tree with its blob.
+fn blobs(root: &Path, rev: &str) -> Option<BTreeMap<String, String>> {
+    let out = git_out(root, &["ls-tree", "-r", "-z", "--full-tree", rev])?;
+    Some(
+        out.split(|byte| *byte == 0)
+            .filter_map(|entry| {
+                let entry = String::from_utf8_lossy(entry);
+                let (meta, path) = entry.split_once('\t')?;
+                let blob = meta.split_whitespace().nth(2)?;
+                Some((path.replace('\\', "/"), blob.to_string()))
+            })
+            .collect(),
+    )
+}
+
+fn changed_files(root: &Path, base: &str) -> Result<Listing, Unlisted> {
+    if base.is_empty() {
+        return Err(Unlisted {
+            text: "the change records no base commit".into(),
+            fix: "chough change status".into(),
+        });
+    }
+    let mut notes = vec![];
+    let shallow =
+        git_line(root, &["rev-parse", "--is-shallow-repository"]).as_deref() == Some("true");
+    let default = default_branch(root);
+    let merge_base = default
+        .as_ref()
+        .and_then(|branch| git_line(root, &["merge-base", "HEAD", branch]));
+    // #406: a base the repository lacks, as after a squash merge removed it, is said
+    // plainly, and the change's work is counted from HEAD's merge base with the default
+    // branch; with neither, there is nothing to count from.
+    let base = if has_commit(root, base) {
+        base.to_string()
+    } else if let Some(merge_base) = &merge_base {
+        notes.push(format!(
+            "the change's base commit {base} is not in this repository, as after a squash merge removed it, so its work is counted from HEAD's merge base with {} ({})",
+            default.as_deref().unwrap_or_default(),
+            &merge_base[..merge_base.len().min(12)]
+        ));
+        merge_base.clone()
+    } else {
+        let (why, fix) = if shallow {
+            (
+                "this shallow clone does not hold it or a merge base with the default branch",
+                "git fetch --unshallow",
+            )
+        } else if default.is_some() {
+            (
+                "HEAD has no merge base with the default branch",
+                "chough change status",
+            )
+        } else {
+            (
+                "there is no default branch to count from",
+                "chough change status",
+            )
+        };
+        return Err(Unlisted {
+            text: format!("the change's base commit is not in this repository, and {why}"),
+            fix: fix.into(),
+        });
+    };
+    let run = |args: &[&str]| -> Result<BTreeSet<String>, Unlisted> {
+        git_out(root, args)
+            .map(|out| names(&out))
+            .ok_or_else(|| Unlisted {
+                text: format!("`git {}` failed", args.first().copied().unwrap_or_default()),
+                fix: "chough change status".into(),
+            })
     };
     // What differs from the base now, committed or not.
-    let differs = run(&["diff", "--name-only", "-z", "--no-renames", base])?;
+    let differs = run(&["diff", "--name-only", "-z", "--no-renames", &base])?;
     // #363: only the change's own work counts. A file that a merge from another branch
     // brought in differs from the base too, but no commit of this branch's own line
     // touched it, so it is left out; a file changed and not committed yet is the
@@ -853,12 +979,50 @@ fn changed_files(root: &Path, base: &str) -> Result<BTreeSet<String>> {
     ])?;
     let uncommitted = run(&["diff", "--name-only", "-z", "--no-renames", "HEAD"])?;
     let untracked = run(&["ls-files", "-z", "--others", "--exclude-standard"])?;
+    // #406: a committed file whose content at HEAD is the default branch's, at its tip or
+    // at HEAD's merge base with it, came from a rebase onto it or a squash merge of it,
+    // and is not the change's own. Never while HEAD is on the default branch or its tip
+    // is HEAD, so work done on the default branch itself is still counted.
+    let mut theirs: Vec<BTreeMap<String, String>> = vec![];
+    if let Some(branch) = &default {
+        let head = git_line(root, &["rev-parse", "HEAD"]);
+        let tip = git_line(root, &["rev-parse", branch]);
+        let on = git_line(root, &["symbolic-ref", "-q", "HEAD"]);
+        let on_default = on.as_deref() == Some(branch.as_str())
+            || on.as_deref().is_some_and(|on| {
+                on.strip_prefix("refs/heads/").is_some_and(|name| {
+                    branch.ends_with(&format!("/{name}"))
+                        && branch.starts_with("refs/remotes/origin/")
+                })
+            })
+            || (head.is_some() && head == tip);
+        if !on_default {
+            theirs.extend(blobs(root, branch));
+            match &merge_base {
+                Some(merge_base) => theirs.extend(blobs(root, merge_base)),
+                None => notes.push(format!(
+                    "HEAD's merge base with {branch} could not be computed, as in a shallow clone, so only its tip is compared"
+                )),
+            }
+        }
+    }
+    let at_head = if theirs.is_empty() {
+        None
+    } else {
+        blobs(root, "HEAD")
+    };
     let mut files: BTreeSet<String> = differs
         .into_iter()
-        .filter(|path| own.contains(path) || uncommitted.contains(path))
+        .filter(|path| uncommitted.contains(path) || own.contains(path))
+        .filter(|path| {
+            uncommitted.contains(path)
+                || at_head
+                    .as_ref()
+                    .is_none_or(|head| !theirs.iter().any(|tree| tree.get(path) == head.get(path)))
+        })
         .collect();
     files.extend(untracked);
-    Ok(files)
+    Ok(Listing { files, notes })
 }
 
 fn names(bytes: &[u8]) -> BTreeSet<String> {

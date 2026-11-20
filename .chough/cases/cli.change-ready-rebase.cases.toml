@@ -1,0 +1,77 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# #406, item 2: after a rebase onto main or a squash merge of it, change ready named
+# main's own files as outside the declared paths.
+
+[[case]]
+id = "TC-cli-change-ready-counts-only-own-work-after-a-rebase"
+title = "After a rebase onto the default branch, change ready names no file only the default branch changed and still names the change's own file outside the declared paths"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/ready.rs::after_a_rebase_onto_main_only_the_change_s_own_files_are_named passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "after_a_rebase_onto_main_only_the_change_s_own_files_are_named"
+
+[[case]]
+id = "TC-cli-change-ready-counts-only-own-work-after-a-squash-merge"
+title = "After a squash merge of the default branch, change ready names no file whose content is the default branch's and still names the change's own file outside the declared paths"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/ready.rs::after_a_squash_merge_of_main_only_the_change_s_own_files_are_named passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "after_a_squash_merge_of_main_only_the_change_s_own_files_are_named"
+
+[[case]]
+id = "TC-cli-change-ready-on-the-default-branch-names-own-files"
+title = "With HEAD on the default branch, or origin/HEAD naming HEAD's own branch, change ready still names the change's own file outside the declared paths"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/ready.rs::on_the_default_branch_itself_the_change_s_files_are_still_named passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "on_the_default_branch_itself_the_change_s_files_are_still_named"
+
+[[case]]
+id = "TC-cli-change-ready-names-a-missing-base-plainly"
+title = "With a base commit the repository lacks, change ready says so with no fatal line and counts from the merge base, and with no default branch names one finding that the files could not be listed"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/ready.rs::a_base_commit_the_repository_lacks_is_named_plainly passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "a_base_commit_the_repository_lacks_is_named_plainly"
