@@ -21,6 +21,11 @@ observations:
   - 2026-11-20-tc-records-doctor-scans-the-open-changes
   - 2026-11-20-tc-records-an-explicit-evidence-id-is-named-by-what-it-holds
   - 2026-11-20-tc-records-no-command-echoes-a-given-value
+  - 2026-11-20-tc-cli-a-leaking-description-rationale-or-answer-is-refused-52fc05
+  - 2026-11-20-tc-records-doctor-scans-the-open-changes-64304c
+  - 2026-11-20-tc-records-an-explicit-evidence-id-is-named-by-what-it-holds-3d2da5
+  - 2026-11-20-tc-records-a-close-gate-value-is-named-by-what-it-holds
+  - 2026-11-20-tc-records-no-command-echoes-a-given-value-f0d727
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -45,6 +50,11 @@ A change's description, rationale and answers pass the leak check before SpecSyn
 - [Ran cargo test --locked --test leaks -- --exact doctor_scans_the_open_changes_but_not_their_deltas_or_the_archive for TC-records-doctor-scans-the-open-changes: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-doctor-scans-the-open-changes.md)
 - [Ran cargo test --locked --test output_safety -- --exact an_explicit_evidence_id_is_named_by_what_it_holds for TC-records-an-explicit-evidence-id-is-named-by-what-it-holds: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-an-explicit-evidence-id-is-named-by-what-it-holds.md)
 - [Ran cargo test --locked --test output_safety -- --exact no_command_echoes_a_value_given_on_the_command_line for TC-records-no-command-echoes-a-given-value: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-no-command-echoes-a-given-value.md)
+- [Ran cargo test --locked --test change -- --exact a_leaking_description_rationale_or_answer_is_refused_before_specsync_runs for TC-cli-a-leaking-description-rationale-or-answer-is-refused: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-leaking-description-rationale-or-answer-is-refused-52fc05.md)
+- [Ran cargo test --locked --test leaks -- --exact doctor_scans_the_open_changes_but_not_their_deltas_or_the_archive for TC-records-doctor-scans-the-open-changes: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-doctor-scans-the-open-changes-64304c.md)
+- [Ran cargo test --locked --test output_safety -- --exact an_explicit_evidence_id_is_named_by_what_it_holds for TC-records-an-explicit-evidence-id-is-named-by-what-it-holds: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-an-explicit-evidence-id-is-named-by-what-it-holds-3d2da5.md)
+- [Ran cargo test --locked --test change -- --exact change_ship_names_a_close_gate_value_by_what_it_holds for TC-records-a-close-gate-value-is-named-by-what-it-holds: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-a-close-gate-value-is-named-by-what-it-holds.md)
+- [Ran cargo test --locked --test output_safety -- --exact no_command_echoes_a_value_given_on_the_command_line for TC-records-no-command-echoes-a-given-value: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-no-command-echoes-a-given-value-f0d727.md)
 
 ## Open threads
 
