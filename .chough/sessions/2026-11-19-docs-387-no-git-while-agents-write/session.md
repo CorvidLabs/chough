@@ -5,7 +5,7 @@ aliases: [docs-387-no-git-while-agents-write]
 objective: The docs and the workflow skill tell agents not to run git merge, rebase, checkout or stash in a worktree while Chough writers run there, since Git can drop writes that already exited 0 (#387)
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-20-tc-cli-the-docs-say-not-to-rewrite-the-worktree-while-another-6bd32f
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of docs-387-no-git-while-agents-write
-    holds: accept
-    drives: review
-    opened: 2026-11-20T02:04:21Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: No Git rewrites of a worktree while another agent works there
 summary:
   - The workflow skill's checkpoint reference, in the bundle and in an installed copy, and docs/cli.md each say not to run git pull, merge, rebase, checkout or stash in a worktree while another agent works there, why (such a command can replace a record another agent's Chough command just saved), and that a lone agent may run one between its own commands; the 0.6.1 digest of the reference is known, so a 0.6.1 install updates (#387).
@@ -46,6 +42,7 @@ The docs and the workflow skill tell agents not to run git merge, rebase, checko
 - 0xLeif decided "Scope approval of docs-387-no-git-while-agents-write": "Yes I approve" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), from a Claude Code chat message on 2026-11-19 at about 14:37Z, on docs-387-no-git-while-agents-write at 0892b125: the one sentence and criterion in REQ-cli-040 and the skill digest in src/skill.rs, approved as drafted); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve docs-387-no-git-while-agents-write as 0xLeif
 - 0xLeif decided "One send-back of docs-387-no-git-while-agents-write to correct its stale acceptance-criteria answer, run by t4b": "a, all yes.. im back" (Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 00:38Z on 2026-11-20, answering t4c's eight-item round; item 7: yes to one send-back of #387 before any code, run by t4b, correcting only the acceptance-criteria answer to match the delta he approved at 0892b125 (git pull named; a lone agent may run Git between its own commands), with no delta word changed); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve docs-387-no-git-while-agents-write as 0xLeif
 - 0xLeif decided "Scope approval of docs-387-no-git-while-agents-write with its corrected acceptance-criteria answer (native approval)": "Yes, record it" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval. Scope: his 'Yes I approve' of the delta at 0892b125 (relayed by hc t4c through fable-lead, 2026-11-19), delta unchanged. Send-back: his 'a, all yes.. im back' (relayed the same way, about 00:38Z on 2026-11-20, item 7), one send-back by t4b correcting only the acceptance-criteria answer); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve docs-387-no-git-while-agents-write as 0xLeif
+- 0xLeif decided "Implementation review of docs-387-no-git-while-agents-write": "Yes, record and ship" (Leif's answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording his implementation review of #416 at 560a8780 and shipping it. Under standing OK 6(b) (his 'Go' to the six rules, relayed by hc t4c): tester2's PASS, corvid-agent approved ddc210fb and 560a8780, no approved sentence changed, checked by fable-lead); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review docs-387-no-git-while-agents-write as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -147,4 +144,20 @@ The docs and the workflow skill tell agents not to run git merge, rebase, checko
   - revision: 560a87805735b57704f82db8a2fdad9d8ca73673
   - holds: accept
   - drives: review
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T02:16:28Z · gate-closed · accept → accept · Implementation review of docs-387-no-git-while-agents-write ^t-c6eea2
+  - native_change: docs-387-no-git-while-agents-write
+  - revision: acd64e321f218ae98b87ba0fb935b2af351ce3af
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, record and ship
+    - where: Leif's answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording his implementation review of #416 at 560a8780 and shipping it. Under standing OK 6(b) (his 'Go' to the six rules, relayed by hc t4c): tester2's PASS, corvid-agent approved ddc210fb and 560a8780, no approved sentence changed, checked by fable-lead
+    - recorded_by: fable-t4b
+    - native: specsync change review docs-387-no-git-while-agents-write
+    - actor: 0xLeif
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T02:16:30Z · advance · accept → done · native:archived ^t-0f2dba
+  - native_change: docs-387-no-git-while-agents-write
+  - gate: native:archived
+  - revision: acd64e321f218ae98b87ba0fb935b2af351ce3af
   - by: fable (claude-opus-5-5, hc t4b)
