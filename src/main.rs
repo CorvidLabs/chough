@@ -308,7 +308,7 @@ fn main() -> Result<()> {
                 .filter(|value| !value.trim().is_empty())
                 .map(|name| (name, "CHOUGH_SESSION"))
         });
-    if let Some((name, source)) = requested
+    if let Some((name, source)) = &requested
         && !matches!(
             &cli.command,
             Commands::Init { .. }
@@ -320,7 +320,7 @@ fn main() -> Result<()> {
                 }
         )
     {
-        pin_session(&root, &name, source)?;
+        pin_session(&root, name, source)?;
     }
     match cli.command {
         Commands::Init {
@@ -418,7 +418,24 @@ fn main() -> Result<()> {
         Commands::Journal { command } => journal::run(&root, command)?,
         Commands::Timing(args) => timing::run(&root, *args)?,
         Commands::Skill { command } => skill::run(&root, command)?,
-        Commands::Session { command } => sessions::run(&root, command)?,
+        Commands::Session { command } => {
+            let sets_pointer = matches!(
+                command,
+                sessions::SessionCommand::New { .. } | sessions::SessionCommand::Use { .. }
+            );
+            sessions::run(&root, command)?;
+            // REQ-cli-037 (#372): these two set the pointer and ignore the pin, so say
+            // when the pin still names another open session that later commands use.
+            if sets_pointer
+                && let Some((name, source)) = &requested
+                && let Ok(pinned) = sessions::resolve_open(&root, name)
+                && sessions::pointed(&root).ok().flatten().as_deref() != Some(pinned.as_str())
+            {
+                eprintln!(
+                    "note: {source} still names session {pinned}; commands given it keep using that session, not the one made active"
+                );
+            }
+        }
         Commands::Inbox { command } => sessions::inbox(&root, command)?,
         Commands::Change { command } => {
             let code = change::run(&root, command)?;

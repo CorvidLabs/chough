@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-g1-gates-and-pins-fail-closed",
+  "slug": "fix-g1-gates-and-pins-fail-closed",
+  "title": "Fix g1 gates and pins fail closed",
+  "description": "fix g1 gates and pins fail closed",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
+  "created_at": 1795065230,
+  "updated_at": 1795117424,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/checkpoint.rs",
+    "src/change.rs",
+    "src/sessions.rs",
+    "src/main.rs",
+    "tests/checkpoint.rs",
+    "tests/stages.rs",
+    "tests/change.rs",
+    "tests/sessions.rs",
+    "tests/session_pin.rs",
+    "docs/cli.md",
+    "changelog.d/",
+    "specs/cli/requirements.md",
+    "specs/cli/cli.spec.md",
+    "specs/history/requirements.md",
+    "specs/history/history.spec.md",
+    ".chough/cases/cli.gates-and-pins.cases.toml",
+    ".chough/cases/history.gates-and-pins.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A hand-edited blank, placeholder or doubled no_native_change is refused by every reader with the edit named, and session list and doctor still run; inbox list honors --session and CHOUGH_SESSION; session use and session new say when a pin still names another session; session shelve resolves a folder name, alias or bare slug; change ship closes its gate and moves its stage in the session it resolved; the ship history check covers the whole range and refuses when Git cannot read it; chough change refuses a leaking or control-character argument before SpecSync runs"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "cli and history lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval, so every sentence was tried against the binary first; a new free-text value goes through the leak guard. File boundaries from the lead's plan: doctor.rs and the archive finish in sessions.rs belong to the fixer's batch and are not touched; the REQ-cli-057 part waits for #407.",
+    "public_contract": "yes"
+  }
+}

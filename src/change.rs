@@ -103,7 +103,41 @@ pub(super) struct ShipArgs {
 const SUMMARY_LINES: usize = 12;
 
 /// Run one step and return the exit code to end with.
+/// REQ-cli-057 (G1, #367): an argument SpecSync would write or echo back is checked
+/// before SpecSync runs. One holding a credential, a personal value or a control
+/// character is refused, naming the argument and what it holds and never the value;
+/// `--redact` does not change this, since SpecSync, not Chough, would write it.
+fn refuse_unshowable(arguments: &[(&str, &str)]) -> Result<()> {
+    for (name, value) in arguments {
+        if let Some(held) = crate::leaks::unshowable(value) {
+            bail!(
+                "refused:unshowable-argument: the {name} argument holds {held}, so SpecSync was not run and nothing was written.\nGive the {name} without it and run the command again."
+            );
+        }
+    }
+    Ok(())
+}
+
 pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
+    match &command {
+        ChangeCommand::New {
+            kind, specs, paths, ..
+        } => {
+            let mut checked: Vec<(&str, &str)> = vec![];
+            if let Some(kind) = kind {
+                checked.push(("kind", kind));
+            }
+            checked.extend(specs.iter().map(|spec| ("spec", spec.as_str())));
+            checked.extend(paths.iter().map(|path| ("path", path.as_str())));
+            refuse_unshowable(&checked)?;
+        }
+        ChangeCommand::Answer { id, question, .. } => {
+            refuse_unshowable(&[("id", id), ("question", question)])?;
+        }
+        ChangeCommand::Check { id, .. } => refuse_unshowable(&[("id", id)])?,
+        ChangeCommand::Status { id: Some(id) } => refuse_unshowable(&[("id", id)])?,
+        _ => {}
+    }
     let (step, arguments, read) = match command {
         ChangeCommand::New {
             description,
@@ -261,9 +295,12 @@ fn status(root: &Path, arguments: &[String], rerun: &str) -> Result<i32> {
 /// command.
 fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
     let id = &args.id;
+    // REQ-records-006 (#367): every message before the id is checked against the
+    // session shows it only when it is clean.
+    let id_shown = crate::leaks::shown("id", id);
     let relay_command = |gate: &str| {
         format!(
-            "chough change ship {id} --close-gate \"{gate}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\""
+            "chough change ship {id_shown} --close-gate \"{gate}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\""
         )
     };
     // REQ-cli-059 (modified): --list and --gate name a listed gate, whose summary must
@@ -282,17 +319,17 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
     let session = crate::checkpoint::read_session(root)?.to_value()?;
     match session["native_change"].as_str() {
         None => bail!(
-            "refused:no-native-change: the active session records no native change, so nothing ran.\nRun `chough checkpoint --native-change {id}`, then `chough change ship {id}` again."
+            "refused:no-native-change: the active session records no native change, so nothing ran.\nRun `chough checkpoint --native-change {id_shown}`, then `chough change ship {id_shown}` again."
         ),
         Some(other) if other != id => bail!(
-            "refused:other-change: the active session's native change is {other}, not {id}, so nothing ran.\nRun `chough change ship {other}` to ship it, or `chough session use <key>` to make {id}'s session active."
+            "refused:other-change: the active session's native change is {other}, not {id_shown}, so nothing ran.\nRun `chough change ship {other}` to ship it, or `chough session use <key>` to make {id_shown}'s session active."
         ),
         Some(_) => {}
     }
     let stage = session["stage"]["current"].as_str().unwrap_or_default();
     if stage != "accept" {
         bail!(
-            "refused:not-at-accept: ship runs at accept, and the active session is at {stage}, so nothing ran.\nRun `chough stage advance --to accept`, then `chough change ship {id}` again."
+            "refused:not-at-accept: ship runs at accept, and the active session is at {stage}, so nothing ran.\nRun `chough stage advance --to accept`, then `chough change ship {id_shown}` again."
         );
     }
     let open: Vec<String> = session["awaiting_human"]
@@ -308,7 +345,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
     if let Some(other) = open.iter().find(|gate| Some(gate.as_str()) != named) {
         if named.is_some_and(|named| open.iter().any(|gate| gate == named)) {
             bail!(
-                "refused:other-gates-open: ship closes only the gate it names, and gate \"{other}\" is open too, so nothing ran.\nDecide it first with `chough checkpoint --close-gate \"{other}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"{}`, then run `chough change ship {id}` with the review relay again.",
+                "refused:other-gates-open: ship closes only the gate it names, and gate \"{other}\" is open too, so nothing ran.\nDecide it first with `chough checkpoint --close-gate \"{other}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"{}`, then run `chough change ship {id_shown}` with the review relay again.",
                 other_gate_flags(root, other)
             );
         }
@@ -327,7 +364,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
         use crate::checkpoint::RelayProblem;
         match problem {
             RelayProblem::WithoutGate(given) => anyhow::anyhow!(
-                "refused:relay-without-gate: {} describe a human's decision at a gate, and no gate is open, so nothing ran.\nRun `chough change ship {id}` without them.",
+                "refused:relay-without-gate: {} describe a human's decision at a gate, and no gate is open, so nothing ran.\nRun `chough change ship {id_shown}` without them.",
                 given.join(", ")
             ),
             RelayProblem::Incomplete(gate, missing) => anyhow::anyhow!(
@@ -337,7 +374,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
                 relay_command(&gate)
             ),
             RelayProblem::NotOpen(gate, _) => anyhow::anyhow!(
-                "refused:gate-not-open: no gate is open, so there is no gate \"{gate}\" to close, and nothing ran.\nRun `chough change ship {id}` without --close-gate and the relay."
+                "refused:gate-not-open: no gate is open, so there is no gate \"{gate}\" to close, and nothing ran.\nRun `chough change ship {id_shown}` without --close-gate and the relay."
             ),
             RelayProblem::TooLong(gate, length) => anyhow::anyhow!(
                 "refused:relay-too-long: the decision for gate \"{gate}\" would be {length} bytes, over the {}-byte checkpoint text bound, so nothing ran.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `{}`.",
@@ -489,13 +526,16 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
     }
     steps.push(("chough stage advance --to done".into(), advance));
     let chough = std::env::current_exe()?;
+    // REQ-cli-059 (#369): the gate close and the move into done act on the session this
+    // command resolved, pinned or not, never on whatever the shared pointer says now.
+    let session = crate::sessions::id_of(&crate::sessions::checkpoint_path(root)?);
     for (index, (shown, arguments)) in steps.iter().enumerate() {
         let mut command = Command::new(&chough);
-        command
-            .arg("--root")
-            .arg(root)
-            .args(arguments)
-            .current_dir(root);
+        command.arg("--root").arg(root);
+        if let Some(session) = &session {
+            command.arg("--session").arg(session);
+        }
+        command.args(arguments).current_dir(root);
         let output = records::run_owned(&mut command, None)?;
         if !output.status.success() {
             if !args.json {
@@ -628,9 +668,6 @@ fn signal(_: &std::process::ExitStatus) -> Option<i32> {
     None
 }
 
-/// The most commits of a change's history the corrupt-history check reads.
-const HISTORY_LIMIT: usize = 1_000;
-
 /// Refuse a ship whose change history SpecSync would read as corrupt (REQ-cli-059, #298):
 /// a commit between the change's recorded base commit and HEAD that holds another change
 /// both open, `.specsync/changes/<id>/state.json`, and archived,
@@ -663,51 +700,209 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
             .success()
             .then(|| String::from_utf8_lossy(&output.stdout).into_owned())
     };
-    let Some(commits) = git(&["rev-list", &format!("{base}..HEAD")]) else {
+    // Outside a Git repository there is nothing to check.
+    if git(&["rev-parse", "--git-dir"]).is_none() {
         return Ok(());
+    }
+    // A base_commit that is not a Git object id (a hand edit, a bad merge of
+    // state.json) names no range at all, as a base that is gone does: say so without
+    // showing the value, and go on, as before this check existed. Only then is it
+    // ASCII, so the short form below is a safe byte slice.
+    if base.is_empty() || base.len() > 64 || !base.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        eprintln!(
+            "note: the change's recorded base commit is not a Git object id, so its history from that base could not be checked; the ship goes on."
+        );
+        return Ok(());
+    }
+    let short_base = &base[..base.len().min(12)];
+    // The remote to fetch from, by its real name so the command pastes as printed: the
+    // one the current branch tracks, else the only remote there is (the tester's
+    // recheck of #413).
+    let tracked = git(&["symbolic-ref", "--quiet", "--short", "HEAD"])
+        .and_then(|branch| git(&["config", &format!("branch.{}.remote", branch.trim())]))
+        .map(|remote| remote.trim().to_string())
+        .filter(|remote| !remote.is_empty() && remote != ".");
+    let remotes: Vec<String> = git(&["remote"])
+        .map(|names| {
+            names
+                .lines()
+                .filter(|name| !name.is_empty())
+                .map(String::from)
+                .collect()
+        })
+        .unwrap_or_default();
+    let remote = tracked.or_else(|| (remotes.len() == 1).then(|| remotes[0].clone()));
+    let refetch = match &remote {
+        // A name that cannot be shown is not printed, so there is nothing to paste.
+        Some(remote) if crate::leaks::unshowable(remote).is_some() => format!(
+            "Run `git fetch --refetch -- <remote>` with the name of {}, to fetch every object again, then the ship.",
+            crate::leaks::shown("remote", remote)
+        ),
+        // One quoted word after `--`, so any name a person's config holds pastes as one
+        // argument and is never read as an option or by the shell.
+        Some(remote) => format!(
+            "Run `git fetch --refetch -- {}` to fetch every object again, then the ship.",
+            shell_quoted(remote)
+        ),
+        // Several remotes and none tracked: they exist, so name a few to choose from.
+        None if !remotes.is_empty() => {
+            let mut named: Vec<String> = remotes
+                .iter()
+                .take(5)
+                .map(|remote| match crate::leaks::unshowable(remote) {
+                    Some(_) => crate::leaks::shown("remote", remote),
+                    None => shell_quoted(remote),
+                })
+                .collect();
+            if remotes.len() > 5 {
+                named.push(format!("{} more (`git remote`)", remotes.len() - 5));
+            }
+            format!(
+                "Run `git fetch --refetch -- <remote>` with the remote that holds this history, one of {}, to fetch every object again, then the ship.",
+                named.join(", ")
+            )
+        }
+        None => "Add the remote that holds this history with `git remote add <name> <url>`, then run `git fetch --refetch -- <name>` to fetch every object again, then the ship.".to_string(),
     };
+    let unchecked = |what: &str| {
+        anyhow::anyhow!(
+            "refused:history-unchecked: Git could not read {what}, so this change's history from its base commit {short_base} to HEAD could not be checked and nothing ran.\n{refetch}"
+        )
+    };
+    // REQ-cli-059 (#400): a base commit that is not an object. In a shallow clone the
+    // history is only missing here, so fetching it is the way on; in a complete clone,
+    // as after a squash merge removed the base, there is no range to read at all, and
+    // refusing would stop the ship for good, so it goes on and says so.
+    if git(&["cat-file", "-e", &format!("{base}^{{commit}}")]).is_none() {
+        if git(&["rev-parse", "--is-shallow-repository"])
+            .as_deref()
+            .map(str::trim)
+            == Some("true")
+        {
+            bail!(
+                "refused:history-unchecked: this shallow clone does not hold the change's base commit {short_base}, so its history to HEAD could not be checked and nothing ran.\nRun `git fetch --unshallow`, then the ship again."
+            );
+        }
+        eprintln!(
+            "note: the change's base commit {short_base} is not in this repository, as after a squash merge removed it, so its history from that base could not be checked; the ship goes on."
+        );
+        return Ok(());
+    }
+    // REQ-cli-059 (#400): the whole range, however many commits.
+    let range = format!("{base}..HEAD");
+    // When a commit object itself cannot be read, `git rev-list` says which on
+    // standard error (`error: Could not read <id>`); name that commit, else the range.
+    let listed = records::run_owned(
+        Command::new("git")
+            .arg("-C")
+            .arg(root)
+            .args(["rev-list", &range]),
+        None,
+    )
+    .map_err(|_| unchecked(&range))?;
+    if !listed.status.success() {
+        let said = String::from_utf8_lossy(&listed.stderr);
+        let lost = said
+            .split(|character: char| !character.is_ascii_hexdigit())
+            .find(|word| word.len() == 40 || word.len() == 64);
+        return Err(match lost {
+            Some(lost) => unchecked(&format!("commit {lost}")),
+            None => unchecked(&range),
+        });
+    }
+    let commits = String::from_utf8_lossy(&listed.stdout).into_owned();
+    // One streaming call gives each commit's two folder trees and its root tree, so
+    // commits that leave both folders as they were cost no further Git call.
+    let mut asked = String::new();
+    for commit in commits.lines() {
+        asked.push_str(&format!(
+            "{commit}:.specsync/changes\n{commit}:.specsync/archive/changes\n{commit}^{{tree}}\n"
+        ));
+    }
+    let trees = records::run_owned(
+        Command::new("git")
+            .arg("-C")
+            .arg(root)
+            .args(["cat-file", "--batch-check"]),
+        Some(asked.as_bytes()),
+    )
+    .ok()
+    .filter(|output| output.status.success())
+    .map(|output| String::from_utf8_lossy(&output.stdout).into_owned())
+    .ok_or_else(|| unchecked("the trees of the commits in that range"))?;
+    // A present folder answers `<tree id> tree <size>`; a missing one
+    // `<commit>:<path> missing`, which is one value here, "missing", whatever the commit.
+    let tree_ids: Vec<&str> = trees
+        .lines()
+        .map(|line| {
+            if line.ends_with(" missing") {
+                "missing"
+            } else {
+                line.split_whitespace().next().unwrap_or_default()
+            }
+        })
+        .collect();
+    // Fewer answers than questions would leave commits unread; never pass them.
+    if tree_ids.len() != commits.lines().count() * 3 {
+        return Err(unchecked("the trees of every commit in that range"));
+    }
+    let mut by_trees: std::collections::HashMap<(String, String), Vec<String>> =
+        std::collections::HashMap::new();
+    // `missing` is also Git's answer for a folder that exists but whose own tree cannot
+    // be read (corvid-agent's review of #413). `git ls-tree -d` reads only the parent
+    // trees, so it still lists such a folder; one listing per distinct root tree.
+    let mut folders_by_root: std::collections::HashMap<String, String> =
+        std::collections::HashMap::new();
     // Newest first, as `git rev-list` gives them: the change kept both ways, and every
     // commit in the window that holds it, so the refusal can name the one that brought
     // it in, as SpecSync's own reason does, and say how many hold it.
     let mut found: Option<(String, Vec<String>)> = None;
-    for commit in commits.lines().take(HISTORY_LIMIT) {
-        let Some(paths) = git(&[
-            "ls-tree",
-            "-r",
-            "--name-only",
-            commit,
-            "--",
-            ".specsync/changes",
-            ".specsync/archive/changes",
-        ]) else {
-            continue;
-        };
-        // SpecSync's rule counts a change's `state.json` on both sides, not any file: a
-        // leftover such as a `tasks.md` beside an archive is not a second state (#333).
-        let mut open = std::collections::BTreeSet::new();
-        let mut archived = std::collections::BTreeSet::new();
-        for path in paths.lines() {
-            let Some(folder) = path.strip_suffix("/state.json") else {
-                continue;
-            };
-            if let Some(folder) = folder.strip_prefix(".specsync/archive/changes/") {
-                // `<YYYY-MM-DD>-<id>`: the change ID follows the 11-byte date prefix.
-                if !folder.contains('/') && folder.len() > 11 && folder.as_bytes()[10] == b'-' {
-                    archived.insert(folder[11..].to_string());
+    for (index, commit) in commits.lines().enumerate() {
+        let key = (
+            tree_ids[index * 3].to_string(),
+            tree_ids[index * 3 + 1].to_string(),
+        );
+        if key.0 == "missing" || key.1 == "missing" {
+            let root_tree = tree_ids[index * 3 + 2];
+            if root_tree == "missing" {
+                return Err(unchecked(&format!("commit {commit}")));
+            }
+            let folders = match folders_by_root.get(root_tree) {
+                Some(folders) => folders.clone(),
+                None => {
+                    let folders = git(&[
+                        "ls-tree",
+                        "-d",
+                        "--name-only",
+                        commit,
+                        "--",
+                        ".specsync/changes",
+                        ".specsync/archive/changes",
+                    ])
+                    .ok_or_else(|| unchecked(&format!("commit {commit}")))?;
+                    folders_by_root.insert(root_tree.to_string(), folders.clone());
+                    folders
                 }
-            } else if let Some(folder) = folder.strip_prefix(".specsync/changes/")
-                && !folder.contains('/')
+            };
+            let exists = |path: &str| folders.lines().any(|line| line == path);
+            if (key.0 == "missing" && exists(".specsync/changes"))
+                || (key.1 == "missing" && exists(".specsync/archive/changes"))
             {
-                open.insert(folder.to_string());
+                return Err(unchecked(&format!("commit {commit}")));
             }
         }
-        // The change being shipped is left out: its own archive appears only when
-        // SpecSync ships it, and a history is poisoned by another change kept both open
-        // and archived, as a merge of main leaves (#298).
-        let both: Vec<&String> = open
-            .intersection(&archived)
-            .filter(|both| both.as_str() != id)
-            .collect();
+        let both: Vec<String> = match by_trees.get(&key) {
+            // With either folder absent no change can be both open and archived.
+            _ if key.0 == "missing" || key.1 == "missing" => vec![],
+            Some(both) => both.clone(),
+            None => {
+                let both = changes_both_ways(&git, commit, id)
+                    .ok_or_else(|| unchecked(&format!("commit {commit}")))?;
+                by_trees.insert(key, both.clone());
+                both
+            }
+        };
+        let both: Vec<&String> = both.iter().collect();
         match &mut found {
             None => {
                 if let Some(first) = both.first() {
@@ -739,6 +934,58 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
         );
     }
     Ok(())
+}
+
+/// `value` as one POSIX shell word: in single quotes, each `'` written as `'\''`.
+fn shell_quoted(value: &str) -> String {
+    format!("'{}'", value.replace('\'', "'\\''"))
+}
+
+/// The changes other than `id` that `commit` holds both open and archived, by their
+/// `state.json` on each side, as SpecSync counts them (#298, #333); None when Git
+/// cannot list that commit's tree.
+fn changes_both_ways(
+    git: &dyn Fn(&[&str]) -> Option<String>,
+    commit: &str,
+    id: &str,
+) -> Option<Vec<String>> {
+    let paths = git(&[
+        "ls-tree",
+        "-r",
+        "--name-only",
+        commit,
+        "--",
+        ".specsync/changes",
+        ".specsync/archive/changes",
+    ])?;
+    // SpecSync's rule counts a change's `state.json` on both sides, not any file: a
+    // leftover such as a `tasks.md` beside an archive is not a second state (#333).
+    let mut open = std::collections::BTreeSet::new();
+    let mut archived = std::collections::BTreeSet::new();
+    for path in paths.lines() {
+        let Some(folder) = path.strip_suffix("/state.json") else {
+            continue;
+        };
+        if let Some(folder) = folder.strip_prefix(".specsync/archive/changes/") {
+            // `<YYYY-MM-DD>-<id>`: the change ID follows the 11-byte date prefix.
+            if !folder.contains('/') && folder.len() > 11 && folder.as_bytes()[10] == b'-' {
+                archived.insert(folder[11..].to_string());
+            }
+        } else if let Some(folder) = folder.strip_prefix(".specsync/changes/")
+            && !folder.contains('/')
+        {
+            open.insert(folder.to_string());
+        }
+    }
+    // The change being shipped is left out: its own archive appears only when
+    // SpecSync ships it, and a history is poisoned by another change kept both open
+    // and archived, as a merge of main leaves (#298).
+    Some(
+        open.intersection(&archived)
+            .filter(|both| both.as_str() != id)
+            .cloned()
+            .collect(),
+    )
 }
 
 #[cfg(test)]
