@@ -5,7 +5,7 @@ aliases: [closed-pipe-and-help]
 objective: "A closed standard output ends a command quietly with its own exit code, and help works after global options, with -V documented as the top-level version flag (#383's closed pipe, #399)"
 intent_scope: ""
 modules: [cli]
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Approve the scope of closed-pipe-and-help\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # A closed standard output ends a command quietly with its own exit code, and help works after global options, with -V documented as the top-level version flag (#383's closed pipe, #399)
 
@@ -66,4 +66,9 @@ A closed standard output ends a command quietly with its own exit code, and help
     - recorded_by: chough-fixer-t4n
     - native: specsync change approve closed-pipe-and-help
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T16:30:10Z · advance · plan → build · native:approved ^t-11dd30
+  - native_change: closed-pipe-and-help
+  - gate: native:approved
+  - revision: 49217bbc1569c1c0e0f080ab7995cd42fd96492b
   - by: chough-fixer (claude-opus-5-5, hc t4n)

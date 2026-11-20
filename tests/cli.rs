@@ -3874,3 +3874,167 @@ fn an_unreadable_skill_file_is_skipped_as_uninspected() {
         "{after:#}"
     );
 }
+
+/// `chough --root <root> <args>` with standard output a pipe whose reader has already
+/// gone, and with `stderr_closed` standard error too (#383): its exit code and what it
+/// wrote to standard error.
+fn into_closed_pipe(
+    fixture: &Fixture,
+    args: &[&str],
+    stderr_closed: bool,
+) -> (Option<i32>, String) {
+    use std::io::Read;
+    use std::process::Stdio;
+    let mut command = Command::new(env!("CARGO_BIN_EXE_chough"));
+    command
+        .arg("--root")
+        .arg(fixture.root())
+        .args(args)
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped());
+    // The same environment as `Fixture::run`, so the two exit codes compare.
+    let mut paths = vec![fixture.root().join("bin")];
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    command.env("PATH", std::env::join_paths(paths).unwrap());
+    let mut child = command.spawn().unwrap();
+    drop(child.stdout.take());
+    let mut said = String::new();
+    if stderr_closed {
+        drop(child.stderr.take());
+    } else {
+        child
+            .stderr
+            .take()
+            .unwrap()
+            .read_to_string(&mut said)
+            .unwrap();
+    }
+    (child.wait().unwrap().code(), said)
+}
+
+/// #383, TC-cli-a-closed-pipe-ends-a-command-with-its-own-code: with its reader gone, each
+/// command stops printing and exits with the code it exits with when its output is read,
+/// with no panic and no `Broken pipe` message, through the print macros and the locked
+/// writers alike (`change ready`).
+#[test]
+fn a_command_whose_reader_has_gone_exits_with_its_own_code() {
+    let fixture = Fixture::new();
+    fixture.git(&["init", "-q", "-b", "main"]);
+    fixture.init();
+    fixture.git(&["add", "-A"]);
+    fixture.git(&[
+        "-c",
+        "user.name=SYNTHETIC",
+        "-c",
+        "user.email=synthetic@example.invalid",
+        "commit",
+        "-q",
+        "-m",
+        "init",
+    ]);
+    let head = Command::new("git")
+        .args(["rev-parse", "HEAD"])
+        .current_dir(fixture.root())
+        .output()
+        .unwrap();
+    fixture.write(
+        ".specsync/changes/probe/state.json",
+        &format!(
+            "{{\"state\":\"draft\",\"base_commit\":\"{}\",\"affected_specs\":[],\"affected_paths\":[],\"no_spec_change\":true}}\n",
+            String::from_utf8_lossy(&head.stdout).trim()
+        ),
+    );
+    let commands: [&[&str]; 11] = [
+        &["next"],
+        &["status"],
+        &["context"],
+        &["bug", "list", "--all"],
+        &["history", "show"],
+        &["doctor"],
+        &["session", "list"],
+        &["timing"],
+        &["checkpoint"],
+        &["cases", "list"],
+        &["change", "ready", "probe"],
+    ];
+    for args in commands {
+        let read = fixture.run(args).status.code();
+        let (code, said) = into_closed_pipe(&fixture, args, false);
+        assert_eq!(code, read, "{args:?}: {said}");
+        assert!(
+            !said.contains("panicked") && !said.contains("Broken pipe"),
+            "{args:?}: {said}"
+        );
+    }
+}
+
+/// #383, TC-cli-a-write-into-a-closed-pipe-saves-and-exits-0: `checkpoint --decision` with
+/// its reader gone saves the decision and exits 0.
+#[test]
+fn a_write_into_a_closed_pipe_saves_and_exits_0() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let (code, said) = into_closed_pipe(
+        &fixture,
+        &[
+            "checkpoint",
+            "--decision",
+            "SYNTHETIC decision through a closed pipe",
+        ],
+        false,
+    );
+    assert_eq!(code, Some(0), "{said}");
+    assert!(
+        fixture
+            .read(&fixture.session_file())
+            .contains("SYNTHETIC decision through a closed pipe")
+    );
+}
+
+/// #383, TC-cli-a-refusal-with-both-streams-closed-exits-1: a refusal with standard
+/// output and standard error both closed exits as it does when they are read, never 101.
+#[test]
+fn a_refusal_with_both_streams_closed_exits_as_it_would() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let args = ["bug", "show", "2026-01-01-no-such-bug"];
+    let read = fixture.run(&args).status.code();
+    assert_eq!(read, Some(1));
+    let (code, _) = into_closed_pipe(&fixture, &args, true);
+    assert_eq!(code, read);
+}
+
+/// #399, TC-cli-help-after-the-global-options: `help --help` and `help -h` after the
+/// global options print the top-level help and exit 0, as `chough help --help` does.
+#[test]
+fn help_after_the_global_options_prints_the_top_level_help() {
+    let fixture = Fixture::new();
+    let run = |args: &[&str]| {
+        Command::new(env!("CARGO_BIN_EXE_chough"))
+            .args(args)
+            .current_dir(fixture.root())
+            .output()
+            .unwrap()
+    };
+    let top = run(&["help", "--help"]);
+    assert!(top.status.success());
+    let forms: [&[&str]; 5] = [
+        &["--root", ".", "help", "--help"],
+        &["--root=.", "help", "-h"],
+        &["--redact", "help", "--help"],
+        &["--session", "x", "help", "--help"],
+        &["--root", ".", "--redact", "help", "-h"],
+    ];
+    for args in forms {
+        let output = run(args);
+        assert!(
+            output.status.success(),
+            "{args:?}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert_eq!(output.stdout, top.stdout, "{args:?}");
+    }
+}
