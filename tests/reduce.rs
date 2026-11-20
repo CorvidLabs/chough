@@ -345,9 +345,20 @@ fn next_at_done_names_what_keeps_the_session_open() {
         "{next:#}"
     );
 
-    // Neither: the session archived itself, and next names a new session.
+    // Neither: the session archived itself. While its folder still holds files, next
+    // names finishing the archive (REQ-cli-021, #371); once the files are committed and
+    // `chough doctor --fix` has removed the folder, it names a new session.
     let fixture = project();
     fixture.ok(&["stage", "advance", "--json"]);
+    let next = fixture.ok(&["next", "--json"]);
+    assert!(
+        next["next_valid_action"]["action"]
+            .as_str()
+            .is_some_and(|action| action.starts_with("Finish the archive of session")),
+        "{next:#}"
+    );
+    fixture.commit("the archive");
+    let _ = fixture.run(&["doctor", "--fix"]);
     let next = fixture.ok(&["next", "--json"]);
     assert!(
         next["next_valid_action"]["command"]

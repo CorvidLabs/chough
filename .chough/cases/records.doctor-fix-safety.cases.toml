@@ -1,0 +1,38 @@
+profile = "chough-testing/1"
+module = "records"
+
+[[case]]
+id = "TC-records-a-front-matter-conflict-is-named"
+title = "A Git conflict in a record's front matter gives a conflict_markers finding for each marker line (#374)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-records-001"]
+paths = ["src/records.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::a_front_matter_conflict_is_named_and_resolved_not_shelved passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "a_front_matter_conflict_is_named_and_resolved_not_shelved"
+
+[[case]]
+id = "TC-records-the-spec-walk-follows-no-link-and-is-bounded"
+title = "The spec walk follows no link out of or back into the project, finishes, and names its bound when a specs folder exceeds it (#402)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-records-014"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::the_spec_walk_follows_no_link_and_is_bounded passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "the_spec_walk_follows_no_link_and_is_bounded"
