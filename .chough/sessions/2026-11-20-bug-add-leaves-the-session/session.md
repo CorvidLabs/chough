@@ -24,6 +24,13 @@ observations:
   - 2026-11-20-tc-cli-a-bug-of-an-archived-or-missing-session-is-no-ones
   - 2026-11-20-tc-history-the-story-names-a-bug-filed-in-the-session
   - 2026-11-20-tc-cli-bug-add-joins-the-active-session
+  - 2026-11-20-tc-cli-bug-add-leaves-the-session-record-503b6b
+  - 2026-11-20-tc-cli-bug-adds-on-two-branches-merge-cleanly-eca047
+  - 2026-11-20-tc-cli-bug-add-files-a-bug-beside-a-full-checkpoint-04e584
+  - 2026-11-20-tc-cli-an-update-leaves-a-filed-bug-unjoined-7a1ed6
+  - 2026-11-20-tc-cli-a-bug-of-an-archived-or-missing-session-is-no-ones-b63f9e
+  - 2026-11-20-tc-history-the-story-names-a-bug-filed-in-the-session-e3fdb8
+  - 2026-11-20-tc-cli-bug-add-joins-the-active-session-0df608
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -51,6 +58,13 @@ bug add records the session on the new bug and never writes the session, so para
 - [Ran cargo test --locked --test bugs -- --exact a_bug_of_an_archived_or_missing_session_is_listed_nowhere_and_raises_nothing for TC-cli-a-bug-of-an-archived-or-missing-session-is-no-ones: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-bug-of-an-archived-or-missing-session-is-no-ones.md)
 - [Ran cargo test --locked --test bugs -- --exact the_story_names_a_bug_filed_in_the_session for TC-history-the-story-names-a-bug-filed-in-the-session: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-history-the-story-names-a-bug-filed-in-the-session.md)
 - [Ran cargo test --locked --test bugs -- --exact a_blocking_bug_added_in_a_session_stops_it for TC-cli-bug-add-joins-the-active-session: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-bug-add-joins-the-active-session.md)
+- [Ran cargo test --locked --test bugs -- --exact bug_add_in_a_session_records_the_session_and_leaves_its_record for TC-cli-bug-add-leaves-the-session-record: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-bug-add-leaves-the-session-record-503b6b.md)
+- [Ran cargo test --locked --test bugs -- --exact bug_adds_on_two_branches_in_one_session_merge_cleanly for TC-cli-bug-adds-on-two-branches-merge-cleanly: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-bug-adds-on-two-branches-merge-cleanly-eca047.md)
+- [Ran cargo test --locked --test bugs -- --exact bug_add_files_the_bug_in_a_session_whose_checkpoint_holds_200_bugs for TC-cli-bug-add-files-a-bug-beside-a-full-checkpoint: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-bug-add-files-a-bug-beside-a-full-checkpoint-04e584.md)
+- [Ran cargo test --locked --test bugs -- --exact an_update_naming_an_active_entry_leaves_a_filed_bug_unjoined for TC-cli-an-update-leaves-a-filed-bug-unjoined: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-an-update-leaves-a-filed-bug-unjoined-7a1ed6.md)
+- [Ran cargo test --locked --test bugs -- --exact a_bug_of_an_archived_or_missing_session_is_listed_nowhere_and_raises_nothing for TC-cli-a-bug-of-an-archived-or-missing-session-is-no-ones: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-bug-of-an-archived-or-missing-session-is-no-ones-b63f9e.md)
+- [Ran cargo test --locked --test bugs -- --exact the_story_names_a_bug_filed_in_the_session for TC-history-the-story-names-a-bug-filed-in-the-session: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-history-the-story-names-a-bug-filed-in-the-session-e3fdb8.md)
+- [Ran cargo test --locked --test bugs -- --exact a_blocking_bug_added_in_a_session_stops_it for TC-cli-bug-add-joins-the-active-session: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-bug-add-joins-the-active-session-0df608.md)
 
 ## Open threads
 
