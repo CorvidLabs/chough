@@ -1283,7 +1283,7 @@ nothing and writes nothing under `.chough/`.
 reads the change and prints one report. It exits 0 when nothing is missing and 1
 when a finding remains. An unknown change exits 1 and names `chough change status`.
 It writes nothing: every tracked file stays as it was, and it does not touch
-`.specsync/hashes.json`. Each finding names one exact command that fixes it.
+`.specsync/hashes.json`, which SpecSync 6.4.0 keeps outside the project. Each finding names one exact command that fixes it.
 
 - Whatever the definition approval would refuse, asked of SpecSync itself: each check
   that SpecSync 6.4.0's read-only dry run of the approval (its `--dry-run` with
