@@ -1,0 +1,22 @@
+profile = "chough-testing/1"
+module = "history"
+
+# GitHub #367 (in part): correct names a given entry only as REQ-records-006 allows (L2, control-and-echo).
+
+[[case]]
+id = "TC-history-correct-names-what-a-given-entry-holds"
+title = "correct with an entry holding a token or an escape sequence is refused with nothing written, naming what it holds, and the output holds neither"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-18", "LIFE-7"]
+requirements = ["REQ-history-015"]
+paths = ["src/history.rs", "src/sessions.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/history.rs::correct_names_what_a_given_entry_holds_and_never_echoes_it passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "correct_names_what_a_given_entry_holds_and_never_echoes_it"
