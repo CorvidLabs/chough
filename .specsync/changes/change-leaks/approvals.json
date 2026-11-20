@@ -1,4 +1,62 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795187357,
+      "digest": "bbe438562e4a5f0bbccdfb7c7a8936a7a8af7c0a78365b35e638302f8b08617e",
+      "note": "Approved by 0xLeif at the Chough gate \"Approve the scope of change-leaks\": \"A: refuse, --redact (Recommended); 1: open changes (Recommended)\" (Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 15:08Z, relayed by hc t4c; the questions as shown: 'Chough #412: a change's description, rationale and answers aren't leak-checked today ... When one holds a leak, what should happen?' and 'Chough #412: what should doctor --leaks also scan?' (.specsync/changes/ but not each change's deltas/, and --fix --redact skips those findings); on change-leaks at 01b7952d with choices (A) and (1)). Relayed and recorded by chough-fixer-t4n at 2026-11-20T15:09:16Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "change-leaks",
+        "title": "Change leaks",
+        "description": "change leaks",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.change-leaks.cases.toml",
+          ".chough/cases/records.change-leaks.cases.toml",
+          "changelog.d/2026-11-20-change-leaks.md",
+          "docs/cli.md",
+          "src/change.rs",
+          "src/doctor.rs",
+          "src/evidence.rs",
+          "src/leaks.rs",
+          "tests/change.rs",
+          "tests/leaks.rs",
+          "tests/output_safety.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A description, a --rationale and an answer holding a leak are refused by chough change new and chough change answer before SpecSync runs, naming the argument and the kind, with nothing under .specsync/ changed; with --redact the change's records hold <redacted:<kind>> and one line says how many were replaced; a control character is refused under --redact too (#412). chough doctor --leaks also scans the open changes under .specsync/changes/ and reports a leak there with the file, line and kind, which --fix --redact skips naming the way out; .specsync/archive/ is not scanned. change ship --close-gate, change new's description, change answer's answer and an explicit evidence ID are named by what they hold in any error or output (rest of #367)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "The issues set the scope: #412 and the sites of #367 that L2 (#418, merged) left to it: change.rs's --close-gate echoes, change new's description and change answer's answer, and evidence.rs's explicit evidence ID. Choices (A) and (1) are the lead's recommended ones and wait for Leif's word; (A) adds a refusal, so the run on the real repositories (rule 3) is in testing.md. LIFE-26: committed records never leak. #413's ID refusals stay as approved, with or without --redact. SpecSync's archive is its authenticated history and is not scanned. Based on main 7bf110dc; REQ-records-006 is built on L2's merged text. No new dependency. Failing tests first.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "b82c4798da7554e6141f6b71fbff8b19ea1a4155416aa01086e3ac334a85659e",
+        "records": "b0c9d9064282fc137afb3d06f86f4be4d95c7a507cdfff031130d52c8f819208"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-057": "6c0735d95b91e39705f8988012812284b3fcb17466eb96671c971d46dc968189",
+        "records: REQUIREMENT REQ-records-006": "e79974d835bebbfe65fcbec274dcc19d0af061366fc36e963c62c484c7e79ce8"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "A: refuse, --redact (Recommended); 1: open changes (Recommended)",
+        "where": "Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 15:08Z, relayed by hc t4c; the questions as shown: 'Chough #412: a change's description, rationale and answers aren't leak-checked today ... When one holds a leak, what should happen?' and 'Chough #412: what should doctor --leaks also scan?' (.specsync/changes/ but not each change's deltas/, and --fix --redact skips those findings); on change-leaks at 01b7952d with choices (A) and (1)",
+        "recorded_by": "chough-fixer-t4n"
+      }
+    }
+  ],
   "reopenings": []
 }

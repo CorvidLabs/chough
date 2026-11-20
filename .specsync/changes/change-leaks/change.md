@@ -1,6 +1,6 @@
 ---
 id: change-leaks
-state: draft
+state: approved
 type: bug_fix
 base_commit: 7bf110dcca70bdd3565007086aee40a286f40eff
 ---
