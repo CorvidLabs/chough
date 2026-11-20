@@ -812,7 +812,15 @@ fn file_state(root: &Path, base: &str, name: &str, content: &str) -> Result<&'st
     // (#262), and reads as `edited`: it is not Chough's copy, so nothing reports it as
     // outdated and nothing overwrites it.
     let Ok(file) = crate::records::open_regular(&path) else {
-        return Ok("edited");
+        // #373: a regular file that cannot be opened, such as one without read
+        // permission, cannot be inspected and is skipped, never taken for an edit.
+        return Ok(
+            if fs::symlink_metadata(&path).is_ok_and(|meta| meta.is_file()) {
+                "uninspected"
+            } else {
+                "edited"
+            },
+        );
     };
     // #361 (62-F8): a skill file is small. One over the bound is not read whole on every
     // `next` and `doctor`; it cannot be Chough's copy, so it reads as `edited`.
@@ -832,7 +840,13 @@ fn file_state(root: &Path, base: &str, name: &str, content: &str) -> Result<&'st
     if bytes == content.as_bytes() {
         return Ok("current");
     }
-    let digest = digest_bytes(&bytes);
+    // #373: a copy whose only difference is CRLF line breaks reads as the bundle file it
+    // equals once each CRLF is read as LF; any other byte difference stays an edit.
+    let lf = lf_of(&bytes);
+    if lf.as_deref() == Some(content.as_bytes()) {
+        return Ok("current");
+    }
+    let digest = digest_bytes(lf.as_deref().unwrap_or(&bytes));
     Ok(
         if KNOWN_PREVIOUS
             .iter()
@@ -845,13 +859,56 @@ fn file_state(root: &Path, base: &str, name: &str, content: &str) -> Result<&'st
     )
 }
 
+/// `bytes` with each CRLF read as LF, or None when they hold no CRLF (#373).
+fn lf_of(bytes: &[u8]) -> Option<Vec<u8>> {
+    if !bytes.windows(2).any(|pair| pair == b"\r\n") {
+        return None;
+    }
+    let mut out = Vec::with_capacity(bytes.len());
+    let mut at = 0;
+    while at < bytes.len() {
+        if bytes[at] == b'\r' && bytes.get(at + 1) == Some(&b'\n') {
+            at += 1;
+            continue;
+        }
+        out.push(bytes[at]);
+        at += 1;
+    }
+    Some(out)
+}
+
+/// Why a host's skill directory cannot be inspected, relative to the project and never
+/// naming an absolute path (#403), or None when it can be.
+fn uninspected(root: &Path, base: &str) -> Option<String> {
+    if local_path(root, base).is_ok() {
+        return None;
+    }
+    let mut reached = String::new();
+    for part in base.split('/') {
+        if !reached.is_empty() {
+            reached.push('/');
+        }
+        reached.push_str(part);
+        if fs::symlink_metadata(root.join(&reached)).is_ok_and(|meta| meta.file_type().is_symlink())
+        {
+            return Some(format!(
+                "{reached} is a symbolic link, which Chough never reads or writes through"
+            ));
+        }
+    }
+    Some("it cannot be inspected".to_string())
+}
+
 fn installed_hosts(root: &Path, requested: Vec<String>) -> Result<Vec<String>> {
     if !requested.is_empty() {
         return distinct(&requested);
     }
     let mut hosts = vec![];
     for (host, _) in HOSTS {
-        if local_path(root, &directory(host)?)?.is_dir() {
+        let base = directory(host)?;
+        // #403: a directory that cannot be inspected, such as one reached through a
+        // symbolic link, is kept, so the report names it as uninspected and goes on.
+        if uninspected(root, &base).is_some() || local_path(root, &base)?.is_dir() {
             hosts.push((*host).to_string());
         }
     }
@@ -954,20 +1011,46 @@ pub(super) fn known_outdated(root: &Path) -> SkillScan {
     scan
 }
 
-fn report(root: &Path, hosts: &[String], update: bool) -> Result<Value> {
+fn report(root: &Path, hosts: &[String], update: bool, named: bool) -> Result<Value> {
     let mut reports = vec![];
     for host in hosts {
         let base = directory(host)?;
+        // #403: a directory that cannot be inspected is skipped and reported, and every
+        // other host goes on; given --host for it, the command refuses naming it.
+        if let Some(why) = uninspected(root, &base) {
+            ensure!(
+                !named,
+                "refused: the {host} skill directory {base} cannot be inspected: {why}; nothing was written"
+            );
+            reports.push(json!({"host": host, "directory": base, "uninspected": why, "files": []}));
+            continue;
+        }
         let mut files = vec![];
         for (name, content) in BUNDLE {
+            let relative = format!("{base}/{name}");
             let before = file_state(root, &base, name, content)?;
             let action = match (update, before) {
+                // #386: another run may write the file first; it then counts as added when
+                // it holds the bundle's bytes and is preserved as an edit otherwise.
                 (true, "missing") => {
-                    ensure!(write_new(root, &format!("{base}/{name}"), content)?);
-                    "added"
+                    if write_new(root, &relative, content)?
+                        || file_state(root, &base, name, content)? == "current"
+                    {
+                        "added"
+                    } else {
+                        "preserved-edit"
+                    }
                 }
                 (true, "known-outdated") => {
-                    write_replace(root, &format!("{base}/{name}"), content)?;
+                    // #373: a copy with CRLF line breaks is refreshed with them.
+                    let crlf = fs::read(local_path(root, &relative)?)
+                        .is_ok_and(|bytes| lf_of(&bytes).is_some());
+                    let fresh = if crlf {
+                        content.replace('\n', "\r\n")
+                    } else {
+                        content.to_string()
+                    };
+                    write_replace(root, &relative, &fresh)?;
                     "updated"
                 }
                 (true, "edited") => "preserved-edit",
@@ -995,16 +1078,18 @@ fn report(root: &Path, hosts: &[String], update: bool) -> Result<Value> {
 pub(super) fn run(root: &Path, command: SkillCommand) -> Result<()> {
     match command {
         SkillCommand::Status { hosts } => {
+            let named = !hosts.is_empty();
             let hosts = installed_hosts(root, hosts)?;
-            print_json(&report(root, &hosts, false)?)
+            print_json(&report(root, &hosts, false, named)?)
         }
         SkillCommand::Update { hosts } => {
+            let named = !hosts.is_empty();
             let hosts = installed_hosts(root, hosts)?;
             ensure!(
                 !hosts.is_empty(),
                 "no installed skill found; run `chough init --host <host>`"
             );
-            print_json(&report(root, &hosts, true)?)
+            print_json(&report(root, &hosts, true, named)?)
         }
         SkillCommand::RemoveLegacy { hosts } => print_json(&remove_legacy(root, &hosts)?),
     }

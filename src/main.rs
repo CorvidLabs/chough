@@ -473,6 +473,10 @@ fn run() -> Result<()> {
     Ok(())
 }
 
+/// `chough init --objective` while a session is open (REQ-cli-001).
+const OPEN_SESSION_REFUSAL: &str =
+    "the project already has an open session; run `chough session new <key>` for new work";
+
 fn init(
     root: &Path,
     objective: Option<String>,
@@ -502,9 +506,28 @@ fn init(
         ensure!(!objective.trim().is_empty(), "objective must not be blank");
         ensure!(
             sessions::open_ids(root)?.is_empty(),
-            "the project already has an open session; run `chough session new <key>` for new work"
+            "{OPEN_SESSION_REFUSAL}"
         );
         let key = session_key.unwrap_or_else(|| identity::slug(&objective, "session", 64));
+        // REQ-cli-001 (#386): the open-session check and the create are one step under the
+        // project's writer lock, held to the end of the command, so of several inits at
+        // once one creates the session and each other refuses as one after it would; none
+        // draws a second session under a suffixed key. Taking the lock writes
+        // `.chough/local/`, so the session's own refusals come first, in the order
+        // `sessions::create` makes them, and a refused init still writes nothing.
+        sessions::ensure_key(&key)?;
+        leaks::check_name(leaks::Local::current(), "key", &key)?;
+        let mut draft =
+            checkpoint::new_checkpoint(objective.clone(), intent_scope.clone(), modules.clone());
+        draft.meta.id = identity::dated_name(&identity::utc_date(records::now()?), &key, "session");
+        draft.meta.aliases = vec![key.clone()];
+        stage::log_start(root, &mut draft, &objective)?;
+        checkpoint::render_counted(&draft)?;
+        checkpoint::lock_checkpoint(root)?;
+        ensure!(
+            sessions::open_ids(root)?.is_empty(),
+            "{OPEN_SESSION_REFUSAL}"
+        );
         let id = sessions::create(root, &key, objective, intent_scope, modules)?;
         created.push(sessions::session_file(&id));
     }
@@ -527,7 +550,29 @@ fn init(
     // REQ-cli-043: with the librarian on, the knowledge directory exists from the start.
     let library = library::create_at_init(root);
     // REQ-cli-047: the merge attributes and drivers, so two branches merge clean.
-    let merge = library::merge_at_init(root);
+    let mut merge = library::merge_at_init(root);
+    // REQ-cli-001 (#386): several inits at once contend for Git's config lock. A driver
+    // another run set meanwhile is current; one still missing is set again, a few times
+    // with a short wait, before a refusal is reported.
+    if merge["drivers"]["status"] == "refused" {
+        for attempt in 1..=5u64 {
+            let missing = library::missing_merge_drivers(root);
+            if missing.is_empty() {
+                merge["drivers"] = json!({"status": "current"});
+                break;
+            }
+            match library::set_merge_drivers(root, &missing) {
+                Ok(()) => {
+                    merge["drivers"] = json!({"status": "set", "set": missing});
+                    break;
+                }
+                Err(error) if attempt == 5 => {
+                    merge["drivers"] = json!({"status": "refused", "reason": format!("{error:#}")});
+                }
+                Err(_) => std::thread::sleep(std::time::Duration::from_millis(25 * attempt)),
+            }
+        }
+    }
     let mut output = json!({
         "schema_version": 1,
         "created": created,

@@ -513,7 +513,6 @@ fn recognition_requires_the_filename_and_exact_unnormalized_bytes() {
     for (name, bytes) in [
         ("references/accept.md", known.clone()),
         ("references/build.md", one_byte),
-        ("references/build.md", crlf),
     ] {
         let temporary = TempDir::new().unwrap();
         seed(temporary.path(), HOSTS[0].1, &corpus.current);
@@ -540,6 +539,35 @@ fn recognition_requires_the_filename_and_exact_unnormalized_bytes() {
         );
         assert_eq!(snapshot(temporary.path()), before);
     }
+    // REQ-cli-016 (#373): a copy whose only difference is CRLF line breaks reads as the
+    // bundle file it equals, here a known earlier release, and `skill update` refreshes
+    // it with CRLF line breaks.
+    let temporary = TempDir::new().unwrap();
+    seed(temporary.path(), HOSTS[0].1, &corpus.current);
+    let path = temporary
+        .path()
+        .join(HOSTS[0].1)
+        .join("references/build.md");
+    write_bytes(&path, &crlf);
+    let status = cli(
+        &corpus,
+        temporary.path(),
+        &["skill", "status", "--host", "openai"],
+    );
+    assert_eq!(
+        row(&status["hosts"][0]["files"], "references/build.md")["state"],
+        "known-outdated"
+    );
+    cli(
+        &corpus,
+        temporary.path(),
+        &["skill", "update", "--host", "openai"],
+    );
+    let current = String::from_utf8(corpus.current["references/build.md"].clone())
+        .unwrap()
+        .replace('\n', "\r\n")
+        .into_bytes();
+    assert_eq!(fs::read(&path).unwrap(), current);
 }
 
 #[test]
