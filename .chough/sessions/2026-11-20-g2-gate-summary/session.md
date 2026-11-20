@@ -16,7 +16,13 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-20-tc-cli-g2-evidence-with-no-case-counts
+  - 2026-11-20-tc-cli-g2-uncommitted-work-in-the-diff-line
+  - 2026-11-20-tc-cli-g2-a-session-before-the-first-commit
+  - 2026-11-20-tc-cli-g2-an-unattended-done-needs-a-reason
+  - 2026-11-20-tc-cli-g2-a-move-past-plan-says-whether-a-human-decided
+  - 2026-11-20-tc-cli-g2-the-fix-names-the-journal-post
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -38,6 +44,13 @@ The gate summary counts evidence without a case, shows uncommitted work in its d
 - 0xLeif decided "Re-approval of fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason with its history delta narrowed (native approval)": "A: narrow it, keep B (Recommended)" (Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 17:04Z, to: 'Chough G2, a correction (t4b's mistake, caught before building). Its approved change to REQ-history-012 says an untracked journal post holds up doctor --fix's finish. That reverses your option B from Nov 19 (D1: an untracked or ignored journal post does NOT hold the finish), which is on main. Fix by one send-back of the history delta?' The cli delta and the rest of the scope stand on his 'Approve (Recommended)' of about 16:04Z. Recorded by t4c); recorded by t4c; a relayed claim, not authenticated; ran specsync change approve fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test gates -- --exact evidence_with_no_case_counts_in_the_tests_line for TC-cli-g2-evidence-with-no-case-counts: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-evidence-with-no-case-counts.md)
+- [Ran cargo test --locked --test gates -- --exact uncommitted_work_is_shown_by_the_diff_line for TC-cli-g2-uncommitted-work-in-the-diff-line: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-uncommitted-work-in-the-diff-line.md)
+- [Ran cargo test --locked --test gates -- --exact a_session_started_before_the_first_commit_counts_from_it for TC-cli-g2-a-session-before-the-first-commit: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-a-session-before-the-first-commit.md)
+- [Ran cargo test --locked --test stages -- --exact without_specsync_a_done_across_plan_and_accept_needs_a_reason for TC-cli-g2-an-unattended-done-needs-a-reason: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-an-unattended-done-needs-a-reason.md)
+- [Ran cargo test --locked --test stages -- --exact without_specsync_a_move_past_plan_says_whether_a_human_decided for TC-cli-g2-a-move-past-plan-says-whether-a-human-decided: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-a-move-past-plan-says-whether-a-human-decided.md)
+- [Ran cargo test --locked --test doctor -- --exact the_unfinished_archive_fix_names_the_journal_post for TC-cli-g2-the-fix-names-the-journal-post: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-the-fix-names-the-journal-post.md)
 
 ## Open threads
 
