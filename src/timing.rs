@@ -1863,7 +1863,7 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
     if args.json {
         print_json(&report)?;
     } else {
-        // REQ-reporting-001 (#366): text from a record, such as a stage move's reason, is
+        // REQ-reporting-001 (#366): text from a record, such as a gate's name, is
         // printed as REQ-records-016 says, with each control character escaped.
         print!(
             "{}",

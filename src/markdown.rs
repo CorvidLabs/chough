@@ -576,19 +576,22 @@ impl Record {
 
     /// Refuse a control character in what this record adds over `stored`
     /// (REQ-records-016): in every value without `stored`, and with it only in a value it
-    /// does not already hold, and in the body only on a line it does not already hold, so
-    /// text written by hand or by an earlier release never blocks a save.
+    /// does not already hold anywhere in its front matter, compared by value so a list
+    /// that shifted keeps its items, and in the body only on a line it does not already
+    /// hold, so text written by hand or by an earlier release never blocks a save.
     pub(super) fn check_controls(&self, stored: Option<&Record>) -> Result<()> {
         if let Some(field) = &self.folded_tab {
             crate::leaks::check_controls(field, "\t", false)?;
         }
-        let kept: std::collections::BTreeMap<String, String> = stored
+        let kept: std::collections::BTreeSet<String> = stored
             .map(Record::fields)
             .unwrap_or_default()
             .into_iter()
+            .filter(|(field, _)| field != "body")
+            .map(|(_, value)| value)
             .collect();
         for (field, value) in self.fields() {
-            if kept.get(&field) == Some(&value) {
+            if field != "body" && kept.contains(&value) {
                 continue;
             }
             match stored {
@@ -1137,6 +1140,37 @@ fn section_span(body: &str, heading: &str) -> Option<(usize, usize)> {
 
 #[cfg(test)]
 mod tests {
+    /// REQ-records-016 (fable-lead's read of #418): a value the stored record holds is
+    /// compared by value, so after a list shifts, as `bug update --unlink` shifts one, an
+    /// item an earlier release wrote with a control character does not refuse the save,
+    /// while a new item holding one still does.
+    #[test]
+    fn a_stored_item_that_moved_in_a_list_is_not_refused() {
+        let mut stored = super::Record::new("");
+        stored
+            .set(
+                "notes",
+                super::Value::List(vec!["first".into(), "kept \u{1b}[31m note".into()]),
+            )
+            .unwrap();
+        let mut saved = stored.clone();
+        saved
+            .set(
+                "notes",
+                super::Value::List(vec!["kept \u{1b}[31m note".into()]),
+            )
+            .unwrap();
+        saved.check_controls(Some(&stored)).unwrap();
+        saved
+            .set(
+                "notes",
+                super::Value::List(vec!["kept \u{1b}[31m note".into(), "new \u{7} one".into()]),
+            )
+            .unwrap();
+        let refused = saved.check_controls(Some(&stored)).unwrap_err().to_string();
+        assert!(refused.contains("U+0007"), "{refused}");
+    }
+
     use super::*;
 
     const SESSION: &str = "---\nkind: session\nid: 2026-11-10-alpha\naliases: [alpha, BUG-0012]\nobjective: \"Ship: alpha\"\nwaiting_on_human:\n  - gate: Scope approval\n    holds: plan\n    drives: approve\ncriteria:\n  - DRIVE-24\n  - DRIVE-25\n---\n# Ship alpha\n\n## Goal\n\nA person's words.\n\n## Timeline\n\n- 2026-11-10 entry one ^t-aaaaaa\n\n## Notes\n\nKeep me.\n";
