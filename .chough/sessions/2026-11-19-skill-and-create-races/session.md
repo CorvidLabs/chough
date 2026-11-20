@@ -45,6 +45,16 @@ observations:
   - 2026-11-20-tc-history-doctor-names-a-special-file-without-opening-it-c1514f
   - 2026-11-20-tc-history-doctor-skips-ignored-and-reports-once-2fd9c3
   - 2026-11-20-tc-cli-release-name-byte-matching
+  - 2026-11-20-tc-cli-a-crlf-skill-copy-reads-as-its-lf-state-88f07d
+  - 2026-11-20-tc-cli-a-symlinked-host-is-skipped-and-the-rest-updated-16ac1e
+  - 2026-11-20-tc-cli-a-skill-file-it-cannot-write-is-refused-plainly-1145ae
+  - 2026-11-20-tc-cli-an-unreadable-skill-file-is-skipped-as-uninspected-b7793f
+  - 2026-11-20-tc-cli-parallel-skill-updates-each-succeed-54b621
+  - 2026-11-20-tc-cli-parallel-inits-each-succeed-or-refuse-plainly-a11c2d
+  - 2026-11-20-tc-history-doctor-reads-uncommitted-records-375f68
+  - 2026-11-20-tc-history-doctor-names-a-special-file-without-opening-it-65a905
+  - 2026-11-20-tc-history-doctor-skips-ignored-and-reports-once-2126cf
+  - 2026-11-20-tc-cli-release-name-byte-matching-6874f7
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -95,6 +105,16 @@ Skill and create-new batch: skill update writes CRLF copies and names a file it 
 - [Ran cargo test --locked --test doctor -- --exact doctor_names_a_special_file_without_opening_it for TC-history-doctor-names-a-special-file-without-opening-it: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-history-doctor-names-a-special-file-without-opening-it-c1514f.md)
 - [Ran cargo test --locked --test doctor -- --exact doctor_skips_ignored_files_and_reports_a_committed_record_once for TC-history-doctor-skips-ignored-and-reports-once: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-history-doctor-skips-ignored-and-reports-once-2fd9c3.md)
 - [Ran cargo test --locked --test skill_releases -- --exact recognition_requires_the_filename_and_exact_unnormalized_bytes for TC-cli-release-name-byte-matching: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-release-name-byte-matching.md)
+- [Ran cargo test --locked --test cli -- --exact a_crlf_skill_copy_reads_as_its_lf_state_and_is_refreshed_with_crlf for TC-cli-a-crlf-skill-copy-reads-as-its-lf-state: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-crlf-skill-copy-reads-as-its-lf-state-88f07d.md)
+- [Ran cargo test --locked --test cli -- --exact a_symlinked_host_is_skipped_and_the_rest_updated for TC-cli-a-symlinked-host-is-skipped-and-the-rest-updated: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-symlinked-host-is-skipped-and-the-rest-updated-16ac1e.md)
+- [Ran cargo test --locked --test cli -- --exact a_skill_file_it_cannot_write_is_refused_plainly for TC-cli-a-skill-file-it-cannot-write-is-refused-plainly: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-skill-file-it-cannot-write-is-refused-plainly-1145ae.md)
+- [Ran cargo test --locked --test cli -- --exact an_unreadable_skill_file_is_skipped_as_uninspected for TC-cli-an-unreadable-skill-file-is-skipped-as-uninspected: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-an-unreadable-skill-file-is-skipped-as-uninspected-b7793f.md)
+- [Ran cargo test --locked --test parallel -- --exact parallel_skill_updates_each_succeed for TC-cli-parallel-skill-updates-each-succeed: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-parallel-skill-updates-each-succeed-54b621.md)
+- [Ran cargo test --locked --test parallel -- --exact parallel_inits_each_succeed_or_refuse_plainly for TC-cli-parallel-inits-each-succeed-or-refuse-plainly: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-parallel-inits-each-succeed-or-refuse-plainly-a11c2d.md)
+- [Ran cargo test --locked --test doctor -- --exact doctor_reads_uncommitted_records for TC-history-doctor-reads-uncommitted-records: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-history-doctor-reads-uncommitted-records-375f68.md)
+- [Ran cargo test --locked --test doctor -- --exact doctor_names_a_special_file_without_opening_it for TC-history-doctor-names-a-special-file-without-opening-it: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-history-doctor-names-a-special-file-without-opening-it-65a905.md)
+- [Ran cargo test --locked --test doctor -- --exact doctor_skips_ignored_files_and_reports_a_committed_record_once for TC-history-doctor-skips-ignored-and-reports-once: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-history-doctor-skips-ignored-and-reports-once-2126cf.md)
+- [Ran cargo test --locked --test skill_releases -- --exact recognition_requires_the_filename_and_exact_unnormalized_bytes for TC-cli-release-name-byte-matching: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-release-name-byte-matching-6874f7.md)
 
 ## Open threads
 
