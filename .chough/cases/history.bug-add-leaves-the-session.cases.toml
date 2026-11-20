@@ -1,0 +1,22 @@
+profile = "chough-testing/1"
+module = "history"
+
+# GitHub #382: the story names the bugs filed in the session (R2a, bug-add-leaves-the-session).
+
+[[case]]
+id = "TC-history-the-story-names-a-bug-filed-in-the-session"
+title = "A bug filed in a session that no checkpoint list holds is named under the archived story's ## Bugs"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::the_story_names_a_bug_filed_in_the_session passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "the_story_names_a_bug_filed_in_the_session"

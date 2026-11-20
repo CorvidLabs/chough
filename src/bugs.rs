@@ -403,8 +403,29 @@ fn read_all(root: &Path) -> Result<Vec<Stored>> {
     Ok(bugs)
 }
 
-/// The items of an archived story's `## Bugs` section (REQ-history-006, F10b): each bug
-/// of the session's checkpoint, once, as `[<title>](../../bugs/<file>): <status>`,
+/// The session's bugs (REQ-cli-012): those its checkpoint holds, then those filed in it,
+/// in the order they were filed (`created`, then name), each once. When the bug records
+/// cannot be read, only the held bugs are given; doctor names the unreadable record.
+pub(super) fn of_session(root: &Path, session: &crate::checkpoint::Checkpoint) -> Vec<String> {
+    let mut ids = session.bugs.clone();
+    let id = session.meta.id.as_str();
+    if id.is_empty() {
+        return ids;
+    }
+    let mut filed: Vec<(String, String)> = read_all(root)
+        .unwrap_or_default()
+        .into_iter()
+        .filter(|bug| bug.optional("session").as_deref() == Some(id))
+        .filter(|bug| !session.bugs.iter().any(|held| bug.holds(held)))
+        .map(|bug| (bug.text("created").to_string(), bug.id().to_string()))
+        .collect();
+    filed.sort();
+    ids.extend(filed.into_iter().map(|(_, id)| id));
+    ids
+}
+
+/// The items of an archived story's `## Bugs` section (REQ-history-006, F10b): each of
+/// the session's bugs ([`of_session`]), once, as `[<title>](../../bugs/<file>): <status>`,
 /// linked from the story to its record; an ID no one bug record holds is named as such.
 pub(super) fn story_lines(root: &Path, ids: &[String]) -> Vec<String> {
     let bugs = read_all(root).unwrap_or_default();
@@ -988,21 +1009,30 @@ fn stored_form(id: &str, linked: &Linked) -> String {
     }
 }
 
-/// REQ-cli-012: the bug joins the active session's checkpoint as `checkpoint --bug` adds
-/// it (REQ-records-004), once, so the session's story names the bugs found in it and a
-/// blocking one stops it (REQ-cli-054). A new bug (`always`) joins whenever a session is
-/// active (#329); an updated one joins only when `--observation` names an entry of the
-/// active session, which [`stored_form`] stores as `<session>/<id>`. An entry of another
+/// REQ-cli-012: an updated bug joins the active session's checkpoint as `checkpoint --bug`
+/// adds it (REQ-records-004), once, when `--observation` names an entry of the active
+/// session, which [`stored_form`] stores as `<session>/<id>`. A bug filed in the active
+/// session (`filed_in`) is already one of its bugs and joins nothing; a new bug never
+/// joins, since `bug add` records the session on the bug (#382, #395). An entry of another
 /// session, a receipt or no active session leaves every checkpoint unchanged.
-fn join_active_session(root: &Path, bug: &str, links: &[String], always: bool) -> Result<()> {
+fn join_active_session(
+    root: &Path,
+    bug: &str,
+    filed_in: Option<&str>,
+    links: &[String],
+) -> Result<()> {
     let Some(active) = crate::sessions::checkpoint_path(root)
         .ok()
         .and_then(|relative| crate::sessions::id_of(&relative))
     else {
         return Ok(());
     };
+    // A bug filed in the active session is already one of its bugs (REQ-cli-012).
+    if filed_in == Some(active.as_str()) {
+        return Ok(());
+    }
     let prefix = format!("{active}/");
-    if !always && !links.iter().any(|link| link.starts_with(&prefix)) {
+    if !links.iter().any(|link| link.starts_with(&prefix)) {
         return Ok(());
     }
     let mut session = match crate::checkpoint::read_session(root)? {
@@ -1013,32 +1043,6 @@ fn join_active_session(root: &Path, bug: &str, links: &[String], always: bool) -
     }
     session.bugs.push(bug.to_string());
     crate::checkpoint::save_checkpoint(root, &mut session)
-}
-
-/// Before `bug add` writes anything (#343 review): the active session, if one is, can
-/// take the new bug's link, checked as its save would check it, so a new bug is never
-/// left out of the session it was filed in. The check holds a name as long as any name
-/// `create` can give the bug, so the save after it is never larger than the one checked.
-fn session_takes_a_bug(root: &Path) -> Result<()> {
-    let Some(active) = crate::sessions::checkpoint_path(root)
-        .ok()
-        .and_then(|relative| crate::sessions::id_of(&relative))
-    else {
-        return Ok(());
-    };
-    let mut session = match crate::checkpoint::read_session(root)? {
-        crate::checkpoint::Session::V2(session) => *session,
-    };
-    let date = identity::utc_date(now()?);
-    session.bugs.push(format!(
-        "{date}-{}",
-        "x".repeat(identity::NAME_LIMIT - date.len() - 1)
-    ));
-    crate::checkpoint::check_save(root, &session).map_err(|error| {
-        anyhow::anyhow!(
-            "refused: session {active} cannot take another bug ({error:#}), and a bug added now would be left out of it; run `chough session new <key>` and add the bug there; nothing was written"
-        )
-    })
 }
 
 fn check_regression(evidence: &Evidence<'_>, root: &Path, bug: &Stored) -> Result<()> {
@@ -1182,6 +1186,8 @@ struct Draft {
     source: String,
     /// Log entries after the report, such as the reason a similar report is distinct.
     notes: Vec<String>,
+    /// The session active when the bug was filed (REQ-cli-012).
+    session: Option<String>,
 }
 
 /// The write-up: the title, the five paragraphs, with `fix` as the Fix paragraph, and an
@@ -1298,6 +1304,9 @@ fn draft_record(
         record.set_scalar("revision", &revision)?;
     }
     record.set_scalar("found_by", &found_by)?;
+    if let Some(session) = &draft.session {
+        record.set_scalar("session", session)?;
+    }
     if let Some(actor) = actor {
         record.set("actor", actor.front_value())?;
     }
@@ -1574,6 +1583,7 @@ pub(super) fn capture_failure(root: &Path, finding: Finding<'_>) -> Result<Strin
         environment: finding.environment.into(),
         source: finding.source,
         notes: vec![],
+        session: None,
     };
     let (stored, _) = create(root, draft, true)?;
     Ok(stored.id().to_string())
@@ -1674,10 +1684,13 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         environment: args.environment,
         source: args.source,
         notes,
+        // REQ-cli-012 (#382, #395): the bug names the session it was filed in, and the
+        // session's record is never written, so filing merges and costs the same at any size.
+        session: crate::sessions::checkpoint_path(root)
+            .ok()
+            .and_then(|relative| crate::sessions::id_of(&relative)),
     };
-    session_takes_a_bug(root)?;
     let (stored, redacted) = create(root, draft, false)?;
-    join_active_session(root, stored.id(), &stored.list("evidence"), true)?;
     let mut output = json!({
         "schema_version": 1,
         "recorded": stored.path,
@@ -1846,7 +1859,7 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     validate(&stored)?;
     let redacted = guard(&mut stored.record, Local::current(), Some(&original))?;
     markdown::replace(root, &stored.path, &stored.record, Kind::Bug)?;
-    join_active_session(root, &id, &links, false)?;
+    join_active_session(root, &id, stored.optional("session").as_deref(), &links)?;
     let mut output = json!({
         "schema_version": 1,
         "recorded": stored.path,
@@ -2046,13 +2059,17 @@ pub(super) struct SessionBlocking {
     pub(super) warns: Vec<String>,
 }
 
-/// Whether `bug` is related to `session`: the session lists it, its evidence names
-/// that session, or they share a criterion, requirement, or case.
+/// Whether `bug` is related to `session` (REQ-cli-054): the session lists it or it was
+/// filed in it, its evidence names that session, or they share a criterion, requirement,
+/// or case.
 fn related_to(session: &crate::checkpoint::Checkpoint, bug: &Stored) -> bool {
     if session.bugs.iter().any(|id| bug.holds(id)) {
         return true;
     }
     let id = session.meta.id.as_str();
+    if !id.is_empty() && bug.optional("session").as_deref() == Some(id) {
+        return true;
+    }
     if !id.is_empty() {
         let prefix = format!("{id}/");
         if bug
@@ -2574,6 +2591,7 @@ pub(super) fn migrate_0_5(
             environment: legacy.environment.clone(),
             source: legacy.source.clone(),
             notes: vec![],
+            session: None,
         };
         let fix = if legacy.is_open() {
             NOT_FIXED
@@ -3646,6 +3664,7 @@ mod tests {
             environment: "e".into(),
             source: "s".into(),
             notes: vec![],
+            session: None,
         };
         let stored = Stored {
             path: String::new(),
