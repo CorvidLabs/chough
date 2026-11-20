@@ -387,6 +387,14 @@ for example `chough: removed .chough/sessions/<id>/<temp> (<bytes> bytes), left 
 session write that was stopped before it saved; the session was not changed by it`.
 The killed command's update was never saved. Other file names are left alone.
 
+The lock orders Chough's own writers only. A Git command that rewrites the worktree,
+such as `git pull`, `git merge`, `git rebase`, `git checkout` or `git stash`, or
+`git switch`, `git restore`, `git reset --hard` and `git cherry-pick`, can replace a
+record that another process's Chough writer has just saved and exited 0 for, with
+nothing said (#387). So do not run such a Git command in a worktree while another agent
+works there, that is, while any other Chough command may be running there. A lone agent
+may run one between its own commands.
+
 ### Module, criterion and reference identities
 
 A session, bug, evidence or case module is any module ID SpecSync accepts, so a dotted

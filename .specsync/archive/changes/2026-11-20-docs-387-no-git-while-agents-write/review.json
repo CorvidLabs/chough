@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "docs-387-no-git-while-agents-write",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "1b1ab5c124c9f3a26ae244dba1351505474d44b7",
+  "contract_digest": "b62cb6c7cd4bf9ff160f919c0734005df34e3d936641c6e0099b56f624b58a57",
+  "execution_digest": "3ab664bed88c81cfb886b224399c91b177c905eaaacc5446aa739e22c50caa31",
+  "workspace_digest": "6e47ebd3f97caac46d443d7ad97e9bb5492da0a7f776483e27e3ef07c9dd1eac",
+  "timestamp": 1795140939,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Yes, record and ship",
+    "where": "Leif's answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording his implementation review of #416 at 560a8780 and shipping it. Under standing OK 6(b) (his 'Go' to the six rules, relayed by hc t4c): tester2's PASS, corvid-agent approved ddc210fb and 560a8780, no approved sentence changed, checked by fable-lead",
+    "recorded_by": "fable-t4b"
+  }
+}

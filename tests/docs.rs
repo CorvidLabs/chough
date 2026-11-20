@@ -2035,3 +2035,74 @@ fn the_readme_init_paragraph_names_the_host_directories_without_a_long_parenthet
         );
     }
 }
+
+/// The paragraph of `text` that names all five worktree-rewriting Git commands, if any.
+fn git_rewrite_paragraph(text: &str) -> Option<String> {
+    text.split("\n\n")
+        .find(|paragraph| {
+            ["pull", "merge", "rebase", "checkout", "stash"]
+                .iter()
+                .all(|command| paragraph.contains(&format!("`git {command}`")))
+        })
+        .map(|paragraph| paragraph.split_whitespace().collect::<Vec<_>>().join(" "))
+}
+
+/// The `###` section of `text` headed `heading`, up to the next heading.
+fn section_of<'a>(text: &'a str, heading: &str) -> &'a str {
+    let start = text
+        .find(&format!("\n### {heading}\n"))
+        .unwrap_or_else(|| panic!("no section {heading}"));
+    let rest = &text[start + 1..];
+    let end = rest[1..]
+        .find("\n#")
+        .map_or(rest.len(), |offset| offset + 1);
+    &rest[..end]
+}
+
+/// #387 (REQ-cli-040): the skill's checkpoint reference, in the bundle and in an
+/// installed copy, and the concurrency section of `docs/cli.md` each say not to run
+/// `git pull`, `git merge`, `git rebase`, `git checkout` or `git stash` in a worktree while
+/// another agent works there, why, and that a lone agent may run one between its own
+/// commands.
+#[test]
+fn the_docs_say_not_to_rewrite_the_worktree_while_another_agent_works() {
+    let project = initialized_project();
+    let installed = fs::read_to_string(
+        project
+            .path()
+            .join(".agents/skills/chough-workflow/references/checkpoint.md"),
+    )
+    .unwrap()
+    .replace("\r\n", "\n");
+    let docs = read("docs/cli.md");
+    let texts = [
+        (
+            "skills/chough-workflow/references/checkpoint.md".to_string(),
+            read("skills/chough-workflow/references/checkpoint.md"),
+        ),
+        (
+            ".agents/skills/chough-workflow/references/checkpoint.md".to_string(),
+            read(".agents/skills/chough-workflow/references/checkpoint.md"),
+        ),
+        ("the copy chough init installs".to_string(), installed),
+        (
+            "docs/cli.md, Concurrent record writers".to_string(),
+            section_of(&docs, "Concurrent record writers").to_string(),
+        ),
+    ];
+    for (name, text) in texts {
+        let paragraph = git_rewrite_paragraph(&text).unwrap_or_else(|| {
+            panic!("{name}: no paragraph names git pull, merge, rebase, checkout and stash")
+        });
+        for needed in [
+            "while another agent works there",
+            "can replace a record",
+            "A lone agent may run one between its own commands",
+        ] {
+            assert!(
+                paragraph.contains(needed),
+                "{name}: the Git paragraph does not say {needed:?}: {paragraph}"
+            );
+        }
+    }
+}
