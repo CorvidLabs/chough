@@ -49,7 +49,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Re-approval of control-and-echo with four more paths and REQ-reporting-001's example\" closed (approved); run `chough stage advance` to move on."
+next: "Gate \"Re-approval of control-and-echo with tests/spec_split.rs added\" closed (approved); run `chough stage advance` to move on."
 ---
 # Control and echo batch: control characters refused at write and escaped on print (#366), --pr takes a number or an http(s) URL and is shown in next, status, context and the checkpoint view (#353), the remaining sites echo no value (part of #367), and a file URL holds the user name
 
@@ -65,6 +65,8 @@ Control and echo batch: control characters refused at write and escaped on print
 - 0xLeif decided "Approve the scope of control-and-echo": "Approve the recommended set" (Claude Code chat answer, relayed by his planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-19 about 14:12Z, on L2 control-and-echo at 1068f67 with the seven recommended choices; recorded at the batch start on that text, with REQ-cli-007 rebased onto main after #413 under standing OK (d) (his 'yes to both', about 15:02Z, relayed by t4c; fable-lead's script check of 2026-11-20)); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve control-and-echo as 0xLeif
 - 0xLeif decided "Add four files to control-and-echo's scope by one send-back, run by the fixer": "Ok" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 03:00Z, answering t4c's six-item list, put to him with 'all yes' as the way to accept all; item 2: add src/evidence.rs, src/gates.rs, tests/front_matter_writes.rs and its case file .chough/cases/records.test-stage.cases.toml to L2's scope by one send-back the fixer runs, no sentence change); recorded by chough-fixer-t4g; a relayed claim, not authenticated
 - 0xLeif decided "Re-approval of control-and-echo with four more paths and REQ-reporting-001's example": "Ok" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 03:00Z, item 2 of t4c's six-item list, on this text: src/evidence.rs, src/gates.rs, tests/front_matter_writes.rs and .chough/cases/records.test-stage.cases.toml join the declared paths, with no sentence change; and REQ-reporting-001's example and criterion name a gate's name in place of a stage move's reason, under standing OK 6(a), a wording fix that only makes an approved sentence match tested code, relayed via t4c and checked by fable-lead's script; the earlier approvals stand for the rest: 'Approve the recommended set' (2026-11-19 about 14:12Z) and standing OK (d) for REQ-cli-007's rebase after #413); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve control-and-echo as 0xLeif
+- 0xLeif decided "Add tests/spec_split.rs to control-and-echo's scope by one send-back, run by the fixer": "continue with 95% confidence" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 04:09Z, answering t4c's five-item list, each item carrying t4c's recommendation; he named no item. The reading is t4c's, recorded with his words at t4c's request: go ahead with the recommendations t4c is at least 95% sure of, items 1 to 4. Item 3, as t4c put it to him: 'Chough L2: add the one test file (tests/spec_split.rs) and widen the standing OK to cover tests that only pin a requirement's wording?'); recorded by chough-fixer-t4g; a relayed claim, not authenticated
+- 0xLeif decided "Re-approval of control-and-echo with tests/spec_split.rs added": "continue with 95% confidence" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 04:09Z, on this text: tests/spec_split.rs, which pins REQ-reporting-001's wording, joins the declared paths, with no delta word. The reading is t4c's, recorded with his words at t4c's request: go ahead with t4c's recommendations it is at least 95% sure of, items 1 to 4, item 3 being 'Chough L2: add the one test file (tests/spec_split.rs) and widen the standing OK to cover tests that only pin a requirement's wording?'. The earlier approvals stand for the rest: 'Approve the recommended set', standing OK (d) for REQ-cli-007, 'Ok' (item 2) for the four paths, and standing OK 6(a) for REQ-reporting-001's example); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve control-and-echo as 0xLeif
 
 ## What was verified
 
@@ -186,6 +188,49 @@ Control and echo batch: control characters refused at write and escaped on print
     - decided_by: 0xLeif
     - words: Ok
     - where: Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 03:00Z, item 2 of t4c's six-item list, on this text: src/evidence.rs, src/gates.rs, tests/front_matter_writes.rs and .chough/cases/records.test-stage.cases.toml join the declared paths, with no sentence change; and REQ-reporting-001's example and criterion name a gate's name in place of a stage move's reason, under standing OK 6(a), a wording fix that only makes an approved sentence match tested code, relayed via t4c and checked by fable-lead's script; the earlier approvals stand for the rest: 'Approve the recommended set' (2026-11-19 about 14:12Z) and standing OK (d) for REQ-cli-007's rebase after #413
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve control-and-echo
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T04:10:21Z · gate-opened · build → build · Add tests/spec_split.rs to control-and-echo's scope by one send-back, run by the fixer ^t-9b6ba5
+  - native_change: control-and-echo
+  - revision: 4edfaac69645eed7244af72c97c4864272eff5c3
+  - holds: build
+  - drives: none
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T04:10:21Z · gate-closed · build → build · Add tests/spec_split.rs to control-and-echo's scope by one send-back, run by the fixer ^t-d236b0
+  - native_change: control-and-echo
+  - revision: 4edfaac69645eed7244af72c97c4864272eff5c3
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: continue with 95% confidence
+    - where: Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 04:09Z, answering t4c's five-item list, each item carrying t4c's recommendation; he named no item. The reading is t4c's, recorded with his words at t4c's request: go ahead with the recommendations t4c is at least 95% sure of, items 1 to 4. Item 3, as t4c put it to him: 'Chough L2: add the one test file (tests/spec_split.rs) and widen the standing OK to cover tests that only pin a requirement's wording?'
+    - recorded_by: chough-fixer-t4g
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T04:10:46Z · gate-opened · build → build · Re-approval of control-and-echo with tests/spec_split.rs added ^t-6b5392
+  - native_change: control-and-echo
+  - revision: 4edfaac69645eed7244af72c97c4864272eff5c3
+  - holds: build
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T04:10:46Z · direct-native-write · build → build · control-and-echo's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-f1de82
+  - native_change: control-and-echo
+  - revision: 4edfaac69645eed7244af72c97c4864272eff5c3
+  - direct_write:
+    - change: control-and-echo
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T04:10:46Z · gate-closed · build → build · Re-approval of control-and-echo with tests/spec_split.rs added ^t-e59a99
+  - native_change: control-and-echo
+  - revision: 4edfaac69645eed7244af72c97c4864272eff5c3
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: continue with 95% confidence
+    - where: Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 04:09Z, on this text: tests/spec_split.rs, which pins REQ-reporting-001's wording, joins the declared paths, with no delta word. The reading is t4c's, recorded with his words at t4c's request: go ahead with t4c's recommendations it is at least 95% sure of, items 1 to 4, item 3 being 'Chough L2: add the one test file (tests/spec_split.rs) and widen the standing OK to cover tests that only pin a requirement's wording?'. The earlier approvals stand for the rest: 'Approve the recommended set', standing OK (d) for REQ-cli-007, 'Ok' (item 2) for the four paths, and standing OK 6(a) for REQ-reporting-001's example
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve control-and-echo
     - actor: 0xLeif
