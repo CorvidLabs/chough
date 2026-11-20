@@ -1118,6 +1118,37 @@ fn uncommitted_work_is_shown_by_the_diff_line() {
     assert!(summary.contains("not committed yet"), "{summary}");
 }
 
+/// G2, #389 (REQ-cli-061), tester2's finding on #428: at a gate that drives approval,
+/// with only the change's own definition uncommitted, what changed counts those files, so
+/// the diff line is `git diff <base>` too, never an empty `<base>..<base>`.
+#[test]
+fn an_uncommitted_definition_is_shown_by_the_diff_line_at_scope_approval() {
+    let fixture = project(&[]);
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        SCOPE,
+        "--drives",
+        "approve",
+    ]);
+    let state: Value = serde_json::from_str(&fixture.read(&format!("{DIR}/state.json"))).unwrap();
+    let base = state["base_commit"].as_str().unwrap().to_string();
+    // Only the change's own definition, beside Chough's records, is not committed.
+    fixture.git(&["reset", "-q", "--soft", &base]);
+    fixture.git(&["checkout", "-q", &base, "--", "src/input.txt"]);
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap();
+    assert!(
+        summary.contains(&format!("{DIR}/deltas/cli.md")),
+        "the definition is not in what changed: {summary}"
+    );
+    assert!(!summary.contains(&format!("{base}..{base}")), "{summary}");
+    assert!(
+        summary.contains(&format!("Diff: git diff {base} (work not committed yet)")),
+        "{summary}"
+    );
+}
+
 /// G2, #389 (REQ-cli-061): a session started before the repository's first commit records
 /// no base; what changed and the diff count from that first commit and say why.
 #[test]

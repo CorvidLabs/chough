@@ -328,20 +328,17 @@ fn tests(root: &Path, session: &Value) -> (usize, usize, usize, Vec<String>) {
     counts
 }
 
-/// Whether the working tree holds a change since HEAD, tracked or untracked, outside what
-/// the summary leaves out (Chough's own records), so the diff link must show it (#389).
-fn uncommitted_work(root: &Path, left_out: &[String]) -> bool {
+/// Whether the working tree holds a change since HEAD, tracked or untracked, that what
+/// changed counts (`counts`, the same rule as that line's), so the diff link must show it
+/// (#389). At a gate that drives approval the change's own definition counts, though the
+/// rest of `.specsync/changes/` is left out (tester2's finding on #428).
+fn uncommitted_work(root: &Path, counts: impl Fn(&str) -> bool) -> bool {
     let tracked = git(root, &["diff", "--name-only", "HEAD"]).unwrap_or_default();
     tracked
         .lines()
         .map(String::from)
         .chain(untracked(root).into_iter().map(|(_, _, path)| path))
-        .any(|path| {
-            !path.is_empty()
-                && !left_out
-                    .iter()
-                    .any(|prefix| path.starts_with(prefix.as_str()))
-        })
+        .any(|path| !path.is_empty() && counts(&path))
 }
 
 /// The diff link: a GitHub compare URL when `origin` is on GitHub, else the command.
@@ -799,7 +796,14 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
         _ if at_intent => {}
         // #389: work not committed yet is in no range to HEAD, so the link is the working
         // tree against the base, and says so.
-        Some(base) if uncommitted_work(root, &left_out) => {
+        Some(base)
+            if uncommitted_work(root, |path| {
+                is_definition(path)
+                    || !left_out
+                        .iter()
+                        .any(|prefix| path.starts_with(prefix.as_str()))
+            }) =>
+        {
             lines.push(format!("Diff: git diff {base} (work not committed yet)"))
         }
         Some(base) => lines.push(format!("Diff: {}", diff_link(root, base, &head))),

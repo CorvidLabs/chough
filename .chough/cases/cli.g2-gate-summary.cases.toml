@@ -128,3 +128,21 @@ expected = ["tests/stages.rs::a_note_and_a_reason_both_reach_the_timeline passes
 adapter = "cargo-test"
 test_target = "stages"
 test = "a_note_and_a_reason_both_reach_the_timeline"
+
+[[case]]
+id = "TC-cli-g2-an-uncommitted-definition-in-the-diff-line"
+title = "At a gate that drives approval, with only the change's own definition uncommitted, the diff line is git diff <base> and says so"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::an_uncommitted_definition_is_shown_by_the_diff_line_at_scope_approval passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "an_uncommitted_definition_is_shown_by_the_diff_line_at_scope_approval"
