@@ -10,7 +10,7 @@
   "state": "draft",
   "base_commit": "1fb67c29295cc2472285bbd03b6a10cf8c5f6c40",
   "created_at": 1795147565,
-  "updated_at": 1795147641,
+  "updated_at": 1795147819,
   "affected_specs": [
     "cli"
   ],
@@ -26,7 +26,7 @@
   "no_spec_change": false,
   "no_spec_change_rationale": null,
   "acceptance_criteria": [
-    "On a branch rebased onto the default branch, or one that squash-merged it, after the change recorded its base, chough change ready names no file whose content at HEAD is the default branch's, and still names a file outside the declared paths that the change's own commits changed; with a base commit the repository does not have, it says so, naming it, prints no fatal: line, and counts from HEAD's merge base with the default branch."
+    "After a rebase onto the default branch or a squash merge of it, chough change ready names no file only the default branch changed and still names a file outside the declared paths that the change changed; with HEAD on the default branch, its tip at HEAD, or origin/HEAD naming HEAD's own branch, such a file is still named; with a base commit the repository lacks, it says so, prints no fatal: line and counts from the merge base, and with no default branch either it names one finding that the changed files could not be listed, never reporting that nothing is missing."
   ],
   "selected_artifacts": [
     "context",
