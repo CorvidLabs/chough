@@ -16,7 +16,9 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-20-tc-records-a-cut-off-write-leaves-no-record
+  - 2026-11-20-tc-records-an-empty-record-is-named-as-empty
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -38,6 +40,9 @@ A new record is written whole or not at all, so a full disk or a file-size limit
 - 0xLeif decided "Re-approval of fix-260-a-new-record-is-written-whole-or-not-at-all with src/checkpoint.rs added to its paths (native approval)": "Standing OK, tell me after" (Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this path-only addition: src/checkpoint.rs joins #260's paths so its approved exFAT criterion holds, and #260 also closes #424; no delta word changes, no new refusal. Recorded by t4c); recorded by t4c; a relayed claim, not authenticated; ran specsync change approve fix-260-a-new-record-is-written-whole-or-not-at-all as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test records -- --exact a_write_cut_off_by_a_size_limit_leaves_no_record for TC-records-a-cut-off-write-leaves-no-record: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-a-cut-off-write-leaves-no-record.md)
+- [Ran cargo test --locked --test records -- --exact an_empty_record_is_named_as_empty for TC-records-an-empty-record-is-named-as-empty: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-an-empty-record-is-named-as-empty.md)
 
 ## Open threads
 
