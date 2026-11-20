@@ -2588,15 +2588,40 @@ fn unattended_step(session: &Checkpoint, stage: &str, label: Option<&str>) -> bo
         && !human_decided_at(session, stage)
 }
 
-/// Whether a human's decision closed a gate held at `stage`: a gate-closed entry at that
-/// stage whose gate a recorded decision names.
-fn human_decided_at(session: &Checkpoint, stage: &str) -> bool {
-    let entries = session
+/// The plan or accept that an earlier advance left ungated, with no human decision.
+fn passed_unattended(session: &Checkpoint) -> Vec<String> {
+    let entries = timeline_entries(session);
+    ["plan", "accept"]
+        .into_iter()
+        .filter(|stage| {
+            entries.iter().any(|entry| {
+                entry.transition.kind == "advance"
+                    && entry.transition.from == *stage
+                    && entry.transition.to != *stage
+                    && matches!(
+                        entry.transition.gate.as_deref(),
+                        Some("ungated:not-configured" | "ungated:sdd-disabled")
+                    )
+            }) && !human_decided_at(session, stage)
+        })
+        .map(String::from)
+        .collect()
+}
+
+/// The session's Timeline as it was read, or none when it cannot be.
+fn timeline_entries(session: &Checkpoint) -> Vec<crate::session_md::Entry> {
+    session
         .source
         .as_ref()
         .map(crate::session_md::timeline)
         .and_then(Result::ok)
-        .unwrap_or_default();
+        .unwrap_or_default()
+}
+
+/// Whether a human's decision closed a gate held at `stage`: a gate-closed entry at that
+/// stage whose gate a recorded decision names.
+fn human_decided_at(session: &Checkpoint, stage: &str) -> bool {
+    let entries = timeline_entries(session);
     entries.iter().any(|entry| {
         let transition = &entry.transition;
         transition.kind == GATE_CLOSED
@@ -2784,7 +2809,8 @@ pub(super) fn run(root: &Path, command: StageCommand, as_json: bool) -> Result<(
             }
             // The reason, when given, is what the Timeline entry records.
             let recorded = reason.as_deref().or(note.as_deref());
-            let (applied, _) = match to {
+            let earlier = passed_unattended(&session);
+            let (mut applied, _) = match to {
                 Some(target) => {
                     advance_to(root, &mut session, &target, recorded, reason.is_some())?
                 }
@@ -2798,6 +2824,24 @@ pub(super) fn run(root: &Path, command: StageCommand, as_json: bool) -> Result<(
                     (applied, read)
                 }
             };
+            // REQ-cli-031: the move into done names every plan or accept passed with no
+            // human decision, by this move or an earlier one.
+            if applied["to"].as_str() == Some("done") {
+                let now: Vec<String> = applied["unattended"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .filter_map(Value::as_str)
+                    .map(String::from)
+                    .collect();
+                let stages: Vec<&str> = ["plan", "accept"]
+                    .into_iter()
+                    .filter(|stage| earlier.iter().chain(&now).any(|passed| passed == stage))
+                    .collect();
+                if !stages.is_empty() {
+                    applied["unattended"] = json!(stages);
+                }
+            }
             Some(applied)
         }
         StageCommand::Skip { reason } => {

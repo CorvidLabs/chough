@@ -3781,6 +3781,24 @@ fn without_specsync_a_done_across_plan_and_accept_needs_a_reason() {
     );
 }
 
+/// G2, #390 (REQ-cli-031): without SpecSync, the summary of the move into done names
+/// every plan or accept passed with no human decision, also when single advances got
+/// there and plan was left moves earlier.
+#[test]
+fn without_specsync_the_move_into_done_names_each_stage_passed_unattended() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "solo", "--objective", "A solo spike"]);
+    for _ in 0..5 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    let said = fixture.ok_text(&["stage", "advance"]);
+    assert!(
+        said.contains("no human decision is recorded for plan")
+            && said.contains("no human decision is recorded for accept"),
+        "{said}"
+    );
+}
+
 /// G2, #390: without SpecSync, a single `stage advance` from plan says no human decision
 /// is recorded for plan and moves; with a closed human gate held at plan it says nothing
 /// of the kind.
