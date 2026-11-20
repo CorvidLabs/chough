@@ -684,7 +684,9 @@ fn specsync_own_untracked(root: &Path, path: &str) -> bool {
 }
 
 /// What the other active changes hold (#406): each one's own folder under
-/// `.specsync/changes/` and each of its affected paths. Their work is theirs.
+/// `.specsync/changes/` and each of its affected paths, but for one that covers the whole
+/// project (`.`), which shows no file is that change's work (Leif's "A", the tester's
+/// NFTMix case). Their work is theirs.
 fn other_changes_scopes(root: &Path, id: &str) -> Vec<String> {
     let Ok(entries) = fs::read_dir(root.join(".specsync/changes")) else {
         return Vec::new();
@@ -699,9 +701,19 @@ fn other_changes_scopes(root: &Path, id: &str) -> Vec<String> {
             continue;
         };
         scopes.push(format!(".specsync/changes/{name}"));
-        scopes.extend(other.affected_paths);
+        scopes.extend(
+            other
+                .affected_paths
+                .into_iter()
+                .filter(|scope| !whole_project(scope)),
+        );
     }
     scopes
+}
+
+/// Whether a declared path covers the whole project, as `.` or `./` does.
+fn whole_project(scope: &str) -> bool {
+    scope.replace('\\', "/").trim_end_matches('/') == "."
 }
 
 fn ignored_prefixes(root: &Path) -> Vec<String> {

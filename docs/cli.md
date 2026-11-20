@@ -1309,7 +1309,9 @@ It writes nothing: every tracked file stays as it was, and it does not touch
   rebase onto it or a squash merge of it (#406). Nor does SpecSync's own untracked
   `.specsync/change.lock` or `.specsync/workflow-v2-baseline.json`, nor another active
   change's work: its own `.specsync/changes/<other>/` folder and the files its affected
-  paths cover (#406). The default branch is the one
+  paths cover (#406), so a broad one there, such as `src/`, also hides this change's own
+  edits under it. A declared path that covers the whole project (`.`) leaves nothing out,
+  since it shows no file is that change's work. The default branch is the one
   `origin/HEAD` names, unless that names no branch or HEAD's own; then `origin/main`; a
   local `main` only with no remote. On the default branch itself every changed file
   counts. A base commit the repository no longer has is said on standard error, and the
