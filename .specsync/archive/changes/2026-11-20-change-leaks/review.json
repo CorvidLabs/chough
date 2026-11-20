@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "change-leaks",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "7ab2ca20f460d5c9187e3dd8ffab3d64e0809901",
+  "contract_digest": "bbe438562e4a5f0bbccdfb7c7a8936a7a8af7c0a78365b35e638302f8b08617e",
+  "execution_digest": "0a8809ebfe3679dba014691c08d8fa6df086f3bb4e031f14f62dfcf4f6132577",
+  "workspace_digest": "06211bd498042ce8942373e44255ce9bb95ba5db0680a973a4eb2a2a7dc53c3a",
+  "timestamp": 1795214649,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Pass (Recommended)",
+    "where": "Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 22:43Z, relayed by hc t4c: his implementation review of Chough #412 (PR #430) at 7ab2ca20 (the leak check on description, --rationale and answers with --redact as the way out; doctor --leaks scanning open changes; the tester's PASS: 178/178, 2 new real-repo findings, --redact with SpecSync 6.3.0 and 6.4.0)",
+    "recorded_by": "chough-fixer-t4n"
+  }
+}

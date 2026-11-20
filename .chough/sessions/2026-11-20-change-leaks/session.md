@@ -5,7 +5,7 @@ aliases: [change-leaks]
 objective: "A change's description, rationale and answers pass the leak check before SpecSync writes them, doctor --leaks scans the open changes, and the last echo sites name what a value holds (#412, rest of #367)"
 intent_scope: ""
 modules: [cli, records]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -33,9 +33,13 @@ observations:
   - 2026-11-20-tc-records-no-command-echoes-a-given-value-576667
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of change-leaks
+    holds: accept
+    drives: review
+    opened: 2026-11-20T22:44:04Z
 run_consents: []
-next: Continue build
+next: Continue accept
 ---
 # A change's description, rationale and answers pass the leak check before SpecSync writes them, doctor --leaks scans the open changes, and the last echo sites name what a value holds (#412, rest of #367)
 
@@ -100,4 +104,20 @@ A change's description, rationale and answers pass the leak check before SpecSyn
   - native_change: change-leaks
   - gate: native:approved
   - revision: f6536ca4bd92c7fd83642f0028b4f954a641254c
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T22:43:47Z · advance · build → test · native:verifying ^t-f74f97
+  - native_change: change-leaks
+  - gate: native:verifying
+  - revision: 7ab2ca20f460d5c9187e3dd8ffab3d64e0809901
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T22:43:49Z · advance · test → accept · native:verifying ^t-d4400b
+  - native_change: change-leaks
+  - gate: native:verifying
+  - revision: 7ab2ca20f460d5c9187e3dd8ffab3d64e0809901
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T22:44:04Z · gate-opened · accept → accept · Implementation review of change-leaks ^t-dfbd03
+  - native_change: change-leaks
+  - revision: 7ab2ca20f460d5c9187e3dd8ffab3d64e0809901
+  - holds: accept
+  - drives: review
   - by: chough-fixer (claude-opus-5-5, hc t4n)

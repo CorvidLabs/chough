@@ -7,11 +7,11 @@
   "title": "Change leaks",
   "description": "change leaks",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "7bf110dcca70bdd3565007086aee40a286f40eff",
   "created_at": 1795186495,
-  "updated_at": 1795212959,
+  "updated_at": 1795214662,
   "affected_specs": [
     "cli",
     "records"

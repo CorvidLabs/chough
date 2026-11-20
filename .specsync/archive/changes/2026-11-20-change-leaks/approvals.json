@@ -56,6 +56,13 @@
         "where": "Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 15:08Z, relayed by hc t4c; the questions as shown: 'Chough #412: a change's description, rationale and answers aren't leak-checked today ... When one holds a leak, what should happen?' and 'Chough #412: what should doctor --leaks also scan?' (.specsync/changes/ but not each change's deltas/, and --fix --redact skips those findings); on change-leaks at 01b7952d with choices (A) and (1)",
         "recorded_by": "chough-fixer-t4n"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795214660,
+      "digest": "a6554ad32fd5467c8bc6a1e7ebfba90f17beafe31253e13fe5ae6e6d4b5408bd",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
