@@ -5,7 +5,7 @@ aliases: [skill-and-create-races]
 objective: "Skill and create-new batch: skill update writes CRLF copies and names a file it cannot write (#373), parallel skill update and init runs all succeed (#386), a host folder that cannot be inspected is skipped and reported while the rest update (#403), and doctor reads an uncommitted session that fails validation (#408)"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -57,9 +57,13 @@ observations:
   - 2026-11-20-tc-cli-release-name-byte-matching-6874f7
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of skill-and-create-races
+    holds: accept
+    drives: review
+    opened: 2026-11-20T15:30:49Z
 run_consents: []
-next: "Gate \"Re-approval of skill-and-create-races with tests/skill_releases.rs added\" closed (approved); run `chough stage advance` to move on."
+next: Continue accept
 ---
 # Skill and create-new batch: skill update writes CRLF copies and names a file it cannot write (#373), parallel skill update and init runs all succeed (#386), a host folder that cannot be inspected is skipped and reported while the rest update (#403), and doctor reads an uncommitted session that fails validation (#408)
 
@@ -193,4 +197,20 @@ Skill and create-new batch: skill update writes CRLF copies and names a file it 
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve skill-and-create-races
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T15:30:02Z · advance · build → test · native:verifying ^t-f3161b
+  - native_change: skill-and-create-races
+  - gate: native:verifying
+  - revision: 3b5890ae3edd848815a9271832beaaa2d846512a
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T15:30:21Z · advance · test → accept · native:verifying ^t-ec0f5e
+  - native_change: skill-and-create-races
+  - gate: native:verifying
+  - revision: 3b5890ae3edd848815a9271832beaaa2d846512a
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T15:30:49Z · gate-opened · accept → accept · Implementation review of skill-and-create-races ^t-3a7fdd
+  - native_change: skill-and-create-races
+  - revision: 3b5890ae3edd848815a9271832beaaa2d846512a
+  - holds: accept
+  - drives: review
   - by: chough-fixer (claude-opus-5-5, hc t4n)

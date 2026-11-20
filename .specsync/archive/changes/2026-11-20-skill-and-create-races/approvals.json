@@ -114,6 +114,13 @@
         "where": "Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 14:13Z, relayed by hc t4c through fable-lead (hc t53); the question as shown: 'Chough D2: ... May D2's scope add tests/skill_releases.rs so the test can follow your rule? No wording changes.'; on this text: tests/skill_releases.rs joins the declared paths (11 to 12) with no sentence change, the deltas byte-identical to those approved at f37fc73",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795188717,
+      "digest": "059257f952e24027400301d26668c017d34bf3dfa54830b6543b7cda5c04b7ec",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],
