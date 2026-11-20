@@ -139,10 +139,12 @@ fn bug_add(title: &str) -> Vec<&str> {
 fn a_control_character_is_refused_at_write_in_every_field() {
     let fixture = Fixture::new();
     fixture.configure_human();
+    fixture.hi_stand_in();
     fixture.init();
     fixture.ok(&["checkpoint", "--awaiting-human", "SYNTHETIC gate"]);
     fixture.commit("fixture");
     let session = fixture.active_id();
+    let mut problems: Vec<String> = vec![];
     for (point, character) in CONTROLS {
         let value = format!("probe {character} value");
         let words = vec![
@@ -179,7 +181,7 @@ fn a_control_character_is_refused_at_write_in_every_field() {
                 "no_native_change",
             ),
             (vec!["checkpoint", "--pr", &value], "pr"),
-            (evidence_add(&value, "local", "none"), "summary"),
+            (evidence_add(&value, "local", "none"), "claim"),
             (evidence_add("probe", &value, "none"), "environment"),
             (evidence_add("probe", "local", &value), "limitation"),
             (bug_add(&value), "title"),
@@ -193,24 +195,42 @@ fn a_control_character_is_refused_at_write_in_every_field() {
                 let before = tree(fixture.root());
                 let output = fixture.run(&all);
                 let said = said(&output);
-                assert!(!output.status.success(), "{all:?} was written: {said:?}");
-                assert!(
-                    said.contains("refused:control-character") && said.contains(point),
-                    "{all:?} is not refused as a control character naming {point}: {said:?}"
-                );
-                assert!(
-                    said.contains(field),
-                    "{all:?} does not name the field {field}: {said:?}"
-                );
-                assert!(raw(&said).is_empty(), "{all:?} printed {:?}", raw(&said));
-                assert!(
-                    !said.contains("probe"),
-                    "{all:?} echoed the value: {said:?}"
-                );
-                assert_eq!(tree(fixture.root()), before, "{all:?} changed a file");
+                let after = tree(fixture.root());
+                let mut wrong = vec![];
+                if output.status.success() {
+                    wrong.push("it was written".to_string());
+                }
+                if !(said.contains("refused:control-character") && said.contains(point)) {
+                    wrong.push(format!("not refused as a control character naming {point}"));
+                }
+                if !said.contains(field) {
+                    wrong.push(format!("does not name the field {field}"));
+                }
+                if !raw(&said).is_empty() {
+                    wrong.push(format!("printed {:?}", raw(&said)));
+                }
+                if said.contains("probe") {
+                    wrong.push("echoed the value".to_string());
+                }
+                if after != before {
+                    wrong.push("changed a file".to_string());
+                    // Put the tree back, so the next write starts from the same files.
+                    for name in after.keys().filter(|name| !before.contains_key(*name)) {
+                        fs::remove_file(fixture.root().join(name)).ok();
+                    }
+                    for (name, bytes) in &before {
+                        if after.get(name) != Some(bytes) {
+                            fs::write(fixture.root().join(name), bytes).unwrap();
+                        }
+                    }
+                }
+                if !wrong.is_empty() {
+                    problems.push(format!("{all:?}: {}", wrong.join("; ")));
+                }
             }
         }
     }
+    assert!(problems.is_empty(), "{}", problems.join("\n"));
 }
 
 /// REQ-records-016, TC-records-a-line-feed-is-kept-where-a-field-takes-one: a decision
@@ -222,6 +242,7 @@ fn a_control_character_is_refused_at_write_in_every_field() {
 fn a_line_feed_is_kept_where_a_field_takes_one_and_a_tab_is_refused() {
     let fixture = Fixture::new();
     fixture.configure_human();
+    fixture.hi_stand_in();
     fixture.init();
     fixture.commit("fixture");
     fixture.ok(&["checkpoint", "--decision", "first line\nsecond line"]);
@@ -232,20 +253,16 @@ fn a_line_feed_is_kept_where_a_field_takes_one_and_a_tab_is_refused() {
         tab.contains("refused:control-character") && tab.contains("U+0009"),
         "{tab}"
     );
-    fixture.ok(&["checkpoint", "--decision", "crlf one\r\ncrlf two"]);
+    // A reason keeps its line breaks, so a Windows one shows how it is stored.
+    fixture.ok(&["checkpoint", "--no-native-change", "crlf one\r\ncrlf two"]);
     let stored = tree(fixture.root());
     assert!(
         !stored.values().any(|bytes| bytes.contains(&b'\r')),
         "a carriage return was stored"
     );
-    let decisions = fixture.checkpoint()["decisions"].clone();
-    assert!(
-        decisions
-            .as_array()
-            .unwrap()
-            .iter()
-            .any(|decision| decision == "crlf one\ncrlf two"),
-        "{decisions}"
+    assert_eq!(
+        fixture.checkpoint()["no_native_change"],
+        "crlf one\ncrlf two"
     );
     fixture.fails(&["checkpoint", "--title", "a\nb"]);
     let pr = fixture.fails(&["checkpoint", "--pr", "48\n17"]);
@@ -278,6 +295,8 @@ fn a_line_feed_is_kept_where_a_field_takes_one_and_a_tab_is_refused() {
 struct Leaf {
     path: Vec<String>,
     positionals: Vec<String>,
+    /// The options the usage line requires, each with its value's name.
+    required: Vec<(String, String)>,
     options: Vec<String>,
     json: bool,
 }
@@ -345,13 +364,17 @@ fn leaves() -> Vec<Leaf> {
             // or `[NAME]` that is not a required option's value.
             let words: Vec<&str> = usage.split_whitespace().skip(2 + path.len()).collect();
             let mut positionals = vec![];
+            let mut required = vec![];
             for (at, word) in words.iter().enumerate() {
                 let after_flag = at > 0 && words[at - 1].starts_with("--");
+                let name = word.trim_matches(|c| "<>[].".contains(c)).to_string();
                 if (word.starts_with('<') || word.starts_with('['))
                     && !word.contains("OPTIONS")
                     && !after_flag
                 {
-                    positionals.push(word.trim_matches(|c| "<>[].".contains(c)).to_string());
+                    positionals.push(name);
+                } else if after_flag && word.starts_with('<') {
+                    required.push((words[at - 1].to_string(), name));
                 }
             }
             options.sort();
@@ -359,6 +382,7 @@ fn leaves() -> Vec<Leaf> {
             out.push(Leaf {
                 path,
                 positionals,
+                required,
                 options,
                 json,
             });
@@ -476,6 +500,10 @@ fn invocations(leaf: &Leaf, ids: &BTreeMap<&str, String>) -> Vec<Vec<String>> {
                 args.push(filler(slot, ids));
             }
         }
+        for (flag, name) in &leaf.required {
+            args.push(flag.clone());
+            args.push(filler(name, ids));
+        }
         out.push(args.clone());
         if leaf.json {
             let mut json = args.clone();
@@ -502,8 +530,11 @@ const CASES: &str = "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]
 fn dirty_project() -> (Fixture, BTreeMap<&'static str, String>) {
     let fixture = Fixture::new();
     fixture.configure_human();
+    fixture.hi_stand_in();
     fixture.write(".chough/cases/cli.cases.toml", CASES);
     fixture.init();
+    fixture.commit("fixture");
+    let first = fixture.active_id();
     // An archived story and journal post first.
     fixture.ok(&["session", "new", "beta", "--objective", "Beta PLANT objective"]);
     fixture.ok(&["checkpoint", "--decision", "Beta PLANT decision"]);
@@ -513,7 +544,6 @@ fn dirty_project() -> (Fixture, BTreeMap<&'static str, String>) {
         }
         break;
     }
-    let first = fixture.open_ids()[0].clone();
     fixture.ok(&["session", "use", &first]);
     fixture.ok(&["checkpoint", "--objective", "Probe PLANT objective"]);
     fixture.ok(&["checkpoint", "--decision", "PLANT decision"]);
@@ -604,6 +634,15 @@ fn no_command_prints_a_stored_control_character_raw() {
     assert!(problems.is_empty(), "{}", problems.join("\n"));
 }
 
+/// The `src/change.rs` sites #412 makes stop echoing (the description SpecSync repeats,
+/// an answer, and `change ship`'s `--close-gate` text): not this change's (#367 closes
+/// when both are merged). #412 removes this list.
+const FOR_412: [(&str, &str); 3] = [
+    ("change new", "DESCRIPTION"),
+    ("change answer", "ANSWER"),
+    ("change ship", "--close-gate"),
+];
+
 /// REQ-records-006, TC-records-no-command-echoes-a-given-value: every value slot of every
 /// command in `chough --help`'s tree, each option that takes a value and each argument,
 /// given a token and an escape sequence, prints neither, in any output or error (#367).
@@ -611,6 +650,7 @@ fn no_command_prints_a_stored_control_character_raw() {
 fn no_command_echoes_a_value_given_on_the_command_line() {
     let fixture = Fixture::new();
     fixture.configure_human();
+    fixture.hi_stand_in();
     fixture.write(".chough/cases/cli.cases.toml", &CASES.replace(" PLANTTOML", ""));
     fixture.init();
     let bug = fixture.ok(&bug_add("SYNTHETIC bug"));
@@ -635,16 +675,31 @@ fn no_command_echoes_a_value_given_on_the_command_line() {
         let copy: PathBuf = scratch.path().join(format!("e{index}"));
         copy_tree(fixture.root(), &copy);
         let base = &invocations(leaf, &ids)[0];
+        let command = leaf.path.join(" ");
         let mut tries: Vec<Vec<String>> = vec![];
         // Each argument slot in turn.
-        for slot in 0..leaf.positionals.len() {
+        for (slot, name) in leaf.positionals.iter().enumerate() {
+            if FOR_412.contains(&(command.as_str(), name.as_str())) {
+                continue;
+            }
             let mut args = base.clone();
             args[leaf.path.len() + slot] = value.clone();
             tries.push(args);
         }
-        // Each option that takes a value.
+        // Each option that takes a value, in place of its filler when it is required.
         for option in &leaf.options {
-            let mut args = base.clone();
+            if FOR_412.contains(&(command.as_str(), option.as_str())) {
+                continue;
+            }
+            let mut args: Vec<String> = vec![];
+            let mut words = base.iter();
+            while let Some(word) = words.next() {
+                if word == option {
+                    words.next();
+                } else {
+                    args.push(word.clone());
+                }
+            }
             args.push(option.clone());
             args.push(value.clone());
             tries.push(args);

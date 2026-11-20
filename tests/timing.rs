@@ -2647,17 +2647,20 @@ fn strings(value: &Value, out: &mut Vec<String>) {
 }
 
 /// REQ-reporting-001 (#366), TC-reporting-timing-prints-stored-text-escaped: with a stage
-/// move's reason holding ESC and U+202E, as a hand edit or an earlier release left it,
-/// `chough timing` prints neither raw, in text or JSON, and its JSON parses back to the
-/// stored reason.
+/// move's reason and a gate's name holding ESC and U+202E, as a hand edit or an earlier
+/// release left them, `chough timing` prints neither raw, in text or JSON, and its JSON
+/// parses back to the stored gate name. (The report shows no stage move's reason; it is
+/// planted too, so it is shown never raw if it ever is.)
 #[test]
 fn timing_prints_a_stored_control_character_escaped() {
     let fixture = Fixture::new();
     fixture.init();
     fixture.ok(&["stage", "skip", "--json", "--reason", "No PLANT visuals"]);
+    fixture.ok(&["checkpoint", "--awaiting-human", "PLANT gate"]);
+    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
     let file = fixture.session_file();
-    let dirty = "No \u{1b}[2J\u{202e} visuals";
-    let text = fixture.read(&file).replace("No PLANT visuals", dirty);
+    let dirty = "X \u{1b}[2J\u{202e} Y";
+    let text = fixture.read(&file).replace("PLANT", dirty);
     fixture.write(&file, &text);
     let raw = |text: &str| text.contains('\u{1b}') || text.contains('\u{202e}');
     let shown = fixture.ok_text(&["timing"]);
@@ -2670,7 +2673,7 @@ fn timing_prints_a_stored_control_character_escaped() {
     let mut all = vec![];
     strings(&parsed, &mut all);
     assert!(
-        all.iter().any(|text| text.contains(dirty)),
-        "the JSON does not parse back to the stored reason"
+        all.iter().any(|text| text.contains(&format!("{dirty} gate"))),
+        "the JSON does not parse back to the stored gate name: {all:?}"
     );
 }

@@ -378,7 +378,7 @@ pub(super) fn observation_room(root: &Path) -> Result<()> {
     if session.observations.len() >= MAX_OBSERVATIONS {
         bail!(observations_full(root, session.observations.len(), 1)?);
     }
-    guard_leaks(&mut (*session).clone(), "")?;
+    guard_leaks(&mut (*session).clone(), "", Kept::All)?;
     Ok(())
 }
 
@@ -581,16 +581,77 @@ pub(super) fn read_checkpoint_unlocked(root: &Path) -> Result<Checkpoint> {
     }
 }
 
+/// The pull request `value` names (REQ-cli-007, #353): a positive whole number written
+/// without a sign or leading zero, after at most one `#`, which is dropped, or an
+/// `http://` or `https://` URL with a host and none of white space, `(`, `)`, `[`, `]`,
+/// `<`, `>`, a quote, a backtick or a backslash; `None` for anything else.
+pub(super) fn pull_request(value: &str) -> Option<String> {
+    let number = value.strip_prefix('#').unwrap_or(value);
+    if !number.is_empty() && number.bytes().all(|byte| byte.is_ascii_digit()) && !number.starts_with('0') {
+        return Some(number.to_string());
+    }
+    let rest = value
+        .strip_prefix("https://")
+        .or_else(|| value.strip_prefix("http://"))?;
+    let host = rest.split(['/', '?', '#']).next().unwrap_or_default();
+    let clean = !value.chars().any(|character| {
+        character.is_whitespace() || character.is_control() || "()[]<>\"'`\\".contains(character)
+    });
+    (clean && !host.is_empty()).then(|| value.to_string())
+}
+
+/// The pull request as the session record writes it (REQ-cli-007, #353): double-quoted,
+/// since a YAML reader takes a number as other than text; an empty one stays out of a
+/// record `--pr ""` cleared it from (`stored` holds no `pr`), while a session that never
+/// set one keeps its `pr: ""`, which reads as none. Every session save renders through
+/// [`render_counted`], so every writer of a session file keeps this form.
+fn pr_as_written(
+    record: &mut crate::markdown::Record,
+    pr: &str,
+    stored: Option<&crate::markdown::Record>,
+) -> Result<()> {
+    if !pr.is_empty() {
+        return record.set_quoted("pr", pr);
+    }
+    if stored.is_some_and(|stored| stored.get("pr").is_none()) {
+        record.remove("pr");
+    }
+    Ok(())
+}
+
+/// Which values a guard treats as already stored, so a control character in them never
+/// refuses (REQ-records-016).
+enum Kept<'a> {
+    /// Every value: the session is checked as it stands, not written anew.
+    All,
+    /// The values of the stored record's front matter, besides its body text.
+    From(&'a [String]),
+}
+
 /// Every value this checkpoint writes, checked for leaks or redacted under `--redact`
 /// (REQ-records-006); returns how many matches were redacted. Prose a person wrote in
 /// the body is theirs and is not rewritten.
-fn guard_leaks(session: &mut Checkpoint, stored: &str) -> Result<usize> {
+fn guard_leaks(session: &mut Checkpoint, stored: &str, kept: Kept) -> Result<usize> {
     use crate::leaks::Local;
     // A value the stored body already holds is counted by the body's redaction, so a
     // stored leak a save redacts is counted once (#407).
     let guard = |local: &Local, field: &str, value: &mut String| -> Result<usize> {
         let original = value.clone();
-        let found = crate::leaks::guard(local, field, value)?;
+        // A control character is refused only in a value this write adds: one the stored
+        // record already holds, written by hand or by an earlier release, is escaped
+        // when printed and never blocks a save (REQ-records-016).
+        let held = match &kept {
+            Kept::All => true,
+            Kept::From(values) => {
+                (!stored.is_empty() && !original.is_empty() && stored.contains(original.as_str()))
+                    || values.iter().any(|value| value == &original)
+            }
+        };
+        let found = if held {
+            crate::leaks::guard_kept(local, field, value)?
+        } else {
+            crate::leaks::guard(local, field, value)?
+        };
         Ok(
             if found > 0 && !stored.is_empty() && stored.contains(original.as_str()) {
                 0
@@ -719,7 +780,12 @@ pub(super) fn render_counted(session: &Checkpoint) -> Result<(crate::markdown::R
         .as_ref()
         .map(|source| source.body().to_string())
         .unwrap_or_default();
-    let mut redacted = guard_leaks(&mut guarded, &stored)?;
+    let kept: Vec<String> = guarded
+        .source
+        .as_ref()
+        .map(|source| source.fields().into_iter().map(|(_, value)| value).collect())
+        .unwrap_or_default();
+    let mut redacted = guard_leaks(&mut guarded, &stored, Kept::From(&kept))?;
     // REQ-records-006: under `--redact`, a leak already stored in the record's body, such
     // as a decision an older Chough wrote, is replaced where it stands, so the save adds no
     // redacted copy beside the original and the next plain save is not refused for it.
@@ -729,7 +795,8 @@ pub(super) fn render_counted(session: &Checkpoint) -> Result<(crate::markdown::R
         redacted += source.redact_body(crate::leaks::Local::current());
     }
     let session = &guarded;
-    let record = crate::session_md::render(session, crate::records::now()?)?;
+    let mut record = crate::session_md::render(session, crate::records::now()?)?;
+    pr_as_written(&mut record, &session.meta.pr, session.source.as_ref())?;
     let content = record.render();
     ensure!(
         content.len() as u64 <= SESSION_LIMIT,
@@ -795,7 +862,7 @@ pub(super) fn save_checkpoint(root: &Path, session: &mut Checkpoint) -> Result<(
     // Under `--redact` the checkpoint then holds the values saved, so what a command
     // prints is what the session record says (REQ-records-006).
     if crate::leaks::redacting() {
-        guard_leaks(session, "")?;
+        guard_leaks(session, "", Kept::All)?;
     }
     session.source = Some(record);
     session.pending.clear();
@@ -1655,6 +1722,9 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         changed = true;
     }
     if let Some(title) = args.title {
+        // REQ-records-016: a control character, a line break among them, is refused
+        // before the title's own one-line check.
+        crate::leaks::check_controls("title", &title, false)?;
         session.meta.title = crate::journal::checked_title(&title)?;
         changed = true;
     }
@@ -1662,17 +1732,28 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         session.meta.summary = crate::journal::checked_summary(&summary)?;
         changed = true;
     }
-    // REQ-cli-007 (#282): one line, as the objective is; the save's leak guard checks it
-    // as it always has. Like --objective and --title, it adds no Timeline entry.
+    // REQ-cli-007 (#282, #353): an empty value clears the pull request; any other is a
+    // control character refused first (REQ-records-016), then a pull request number or
+    // an http(s) URL, or refused naming the two forms and never the value; the save's
+    // leak guard checks it as it always has. Like --objective and --title, it adds no
+    // Timeline entry.
     if let Some(pr) = args.pr {
-        if !pr.is_empty() {
+        session.meta.pr = if pr.is_empty() {
+            // Cleared, `pr` leaves the front matter and stays out of it at every later
+            // save; a session that never set one keeps the `pr: ""` it was written with.
+            if let Some(source) = session.source.as_mut() {
+                source.remove("pr");
+            }
+            String::new()
+        } else {
+            crate::leaks::check_controls("pr", &pr, false)?;
             ensure_text("pr", &pr)?;
-            ensure!(
-                !pr.contains(['\n', '\r']),
-                "--pr is one line: the pull request's number or URL; nothing was saved"
-            );
-        }
-        session.meta.pr = pr;
+            pull_request(&pr).ok_or_else(|| {
+                anyhow::anyhow!(
+                    "refused: --pr takes a pull request number, such as 42 or #42, or an http:// or https:// URL to it; nothing was saved"
+                )
+            })?
+        };
         changed = true;
     }
     if let Some(change) = args.native_change {
@@ -1694,7 +1775,8 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         );
         ensure!(
             !(reason.starts_with('<') && reason.ends_with('>')),
-            "--no-native-change got the placeholder {reason}: replace it with the reason this session's work needs no native change"
+            "--no-native-change got the placeholder {}: replace it with the reason this session's work needs no native change",
+            crate::leaks::shown("--no-native-change", &reason)
         );
         ensure_text("no_native_change", &reason)?;
         if let Some(change) = &session.native_change {
@@ -1865,6 +1947,10 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         .then(|| crate::direct_writes::settle(root, session.native_change.as_deref()).err())
         .flatten();
     let mut output = json!({"schema_version": 1, "saved": changed, "checkpoint": session});
+    // REQ-cli-007 (#353): the checkpoint view shows the session's pull request.
+    if !session.meta.pr.is_empty() {
+        output["checkpoint"]["pr"] = json!(session.meta.pr);
+    }
     if let Some(error) = settled {
         output["direct_writes"] = json!({"unknown": error.to_string()});
     }

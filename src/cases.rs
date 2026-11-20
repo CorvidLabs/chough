@@ -835,7 +835,13 @@ fn select(
     let (lane, origin) = prefs::effective(root, "required-lane")?;
     Ok(json!({
         "schema_version": 1,
-        "affected": {"criteria": criteria, "requirements": requirements, "paths": paths, "tracks": tracks},
+        // REQ-records-006 (#367): values given on the command line, each shown only clean.
+        "affected": {
+            "criteria": criteria.iter().map(|id| crate::leaks::shown("--criterion", id)).collect::<Vec<_>>(),
+            "requirements": requirements.iter().map(|id| crate::leaks::shown("--requirement", id)).collect::<Vec<_>>(),
+            "paths": paths.iter().map(|path| crate::leaks::shown("--path", path)).collect::<Vec<_>>(),
+            "tracks": tracks,
+        },
         "selected": selected,
         "omitted": omitted,
         "required_lane": if lane.is_empty() { json!(null) } else { json!({"lane": lane, "origin": origin, "command": format!("fledge lanes run {lane}")}) },
@@ -1281,6 +1287,17 @@ pub(super) fn run_case(
     if let Some(note) = crate::local::toolchain_limitation(root) {
         limitations.push(note);
     }
+    // What the entry holds from the case definition and the captured output is stored
+    // as Chough prints it, so a control character in either, such as a progress bar's
+    // carriage return, is escaped and never refused: nobody gave it (REQ-records-016).
+    let printed = |text: &str| crate::leaks::printable(text, true).into_owned();
+    let summary = printed(&summary);
+    let limitations: Vec<String> = limitations.iter().map(|line| printed(line)).collect();
+    let key_lines = (
+        key_lines.0.iter().map(|line| printed(line)).collect::<Vec<_>>(),
+        key_lines.1,
+    );
+    let argv: Vec<String> = argv.iter().map(|word| printed(word)).collect();
     let record = Evidence {
         id: observation.clone(),
         explicit_id: explicit,

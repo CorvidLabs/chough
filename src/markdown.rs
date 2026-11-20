@@ -177,10 +177,17 @@ impl Record {
         // The subset holds no tab, so a tab in a value, such as pasted terminal output,
         // is stored as one space: Chough never writes front matter its reader refuses
         // (REQ-records-001).
+        // A Windows line break is stored as a line feed (REQ-records-016).
+        let clean = |text: &mut String| {
+            untab(text);
+            if text.contains("\r\n") {
+                *text = text.replace("\r\n", "\n");
+            }
+        };
         match &mut value {
-            Value::Scalar(text) => untab(text),
-            Value::List(items) => items.iter_mut().for_each(untab),
-            Value::Maps(maps) => maps.iter_mut().flatten().for_each(|(_, text)| untab(text)),
+            Value::Scalar(text) => clean(text),
+            Value::List(items) => items.iter_mut().for_each(clean),
+            Value::Maps(maps) => maps.iter_mut().flatten().for_each(|(_, text)| clean(text)),
         }
         if let Value::Maps(maps) = &value {
             for map in maps {
@@ -218,6 +225,31 @@ impl Record {
 
     pub(crate) fn set_scalar(&mut self, key: &str, value: &str) -> Result<()> {
         self.set(key, Value::Scalar(value.to_string()))
+    }
+
+    /// Set `key` to `value` written double-quoted whatever it holds, for a text field a
+    /// YAML reader would otherwise take as a number, such as a pull request (REQ-cli-007).
+    pub(crate) fn set_quoted(&mut self, key: &str, value: &str) -> Result<()> {
+        self.set_written(key, value, quoted(value))
+    }
+
+    /// Set `key` to the YAML boolean `value`, written plain: a flag, not text, so the
+    /// quoting of YAML's reserved words leaves it a boolean (REQ-records-016).
+    pub(crate) fn set_bool(&mut self, key: &str, value: bool) -> Result<()> {
+        let text = if value { "true" } else { "false" };
+        self.set_written(key, text, text.to_string())
+    }
+
+    fn set_written(&mut self, key: &str, value: &str, written: String) -> Result<()> {
+        self.set_scalar(key, value)?;
+        for item in &mut self.items {
+            if let Item::Entry { key: name, raw, .. } = item
+                && name == key
+            {
+                *raw = Some(format!("{key}: {written}\n"));
+            }
+        }
+        Ok(())
     }
 
     pub(crate) fn remove(&mut self, key: &str) {
@@ -493,6 +525,62 @@ impl Record {
     pub(crate) fn check_leaks(&self, local: &crate::leaks::Local) -> Result<()> {
         for (field, value) in self.fields() {
             crate::leaks::check(local, &field, &value)?;
+        }
+        Ok(())
+    }
+
+    /// Escape every control character this record's values and body hold, as Chough
+    /// prints text (REQ-records-016): for a record generated from stored text, such as an
+    /// archived story, which then holds none raw and still reads back.
+    pub(crate) fn make_printable(&mut self) {
+        let printable = |text: &mut String| -> bool {
+            match crate::leaks::printable(text, false) {
+                std::borrow::Cow::Owned(escaped) => {
+                    *text = escaped;
+                    true
+                }
+                std::borrow::Cow::Borrowed(_) => false,
+            }
+        };
+        for item in &mut self.items {
+            let Item::Entry { value, raw, .. } = item else {
+                continue;
+            };
+            let changed = match value {
+                Value::Scalar(text) => printable(text),
+                Value::List(items) => items.iter_mut().fold(false, |any, text| printable(text) | any),
+                Value::Maps(maps) => maps
+                    .iter_mut()
+                    .flatten()
+                    .fold(false, |any, (_, text)| printable(text) | any),
+            };
+            if changed {
+                *raw = None;
+            }
+        }
+        printable(&mut self.body);
+    }
+
+    /// Refuse a control character in what this record adds over `stored`
+    /// (REQ-records-016): in every value without `stored`, and with it only in a value it
+    /// does not already hold, and in the body only on a line it does not already hold, so
+    /// text written by hand or by an earlier release never blocks a save.
+    pub(crate) fn check_controls(&self, stored: Option<&Record>) -> Result<()> {
+        let kept: std::collections::BTreeMap<String, String> =
+            stored.map(Record::fields).unwrap_or_default().into_iter().collect();
+        for (field, value) in self.fields() {
+            if kept.get(&field) == Some(&value) {
+                continue;
+            }
+            match stored {
+                Some(stored) if field == "body" => {
+                    let old: std::collections::BTreeSet<&str> = stored.body.lines().collect();
+                    for line in value.lines().filter(|line| !old.contains(line)) {
+                        crate::leaks::check_controls(&field, line, true)?;
+                    }
+                }
+                _ => crate::leaks::check_controls(&field, &value, true)?,
+            }
         }
         Ok(())
     }
@@ -986,6 +1074,12 @@ fn plain_safe(text: &str, in_flow: bool) -> bool {
         && !text.contains(": ")
         && !text.contains(" #")
         && !text.contains(['\n', '\r', '\t', '"', '\\'])
+        // A word a YAML reader takes as other than text is quoted, so every text field
+        // reads back as text (REQ-records-016, #366).
+        && !matches!(
+            text.to_ascii_lowercase().as_str(),
+            "null" | "~" | "true" | "false" | "yes" | "no" | "on" | "off"
+        )
         && !"'&*!|>{[%@`#\"".contains(first)
         && !text.starts_with("- ")
         && !text.starts_with("? ")

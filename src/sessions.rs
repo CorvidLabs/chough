@@ -323,7 +323,10 @@ pub(super) fn resolve_any(root: &Path, name: &str) -> Result<String> {
     }
     match found.as_slice() {
         [id] => Ok(archive_file(id)),
-        [] => bail!("refused: no open session or archived story {name}; nothing was written"),
+        [] => bail!(
+            "refused: no open session or archived story {}; nothing was written",
+            crate::leaks::shown("session name", name)
+        ),
         several => bail!(
             "refused: {name} names several archived stories ({}); name one by its ID; nothing was written",
             several.join(", ")
@@ -982,6 +985,18 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
         .collect();
     for key in empty {
         record.remove(&key);
+    }
+    // REQ-records-016 (#366): the story holds the session's text as it is printed, so a
+    // control character a session holds by hand is escaped, never carried raw.
+    record.make_printable();
+    // REQ-cli-007 (#353): the story writes the pull request as the session does,
+    // double-quoted; an empty one went with the other empty values above.
+    if let Some(pr) = record
+        .scalar("pr")
+        .map(str::to_string)
+        .filter(|pr| !pr.is_empty())
+    {
+        record.set_quoted("pr", &pr)?;
     }
     let mut text = record.render_within(RecordKind::Story)?;
     if !text.ends_with('\n') {
@@ -1847,7 +1862,7 @@ pub(super) fn render_entry(
     record.set_scalar("from", from)?;
     record.set_scalar("value", text)?;
     if let Some(recorded) = recorded {
-        record.set_scalar("recorded", if recorded { "true" } else { "false" })?;
+        record.set_bool("recorded", recorded)?;
     }
     record.set_scalar("added", added)?;
     record.render_within(RecordKind::Inbox)
