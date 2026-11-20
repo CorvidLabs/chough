@@ -82,7 +82,108 @@
         "where": "Claude Code chat answer, relayed by his planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-19 about 14:12Z, on L2 control-and-echo at 1068f67 with the seven recommended choices; recorded at the batch start on that text, with REQ-cli-007 rebased onto main after #413 under standing OK (d) (his 'yes to both', about 15:02Z, relayed by t4c; fable-lead's script check of 2026-11-20)",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795143829,
+      "digest": "42ca242d8de6dff7da73be19f3440eff4c3bf118d0684e74b71cf467d80911e7",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of control-and-echo with four more paths and REQ-reporting-001's example\": \"Ok\" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 03:00Z, item 2 of t4c's six-item list, on this text: src/evidence.rs, src/gates.rs, tests/front_matter_writes.rs and .chough/cases/records.test-stage.cases.toml join the declared paths, with no sentence change; and REQ-reporting-001's example and criterion name a gate's name in place of a stage move's reason, under standing OK 6(a), a wording fix that only makes an approved sentence match tested code, relayed via t4c and checked by fable-lead's script; the earlier approvals stand for the rest: 'Approve the recommended set' (2026-11-19 about 14:12Z) and standing OK (d) for REQ-cli-007's rebase after #413). Relayed and recorded by chough-fixer-t4g at 2026-11-20T03:03:48Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "control-and-echo",
+        "title": "Control and echo",
+        "description": "control and echo",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records",
+          "reporting"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.control-and-echo.cases.toml",
+          ".chough/cases/history.control-and-echo.cases.toml",
+          ".chough/cases/records.control-and-echo.cases.toml",
+          ".chough/cases/records.test-stage.cases.toml",
+          ".chough/cases/reporting.control-and-echo.cases.toml",
+          "changelog.d/2026-11-19-control-and-echo.md",
+          "docs/cli.md",
+          "src/bugs.rs",
+          "src/cases.rs",
+          "src/checkpoint.rs",
+          "src/context.rs",
+          "src/evidence.rs",
+          "src/gates.rs",
+          "src/history.rs",
+          "src/identity.rs",
+          "src/journal.rs",
+          "src/leaks.rs",
+          "src/library.rs",
+          "src/main.rs",
+          "src/markdown.rs",
+          "src/prefs.rs",
+          "src/records.rs",
+          "src/sessions.rs",
+          "src/skill.rs",
+          "src/stage.rs",
+          "src/timing.rs",
+          "src/validate.rs",
+          "tests/checkpoint.rs",
+          "tests/front_matter_writes.rs",
+          "tests/history.rs",
+          "tests/journal.rs",
+          "tests/leaks.rs",
+          "tests/next.rs",
+          "tests/output_safety.rs",
+          "tests/timing.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A control character (C0, DEL, C1, a bidi override or isolate) in a value a person gives is refused at write as refused:control-character, naming the field and code point, except a line feed where the field takes a line break, with CRLF stored as LF; text printed from a record or given is escaped as \\u and four hex digits, text and JSON alike, with a line feed shown as \\n on a one-line slot; YAML reserved scalars are written quoted (#366). checkpoint --pr takes only a number or an http(s) URL, an empty value removes it, and next, status, context and the checkpoint view show it; the journal post links only those forms (#353). The remaining error and output sites name the field and what it holds, never the value, proven by a black-box sweep (part of #367). A file: URL is checked like the path it carries, and USERNAME counts like USER and LOGNAME (REQ-records-006)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif decided the scope on the issues: #366 \"both. New values holding control characters are refused at write (except line breaks where a field allows them), and stored text is shown escaped when printed, as status and context already do\", widened to C0/C1 controls, DEL and bidi overrides in every field, with a tab refused like any other control, since a survey of 22 repositories' records found none; #353 from his decision of 2026-11-18 (number or URL, shown in next, status, context and the checkpoint view; an empty value clears it), with #12 stored as 12 and pr written as a quoted string; #367 \"approved. Errors name the field and the kind, never the offending text\" and \"Show it only if clean\". Stacked on #407 (leaks-and-output), whose REQ-records-006 text it builds on; it modifies no requirement D1 (doctor-fix-safety) or #311 modifies. change.rs sites stay with G1. No new dependency. Failing tests first.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "8eed61e98cb530fc089337f064f074a249da0da3ec94beb814559a7157107934",
+        "history": "1341c6c275a1ab761e9ada91a081a67c524a4c9bbfd4066368f68a08084659d1",
+        "records": "44735e6f7fb61a4f51d99281d7d284fd874ccc0118fb540759c855dbe5aae61b",
+        "reporting": "89d489de77399cf5899aedd1450df55cfd45e8ab6adbc1112c87e131b5b3601e"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-007": "2b79a996524077174fc2e395bb69def3f7e703fe8eccff4d763d0100ad850914",
+        "history: REQUIREMENT REQ-history-015": "68be77743e1fb7d97fc03a70df0bd7f45cd0c4f15fe5e3da4c1548de316360db",
+        "records: REQUIREMENT REQ-records-006": "c63ea29c1be70de2c3333f155f9225dae8f784fe02e8513de67702f336127805",
+        "reporting: REQUIREMENT REQ-reporting-001": "5c2cb4c8aad77c5d2bdbd4ede894f8acf7d17471512e07e8601066f1034af468"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Ok",
+        "where": "Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 03:00Z, item 2 of t4c's six-item list, on this text: src/evidence.rs, src/gates.rs, tests/front_matter_writes.rs and .chough/cases/records.test-stage.cases.toml join the declared paths, with no sentence change; and REQ-reporting-001's example and criterion name a gate's name in place of a stage move's reason, under standing OK 6(a), a wording fix that only makes an approved sentence match tested code, relayed via t4c and checked by fable-lead's script; the earlier approvals stand for the rest: 'Approve the recommended set' (2026-11-19 about 14:12Z) and standing OK (d) for REQ-cli-007's rebase after #413",
+        "recorded_by": "chough-fixer-t4g"
+      }
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "control-and-echo",
+      "actor": "0xLeif",
+      "reason": "Add src/evidence.rs, src/gates.rs, tests/front_matter_writes.rs and .chough/cases/records.test-stage.cases.toml to the declared paths, and make the example in REQ-reporting-001 a gate's name, which chough timing shows, in place of a stage move's reason, which it does not (run by the fixer on Leif's relayed word, via t4c, 2026-11-20; the wording under standing OK 6(a), relayed via t4c)",
+      "timestamp": 1795143803,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
+    }
+  ]
 }

@@ -10,7 +10,7 @@
   "state": "approved",
   "base_commit": "9a81c859ae449f9da541cab3538d318de411a1ee",
   "created_at": 1795070957,
-  "updated_at": 1795138911,
+  "updated_at": 1795143829,
   "affected_specs": [
     "records",
     "cli",
@@ -48,7 +48,11 @@
     ".chough/cases/records.control-and-echo.cases.toml",
     ".chough/cases/cli.control-and-echo.cases.toml",
     ".chough/cases/history.control-and-echo.cases.toml",
-    ".chough/cases/reporting.control-and-echo.cases.toml"
+    ".chough/cases/reporting.control-and-echo.cases.toml",
+    "src/evidence.rs",
+    "src/gates.rs",
+    "tests/front_matter_writes.rs",
+    ".chough/cases/records.test-stage.cases.toml"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,

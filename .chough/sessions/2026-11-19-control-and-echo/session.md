@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: "Gate \"Re-approval of control-and-echo with four more paths and REQ-reporting-001's example\" closed (approved); run `chough stage advance` to move on."
 ---
 # Control and echo batch: control characters refused at write and escaped on print (#366), --pr takes a number or an http(s) URL and is shown in next, status, context and the checkpoint view (#353), the remaining sites echo no value (part of #367), and a file URL holds the user name
 
@@ -35,6 +35,8 @@ Control and echo batch: control characters refused at write and escaped on print
 
 - 0xLeif decided "Standing OK (d): rebase control-and-echo's REQ-cli-007 onto main after #413": "yes to both" (Standing OK (d), Leif's Claude Code chat message relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:02Z; #413 changed REQ-cli-007 on main, so the delta was rebased onto main's text at 2968f061 with exactly the approved words (six body edits, one --pr criterion replaced and two added) and #413's (one sentence, one criterion) kept, the criteria placed as main's three unchanged, L2's three, then #413's; fable-lead verified by script on 2026-11-20 that nothing else changed); recorded by chough-fixer-t4g; a relayed claim, not authenticated
 - 0xLeif decided "Approve the scope of control-and-echo": "Approve the recommended set" (Claude Code chat answer, relayed by his planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-19 about 14:12Z, on L2 control-and-echo at 1068f67 with the seven recommended choices; recorded at the batch start on that text, with REQ-cli-007 rebased onto main after #413 under standing OK (d) (his 'yes to both', about 15:02Z, relayed by t4c; fable-lead's script check of 2026-11-20)); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve control-and-echo as 0xLeif
+- 0xLeif decided "Add four files to control-and-echo's scope by one send-back, run by the fixer": "Ok" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 03:00Z, answering t4c's six-item list, put to him with 'all yes' as the way to accept all; item 2: add src/evidence.rs, src/gates.rs, tests/front_matter_writes.rs and its case file .chough/cases/records.test-stage.cases.toml to L2's scope by one send-back the fixer runs, no sentence change); recorded by chough-fixer-t4g; a relayed claim, not authenticated
+- 0xLeif decided "Re-approval of control-and-echo with four more paths and REQ-reporting-001's example": "Ok" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 03:00Z, item 2 of t4c's six-item list, on this text: src/evidence.rs, src/gates.rs, tests/front_matter_writes.rs and .chough/cases/records.test-stage.cases.toml join the declared paths, with no sentence change; and REQ-reporting-001's example and criterion name a gate's name in place of a stage move's reason, under standing OK 6(a), a wording fix that only makes an approved sentence match tested code, relayed via t4c and checked by fable-lead's script; the earlier approvals stand for the rest: 'Approve the recommended set' (2026-11-19 about 14:12Z) and standing OK (d) for REQ-cli-007's rebase after #413); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve control-and-echo as 0xLeif
 
 ## What was verified
 
@@ -87,4 +89,47 @@ Control and echo batch: control characters refused at write and escaped on print
   - native_change: control-and-echo
   - gate: native:approved
   - revision: 0e29a28a355707d0b1403a4059b9a564f7a84b6f
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T03:03:14Z · gate-opened · build → build · Add four files to control-and-echo's scope by one send-back, run by the fixer ^t-3e92f4
+  - native_change: control-and-echo
+  - revision: df70adb2274a78df8c073be78c35b77dd80b2ac2
+  - holds: build
+  - drives: none
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T03:03:14Z · gate-closed · build → build · Add four files to control-and-echo's scope by one send-back, run by the fixer ^t-fca033
+  - native_change: control-and-echo
+  - revision: df70adb2274a78df8c073be78c35b77dd80b2ac2
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Ok
+    - where: Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 03:00Z, answering t4c's six-item list, put to him with 'all yes' as the way to accept all; item 2: add src/evidence.rs, src/gates.rs, tests/front_matter_writes.rs and its case file .chough/cases/records.test-stage.cases.toml to L2's scope by one send-back the fixer runs, no sentence change
+    - recorded_by: chough-fixer-t4g
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T03:03:48Z · gate-opened · build → build · Re-approval of control-and-echo with four more paths and REQ-reporting-001's example ^t-f9e2ca
+  - native_change: control-and-echo
+  - revision: df70adb2274a78df8c073be78c35b77dd80b2ac2
+  - holds: build
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T03:03:48Z · direct-native-write · build → build · control-and-echo's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state approved → draft ^t-845a37
+  - native_change: control-and-echo
+  - revision: df70adb2274a78df8c073be78c35b77dd80b2ac2
+  - direct_write:
+    - change: control-and-echo
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: approved
+    - after_state: draft
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T03:03:48Z · gate-closed · build → build · Re-approval of control-and-echo with four more paths and REQ-reporting-001's example ^t-0383ba
+  - native_change: control-and-echo
+  - revision: df70adb2274a78df8c073be78c35b77dd80b2ac2
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Ok
+    - where: Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 03:00Z, item 2 of t4c's six-item list, on this text: src/evidence.rs, src/gates.rs, tests/front_matter_writes.rs and .chough/cases/records.test-stage.cases.toml join the declared paths, with no sentence change; and REQ-reporting-001's example and criterion name a gate's name in place of a stage move's reason, under standing OK 6(a), a wording fix that only makes an approved sentence match tested code, relayed via t4c and checked by fable-lead's script; the earlier approvals stand for the rest: 'Approve the recommended set' (2026-11-19 about 14:12Z) and standing OK (d) for REQ-cli-007's rebase after #413
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve control-and-echo
+    - actor: 0xLeif
   - by: chough-fixer (claude-opus-5-5, hc t4n)
