@@ -7,11 +7,10 @@
   "title": "Fix G2: the gate summary tells the truth and an unattended done needs a reason",
   "description": "Fix G2: the gate summary tells the truth and an unattended done needs a reason",
   "kind": "bug_fix",
-  "state": "verifying",
-  "canonical_applied": true,
+  "state": "approved",
   "base_commit": "7bf110dcca70bdd3565007086aee40a286f40eff",
   "created_at": 1795190537,
-  "updated_at": 1795196612,
+  "updated_at": 1795197913,
   "affected_specs": [
     "cli",
     "history"
@@ -30,7 +29,8 @@
     "specs/history/requirements.md",
     "specs/history/history.spec.md",
     "changelog.d/",
-    ".chough/cases/cli.g2-gate-summary.cases.toml"
+    ".chough/cases/cli.g2-gate-summary.cases.toml",
+    "tests/next.rs"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
