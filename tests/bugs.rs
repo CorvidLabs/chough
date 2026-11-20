@@ -2985,3 +2985,39 @@ fn a_qualified_id_of_archived_evidence_links_the_story() {
         assert!(!reported.contains(&gone), "{reported}");
     }
 }
+
+/// #394 (REQ-cli-047), TC-cli-an-unclosed-fence-keeps-the-bug-log-mergeable: two
+/// branches that each add a Log entry to a bug whose write-up holds a code fence that
+/// never closes merge with both entries and no hand-resolved conflict.
+#[test]
+fn a_bug_with_an_unclosed_fence_still_merges_both_log_entries() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let added = json(&add_bug(&fixture, &[]));
+    let id = added["id"].as_str().unwrap().to_string();
+    let committed = fixture.read(&bug_path(&id));
+    let at = committed.find("\n## Log\n").expect("a Log section");
+    let original = format!(
+        "{}\n```\nan unclosed fence in the write-up\n{}",
+        &committed[..at],
+        &committed[at..]
+    );
+    let ours = format!(
+        "{}- 2099-01-01T00:00:01Z · an entry from ours\n",
+        original.trim_end_matches('\n').to_string() + "\n"
+    );
+    let theirs = format!(
+        "{}- 2099-01-01T00:00:02Z · an entry from theirs\n",
+        original.trim_end_matches('\n').to_string() + "\n"
+    );
+    let output = merge_files(&fixture, &original, &ours, &theirs);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = fixture.read("merge/ours.md");
+    assert!(text.contains("an entry from ours"), "{text}");
+    assert!(text.contains("an entry from theirs"), "{text}");
+    assert_eq!(text.matches("\n## Log\n").count(), 1, "{text}");
+}

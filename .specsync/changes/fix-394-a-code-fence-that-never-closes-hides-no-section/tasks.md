@@ -5,10 +5,10 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Failing tests first, each red on main: a session with a three-backtick Goal saved
+- [x] Failing tests first, each red on main: a session with a three-backtick Goal saved
       three times; a bug merge with an unclosed fence before its Log.
-- [ ] The shared fence rule in `src/markdown.rs`, used by `section_span` and by the bug
+- [x] The shared fence rule in `src/markdown.rs`, used by `section_span` and by the bug
       merge driver's `parts()` in `src/bugs.rs`.
-- [ ] `docs/cli.md`, the case definitions and the changelog fragment.
+- [x] `docs/cli.md`, the case definitions and the changelog fragment.
 
 Human gates (not checkboxes): scope approval, implementation review, merge.

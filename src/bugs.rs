@@ -2911,12 +2911,14 @@ mod merge {
 
     fn parts(body: &str) -> Parts<'_> {
         let mut offset = 0;
-        let mut fenced = false;
         let mut heading = None;
-        for line in body.split_inclusive('\n') {
+        // #394: the section reader's fence rule, so a fence that never closes in the
+        // write-up does not hide the Log.
+        let lines: Vec<&str> = body.split_inclusive('\n').collect();
+        let hidden = crate::markdown::fenced_lines(&lines);
+        for (index, line) in lines.iter().enumerate() {
             let content = line.trim_end();
-            let fence = content.trim_start().starts_with("```");
-            if !fenced && !fence {
+            if !hidden[index] {
                 if let Some((start, end)) = heading {
                     if content.starts_with("# ") || content.starts_with("## ") {
                         return Parts {
@@ -2929,9 +2931,6 @@ mod merge {
                 } else if content == format!("## {LOG}") {
                     heading = Some((offset, offset + line.len()));
                 }
-            }
-            if fence {
-                fenced = !fenced;
             }
             offset += line.len();
         }

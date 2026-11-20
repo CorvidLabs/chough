@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "records"
+
+# #394: a code fence that never closes made every save of a session append its sections
+# again.
+
+[[case]]
+id = "TC-records-an-unclosed-fence-hides-no-section"
+title = "A session whose Goal is a code fence that never closes, backtick or tilde, saves three times with each section once, and chough next reads its decisions and open questions"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24"]
+requirements = ["REQ-records-004"]
+paths = ["src/markdown.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::a_code_fence_that_never_closes_hides_no_section passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "a_code_fence_that_never_closes_hides_no_section"

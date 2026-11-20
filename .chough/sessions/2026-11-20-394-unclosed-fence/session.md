@@ -5,7 +5,7 @@ aliases: [394-unclosed-fence]
 objective: A code fence that never closes hides nothing after it, so saving a session never repeats its sections and the bug merge driver still finds the Log (#394)
 intent_scope: ""
 modules: []
-stage: intent
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Scope approval of fix-394-a-code-fence-that-never-closes-hides-no-section (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # A code fence that never closes hides nothing after it, so saving a session never repeats its sections and the bug merge driver still finds the Log (#394)
 
@@ -61,3 +61,16 @@ A code fence that never closes hides nothing after it, so saving a session never
     - native: specsync change approve fix-394-a-code-fence-that-never-closes-hides-no-section
     - actor: 0xLeif
   - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T14:16:20Z · advance · intent → design ·  ^t-b395d8
+  - native_change: fix-394-a-code-fence-that-never-closes-hides-no-section
+  - revision: cb89694a8a27346a84c8f7352c0351404940268c
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T14:16:20Z · advance · design → plan ·  ^t-888bee
+  - native_change: fix-394-a-code-fence-that-never-closes-hides-no-section
+  - revision: cb89694a8a27346a84c8f7352c0351404940268c
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T14:16:20Z · advance · plan → build · native:approved ^t-8786c9
+  - native_change: fix-394-a-code-fence-that-never-closes-hides-no-section
+  - gate: native:approved
+  - revision: cb89694a8a27346a84c8f7352c0351404940268c
+  - by: fable (claude-opus-5-5, hc t4b)

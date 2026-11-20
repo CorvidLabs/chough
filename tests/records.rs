@@ -1564,3 +1564,51 @@ fn many_unclosed_fence_openers_are_scanned_in_bounded_time() {
     assert!(refused.contains(&format!("line {line}")), "{refused}");
     assert_eq!(fixture.read(&file), bad, "a refused write changed the file");
 }
+
+/// #394 (REQ-records-004, REQ-records-001), TC-records-an-unclosed-fence-hides-no-section:
+/// a session whose Goal is a code fence that never closes, here an objective of three
+/// backticks, saves any number of times with each of its sections once, and `chough
+/// next` reads its decisions and open questions. A tilde fence does the same.
+#[test]
+fn a_code_fence_that_never_closes_hides_no_section() {
+    for fence in ["```", "~~~"] {
+        let fixture = Fixture::new();
+        fixture.init();
+        fixture.ok(&["session", "new", "fence", "--objective", fence]);
+        for index in 1..=3 {
+            fixture.ok(&[
+                "checkpoint",
+                "--decision",
+                &format!("decision {index}"),
+                "--question",
+                &format!("question {index}?"),
+            ]);
+        }
+        let text = fixture.read(&fixture.session_file());
+        for heading in [
+            "## Goal",
+            "## Where it stands",
+            "## Decisions and why",
+            "## What was verified",
+            "## Open threads",
+            "## Timeline",
+        ] {
+            assert_eq!(
+                text.lines().filter(|line| *line == heading).count(),
+                1,
+                "{fence}: {heading} is not there once:\n{text}"
+            );
+        }
+        let next = fixture.ok_text(&["next"]);
+        for index in 1..=3 {
+            assert!(
+                next.contains(&format!("decision {index}")),
+                "{fence}: {next}"
+            );
+            assert!(
+                next.contains(&format!("question {index}?")),
+                "{fence}: {next}"
+            );
+        }
+    }
+}
