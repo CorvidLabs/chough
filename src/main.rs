@@ -485,7 +485,20 @@ fn init(
             "the project already has an open session; run `chough session new <key>` for new work"
         );
         let key = session_key.unwrap_or_else(|| identity::slug(&objective, "session", 64));
-        let id = sessions::create(root, &key, objective, intent_scope, modules)?;
+        // REQ-cli-001 (#386): another init at once may make the session between the check
+        // above and this one; this run then refuses as it would have after it.
+        let id = match sessions::create(root, &key, objective, intent_scope, modules) {
+            Ok(id) => id,
+            Err(error)
+                if !sessions::open_ids(root)?.is_empty()
+                    || format!("{error:#}").contains("is already used by session") =>
+            {
+                bail!(
+                    "the project already has an open session; run `chough session new <key>` for new work"
+                )
+            }
+            Err(error) => return Err(error),
+        };
         created.push(sessions::session_file(&id));
     }
     // REQ-records-002: the records tree's reading guide, create-only; the cases folder

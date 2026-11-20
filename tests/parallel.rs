@@ -81,7 +81,8 @@ fn parallel_skill_updates_each_succeed() {
 /// file another run wrote, and no output holds `File exists`.
 #[test]
 fn parallel_inits_each_succeed_or_refuse_plainly() {
-    for round in 0..6 {
+    // The race is narrow (2 of 24 runs on Linux in a debug build), so many rounds.
+    for round in 0..30 {
         let fixture = Fixture::new();
         fixture.commit("fresh repository");
         let results = at_once(
