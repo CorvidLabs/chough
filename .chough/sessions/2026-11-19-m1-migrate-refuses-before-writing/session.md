@@ -5,7 +5,7 @@ aliases: [m1-migrate-refuses-before-writing]
 objective: "Migration refuses before it writes and leaves a working tree: any entry at a target or receipt name counts as taken, parallel applies cannot both apply, a returning 0.5.x record already migrated is refused by name with the generated index rebuilt, and doctor --fix keeps a pointer that names an open session by alias (#376, #370, #337, #378; #375 and #338 await Leif's choice)"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -60,9 +60,17 @@ observations:
   - 2026-11-20-tc-records-migrate-skips-macos-metadata
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-m1-migrate-refuses-before-writing
+    holds: accept
+    drives: review
+    opened: 2026-11-20T06:23:41Z
 run_consents: []
-next: "Gate \"Re-approval of fix-m1-migrate-refuses-before-writing with the macOS-metadata case file added to its paths (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Continue accept
+title: Migration refuses before it writes and leaves a working tree
+summary:
+  - chough migrate reads every target and receipt entry without following a link or waiting and refuses anything in the way before it writes (#337); judges returning 0.5.x files by the committed receipt that lists them (#370); takes the writer lock before it plans, so one apply of a digest applies (#378); removes no 0.5.x file before every planned file is on disk and gives knowledge/index.md its name by moving the 0.5.x INDEX.md aside, on every file system including a Docker Desktop mount (#338); removes folders left holding only macOS metadata and names them (#375); and doctor --fix keeps a pointer that names an open session by alias (#376).
+  - "Verified at 75264e00: all eleven verify steps and fourteen cases on macOS; the tester's PASS on macOS (25 set rows fixed, nine real repositories); tester2's PASS on Linux and a Docker Desktop mount; corvid-agent's approval; fable-lead's read."
 ---
 # Migration refuses before it writes and leaves a working tree: any entry at a target or receipt name counts as taken, parallel applies cannot both apply, a returning 0.5.x record already migrated is refused by name with the generated index rebuilt, and doctor --fix keeps a pointer that names an open session by alias (#376, #370, #337, #378; #375 and #338 await Leif's choice)
 
@@ -273,3 +281,19 @@ Migration refuses before it writes and leaves a working tree: any entry at a tar
     - native: specsync change approve fix-m1-migrate-refuses-before-writing
     - actor: 0xLeif
   - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T06:23:41Z · advance · build → test · native:verifying ^t-aeb4f7
+  - native_change: fix-m1-migrate-refuses-before-writing
+  - gate: native:verifying
+  - revision: 75264e0039a3957affd98dca1708de2819c2af13
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T06:23:41Z · advance · test → accept · native:verifying ^t-b33754
+  - native_change: fix-m1-migrate-refuses-before-writing
+  - gate: native:verifying
+  - revision: 75264e0039a3957affd98dca1708de2819c2af13
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T06:23:41Z · gate-opened · accept → accept · Implementation review of fix-m1-migrate-refuses-before-writing ^t-8e4c3a
+  - native_change: fix-m1-migrate-refuses-before-writing
+  - revision: 75264e0039a3957affd98dca1708de2819c2af13
+  - holds: accept
+  - drives: review
+  - by: t4c (claude-opus-5-5, hc t4c)

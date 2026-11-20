@@ -258,6 +258,13 @@
         "where": "His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, after his relayed 'Ok' (hc t4c through fable-lead, about 03:00Z, item 3): the one path .chough/cases/records.migrate-macos-metadata.cases.toml added; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 and 'A' (2026-11-20) and standing OK (d), as recorded before",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795155860,
+      "digest": "b2fda32efbcf5e11a29386d0cdb1e0bb148f684f90f0d8cd75e0d6eb97d63d33",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],

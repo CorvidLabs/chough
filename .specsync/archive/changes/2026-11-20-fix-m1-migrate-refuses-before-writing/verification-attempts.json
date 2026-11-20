@@ -1,0 +1,1751 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1795141406,
+      "commit": "3f9f99c0b583daa04c613bbb5f32aa745d38c208",
+      "contract_digest": "",
+      "workspace_digest": "",
+      "passed": false,
+      "commands": [],
+      "requirement_ids": [],
+      "refusal": "tasks.md contains incomplete tasks: finish the 9 open tasks in `.specsync/changes/fix-m1-migrate-refuses-before-writing/tasks.md` (line 8: \"Failing tests first, one per issue, each red on main.\"; line 9: \"#376: the after-fix pointer check in doctor resolves aliases and bare slugs.\"; line 10: \"#337: one no-follow check of every target and receipt name before any write.\"; line 11: \"#370: refuse a returning record whose ID is already held; rebuild the index\"; line 13: \"The change-open refusal, when built: plural wording, one change id per line,\"; and 4 more) and mark each one `[x]`, then re-run `specsync change check fix-m1-migrate-refuses-before-writing --commit`"
+    },
+    {
+      "timestamp": 1795141469,
+      "commit": "26802b19311270e800e3b7bbe52b65dab1bd79a4",
+      "contract_digest": "",
+      "workspace_digest": "",
+      "passed": false,
+      "commands": [],
+      "requirement_ids": [],
+      "refusal": "tasks.md contains incomplete tasks: finish the 9 open tasks in `.specsync/changes/fix-m1-migrate-refuses-before-writing/tasks.md` (line 8: \"Failing tests first, one per issue, each red on main.\"; line 9: \"#376: the after-fix pointer check in doctor resolves aliases and bare slugs.\"; line 10: \"#337: one no-follow check of every target and receipt name before any write.\"; line 11: \"#370: refuse a returning record whose ID is already held; rebuild the index\"; line 13: \"The change-open refusal, when built: plural wording, one change id per line,\"; and 4 more) and mark each one `[x]`, then re-run `specsync change check fix-m1-migrate-refuses-before-writing --commit`"
+    },
+    {
+      "timestamp": 1795141702,
+      "commit": "73e41eddd74bafc5239d54926f2bc520bd7782ea",
+      "contract_digest": "4d4c94a15d5bc426e89019a4a938807ecc9025863f66436a6d3ad418219a8151",
+      "execution_digest": "79892b3b82ccc86f6ef858bf86b759c9f1a254d63be58bcb848bb4f8d7511ee3",
+      "workspace_digest": "e4f339f58993a840519ac9ee193e5f507c58e73519e6758929b6363cf054adae",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-055",
+        "REQ-records-009",
+        "REQ-records-015"
+      ]
+    },
+    {
+      "timestamp": 1795141703,
+      "commit": "dbba1bd99cc441a785829d91807797fdcae2eb41",
+      "contract_digest": "4d4c94a15d5bc426e89019a4a938807ecc9025863f66436a6d3ad418219a8151",
+      "execution_digest": "79892b3b82ccc86f6ef858bf86b759c9f1a254d63be58bcb848bb4f8d7511ee3",
+      "workspace_digest": "8934cfdfc0edfeb35eafcbd3cafac61ffe81eff44ac059ceaf09bc2b3e4b6950",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-055",
+        "REQ-records-009",
+        "REQ-records-015"
+      ]
+    },
+    {
+      "timestamp": 1795142213,
+      "commit": "5a71d6da5a878f9994b57e2ec2fd98d3529c72ae",
+      "contract_digest": "4d4c94a15d5bc426e89019a4a938807ecc9025863f66436a6d3ad418219a8151",
+      "execution_digest": "79892b3b82ccc86f6ef858bf86b759c9f1a254d63be58bcb848bb4f8d7511ee3",
+      "workspace_digest": "8934cfdfc0edfeb35eafcbd3cafac61ffe81eff44ac059ceaf09bc2b3e4b6950",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-055",
+        "REQ-records-009",
+        "REQ-records-015"
+      ]
+    },
+    {
+      "timestamp": 1795142218,
+      "commit": "17dc717b4f0d47924da99f17452dfc74a0038292",
+      "contract_digest": "4d4c94a15d5bc426e89019a4a938807ecc9025863f66436a6d3ad418219a8151",
+      "execution_digest": "79892b3b82ccc86f6ef858bf86b759c9f1a254d63be58bcb848bb4f8d7511ee3",
+      "workspace_digest": "8934cfdfc0edfeb35eafcbd3cafac61ffe81eff44ac059ceaf09bc2b3e4b6950",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-055",
+        "REQ-records-009",
+        "REQ-records-015"
+      ]
+    },
+    {
+      "timestamp": 1795142473,
+      "commit": "cacaee95292a3e88002faca7d872ed4b5f38fd21",
+      "contract_digest": "4d4c94a15d5bc426e89019a4a938807ecc9025863f66436a6d3ad418219a8151",
+      "execution_digest": "79892b3b82ccc86f6ef858bf86b759c9f1a254d63be58bcb848bb4f8d7511ee3",
+      "workspace_digest": "5b2c78313818c3785257a0ea7606b977ff211fe431259f25a2ba34e5f0c3b603",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-055",
+        "REQ-records-009",
+        "REQ-records-015"
+      ]
+    },
+    {
+      "timestamp": 1795142475,
+      "commit": "2785c26d317739171f2eae77f5bb79dcef975ca3",
+      "contract_digest": "4d4c94a15d5bc426e89019a4a938807ecc9025863f66436a6d3ad418219a8151",
+      "execution_digest": "79892b3b82ccc86f6ef858bf86b759c9f1a254d63be58bcb848bb4f8d7511ee3",
+      "workspace_digest": "5b2c78313818c3785257a0ea7606b977ff211fe431259f25a2ba34e5f0c3b603",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-055",
+        "REQ-records-009",
+        "REQ-records-015"
+      ]
+    },
+    {
+      "timestamp": 1795146894,
+      "commit": "de624603e963774b962d26fb278c2869353fafca",
+      "contract_digest": "15813525ef23940a6ee1c909b02dc89e3dee084d362b0eec887f287058b3883a",
+      "execution_digest": "6e3512200c9ef49922963dacf0146c16879bad68da78c6e77e8e5932e821d0fe",
+      "workspace_digest": "2a4d0bfb49211d41d042120928a9fd6a2d0aa69eeb861db62e7cee6c24a2169f",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-055",
+        "REQ-records-009",
+        "REQ-records-015"
+      ]
+    },
+    {
+      "timestamp": 1795146896,
+      "commit": "d2021ef8207a8ed851b3e7cb6e99ec4559afa2c2",
+      "contract_digest": "15813525ef23940a6ee1c909b02dc89e3dee084d362b0eec887f287058b3883a",
+      "execution_digest": "6e3512200c9ef49922963dacf0146c16879bad68da78c6e77e8e5932e821d0fe",
+      "workspace_digest": "2a4d0bfb49211d41d042120928a9fd6a2d0aa69eeb861db62e7cee6c24a2169f",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-055",
+        "REQ-records-009",
+        "REQ-records-015"
+      ]
+    },
+    {
+      "timestamp": 1795147218,
+      "commit": "629bc460537e0487fefeddce96bd4f3e8e7db203",
+      "contract_digest": "15813525ef23940a6ee1c909b02dc89e3dee084d362b0eec887f287058b3883a",
+      "execution_digest": "6e3512200c9ef49922963dacf0146c16879bad68da78c6e77e8e5932e821d0fe",
+      "workspace_digest": "2a4d0bfb49211d41d042120928a9fd6a2d0aa69eeb861db62e7cee6c24a2169f",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-055",
+        "REQ-records-009",
+        "REQ-records-015"
+      ]
+    },
+    {
+      "timestamp": 1795147225,
+      "commit": "8adeca8072dfc2751f5a1fc065c7300c28beae02",
+      "contract_digest": "15813525ef23940a6ee1c909b02dc89e3dee084d362b0eec887f287058b3883a",
+      "execution_digest": "6e3512200c9ef49922963dacf0146c16879bad68da78c6e77e8e5932e821d0fe",
+      "workspace_digest": "2a4d0bfb49211d41d042120928a9fd6a2d0aa69eeb861db62e7cee6c24a2169f",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-055",
+        "REQ-records-009",
+        "REQ-records-015"
+      ]
+    },
+    {
+      "timestamp": 1795147225,
+      "commit": "75264e0039a3957affd98dca1708de2819c2af13",
+      "contract_digest": "15813525ef23940a6ee1c909b02dc89e3dee084d362b0eec887f287058b3883a",
+      "execution_digest": "6e3512200c9ef49922963dacf0146c16879bad68da78c6e77e8e5932e821d0fe",
+      "workspace_digest": "2a4d0bfb49211d41d042120928a9fd6a2d0aa69eeb861db62e7cee6c24a2169f",
+      "acceptance_input_digest": "60e44007f46355b0e3366dbe6c2b74eef50786ad08ef45c19a9c4e5576954ce8",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": ".chough/cases/cli.doctor-keeps-alias-pointer.cases.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "cb8e656f231f7410680c9030d0c2a1b799006376ad372eec918526544fd22bcf",
+            "entry_digest": "4605c69897135d94a0e7ecf80159f196a772c9f535552286a27d41afa60a5f0d",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".chough/cases/records.migrate-case-colliding-target.cases.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "460f6348e00f3b79994613f1c160eb1b915a87d357ceab3c44f2e76d1cf745ff",
+            "entry_digest": "3261cd944ae5aaffa8bf1782b022770e1bb875d92ded0a07d10537881b659666",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".chough/cases/records.migrate-macos-metadata.cases.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "055f60da3f2275f225a0ae9277d0ad0cfbc16a332d618345047bb09ba017174f",
+            "entry_digest": "0c11cd4c222bd9f68f0d5a327669e3153b3b6a111fba782208253d5315d983ae",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".chough/cases/records.migrate-refuses.cases.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "71e4a4e682d2a80bed0d71cc14a88d6c6df13928530e148ce8f0f89d8d49ad3f",
+            "entry_digest": "b9d60658d08db2d35c592ca3866e361404424fa3ff29910c1318e0e21d64ec16",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-14-readiness-report-before-change-approval.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7ba30ad6f26f93962f6519976d6fd1db271197fabc5f481e359d75781ff09d06",
+            "entry_digest": "3936d8a36f4efd48b84d8ce2a0399586d6a0144cfeb22f19a566dfc6766d01b2",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-docs-0-6-1-release.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3c62edc0b32bb5960e2156df9fe9c8f174af55b91438ba423d59232b3cca9d18",
+            "entry_digest": "45dadbf2d02d9761eb0d1bf5c5e8f31811fa50d09c019150346ce6782b901ba4",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-250.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1e6b646a4fb3dba5b7b52e627824cc86b02c60ee68df4b5823e6c802316f6800",
+            "entry_digest": "2715361818c8177879619ba8bb1177f5b99323667b1321b427d53e94a8add2cf",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-251.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4bb508853b4826c907dd84c3dcd57de64714e244f209fcbe9115b6411e0e0e93",
+            "entry_digest": "633d29051658b18e94f028004baa235c724d03814ccfc4c9a067dce07457e2d7",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-263.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "315ab4089eaf33ccf8409abdb4694fe178dd5e2014d0c4032d499c98c16733bb",
+            "entry_digest": "76fe4bf8605f6d8440bfa9dfc618792bb0b28a7ecb0d9f1f236b78045512d839",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-264.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "62546764ef287026dcb566a82fb307cbda89e6914bfa23cd70decee6af4c0149",
+            "entry_digest": "5878dffd7e7a4df69bec64da41f1927984fbb315345a48c03317399fb960ed98",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-265.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "501d776a7038ce6e818af48590ec87bf1af692f85ee9be0638f96d6dd5936ff6",
+            "entry_digest": "291b34bf9ac9937ec9bf5cc77eb8ef2f21185c162dcf79e352e414950ca4d46f",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-266.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e00fd8248bbe3a571803e41ad4a095d55ea56a8adfe771824491a983ab927a7c",
+            "entry_digest": "7440e4e39e66c66d3f882f9884a58dc48183d46002ad254d8b08503a5c70f7b6",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-269-post.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5f5ff290ad5813cb811f02c41f6aac11729fee1fe272f8bfa0cf5025aca3fe83",
+            "entry_digest": "5805870a196fe7511f5995968d7215e6e3627751b4b8f3b714f9d968c4b88bef",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-269.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "35eb6792f59ea473ddbeb23d28a38ca90ada29cc0ea3125751bf32a286d3eceb",
+            "entry_digest": "5c888e00516e17bf4b4c23caca6ca0e4619b62eebfc55a4b2d8408e26dff0f16",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-271.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "c4b8da608209ec3b84fef2ff77edc0d94b14c48d772c6335fc7104a9280eeee5",
+            "entry_digest": "0b6a7c48bea6b823f7912945fa2dda9501e3c6960c93ed2982907ef1b9f2c9c4",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-277.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9cf7aa2828d5e0ba6eddbe09ee033c1bc45a19381459fcc0bc711df94ff464f2",
+            "entry_digest": "2d3a9144451675c47e19a757ea235598f2dfef231c380679e76d463d7b8bed1d",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-281.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "134cf2338467f5cae4641e0ffe79adb406a63d809fdde0ed7872a669b979eb2d",
+            "entry_digest": "5cb81cd7c6118663c534eac2a12d5892b5aeccfc570e60d2aa88c709290be85c",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-282.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9f1c792766ad7bc1595489108b1693680e67224c9e8668494e44541dba0e2835",
+            "entry_digest": "7df5b91ca03b0add06eaa673174e06eac17edf3fbebb5542ac1db92ac20ee6e6",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-283.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7fbec7a8ee036b87d9ce29351d7bacde33d042d283e133d66a0a8c5707f068d5",
+            "entry_digest": "0aa1fc1ec1eab819e1974b90d249a427c83df01d33493750f5a570a0af90c3f6",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-286.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "49dde036fc0baa46119eb021375144d8bd9efc10edd560d204dc3004ca0cfdb8",
+            "entry_digest": "c60638013d5e179c146c9567da68f2fbe8c722cb0e3f8343f0ea23b8e6803109",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-298.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1d75a92e0fd4711a9f6e23f783d2f719320e6bfb24d75e84430b931203a4d3e6",
+            "entry_digest": "b386380da19334e20519cca7a1c273d1c711c6f8561cacb22eb64ab6eca6e220",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-314-folders.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7ce2273f94e46d09dacf06a2c64077908057d96c6a467e96bb3b91e4cc8314cb",
+            "entry_digest": "bccabe73d494196b20e9df5f9de1e0ec01ded935a09a312de3ac27f2f554671b",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-314.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4b8c0a7e6b98a0260c4e907dc38abec215961e89afadc9b4949a819ced563b05",
+            "entry_digest": "cafbc270ee1835976fa8efd11fdced68376e6d69c49eb65d02d534bcd11f2024",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-320.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "c78059e834704ee1ed954d0acda0763af4922b8a7df18f30c481d92d3b74366b",
+            "entry_digest": "29b486f2ebd086772b8cb75ecf05a21fccb586c9e8bb4379dcb5b79ee8b463fb",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-325.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "bedf4e723cede16f78b39a8088f6c080d31baf126193fd17e4ad2d861cf39ab3",
+            "entry_digest": "fd0b6f0db8445e32cc499e038b6016bb4ab18cbeec3bd99d56c8aa697747eec6",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-329.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "2331ec151b4472493cd95bc36917d34ef29fe8f2e15ca01fe9c046f737bc87e4",
+            "entry_digest": "2bd4dd9e7b5a639e0ae1f982dd06d178f6ad431126247c0981eedf6bb2d6f4e3",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-334.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ab70dddc791bc8bc0d8dedd98788f657c2653ac4578d21f1221a094f7b279b88",
+            "entry_digest": "77696490267615886ef889ba010caf90225ec71f88f152bf76222aed35d96b4c",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-339.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1b8f7ec73b2ff7ff8c4ba6171fcacf2376109690ae2241aba1006e3eccca6503",
+            "entry_digest": "b6a7cd3ee7f899dd77d9700fcbb6f5cef4afa241cff067d503600be5c81b9f66",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-347.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4eafefebca0747e9ec515c9249f5a05a7e51abd400e35879b272971c202603e6",
+            "entry_digest": "de49985a638d2f3431613626f9e656a0664138fa34423722f66c73d6750cd0ec",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-349.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "838af48799ae8e2793ad3d04c8fd6424f2c57104ff4e4fe648192213e8ec7f02",
+            "entry_digest": "a35a8b99704024f1969930385081d471e5412d89a5c92616bf8e722aa5b51731",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-351.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3e08620110129da22b58d6a8f94546d6829559a0e8bf6bfd3e04ebf144a5db54",
+            "entry_digest": "46f47f98b24c2997d7624e40d83bfdf8eb0248764f8c692bc48dfa2383af642a",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-361.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "491fb177ebfc95f6516e9638e881f68e26faf5a29510be92d0f0e4d96471c8ca",
+            "entry_digest": "89eae9065a98ce02582931edd60e3bce577c56f358abf4898121f4fd712c94e5",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-19-doctor-fix-safety.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a6683ea1929f18ac92fb6f2c38217dad90284fb19b14ac78641e3b32df86998a",
+            "entry_digest": "9c67d89c33032bb189986df6d69f3c6b647dcd1a7189fb8166c4fa3ee889f474",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-19-fix-g1-gates-and-pins.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a6f282617b5e86c788e75a4e2c248fe17a4178d9821f9081f98e5f196c6dc5b3",
+            "entry_digest": "3307c600ef92fecc0e3a7554f2122258b56af0866a11d6c37bac3a42f67c1fc6",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-19-leaks-and-output.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a9516b7d1f196cf4559c46b52ab98805ea9d24cc5846300dc52196df98a6a4e7",
+            "entry_digest": "480af2464df8d65a0025c5c73063b48b74a57ee4d20c23399f97c510a9eefc95",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-20-docs-387-no-git-while-agents-write.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "135360deb6f3b19757642b3489c40176da67d140ec063d265451a807d42ab30d",
+            "entry_digest": "d2d6ebf7be2d1a353ebe5ab251169fb6fd8c14a3ef541086f40df6708a4c520e",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-20-fix-m1-migrate-refuses-before-writing.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3c2d781d9e4a38f4526337677dd8d90d57ccfc51ad20b2d48f4743e15b644588",
+            "entry_digest": "4efdeff125447bbdcdc01ed9097e5142478486c5714b4bcf7246eab91c653cf1",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "docs/cli.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "21982871e60f39b18a073ce90c0871965c89e6e89d5a8327c819a3581e1708ff",
+            "entry_digest": "e18a5b1bbe0ea1a6cc85795fa333a085c7c5040b798e9ca5f55c0ba96ba58188",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "specs/cli/cli.3md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "35c0238b3221ca8b600366541d910327bd81b6a85cde2f9278bf38af5ae99074",
+            "entry_digest": "0ed50b4fc722a134345453943f6afc0e00078c6006f0a4df0843db3e745a7cd3",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/cli.spec.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "6071194cadfdcfbad3dda36a31ce8f04976eb045ef9755ac5c1a449261e7815b",
+            "entry_digest": "17ec0731de11ba044a5b34e145091c901cbf791487f1a6f0625b174669d37211",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/context.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8b46f365bff777029f5fdd15c4e1acbd5e21bc59020c42f5d7c3401641235588",
+            "entry_digest": "bdaff9b6032ceb643b10c08714e9b812e9d8ff9fa18b6f3317999e0afb112f0d",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/requirements.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "bf1524d3a2389f699cf9d4800ece15d71ff25dfb0803099e07f288e485079a8b",
+            "entry_digest": "84c64b9a16413c5f3d0aad7e90edf6ade8331a7b851fe183017b2a7d91a42a84",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/tasks.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "06f3a8c0850c62325383f36e79273eb2fd9d355ce4d83a543f3c306c43294c3d",
+            "entry_digest": "8f5dc063d921267ddba11b030ed5d923c31baaedd8368d9816a654c8bf950e56",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/testing.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "483933ab74792a113e55a1b3bf4ab1bc2e36578229a52a89c5dbee82d5375eec",
+            "entry_digest": "8ff2dbf45ad083bbcbd7ab754fb4bf49d644ee8baea9f02dc8dd4f4c313ce848",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/records/records.spec.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5783527cd9a5a6145e2ff3836ac7dc879392e92dea9d987848ad02fc084f80db",
+            "entry_digest": "8c8e86f66ec02e3c529b8c000e68cbd7a85fc917d5fa18e5fa7b66fce4b3b876",
+            "owners": [
+              "records"
+            ]
+          },
+          {
+            "path": "specs/records/requirements.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "21cb5ee081efddd4ed264b0de748426cf463e9c3e1c584fe881f9a822b838182",
+            "entry_digest": "850d0e73c24df33c692b63945a75406d89d2507c14efaa9374857e2dc7cf99c6",
+            "owners": [
+              "records"
+            ]
+          },
+          {
+            "path": "src/bugs.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9300f806c0e973339c1d8e91e774305832c72736d5fff142c38c185c87bd3899",
+            "entry_digest": "8b9d1a125be639e011c91f940853d942d1fd7cf42cf06f318be0ef9552243810",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "src/doctor.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f8b07b101af42545224721203d2a6424b54d37bf5dba3f673f7b32c9895c1d50",
+            "entry_digest": "f0a406ccaf61d14846f4b0896ff16f7f13191473b9809f95dd532343e7939c62",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "src/library.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ee3f0b3318a0b8cc6d85be0c33d5f23b8cd3917ce30dc0f2d5f953adfc2a1168",
+            "entry_digest": "38416a71ec74ea784bd7d0d05f264330cd19a8372ec0a31814b9ea631848c8bc",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "src/migrate.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5500eaffba9b38aee60d56ce4109a53d6ee65f97c86a7da7256d198107b46515",
+            "entry_digest": "f5e2e008020d31a6924ae761828f9d3ed2e811f7c557de9016c4f0b2fb4918b4",
+            "owners": [
+              "records"
+            ]
+          },
+          {
+            "path": "tests/doctor.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9e8500a1799b5dc0cda825bfadbda809147aed0ae6452589165c0433cc158303",
+            "entry_digest": "c8e4356aeaacae40f615c6ef7339867b9654b0a393841d032b8ca4ae7879dba4",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-35b47ded993bd490850611ba/EVT-4edf61033f58689200e93314.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f1bc75e5e8d6ada4f9d9e100c15e419fbdef51809bb5ab25ac1a0fb7f5ceee1c",
+            "entry_digest": "c8a3e3683b95c9dff3607f50af27552833f8f6255af11f0089e34a32ac6d341c",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-42680cc9b00fa16e09f7b1a5/EVT-0cdfd4d090ee4a3389ad309f.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "acf090d9b33ce7632d06143d384555994b1cd442ed07273403aa8ae4a2d0aa85",
+            "entry_digest": "b11bdd8da933ea3c0f9a590f0f049e7578408b6247f4eae394da72a909542625",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-42680cc9b00fa16e09f7b1a5/EVT-da5fff4240599edcb3d6502e.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e6545f4ab98ca946dd0741a619cc80330a2ccc38f9988d0c57d0e8ed373b1052",
+            "entry_digest": "478011b949ec769b3606ccb2a46c3b929a2c1ab934e97c37f9a20d4b7826b453",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-5a72dc37cbbdb146702c0e2a/EVT-ce87b276f18c71b7feab3cfb.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "eaace03f5d8643d87968b94e629e85244c44b917a10cb91b246b0c62ef54e406",
+            "entry_digest": "b495358cf529b2ccb8b2971085a5d9d0556a81a81cb5146b9c3bd5dae97432bf",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-621399035e1dfe1261b5ce4a/EVT-188a807240ab4176f0ec460e.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f7cab9d85cc08f05a7f23dd6b9a0ad88e43d1ca5499afd46172150608bce63cd",
+            "entry_digest": "688a8f4bb31b6aa03a56fb46a46b237a27df933b51796e54383e0ca9dee09712",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-621399035e1dfe1261b5ce4a/EVT-281a5600cf62a0bc2dc15ca6.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "199eacf317750c6e9e45dd88469d64f72f0aa83d4242dc2d24cfc4d7a488fc63",
+            "entry_digest": "9705a4094252879418bf146ff8ec8f656b302c356212ef1164db491b745fb018",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-621399035e1dfe1261b5ce4a/EVT-462d4ec830878b10804dfb40.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e59f48dc4f2780bf62f0a6895e8905378ad10f50888e3159908c9c4dbfe20e4a",
+            "entry_digest": "088c1eee3cc4ba7af83ad0afec7cbcd8c2fa4d846aa32633b47e962f794b20f1",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-621399035e1dfe1261b5ce4a/EVT-72523ee7b9ed7ef5bf1f5cfc.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a7db0f87ddcbdee4c49ad531e9aa1732208fb442849a8fec00752aa103877cd0",
+            "entry_digest": "48573de8c43b347b947747db3b682b3ce208769bf3084591eea1a40ea80e745e",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-621399035e1dfe1261b5ce4a/EVT-f14410095b1d4e3f9b1117cc.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "021d55e6084c57ec483f52c5a953f00b2eb3803b87470c977fe217edfec1f224",
+            "entry_digest": "4734d5f55a7bbb39ecf540298f0ba4fae966df807b088505738e290b4fd1b985",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-621399035e1dfe1261b5ce4a/EVT-fea1c6bea657eb5fc5925a67.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d470618154d786978fe25ceb2e31f6b77af2cc738ab2daaecfb2295d96432048",
+            "entry_digest": "b95d580e898ad1fcbffe64cd2f1a41d5acde7ad68da1dc7b0628d9efdf1b28f4",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-6aa09e1da93e854627beb733/EVT-908e95dc0772292bb0c59567.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9e4c32345aaadfa99a0b3421d5b88a45c179e141d0abbf003eeb28928349a198",
+            "entry_digest": "687b319b8efe5788a8161ffece259803b331c64e4b556c3be1118c776f6951c2",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-9fa9e31652575eb199c5ad11/EVT-f2b9b6b9907720e91cd4e0fe.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "afa8598a3f5d5db3bef63fa8d15521cdcf3d65d132147b9ac148c6e0c91e4ab2",
+            "entry_digest": "580addf3422f8e29e74bfc6275ec06fb05793e3784be169331fec0ec524f5870",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-a8df9ab1c24719335a8a4b34/EVT-4281177d85d90b750a4f130f.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9f284357df3878e3991b86f04e8c7e406328d8f0b24e3e96395a46456dc96a02",
+            "entry_digest": "516f52652d908306f9c4f160b9ae6eede44dce09f47f7483f1b27ab07771ddfc",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-bb5c089179aed3227e15b0fd/EVT-134ea977c7a62e1800b8138f.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b7fb0092a18482025622b69791014fdcd1382850f425ee3c41b448f4e4b8d09b",
+            "entry_digest": "bee4387b8bb4ec74d946c17b1f391aa085534cd794b3630ea6f8baa0a8e3e8c1",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/history/cycles/CYC-dfc86094bb233196c40755ce/EVT-c0f51c81b37cf4d6b39ebcea.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "2955bc1eb63d0e9e4d1a2ba986a24c361e54c653679c83585696e81e7c8713b5",
+            "entry_digest": "35f37f41aa760ced9a3078f276f3e33d2265027fccede6eb2c18ba6f01c3ccf7",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/sessions/.gitignore",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "33887a1ea91c394fc4c263371641dba44db652b9defb90020f46783706a04024",
+            "entry_digest": "e9c77df8b15ddb800d1734b10b0a779a0b2e6b8a07d867ad84fe7175364f5b96",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/sessions/archive/adopter.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "654aab60f3afc2bdd49f6b62b6dc8118ae40c9db5ffc2be1d297ccba69862bb6",
+            "entry_digest": "e47fddaa9f57f6bdd81e7b787db851d324a30cdb602127e14ec4f78fdd557f70",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/sessions/archive/archived-2.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a78ff0649086de8a003989b43ed504230b5cad3261ccbbdcb2f4f8aea3ec3a9e",
+            "entry_digest": "aac43489c3e14ff497cd8250d9f1d132aec502aee10e6da2b27ecb4a0d41eef1",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/sessions/archive/archived-3.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "94291d721a025008389f5c9a796fad1f00a05b5015008ec33297cefdf21d180e",
+            "entry_digest": "98f06dba2266d34b296e0b4448bd7efac4eaf675fb4730326a2e7a91fe4c9bf3",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/sessions/archive/archived-4.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d1393d283a4b8689023e0213f5b044d0b1f48ddf1f68545645e5b1041c5f3bb7",
+            "entry_digest": "1cf0a5474f0053325585951be332c527ca1af933e489c5ae078479c2da686235",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/sessions/archive/archived-5.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e6620a71e49c8ac9af867b516d0944c2d9d32eab139e1c8e1dc83b6e3c576603",
+            "entry_digest": "f86c4f4656635db696ae9628068528fdcfc57721f57076ca0a8cd49f4763d2a2",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/sessions/archive/archived-6.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "35bab1c297c6454d4b7ec7a5f969be6e85e94ab83b5795c46a0561f089a3b28b",
+            "entry_digest": "d4a0779b8aa292a807bc173246bc415f4fd97d8fba1a2288fcf6b8c2bd5132e3",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/sessions/archive/finisher.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3067cf1a4adaaaf5c366e18cfaf365321dcac9b72be4677b8e53fbf250be27b0",
+            "entry_digest": "474f962695cf03fa8648f1b368f183fec7c86702797700b6fdb1d15e5ebe8611",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/sessions/open-one.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "42af8dbcdb4657035bd5240a874594bec3c3e1a44ce5f6de4e1cc09b94a8ef72",
+            "entry_digest": "2850eb011a6ad6f5a7a0af69910cf1f865f9293e65220d84c4ed769ce998df80",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/sessions/open-two.inbox/INB-0590e45a5d1e2245e91e1121.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f381c1b0e0c0f1f23293174c09ce524013848071645bbf44f502effe33442fab",
+            "entry_digest": "311e8f7ccd380330c8b276be5ff0432b34f6ec11f8514be5c27319fe9106f658",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/sessions/open-two.inbox/INB-5daf329377423eec43892694.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "cb7e2cdda547753f2e3c3cd5291080c86b09216cc8941735ecf0eff8e4253d5e",
+            "entry_digest": "a703852de90feaff822fc59caef76821c385f1a834b26fa170cc2f5248525592",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/sessions/open-two.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "28c1a659a4d14a3d5b64d36661914824165552b260f58fa53790111cf468c1eb",
+            "entry_digest": "6fddb53b5ece11c42fb66937758e2a7af8ea8ae28557cc9ebc8be14d3547eb27",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/.chough/transitions.jsonl",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "58a5ec984be66265ca7aa56758d64dce814300a676b63f9a5ee34104c1dd2b8f",
+            "entry_digest": "4d18332bc548b091824a09fbec82cc1af8fc15e66b3dc1e3bed6e35ecc090987",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/README.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8ffac9a5bc827c95fd2a3f0f4c7d658d488fe101fcc4503ececd4b7c77481fc0",
+            "entry_digest": "8236e2ba413fd5205c78c602402f39cdd86e7385925f01c39680531843531ce4",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/knowledge/INDEX.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "edc58133029af0bea91952ac137de6d9a1a5659432413fb512021911265bf913",
+            "entry_digest": "20298c6f6d3eeaa1ff8ae3ba30bd3bf0d67e51844d6f881bccd0e233733b9043",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/knowledge/README.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "0518cde607c068100782610deab3cac3f705ad040062b066d344bfef2f6f0e85",
+            "entry_digest": "6deb155d1d20d616c981b6b6487cb4d1a167b1e8a739c2b6e3bf7d80f9ba3d1c",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/knowledge/attachments/archived-1/sessions/archived-1.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f628b62740fcab7478a28e0747b8ff5a436c404328631e6a35553404e538c4b5",
+            "entry_digest": "cf825a0d9a9b17213b3a11a24645860a3829410354a3bea6476a2adf0503a02a",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/knowledge/rules.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e2f46a9fd7fd3a6b70183e265378af101493c75d465ba9167360fcd1721224bc",
+            "entry_digest": "8b911ee10eb18bdf47d4005582559934e270361c8cd0e041a6080f069ea7baf2",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/knowledge/sessions/archived-1.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b29df7d036e3dfa2a0886c36efe68c7a5048561aa461f0d041be6198ff590655",
+            "entry_digest": "ae97dc0b23aed8039fbd79c1c477796dda3736b029beb456a1537d65685b8a23",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/adopted/knowledge/timeline.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1927b176e8229dd757bed0fc6fc6e661de0b93bdc886fbf1e5456224dc4b65fb",
+            "entry_digest": "8a67bea4353c133d40cb679fdfd3a099d975c80e95510d82dd5addf650c8f283",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/observe-vaulted-adopter.sh",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "452aa743bb41687caac95fc795effa7f7d80363b84d0b2d61a12d21fe9761e28",
+            "entry_digest": "15c261eeb03bbc9fe13750140dae2830714778a992b979be7de86d890703e9ec",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/receipts/README.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8c7311cb77f6de065fd8a846af4bb29e6fc029612e66abc3d6dfaf163010ede4",
+            "entry_digest": "0792ec385b213f25a799ec74f529561a414f3bbb126f1fc125bbd4829d0aa4b8",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/receipts/from-0-6-1.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d068cc00b88fed5faaf2781ce3a9edc3aae5a0dda90490c58c0839770f26d862",
+            "entry_digest": "22b85dba014a7f4006458ba8d42ed9a989b8eccdf7eae608bf628a626199ad81",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/regenerate.sh",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4d9bbb4646669e4cf064cf8a2624a3d37954d04203579df011b28dae34e83b7e",
+            "entry_digest": "dfa1c2e51dbbadbac7a3db1fccf5d32d06112661ab816cae9e02da2a90ae8439",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-10720912cd671c6b2a2c4f99/EVT-229ba82896733919df0986f2.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "518fa971f6c3b3a3b0fe3ce769a75deae1fb304537415659f6299b7f28f6e98b",
+            "entry_digest": "4aaedee3c11a6c2713035686b955bd673b84e3a7b8d28fb8e9bb3dc610ea67cd",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-10720912cd671c6b2a2c4f99/EVT-23eef9420b9a0ef43cc87f22.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8777ec04f9dfb613d6ae537b503f1882b0eb413bc8e4ea064110fe6828a6e4bb",
+            "entry_digest": "9dc70c2ad0fb15d59f7b134bdbb73d0954f9c7df8b0dd6f22808198472d2e301",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-10720912cd671c6b2a2c4f99/EVT-3d508e0a9814d019e383718d.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "958d7dcbe7a5c0c5389bc513421cf9791a9aa25eea3061a2ef468eee1bd1d94b",
+            "entry_digest": "7826c97a82b6a5792e8af9fa939c2ce56741a1e2cf93a6f8f4f9eef41b4b80cc",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-10720912cd671c6b2a2c4f99/EVT-77161f6e00c753882c3d943b.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3c5754a5e809f45e532cfca190981c7a157761c1c8801b2454a50793c426b80c",
+            "entry_digest": "55fe85cbb3bce49bfc685df294818c84b2e07fb5ed95750b5046be69247e3c31",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-10720912cd671c6b2a2c4f99/EVT-e1484d79fe734cf68d9407a6.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b20dbb11d1f926526746a66874c1c473c61664c40bea63334077d03231cd678f",
+            "entry_digest": "3916a6dd4df16604933595e7d397a57dc88e792b332df274fc5221072da8b7b9",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-10720912cd671c6b2a2c4f99/EVT-e264c2da88f4efb0847e39b0.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e74af2fe1a882ca0975b6c172484a12f6890ade7336c94b87937b771bc20db7b",
+            "entry_digest": "49bd3e05cc826601f9f3715cdbdc261ef8eefdedd3c70f8a04688febf93208a8",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-1cb9bb13ca1762f64868064d/EVT-1025bc34073c3713877553b8.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7f39838eeb51afb2c8f8a4de90d654f751f8419102bcb00389c4beb9c3854b95",
+            "entry_digest": "4795f9684cd7440e3ec931052ef69c39a4bb71087acde17f51a53616bad7b362",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-1cb9bb13ca1762f64868064d/EVT-41ad18bf81aed62c20eb9b76.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "2ea6b59653c1dcd9e971cbbac1acc9dec6ed76b532cf826a4b49aea46cec8476",
+            "entry_digest": "77b322b3194e67309c9b12498edc840d1c51f580656ea654fb13456864272ac5",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-1cb9bb13ca1762f64868064d/EVT-565918c3e4aeae1f9ee08527.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ef15cb013de2eea1df2389e815a7acf054e0caece0c3a40e05fad34f99729108",
+            "entry_digest": "b79a7bdd35df087af37f423bbba9ad4b3efe27f1739d18e00157894f173d3952",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-1cb9bb13ca1762f64868064d/EVT-6945327d465d5c319f2886d5.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7e649d03ec3e22b604e3a978b1ecb373a64a26a4f97927f2448237cdfbeb9f7a",
+            "entry_digest": "07a7af59bdeda0a7cc76493eb4548e32b4d23fbd389161b43a81165723012b02",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-1cb9bb13ca1762f64868064d/EVT-dfac0539397bb8bf3b92e783.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7f97e9564102371bace804b59e6a4492336e473f70fe59250db453ad64bb624a",
+            "entry_digest": "579262d9ae4146dc3b77125f9767319c04f14fb4bf19d778779cff1a8044c667",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-1cb9bb13ca1762f64868064d/EVT-eef4edeaf713064df3cd246e.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "64864b923b490280aec37c431732ec458366ec81ca5157b2f5b93f58a664be35",
+            "entry_digest": "eff0be01e204b86d0fb144f5655ff31a60b783e731581ea06d00e93a221cd71b",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-7196926f4472e9d330582bb0/EVT-072a4f263f731e061964196b.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "74f0b23c35355f29e3f5ccf94355f3e5d0fa34cb6aaeeadea98f1366abd0a76b",
+            "entry_digest": "47b19246a9663e17798de1e66d26923509090536ec7d694a814515f42e385f79",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-7196926f4472e9d330582bb0/EVT-20374c9e1bc596f6ea7a41ab.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4f409080a30f842e24606fbecc564faf0bdddfbae27ba40519edaaac747141f8",
+            "entry_digest": "0a1f6d7163ca9488cb73ac23dfb511d93beb1a8fe2be352fedf220a60e6e6f20",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-7196926f4472e9d330582bb0/EVT-23a9e249b7ae768e83681111.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b1eeb6ac07ade8083fa70a088a1323a1e993af54f795ec185b85be633f3ddfa1",
+            "entry_digest": "f3d7a2a16be7392f2764220c90ce0a958cc36d0988b570b00757ce899faeed69",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-7196926f4472e9d330582bb0/EVT-5bafee149a9a4aa753ca2cc8.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d208686f89fdb48a0d506ac1cdca3c2f9fe85beb0d22bb4f177042f8b477f21f",
+            "entry_digest": "48934e989f0e733a3a6926b04b19d9f7a598bb30dc94b9d2388b13ab12a07c15",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-7196926f4472e9d330582bb0/EVT-a634edc459176eb0c9777a03.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "28fc13c129c3d528a46f017b3c09dc025e1f85f215b3a154af275f04ad6000ed",
+            "entry_digest": "b7597967472fd576e68215ba63207d0ba1919e61715b79d2c63c2a7b369e844c",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-7196926f4472e9d330582bb0/EVT-b63e02cea0fa4951ba852b65.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "c1376390f8b1095d0649416e8e70a81e70bf166999f60f3b46b1ee7c1a4a9e7b",
+            "entry_digest": "2794a3922a482eff5a6f2564cb9a6b3d6788dbac6b62efcb89a3c562666fc0ae",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-9156658969c56368243d372b/EVT-6bacbcda2c2d6c48a779904d.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4198be1381502fdc29ca951ee8cf34b54570bcc776a08759fd841b4c818041d2",
+            "entry_digest": "ce1c3ed4e462a6e8b7932a7ba2081ad5fb8347e6bcf4678d23d7947b013bc618",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-9156658969c56368243d372b/EVT-6e9ab9c44d27d1c6322d9757.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4c390daef5349e54da19df39c5d6b14fe45731c315986604012f047376a3da99",
+            "entry_digest": "f5f8a812814b80029ec504cb0ab85f8eaf066380bb44482e26cedca245cb4cce",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-9156658969c56368243d372b/EVT-a06ca04d496a9e55b42104fa.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e3b6fcb11b821677f98e71f9265e80b94cde033317ed51c34722dbcba02627be",
+            "entry_digest": "2a6b9354e59a4264301aace0662abc8481b6b4c662877037a0b4850a60bd77ef",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-9156658969c56368243d372b/EVT-c277ea585cbe0862adf86ba9.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4d349d8ac64e4387a20d72158779afcb77b5f5f23b02d24b0f704b64017e1931",
+            "entry_digest": "20a383bcad04cdee6b1699a01cf4a0f6e4933a7543c06b08f29647ba7ab65384",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-9156658969c56368243d372b/EVT-e73894c5669d30b48b82f91d.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4ca2833adc57057aa4f402cd5fdfad774c47564c52cf4542a99ebbf2344385cf",
+            "entry_digest": "4cf4ea705a58e81404df410aebb863c08a244fab78c62e4d011395815ed5a23d",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-9156658969c56368243d372b/EVT-eed100b71fbd66a31eb35729.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "29d537d6a4bc02b9e1b530a641fd5f83fbd7024864fff6074c46e053998ad6ae",
+            "entry_digest": "1a84d8421254a9cdb2bff8704635d2b9c65ca27bbd665e7f650a3d49251f200e",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-a62103f092fade5130504d00/EVT-07f59d2e72c9a3357e6521a6.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9719dc76a6afc90804e0cc606b09008d3c2baf2b89bfc33c10a4cdbd5b607908",
+            "entry_digest": "65553d229fa5cd13470096d049d3a86786699589e7b81878eedcabd7f1e0965a",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-a62103f092fade5130504d00/EVT-9bf0c2af017169220063d178.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "39c3ee30e9ad22e082635ee7b263c5d8ef81e33d3317bb43901e84834672ff78",
+            "entry_digest": "b1e86008dcf5646fb53eadf2cbddf53f0973ec9f34c8dcd91b948a332cb1b4f8",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-a62103f092fade5130504d00/EVT-a6aa4c05bdf40d6a780b0cd6.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "24af6df9d74303f04fa926fca430ad76f41fbb6e2230d643b2be2b6e310b7109",
+            "entry_digest": "41edf17b3ff491bd41acb9bd2881d059df357a57aa7c84ee74d7bf28e0a569d4",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-a62103f092fade5130504d00/EVT-dd530cb056e5d933b843936d.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4942fe03a0b6aa928c9cd5664d53f8b1278d01fc51e496b086a873d31cf74b6b",
+            "entry_digest": "70171d4fd0bbe2c5dce66717851908b8564ef682a52e1792be15fd84b392c4a7",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-abb4b73ecdec1fc95b46db63/EVT-2175477bb2f38714e7b0eb80.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b3607652b2e5e44e2225fe5fc1edd721c84d716e23adc9f62953a3f6e9dff574",
+            "entry_digest": "4ca382f30f0aeba9575332423bc4677c16a5311b51e7efe8d123c53e47f5af1f",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-abb4b73ecdec1fc95b46db63/EVT-68f3359dfe0133e9dcd4dd37.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7370bb86e57f11f20788223da2bf0be6c50c4b45906c66a311a12348179c86d7",
+            "entry_digest": "d0efd8a63949567f976fea1757919e54f7aafc8f74bab547a7694e2237a7996f",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-abb4b73ecdec1fc95b46db63/EVT-9f09c4bfd9387a09105231bb.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "fc242848722791202860aa419e86d7ddec7c8a456acc6ff83da2d2f6a6f1af0e",
+            "entry_digest": "089d77a6f608e522d8d15b15400dad8acccd6c9b80b36ebcf13fdc08d472eb45",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-abb4b73ecdec1fc95b46db63/EVT-c22c84c847cbceca3310bfe4.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "db18a7b067865010edc44b9bd6b655c356f86ca48407ee3a2ba74ded9902e482",
+            "entry_digest": "8ebc43631059b0e2f8afad05784e80786bd69d05db4ec8188ed1c6141522e3b2",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-abb4b73ecdec1fc95b46db63/EVT-d8e4d7e1384d481dc7f21b07.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "856900cda8d46b907493205a4ed0f96336ab0dad0d7932550de8f7458ee98673",
+            "entry_digest": "0ce5f608a2ceaa1303c385b47b1060f68c53f4f02e70cd01b9b3f12fd487d9d0",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-abb4b73ecdec1fc95b46db63/EVT-e6090e55b990aed514743c53.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b20889b3c1fa7902a23dabcce808e04343954e3cfc2c88c646f385ed0318e6fc",
+            "entry_digest": "2866e2925f28de8fdc912f4b29f2bce1d672822a01adce987a0d6124f9823549",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-f5e7215b2698df6ec55cf72a/EVT-53008855d2b33aac4a4c6150.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "26b4506dddb347b5987195bdb5bc172bccad024fa5dbbf766c7b37818569836c",
+            "entry_digest": "c6c0216df53d5caf59e4688d192a651442d71b9c1199804fc993f40cac69ab08",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-f5e7215b2698df6ec55cf72a/EVT-8e525c92fb47bfc6677acba8.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f2546c288ecdcbfcf78e8e71dc2aac0102acb75295cf7b3090f15c04d0e91cc3",
+            "entry_digest": "54a07f8eb722af7c807addb99e0dbbc70af9277e931fb388024e7b0c33887d1f",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-f5e7215b2698df6ec55cf72a/EVT-9e5f711c35ef83423fa2447c.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "fdbbdc64d9b71ea51c3fc1f3488f33a56bde7bafac6c45b108bd9c52e477a282",
+            "entry_digest": "579d839817397ad710df9b1d8907786fa75ea47fc58ad21c408f20229f55114c",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-f5e7215b2698df6ec55cf72a/EVT-9fccf1f00844a00b476f7384.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "15b593baf992b327fec4bdbba02008d8d6e3dace00734ae03eef02b8b38c27a2",
+            "entry_digest": "2e2ef625d84ba28f72d528489a3b0531d09b60ad0b36be46a325391deb173114",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-f5e7215b2698df6ec55cf72a/EVT-a670356ace76e3df5de03a7e.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7802aac2be7e59dab9a65cc11aeada64841276b6cbdd941d2e0984dd5e72d302",
+            "entry_digest": "e77503ffdb5b36ee4ec2fa39699a1f1b2f9697e5652b0a126a29ef30a74bdaab",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/history/cycles/CYC-f5e7215b2698df6ec55cf72a/EVT-ea5c801a5ebf5ffb1d577365.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7f1f399daf6be35b585f5edfbaa4c044325d5432aa6955e8f3608049129d6d7f",
+            "entry_digest": "c981f6f490b843234d1806a590d30d5616c76c228628a6a9a26e96e44cd32e99",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/preferences.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f9fe0b00f19018f5792b5d0ae5aba636a1fe6b8f1e68ca1683480b0223f3e8a4",
+            "entry_digest": "824c763c13305fcd27d9e27ef4c5351f83a4375ff42d85571cf56faf597d0bdb",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/sessions/.gitignore",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "33887a1ea91c394fc4c263371641dba44db652b9defb90020f46783706a04024",
+            "entry_digest": "298eb90dc6be86f08486be665b20038d7d9d2288ed484ab0b55c108a72768fdf",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/sessions/archive/archived-1.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "180d2ec01eb917ab9e915349e963a739e8c5d0070702b43f70573e907f02b8ec",
+            "entry_digest": "c540ecc15a73067147ebd81c8fb88328a584ae8331a71f0df7a6f6c742f11325",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/sessions/archive/archived-2.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "da2ebc532a24aa5157b1800ca0644de1e650c41a1412add0c6b1470786277772",
+            "entry_digest": "f9e90abf4b24e9d939e1a7da925c479740fe3e66bcb6c0ea44a611b40a94cda9",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/sessions/archive/archived-3.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f5390ee1342d629f7301e3fea370ed674a0a0eca2a6c91c2386500c791bcd19f",
+            "entry_digest": "cfb023faf1dc7fd8cf18702a15d54089fbb8024711376b3e4cd0db651bc6c54e",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/sessions/archive/archived-4.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "176b7e9f87a572436eab00c1009cdcf94587cfea3a00685f8d3e86da91d8b304",
+            "entry_digest": "db36eacdbc269221ea3a18606270fa3b578dcf1a80592e3ee75dbf9f8610a18c",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/sessions/archive/archived-5.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d9c6bca77913cf702d3219630fb07c814dc289d3afa560fd4c3711320792566c",
+            "entry_digest": "abb77d58a7219b06fad34e01bc7c433e10434b882dd61d35b3a630b922e172bd",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/sessions/archive/finisher.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3720c849a9326b03b45d1b4e996e8e82d830721d58f46dc2416eb57843c4be3c",
+            "entry_digest": "0ecc436ae2a5b90d145b0b1e51ac63db5fe9e3c03811cd61784e81f143d21f85",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/sessions/working.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8ec64fe95530ab4a7bea33b701ce637fa19eb56edf9fda2403abc3d7f87ee4f7",
+            "entry_digest": "039d8f61c9eee86d81a790c688ce27547423e0acd5dfc106cc68aa5055430fb6",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/.chough/transitions.jsonl",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "697fe6bc4c327a3e23cde223b58484887836dbae172cf59bf8a14adba981703c",
+            "entry_digest": "905f9f3a832da4c687e75e6ff1a6de0b78a58376fb959ffdb38a5dadea12d4cc",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/README.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8ffac9a5bc827c95fd2a3f0f4c7d658d488fe101fcc4503ececd4b7c77481fc0",
+            "entry_digest": "44f732be1bd181e1da9039440f82ecd5798c55c2bf52afd2fef566a76ea10a86",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/knowledge/INDEX.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "edc58133029af0bea91952ac137de6d9a1a5659432413fb512021911265bf913",
+            "entry_digest": "b2634ea7d42be0955e86f6eec94bfc4dd388df814b7e57eba98f734089fde373",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/knowledge/README.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "0518cde607c068100782610deab3cac3f705ad040062b066d344bfef2f6f0e85",
+            "entry_digest": "a939779146b9b5d2f8e744fecc1e43d91067f887c12d011b5c46176e9f712acb",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/knowledge/attachments/adopter/sessions/adopter.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "c96e1e14e0a56e0ad2c18d3fa38b70237a5d1a4ceb79b00e4fee89e3fa8e5668",
+            "entry_digest": "d22ce9e3ea4b55298c17f8a430522d104e86cfb5e45d3cf135ad6d98ed3fed77",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/knowledge/rules.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e2f46a9fd7fd3a6b70183e265378af101493c75d465ba9167360fcd1721224bc",
+            "entry_digest": "c4d161b4d5e26c954377b69d35e5c67975db217a941a78eeadfc7dee157cb7a3",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/knowledge/sessions/adopter.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4ba9f9c4cd8944b14e378c3909b8d35da8bc524e686d98b30d35e695b75ccbc0",
+            "entry_digest": "8d22f178941b0039ac816a21f4c453f064bb88202bdd5e8d45e8f5348778e863",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/migrate/vaulted-adopter/knowledge/timeline.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1927b176e8229dd757bed0fc6fc6e661de0b93bdc886fbf1e5456224dc4b65fb",
+            "entry_digest": "1d929669e2b59d1f6f727df792ceb538c9ee0bb1389933f54c7a64787428361c",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/migrate.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8a513c0e6e62af4a7cf8a7080b09d21b8fd00999843b9ed74632ec8c7d5b743d",
+            "entry_digest": "31cd9d4d75ee8b14546d4e013ea16d072e7c19637b1b7f2daa0fdf341e0b959c",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/migrate_bugs.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "432a997d95bc468b203de278b73a254df7e6dcc4f2074fa6502ef133f3090862",
+            "entry_digest": "220558481404a089641ba0f25821f80baf539a5f8647b37215fcc59e88071505",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/migrate_knowledge.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5cb112d083cd7ccb3efac3983cafacdc4a979887387dea26cee6de67d20a134d",
+            "entry_digest": "2de20ef23ea0ff40a1a1d9b4a5497f073e6d47fe00dce0ee972bd22bd85e50d9",
+            "owners": [
+              "@exact:test"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-055",
+        "REQ-records-009",
+        "REQ-records-015"
+      ]
+    }
+  ]
+}

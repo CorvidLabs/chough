@@ -1,6 +1,6 @@
 ---
 id: fix-m1-migrate-refuses-before-writing
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 9d260310bca8553a0203e5ef90bc8372b4e15aae
 ---
