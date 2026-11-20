@@ -21,7 +21,13 @@ fn tree(root: &Path) -> BTreeMap<String, Vec<u8>> {
     fn walk(base: &Path, dir: &Path, out: &mut BTreeMap<String, Vec<u8>>) {
         for entry in fs::read_dir(dir).unwrap().flatten() {
             let path = entry.path();
-            if entry.file_name() == ".git" {
+            // The Git-ignored writer lock under .chough/local is not a write of the
+            // migration (REQ-records-009), so the tree leaves it out.
+            if entry.file_name() == ".git"
+                || path
+                    .strip_prefix(base)
+                    .is_ok_and(|relative| relative == Path::new(".chough/local"))
+            {
                 continue;
             }
             if path.is_dir() {

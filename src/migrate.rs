@@ -228,7 +228,9 @@ static GUARD_EXEMPT: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBo
 
 /// The 0.5.x files the plan being built removes as already migrated, because a committed
 /// receipt of an earlier migration lists them with these bytes (REQ-records-009, #370).
-/// The mappers leave them out, so none is carried a second time.
+/// The mappers leave them out, so none is carried a second time. It is process-wide
+/// state keyed by project-relative path and set by each plan build; a test that builds
+/// plans of two projects in one process would share it.
 static ALREADY_MIGRATED: std::sync::Mutex<BTreeSet<String>> =
     std::sync::Mutex::new(BTreeSet::new());
 
@@ -857,6 +859,9 @@ fn target_refusal(root: &Path, plan: &Plan, digest: &str) -> Result<Option<Strin
     )))
 }
 
+/// The suffix of the temporary file a planned file is written to before its rename.
+pub(super) const MIGRATING: &str = ".migrating";
+
 /// Write one planned file under a temporary name in its folder and give it its name by
 /// rename, replacing what is there (#338): a file whose name differs only in case from
 /// a planned removal, or a generated file the plan replaces. Then read it back.
@@ -878,8 +883,12 @@ fn write_by_rename(root: &Path, written: &Planned, written_now: &mut Vec<String>
             .file_name()
             .map(|name| name.to_string_lossy().into_owned())
             .unwrap_or_default();
-        let temporary = folder.join(format!(".{name}.{}.migrating", std::process::id()));
-        let _ = std::fs::remove_file(&temporary);
+        // A fixed name, which the next plan skips (REQ-records-009); one a stopped apply
+        // left is removed first. The writer lock keeps a second apply out meanwhile.
+        let temporary = folder.join(format!(".{name}{MIGRATING}"));
+        if std::fs::symlink_metadata(&temporary).is_ok_and(|meta| meta.is_file()) {
+            std::fs::remove_file(&temporary)?;
+        }
         {
             let mut file = std::fs::OpenOptions::new()
                 .write(true)
@@ -911,8 +920,18 @@ fn write_by_rename(root: &Path, written: &Planned, written_now: &mut Vec<String>
                         .eq_ignore_ascii_case(&name.to_string_lossy())
                 })
             {
-                std::fs::rename(folder.join(listed), &path)?;
+                // Through a name of its own, since a file system that folds case may take
+                // a case-only rename as no change at all, as a Docker Desktop mount of a
+                // macOS folder does (tester2's finding).
+                let between = folder.join(format!(".{}{MIGRATING}", name.to_string_lossy()));
+                std::fs::rename(folder.join(listed), &between)?;
+                std::fs::rename(&between, &path)?;
             }
+            ensure!(
+                listed_exactly(&path),
+                "{} could not be given its name in that letter case; no 0.5.x file was removed",
+                written.path
+            );
         }
         written_now.push(written.path.clone());
     }
@@ -923,6 +942,16 @@ fn write_by_rename(root: &Path, written: &Planned, written_now: &mut Vec<String>
             written.path
         ),
     }
+}
+
+/// Whether the folder of `path` lists its exact name, letter case included.
+fn listed_exactly(path: &Path) -> bool {
+    path.parent()
+        .zip(path.file_name())
+        .is_some_and(|(folder, name)| {
+            std::fs::read_dir(folder)
+                .is_ok_and(|entries| entries.flatten().any(|entry| entry.file_name() == name))
+        })
 }
 
 /// How many files a folder holds, all of them, for a macOS metadata folder.
@@ -1012,6 +1041,8 @@ struct EarlierReceipt {
 /// The `- `path` <sha256>` lines of a receipt's `## Before` section: the files it read,
 /// or `None` when it has no such section.
 fn files_read(text: &str) -> Option<BTreeMap<String, String>> {
+    // A receipt checked out with CRLF line ends reads the same.
+    let text = &text.replace("\r\n", "\n");
     let start = text.find("\n## Before\n")? + "\n## Before\n".len();
     let section = &text[start..];
     let section = &section[..section.find("\n## ").unwrap_or(section.len())];
@@ -1029,6 +1060,7 @@ fn files_read(text: &str) -> Option<BTreeMap<String, String>> {
 
 /// What each removed file of a receipt's `## Removed` section was carried into.
 fn carried_into(text: &str) -> BTreeMap<String, Vec<String>> {
+    let text = &text.replace("\r\n", "\n");
     let Some(start) = text.find("\n## Removed\n") else {
         return BTreeMap::new();
     };
@@ -1082,6 +1114,16 @@ fn earlier_receipts(root: &Path) -> Result<Vec<EarlierReceipt>> {
     let (mut unreadable, mut edited, mut judged) = (vec![], vec![], vec![]);
     for name in names {
         let path = format!("{RECEIPTS}/{name}");
+        // The bound is checked from the file's length before anything is read.
+        if std::fs::symlink_metadata(local_path(root, &path)?)
+            .is_ok_and(|meta| meta.is_file() && meta.len() > crate::markdown::RECEIPT_BOUND)
+        {
+            unreadable.push(format!(
+                "{path} is over the {}-byte receipt bound",
+                crate::markdown::RECEIPT_BOUND
+            ));
+            continue;
+        }
         let bytes = match at_target(root, &path)? {
             AtTarget::Absent => continue,
             AtTarget::Other(what) => {
@@ -1299,34 +1341,21 @@ fn apply(
     // sources removed and the planned file missing. The 0.5.x file such a rename replaces
     // on a file system that folds case is kept in memory, to be listed as removed and
     // restored with the others.
+    // First every planned file written where nothing is, by create-new. The receipt
+    // follows. Every write that replaces a file already there comes last (below): one
+    // whose name differs only in case from a 0.5.x file the plan removes, and a generated
+    // file the plan replaces. So a failure before them leaves every file that was there
+    // byte for byte, and the plan, which `replaces` is part of, unchanged.
+    let replaces_one = |path: &str| {
+        collides_by_case(plan, path) || plan.replaces.iter().any(|replaced| replaced == path)
+    };
     let mut written_now = vec![];
-    let mut replaced_by_case: Vec<(String, Vec<u8>)> = vec![];
-    for written in &plan.files {
-        if collides_by_case(plan, &written.path) || plan.replaces.contains(&written.path) {
-            for removed in plan
-                .carried
-                .removed
-                .keys()
-                .chain(plan.carried.sources.iter())
-                .filter(|removed| {
-                    **removed != written.path && removed.eq_ignore_ascii_case(&written.path)
-                })
-            {
-                let local = local_path(root, removed)?;
-                if one_file_by_case(&local_path(root, &written.path)?, &local)
-                    && let AtTarget::Bytes(bytes) = at_target(root, removed)?
-                    && plan
-                        .sources
-                        .get(removed)
-                        .is_some_and(|sha| *sha == sha256(&bytes))
-                {
-                    replaced_by_case.push((removed.clone(), bytes));
-                }
-            }
-            write_by_rename(root, written, &mut written_now)?;
-        } else {
-            write_planned(root, written, &mut written_now)?;
-        }
+    for written in plan
+        .files
+        .iter()
+        .filter(|written| !replaces_one(&written.path))
+    {
+        write_planned(root, written, &mut written_now)?;
     }
     let receipt_local = local_path(root, &receipt)?;
     match at_target(root, &receipt)? {
@@ -1350,6 +1379,49 @@ fn apply(
                 )?,
                 "{receipt} appeared while migrating; nothing was removed"
             );
+        }
+    }
+    // Last, by rename, every write that replaces a file already there: a generated file
+    // under `replaces`, and a file whose name differs only in case from a 0.5.x file the
+    // plan removes (knowledge/index.md beside knowledge/INDEX.md). On a file system that
+    // folds case those two are one file, so that rename is the 0.5.x file's removal: it
+    // comes only once every other planned file and the receipt hold their bytes (#338),
+    // and the 0.5.x bytes it replaces are kept in memory to be listed as removed and
+    // restored.
+    let mut replaced_by_case: Vec<(String, Vec<u8>)> = vec![];
+    for written in plan
+        .files
+        .iter()
+        .filter(|written| replaces_one(&written.path))
+    {
+        // The 0.5.x file of another letter case, with its planned bytes, read before the
+        // rename. Whether the rename replaced it is told afterwards, from what the folder
+        // lists: before the planned file exists, two names in one folder cannot be told
+        // apart from one file (#338, tester2's finding on Linux).
+        let mut before: Vec<(String, Vec<u8>)> = vec![];
+        for removed in plan
+            .carried
+            .removed
+            .keys()
+            .chain(plan.carried.sources.iter())
+            .filter(|removed| {
+                **removed != written.path && removed.eq_ignore_ascii_case(&written.path)
+            })
+        {
+            if let AtTarget::Bytes(bytes) = at_target(root, removed)?
+                && plan
+                    .sources
+                    .get(removed)
+                    .is_some_and(|sha| *sha == sha256(&bytes))
+            {
+                before.push((removed.clone(), bytes));
+            }
+        }
+        write_by_rename(root, written, &mut written_now)?;
+        for (removed, bytes) in before {
+            if !listed_exactly(&local_path(root, &removed)?) {
+                replaced_by_case.push((removed, bytes));
+            }
         }
     }
     // Never weaken an archive: read the validity of every archived change whose

@@ -688,8 +688,9 @@ fn an_interrupted_apply_completes_to_the_uninterrupted_result() {
     assert_eq!(first["plan_digest"], plan["plan_digest"]);
     // The stop: every planned file but the last written, with its planned bytes. A
     // file that differs only in case from a planned removal (knowledge/index.md for
-    // knowledge/INDEX.md) is written after the removals, so a stop before them has not
-    // written it.
+    // knowledge/INDEX.md) is written last of all, after the receipt, since on a file
+    // system that folds case that write is the removal; a stop before it has not written
+    // it.
     let removals: Vec<String> = plan["removed"]
         .as_object()
         .unwrap()
@@ -2570,33 +2571,120 @@ fn a_returning_legacy_checkpoint_holding_another_session_is_refused() {
     assert_eq!(fixture.open_ids(), sessions);
 }
 
-/// #338 (REQ-records-009): an apply whose planned write fails leaves every 0.5.x file in
-/// place, since no source is removed before every planned file is on disk.
+/// #338 (REQ-records-009), TC-records-migrate-a-failed-write-removes-nothing: an apply
+/// whose planned write fails leaves every 0.5.x file in place byte for byte, and the
+/// next preview has the same digest. The write that fails is `knowledge/journal/feed.xml`,
+/// after `knowledge/index.md` in path order: on a file system that folds case,
+/// `knowledge/index.md` is `knowledge/INDEX.md`, and writing it is that file's removal,
+/// so it comes last.
 #[cfg(unix)]
 #[test]
 fn an_apply_whose_planned_write_fails_leaves_every_0_5_x_file() {
     use std::os::unix::fs::PermissionsExt;
     let fixture = migrate_project("adopted", &[]);
-    let before: Vec<String> = files(fixture.root())
-        .into_keys()
-        .filter(|path| path.starts_with(".chough/") || path.starts_with("knowledge/"))
-        .filter(|path| !path.starts_with(".chough/local/"))
-        .collect();
+    let sources = |fixture: &Fixture| -> BTreeMap<String, Vec<u8>> {
+        files(fixture.root())
+            .into_iter()
+            .filter(|(path, _)| path.starts_with(".chough/") || path.starts_with("knowledge/"))
+            .collect()
+    };
+    let before = sources(&fixture);
     let plan = fixture.ok(&["migrate", "--json"]);
-    let digest = plan["plan_digest"].as_str().unwrap();
-    // The last folder a planned file goes into cannot be written.
-    let blocked = fixture.root().join("knowledge");
+    let digest = plan["plan_digest"].as_str().unwrap().to_string();
+    planned(&plan, "knowledge/journal/feed.xml");
+    let blocked = fixture.root().join("knowledge/journal");
+    std::fs::create_dir_all(&blocked).unwrap();
     std::fs::set_permissions(&blocked, std::fs::Permissions::from_mode(0o555)).unwrap();
-    let output = fixture.run(&["migrate", "--apply", digest, "--consent", CONSENT]);
+    let output = fixture.run(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    std::fs::set_permissions(&blocked, std::fs::Permissions::from_mode(0o755)).unwrap();
+    std::fs::remove_dir(&blocked).unwrap();
+    assert!(
+        !output.status.success(),
+        "the apply succeeded with knowledge/journal read-only"
+    );
+    let after = sources(&fixture);
+    for (path, bytes) in &before {
+        assert_eq!(
+            after.get(path),
+            Some(bytes),
+            "{path} changed although a planned write failed"
+        );
+    }
+    let again = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(
+        again["plan_digest"],
+        digest.as_str(),
+        "the failed apply changed the plan"
+    );
+}
+
+/// #338 (REQ-records-009): on a migrated tree with a new 0.5.x bug, where the plan
+/// replaces `knowledge/index.md`, an apply whose write of the new bug fails leaves the
+/// 0.5.x bug and the index byte for byte, and the next preview has the same digest, so
+/// the consented one still applies.
+#[cfg(unix)]
+#[test]
+fn a_failed_write_before_a_replacement_keeps_the_plan() {
+    use std::os::unix::fs::PermissionsExt;
+    let (fixture, _) = migrated_adopted();
+    fixture.write(".chough/bugs/BUG-0001.json", LEGACY_BUG);
+    fixture.commit("a new 0.5.x bug from an old branch");
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(
+        plan["replaces"],
+        serde_json::json!(["knowledge/index.md"]),
+        "{plan:#}"
+    );
+    let digest = plan["plan_digest"].as_str().unwrap().to_string();
+    let (bug, index) = (
+        fixture.read(".chough/bugs/BUG-0001.json"),
+        fixture.read("knowledge/index.md"),
+    );
+    let blocked = fixture.root().join(".chough/bugs");
+    std::fs::set_permissions(&blocked, std::fs::Permissions::from_mode(0o555)).unwrap();
+    let output = fixture.run(&["migrate", "--apply", &digest, "--consent", CONSENT]);
     std::fs::set_permissions(&blocked, std::fs::Permissions::from_mode(0o755)).unwrap();
     assert!(
         !output.status.success(),
-        "the apply succeeded with knowledge/ read-only"
+        "the apply succeeded with .chough/bugs read-only"
     );
-    for path in before {
-        assert!(
-            fixture.exists(&path),
-            "{path} was removed although a planned write failed"
-        );
-    }
+    assert_eq!(fixture.read(".chough/bugs/BUG-0001.json"), bug);
+    assert_eq!(
+        fixture.read("knowledge/index.md"),
+        index,
+        "the index was replaced before a failed write"
+    );
+    let again = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(
+        again["plan_digest"],
+        digest.as_str(),
+        "the failed apply changed the plan"
+    );
+    let applied = fixture.ok(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+}
+
+/// #338 (REQ-records-009): the temporary file of a planned write that a stopped apply
+/// left beside `knowledge/index.md` is no 0.5.x note: it changes neither the plan nor its
+/// digest, and the next apply removes it.
+#[test]
+fn a_leftover_temporary_file_changes_nothing_and_the_apply_clears_it() {
+    let plain = migrate_project("adopted", &[]);
+    let fixture = migrate_project("adopted", &[]);
+    fixture.write(
+        "knowledge/.index.md.migrating",
+        "SYNTHETIC half-written index\n",
+    );
+    let digest = plain.ok(&["migrate", "--json"])["plan_digest"].clone();
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(plan["plan_digest"], digest, "{plan:#}");
+    let applied = fixture.ok(&[
+        "migrate",
+        "--apply",
+        plan["plan_digest"].as_str().unwrap(),
+        "--consent",
+        CONSENT,
+    ]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+    assert!(!fixture.exists("knowledge/.index.md.migrating"));
 }
