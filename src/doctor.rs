@@ -1892,26 +1892,45 @@ fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
                 uncommitted.push(story);
             }
         }
-        if !uncommitted.is_empty() || !forced.is_empty() {
+        // #389 (Leif's option A of 2026-11-20, keeping his option B): the fix also names
+        // the session's journal post among the files to commit while it is not
+        // committed, so following it commits the post too; the post never holds the
+        // finish.
+        let posts: Vec<String> = sessions::archive_to_commit(root, &id)
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|path| !path.starts_with(".chough/") && !uncommitted.contains(path))
+            .collect();
+        if !uncommitted.is_empty() || !forced.is_empty() || !posts.is_empty() {
             let ignore_note = if forced.is_empty() {
                 String::new()
             } else {
                 " (`git add -f` since Git ignores it; or change the ignore rule)".to_string()
             };
+            let holding: Vec<String> = uncommitted.iter().chain(&forced).cloned().collect();
+            let mut plain = uncommitted.clone();
+            plain.extend(posts.iter().cloned());
+            let post_note = if posts.is_empty() {
+                ""
+            } else {
+                " and its journal post"
+            };
             let command = sessions::commit_command(
-                &uncommitted,
+                &plain,
                 &forced,
-                &format!("Archive the {id} session."),
+                &format!("Archive the {id} session{post_note}."),
             );
-            uncommitted.extend(forced);
+            plain.extend(forced);
             finding.fix = format!(
                 "commit {}: `{command}`{ignore_note}, then chough doctor --fix",
-                uncommitted.join(", "),
+                plain.join(", "),
             );
-            finding.blocked = Some(format!(
-                "{} not committed at HEAD; commit it first, so Git holds every byte removed and the story before its folder goes",
-                uncommitted.join(", ")
-            ));
+            if !holding.is_empty() {
+                finding.blocked = Some(format!(
+                    "{} not committed at HEAD; commit it first, so Git holds every byte removed and the story before its folder goes",
+                    holding.join(", ")
+                ));
+            }
         }
         archives.push(finding);
     }

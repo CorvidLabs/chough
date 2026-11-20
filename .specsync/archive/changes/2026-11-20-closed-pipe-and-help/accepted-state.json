@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "closed-pipe-and-help",
+  "slug": "closed-pipe-and-help",
+  "title": "Closed pipe and help",
+  "description": "closed pipe and help",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "7bf110dcca70bdd3565007086aee40a286f40eff",
+  "created_at": 1795187425,
+  "updated_at": 1795196024,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/main.rs",
+    "src/records.rs",
+    "src/change.rs",
+    "src/ready.rs",
+    "tests/cli.rs",
+    "docs/cli.md",
+    "changelog.d/2026-11-20-closed-pipe-and-help.md",
+    ".chough/cases/cli.closed-pipe-and-help.cases.toml"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Bug fixes that bring Chough to what its requirements already assume: no requirement says a command panics or exits 101 when its reader goes away, or that help depends on where it stands among the global options; docs/cli.md's sentence on -V is corrected to match the helper.",
+  "acceptance_criteria": [
+    "Every command whose standard output or standard error is closed, as in chough next | true or chough next | head -1, stops printing and exits with the code it would have exited with, never 101 and never a panic or a Broken pipe message; a write command still saves (#383). chough --root . help --help, chough --root=. help -h and chough --redact help --help print the top-level help and exit 0, as chough help --help does, and docs/cli.md names --help and -h as the help flags and chough -V and --version as the top-level version flags (#399)."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The issues set the scope: #383's closed-pipe half (s7-F5; the Unicode half moved to #410 in 0.6.3) and #399 (review of #309, Leif: fix in 0.6.2). Leif asked to check which commands still panic before fixing: measured on main 7bf110dc, every command that prints panics with 101 into a closed pipe, except clap's own help; change ready and the ship summary exit 1 with Error: Broken pipe. Recommended choices only. No new refusal and no requirement wording changes (no-spec, as #309 was). No new dependency. Failing tests first.",
+    "public_contract": "no"
+  }
+}

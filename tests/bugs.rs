@@ -406,7 +406,7 @@ fn a_blocking_bug_stops_only_a_session_it_is_related_to() {
             ("evidence", "[]"),
         ],
     );
-    // Filed in `other`, it is on that session's bugs list and stops it.
+    // Filed in `other`, it is one of that session's bugs and stops it.
     assert!(
         fixture.session()["bugs"]
             .as_array()
@@ -495,7 +495,7 @@ fn a_blocking_bug_stops_only_a_session_it_is_related_to() {
 
 /// REQ-cli-012, REQ-cli-054 (#329), TC-cli-bug-add-joins-the-active-session: a blocking
 /// bug added while a session is active, with no observation, criterion, requirement or
-/// case, is on that session's bugs list and stops it leaving test.
+/// case, is one of that session's bugs and stops it leaving test.
 #[test]
 fn a_blocking_bug_added_in_a_session_stops_it() {
     let fixture = Fixture::new();
@@ -2374,10 +2374,10 @@ fn verifying_a_bug_with_no_fix_names_the_passing_observation_and_its_revision() 
 }
 
 /// REQ-cli-012, F8 of the second fresh-eyes round and #329: `bug add` while a session is
-/// active adds the bug to that session's checkpoint once, with or without
-/// `--observation`, and `bug update` given `--observation` with an entry of the active
-/// session does too, so its archived story names the bugs found in it; an update naming
-/// another session's entry leaves the active checkpoint unchanged.
+/// active makes the bug one of that session's bugs, listed by its checkpoint once, with
+/// or without `--observation`, and `bug update` given `--observation` with an entry of
+/// the active session keeps it so, so its archived story names the bugs found in it; an
+/// update naming another session's entry leaves the active checkpoint unchanged.
 #[test]
 fn a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story() {
     let fixture = Fixture::new();
@@ -2829,37 +2829,37 @@ fn tree(root: &std::path::Path) -> std::collections::BTreeMap<String, Vec<u8>> {
     out
 }
 
-/// REQ-cli-012 (#343 review), TC-cli-bug-add-refuses-before-writing-when-the-session-is-full:
-/// with the active session already holding its 200 bug links, `bug add` refuses before
-/// writing anything, naming the session and the limit, so no bug is left out of the
-/// session it was filed in: no new bug record exists and every file is unchanged.
+/// REQ-cli-012 (#382, #395), TC-cli-bug-add-files-a-bug-beside-a-full-checkpoint: with
+/// the active session's checkpoint already holding its 200 bug links, `bug add` still
+/// files the new bug in the session: the bug records the session, the session's record
+/// is unchanged, and `chough checkpoint` lists it after the 200.
 #[test]
-fn bug_add_refuses_before_writing_when_the_session_is_full() {
+fn bug_add_files_the_bug_in_a_session_whose_checkpoint_holds_200_bugs() {
     let fixture = Fixture::new();
     fixture.init();
     let held: Vec<String> = (0..200)
         .map(|n| format!("2026-01-01-held-bug-{n}"))
         .collect();
     fixture.set_front("bugs", &format!("[{}]", held.join(", ")));
-    assert_eq!(fixture.session()["bugs"].as_array().unwrap().len(), 200);
     let before = tree(fixture.root());
-    let output = add_bug(&fixture, &[]);
-    let said = format!(
-        "{}{}",
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr)
+    let id = json(&add_bug(&fixture, &[]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    // Only the new bug's record is written; the session's record is unchanged.
+    let mut after = tree(fixture.root());
+    assert!(after.remove(&bug_path(&id)).is_some());
+    assert_eq!(after, before, "bug add wrote more than its record");
+    assert!(
+        fixture
+            .read(&bug_path(&id))
+            .contains(&format!("\nsession: {}\n", fixture.active_id())),
+        "{}",
+        fixture.read(&bug_path(&id))
     );
-    assert!(!output.status.success(), "{said}");
-    let after = tree(fixture.root());
-    let written: Vec<&String> = after
-        .keys()
-        .filter(|name| !before.contains_key(*name))
-        .collect();
-    assert!(written.is_empty(), "left behind {written:?}: {said}");
-    assert_eq!(after, before, "{said}");
-    assert!(said.contains(&fixture.active_id()), "{said}");
-    assert!(said.contains("200"), "{said}");
-    assert!(said.contains("nothing was written"), "{said}");
+    let bugs = fixture.session()["bugs"].as_array().unwrap().clone();
+    assert_eq!(bugs.len(), 201);
+    assert_eq!(bugs[200], json!(id));
 }
 
 /// REQ-records-006 (#367), TC-records-a-bug-reference-is-shown-only-when-clean: a bug or
@@ -2983,5 +2983,252 @@ fn a_qualified_id_of_archived_evidence_links_the_story() {
             .unwrap_or_else(|| panic!("no Reported line: {text}"));
         assert!(reported.contains(&story), "{reported}");
         assert!(!reported.contains(&gone), "{reported}");
+    }
+}
+
+/// #394 (REQ-cli-047), TC-cli-an-unclosed-fence-keeps-the-bug-log-mergeable: two
+/// branches that each add a Log entry to a bug whose write-up holds a code fence that
+/// never closes merge with both entries and no hand-resolved conflict.
+#[test]
+fn a_bug_with_an_unclosed_fence_still_merges_both_log_entries() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let added = json(&add_bug(&fixture, &[]));
+    let id = added["id"].as_str().unwrap().to_string();
+    let committed = fixture.read(&bug_path(&id));
+    let at = committed.find("\n## Log\n").expect("a Log section");
+    let original = format!(
+        "{}\n```\nan unclosed fence in the write-up\n{}",
+        &committed[..at],
+        &committed[at..]
+    );
+    let ours = format!(
+        "{}- 2099-01-01T00:00:01Z · an entry from ours\n",
+        original.trim_end_matches('\n').to_string() + "\n"
+    );
+    let theirs = format!(
+        "{}- 2099-01-01T00:00:02Z · an entry from theirs\n",
+        original.trim_end_matches('\n').to_string() + "\n"
+    );
+    let output = merge_files(&fixture, &original, &ours, &theirs);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = fixture.read("merge/ours.md");
+    assert!(text.contains("an entry from ours"), "{text}");
+    assert!(text.contains("an entry from theirs"), "{text}");
+    assert_eq!(text.matches("\n## Log\n").count(), 1, "{text}");
+}
+
+/// A second bug, with nothing in common with `add_bug`'s, so no `--distinct` is needed.
+fn add_receipt_bug(fixture: &Fixture, extra: &[&str]) -> std::process::Output {
+    let mut args = vec![
+        "bug",
+        "add",
+        "--title",
+        "SYNTHETIC receipt email omits the order number",
+        "--symptom",
+        "The receipt email has no order number",
+        "--trigger",
+        "Any completed order",
+        "--expected",
+        "The order number in the receipt",
+        "--actual",
+        "No order number",
+        "--environment",
+        "test-local",
+    ];
+    args.extend(extra);
+    fixture.run(&args)
+}
+
+/// REQ-cli-012 (#382, #395), TC-cli-bug-add-leaves-the-session-record: `bug add` while a
+/// session is active, with or without `--observation`, records the session on the new
+/// bug and never writes the session's record; `chough checkpoint` lists both bugs in the
+/// order they were filed, and `chough context` names them.
+#[test]
+fn bug_add_in_a_session_records_the_session_and_leaves_its_record() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let failed = entry(&fixture, "found-it", "failed", 1_793_000_000);
+    fixture.commit("an entry");
+    let session = fixture.active_id();
+    let session_file = fixture.session_file();
+    let before = fixture.read(&session_file);
+    let plain = json(&add_bug(&fixture, &[]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let linked = json(&add_receipt_bug(&fixture, &["--observation", &failed]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    assert_eq!(
+        fixture.read(&session_file),
+        before,
+        "bug add wrote the session"
+    );
+    for id in [&plain, &linked] {
+        let record = fixture.read(&bug_path(id));
+        assert!(
+            record.contains(&format!("\nsession: {session}\n")),
+            "{record}"
+        );
+    }
+    assert_eq!(fixture.session()["bugs"], json!([plain, linked]));
+    let context = fixture.ok(&["context", "--json"]).to_string();
+    assert!(
+        context.contains(&plain) && context.contains(&linked),
+        "{context}"
+    );
+}
+
+/// REQ-cli-012 (#382), TC-cli-bug-adds-on-two-branches-merge-cleanly: two branches that
+/// each file a bug while the same session is active merge with no conflict; the merged
+/// checkpoint lists both, and a blocking one that names nothing is a blocking bug of
+/// the session.
+#[test]
+fn bug_adds_on_two_branches_in_one_session_merge_cleanly() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("start");
+    fixture.git(&["checkout", "-q", "-b", "one"]);
+    let first = json(&add_bug(&fixture, &["--scope", "blocking"]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    set_bug_fields(&fixture, &first, &[("requirements", "[]")]);
+    fixture.commit("a bug on branch one");
+    fixture.git(&["checkout", "-q", "-"]);
+    let second = json(&add_receipt_bug(&fixture, &[]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    fixture.commit("a bug on the base branch");
+    fixture.git(&["merge", "-q", "--no-edit", "one"]);
+    let bugs = fixture.session()["bugs"].clone();
+    for id in [&first, &second] {
+        assert!(
+            bugs.as_array()
+                .unwrap()
+                .iter()
+                .any(|bug| bug == id.as_str()),
+            "{bugs}"
+        );
+    }
+    let status = fixture.ok(&["status"]);
+    assert!(
+        status["blocking_bugs"].to_string().contains(&first),
+        "{status:#}"
+    );
+}
+
+/// REQ-history-006 (#382), TC-history-the-story-names-a-bug-filed-in-the-session: a bug
+/// filed in a session that no checkpoint list holds is named in the session's archived
+/// story under `## Bugs`.
+#[test]
+fn the_story_names_a_bug_filed_in_the_session() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let session = fixture.active_id();
+    json(&add_bug(&fixture, &[]));
+    fixture.set_front("bugs", "[]");
+    fixture.commit("a bug filed in the session");
+    fixture.ok(&[
+        "session",
+        "close",
+        &session,
+        "--reason",
+        "SYNTHETIC closed with one bug filed",
+    ]);
+    let story = fixture.read(&format!(".chough/archive/sessions/{session}.md"));
+    let bugs = story
+        .split("## Bugs")
+        .nth(1)
+        .unwrap_or_default()
+        .split("\n## ")
+        .next()
+        .unwrap_or_default();
+    assert!(
+        bugs.contains("Shipping is charged at exactly the free threshold"),
+        "{story}"
+    );
+}
+
+/// REQ-cli-012 (#382), TC-cli-an-update-leaves-a-filed-bug-unjoined: filing a bug and then
+/// `bug update --observation` naming an entry of the active session leaves the session's
+/// record unchanged, since the bug is already one of the session's bugs.
+#[test]
+fn an_update_naming_an_active_entry_leaves_a_filed_bug_unjoined() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let passed = entry(&fixture, "passed-later", "passed", 1_793_000_100);
+    fixture.commit("an entry");
+    let session_file = fixture.session_file();
+    let before = fixture.read(&session_file);
+    let id = json(&add_bug(&fixture, &[]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    fixture.ok(&["bug", "update", &id, "--observation", &passed]);
+    assert_eq!(
+        fixture.read(&session_file),
+        before,
+        "the session was written"
+    );
+    assert_eq!(fixture.session()["bugs"], json!([id]));
+}
+
+/// REQ-cli-012 (#382), TC-cli-a-bug-of-an-archived-or-missing-session-is-no-ones: a bug
+/// whose `session` names an archived session, or a session that no longer exists, is
+/// listed by no open session's checkpoint and stops none, and no command reports an
+/// error or a finding for it.
+#[test]
+fn a_bug_of_an_archived_or_missing_session_is_listed_nowhere_and_raises_nothing() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let first = fixture.active_id();
+    let archived = json(&add_bug(&fixture, &["--scope", "blocking"]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    fixture.commit("a bug filed in the first session");
+    fixture.ok(&["session", "close", &first, "--reason", "SYNTHETIC closed"]);
+    fixture.commit("the first session closed");
+    fixture.ok(&["session", "new", "beta", "--objective", "SYNTHETIC beta"]);
+    let missing = json(&add_receipt_bug(&fixture, &["--scope", "blocking"]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let path = bug_path(&missing);
+    let record = fixture.read(&path);
+    let edited = record
+        .lines()
+        .map(|line| {
+            if line.starts_with("session: ") {
+                "session: 2026-01-01-no-such-session".to_string()
+            } else {
+                line.to_string()
+            }
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+        + "\n";
+    fixture.write(&path, &edited);
+    for id in [&archived, &missing] {
+        set_bug_fields(&fixture, id, &[("requirements", "[]")]);
+    }
+    fixture.commit("two bugs of no open session");
+    assert_eq!(fixture.session()["bugs"], json!([]));
+    let status = fixture.ok(&["status"]);
+    assert_eq!(status["blocking_bugs"], json!([]), "{status:#}");
+    fixture.ok(&["bug", "list"]);
+    assert!(fixture.run(&["next"]).status.success());
+    let doctor = fixture.run(&["doctor"]);
+    let said = String::from_utf8_lossy(&doctor.stdout);
+    for id in [&archived, &missing] {
+        assert!(!said.contains(id.as_str()), "{said}");
     }
 }

@@ -1,0 +1,59 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795187534,
+      "digest": "b269056ead41810d2892a485060af2107e86e3c3bc5e68f30298ddb53f48898f",
+      "note": "Approved by 0xLeif at the Chough gate \"Approve the scope of closed-pipe-and-help\": \"Standing OK, tell me after\" (Leif's standing OK for scope approvals, from his Claude Code question dialog in his planning session (hc t4c), 2026-11-20 ('Standing OK, tell me after'), relayed via t4c, which confirmed on 2026-11-20 that E1 closed-pipe-and-help at 8e562c06 has only the recommended choice, changes no requirement wording and adds no refusal; recorded after one interview correction SpecSync required for a no-spec change (public_contract yes to no), which changes none of those three). Relayed and recorded by chough-fixer-t4n at 2026-11-20T15:12:13Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "closed-pipe-and-help",
+        "title": "Closed pipe and help",
+        "description": "closed pipe and help",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.closed-pipe-and-help.cases.toml",
+          "changelog.d/2026-11-20-closed-pipe-and-help.md",
+          "docs/cli.md",
+          "src/change.rs",
+          "src/main.rs",
+          "src/ready.rs",
+          "src/records.rs",
+          "tests/cli.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Bug fixes that bring Chough to what its requirements already assume: no requirement says a command panics or exits 101 when its reader goes away, or that help depends on where it stands among the global options; docs/cli.md's sentence on -V is corrected to match the helper.",
+        "acceptance_criteria": [
+          "Every command whose standard output or standard error is closed, as in chough next | true or chough next | head -1, stops printing and exits with the code it would have exited with, never 101 and never a panic or a Broken pipe message; a write command still saves (#383). chough --root . help --help, chough --root=. help -h and chough --redact help --help print the top-level help and exit 0, as chough help --help does, and docs/cli.md names --help and -h as the help flags and chough -V and --version as the top-level version flags (#399)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The issues set the scope: #383's closed-pipe half (s7-F5; the Unicode half moved to #410 in 0.6.3) and #399 (review of #309, Leif: fix in 0.6.2). Leif asked to check which commands still panic before fixing: measured on main 7bf110dc, every command that prints panics with 101 into a closed pipe, except clap's own help; change ready and the ship summary exit 1 with Error: Broken pipe. Recommended choices only. No new refusal and no requirement wording changes (no-spec, as #309 was). No new dependency. Failing tests first.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Standing OK, tell me after",
+        "where": "Leif's standing OK for scope approvals, from his Claude Code question dialog in his planning session (hc t4c), 2026-11-20 ('Standing OK, tell me after'), relayed via t4c, which confirmed on 2026-11-20 that E1 closed-pipe-and-help at 8e562c06 has only the recommended choice, changes no requirement wording and adds no refusal; recorded after one interview correction SpecSync required for a no-spec change (public_contract yes to no), which changes none of those three",
+        "recorded_by": "chough-fixer-t4n"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795196024,
+      "digest": "9adee77fd5542dd6f749a730693e450c47e75880fc9bf5b8e1eb4eb1d9df38aa",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

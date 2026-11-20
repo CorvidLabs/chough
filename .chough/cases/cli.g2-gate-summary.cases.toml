@@ -1,0 +1,148 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# G2: #389's gate summary and #390's unattended move into done (Leif's decision B).
+
+[[case]]
+id = "TC-cli-g2-evidence-with-no-case-counts"
+title = "Evidence recorded with criteria and no case counts in the gate summary's Tests line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::evidence_with_no_case_counts_in_the_tests_line passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "evidence_with_no_case_counts_in_the_tests_line"
+
+[[case]]
+id = "TC-cli-g2-uncommitted-work-in-the-diff-line"
+title = "With the work not committed yet, the summary's diff line is git diff <base> and says so"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::uncommitted_work_is_shown_by_the_diff_line passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "uncommitted_work_is_shown_by_the_diff_line"
+
+[[case]]
+id = "TC-cli-g2-a-session-before-the-first-commit"
+title = "A session started before the first commit counts what changed from it and says why"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::a_session_started_before_the_first_commit_counts_from_it passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_session_started_before_the_first_commit_counts_from_it"
+
+[[case]]
+id = "TC-cli-g2-an-unattended-done-needs-a-reason"
+title = "Without SpecSync, --to done across plan and accept refuses as refused:no-human-decision without --reason, and with it moves, says so and records the reason"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-031"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::without_specsync_a_done_across_plan_and_accept_needs_a_reason passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "without_specsync_a_done_across_plan_and_accept_needs_a_reason"
+
+[[case]]
+id = "TC-cli-g2-a-move-past-plan-says-whether-a-human-decided"
+title = "Without SpecSync, a move past plan says no human decision is recorded, and says nothing of the kind after a human closed a gate there"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-031"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::without_specsync_a_move_past_plan_says_whether_a_human_decided passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "without_specsync_a_move_past_plan_says_whether_a_human_decided"
+
+[[case]]
+id = "TC-cli-g2-the-fix-names-the-journal-post"
+title = "The unfinished_archive fix names the session's journal post among the files to commit, and making that commit leaves it committed"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-cli-055"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::the_unfinished_archive_fix_names_the_journal_post passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "the_unfinished_archive_fix_names_the_journal_post"
+
+[[case]]
+id = "TC-cli-g2-a-note-and-a-reason-both-reach-the-timeline"
+title = "With both --note and --reason, the move's Timeline entry holds both"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-031"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_note_and_a_reason_both_reach_the_timeline passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_note_and_a_reason_both_reach_the_timeline"
+
+[[case]]
+id = "TC-cli-g2-an-uncommitted-definition-in-the-diff-line"
+title = "At a gate that drives approval, with only the change's own definition uncommitted, the diff line is git diff <base> and says so"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::an_uncommitted_definition_is_shown_by_the_diff_line_at_scope_approval passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "an_uncommitted_definition_is_shown_by_the_diff_line_at_scope_approval"

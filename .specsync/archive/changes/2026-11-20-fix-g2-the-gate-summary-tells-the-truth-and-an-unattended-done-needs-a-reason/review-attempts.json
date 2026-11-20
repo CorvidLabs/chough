@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "b2031107b4baf73e8bd325b32c7287c3fc36ba69",
+      "contract_digest": "fd9e3a22ef60708e191ad8cb7a99de4f8721012294c8d5e838d7c44770c226b2",
+      "execution_digest": "03466fa869352d0137f5f2edda50de47b39de1a3d127aa4558074f690871c69a",
+      "workspace_digest": "853ba1dadf57ec83a0c0d53c00f39895d616dd5db25d56e26ef0f92199b0be2e",
+      "timestamp": 1795210460,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Go",
+        "where": "Standing OK 6(b): Leif's 'Go' to the six rules (Claude Code chat message of 2026-11-19, relayed by his planning session hc t4c), recording his implementation review of a batch with a tester PASS that changes no approved sentence. tester2's full PASS at b2031107 on macOS and Linux: F14 fixed at a scope approval, F4, F5 and #390 passing, the full set 7 fixed and 0 new (the 6 rows that run --to done without --reason are #390's intended refusal). The tester's rule-3 run passed the new refusal (refused:no-human-decision) on the 22 real repositories and Chough, at f547313c. corvid-agent approved #428 at 83ba5d1f. After that: main 562ef738 (#426, #423) merged in at 0e771e62, tests/doctor.rs keeping both sides, t4b's script showing its own changed lines the same per file, the specs only renumbered (cli 132, history 37); corvid-agent's notes taken, a --note given with --reason kept beside it (test first, cfbc67a4) and a design.md note on the narrowed F5 line (eae8f99f); tester2's F14 finding fixed inside the approved words, the diff line counting what What changed counts (test first at a scope approval, 8f0f0403); no approved sentence changed; the full lane green at b2031107. Recorded by t4c",
+        "recorded_by": "t4c"
+      }
+    }
+  ]
+}

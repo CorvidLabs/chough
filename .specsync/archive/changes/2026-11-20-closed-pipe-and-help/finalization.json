@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "closed-pipe-and-help",
+  "implementation_commit": "de0f1dc7ec89772141d8f938e73cb490dce2ffef",
+  "implementation_tree": "0f90d720306ff092f6e7f035bb24f151fb49bd88",
+  "contract_digest": "b269056ead41810d2892a485060af2107e86e3c3bc5e68f30298ddb53f48898f",
+  "workspace_digest": "8af9ab0778cf65e2e890792c7339fcc5e9c194c56275f6eca05ea801647ec407",
+  "closing_digest": "9adee77fd5542dd6f749a730693e450c47e75880fc9bf5b8e1eb4eb1d9df38aa",
+  "review_digest": "c8b11d7892b2ac58b9de6a4716586ce4a5edb44d7c5204020118673eca51df8f",
+  "finalization_digest": "71ad5f6df5c39e3fc98f41a4c5b3f876b38ba058145cd61112db2ac7009ba565",
+  "timestamp": 1795196024
+}

@@ -1,0 +1,76 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #383 (the closed-pipe half) and #399: a closed stream ends no command, and help works after the global options (E1, closed-pipe-and-help).
+
+[[case]]
+id = "TC-cli-a-closed-pipe-ends-a-command-with-its-own-code"
+title = "With its reader gone, next, status, context, bug list, history show, doctor, session list, timing, checkpoint, cases list and change ready each exit with the code they have when their output is read, with no panic and no Broken pipe message"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-4"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/records.rs", "src/change.rs", "src/ready.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::a_command_whose_reader_has_gone_exits_with_its_own_code passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "a_command_whose_reader_has_gone_exits_with_its_own_code"
+
+[[case]]
+id = "TC-cli-a-write-into-a-closed-pipe-saves-and-exits-0"
+title = "checkpoint --decision with its reader gone saves the decision and exits 0"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-4"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/records.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::a_write_into_a_closed_pipe_saves_and_exits_0 passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "a_write_into_a_closed_pipe_saves_and_exits_0"
+
+[[case]]
+id = "TC-cli-a-refusal-with-both-streams-closed-exits-1"
+title = "A refusal with standard output and standard error both closed exits 1 as it does when they are read, never 101"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-4"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/records.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::a_refusal_with_both_streams_closed_exits_as_it_would passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "a_refusal_with_both_streams_closed_exits_as_it_would"
+
+[[case]]
+id = "TC-cli-help-after-the-global-options"
+title = "help --help and help -h after --root, --root=, --redact and --session print the top-level help and exit 0, as chough help --help does"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-4"]
+requirements = ["REQ-cli-019"]
+paths = ["src/main.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::help_after_the_global_options_prints_the_top_level_help passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "help_after_the_global_options_prints_the_top_level_help"
