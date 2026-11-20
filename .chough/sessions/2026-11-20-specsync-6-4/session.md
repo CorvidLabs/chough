@@ -5,7 +5,7 @@ aliases: [specsync-6-4]
 objective: "Chough moves to SpecSync 6.4.0: change ready asks SpecSync's approval dry run and stops copying its delta-set rule, spec history is recorded in fragments with no spec merge line, and change ready leaves .specsync/hashes.json alone (#404, #406, #307)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -61,13 +61,9 @@ observations:
   - 2026-11-20-tc-cli-change-ready-missing-specsync-ed7d72
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
-    holds: accept
-    drives: review
-    opened: 2026-11-20T23:43:49Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: Chough moves to SpecSync 6.4.0, and change ready asks its dry run
 summary:
   - "chough change ready names what SpecSync 6.4.0's approval dry run refuses, in its words, in place of its own delta-set rule (#406, #307); it leaves SpecSync's own untracked change.lock and workflow-v2-baseline.json and another active change's work out of the paths check, a whole-project scope leaving nothing out; it no longer touches .specsync/hashes.json, which 6.4.0 keeps outside the work tree. Every pin names 6.4.0, and the spec merge line goes since 6.4.0 records history in fragments (#404)."
@@ -90,6 +86,7 @@ Chough moves to SpecSync 6.4.0: change ready asks SpecSync's approval dry run an
 - 0xLeif decided "Re-approval of specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments with the skill-release fixture added (native approval)": "Standing OK, tell me after" (Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this path-only addition: tests/fixtures/skill-releases/manifest.json and tests/skill_releases.rs, which pin the current skill bundle that the approved pin move's skill reference changes, as #351 did; no delta word changes, no new refusal. Recorded by t4c); recorded by t4c; a relayed claim, not authenticated; ran specsync change approve specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments as 0xLeif
 - 0xLeif decided "One send-back of specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments: a declared path covering the whole project leaves nothing out": "A: '.' leaves nothing out (Recommended)" (Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 22:02Z, to: 'Chough #404, an edge case the tester found in NFTMix. Under your Q2 "A", the paths check leaves out another active change's declared paths. But one NFTMix change declares the whole project ("."), so every other change's "outside the declared paths" findings disappear. Fix: a declared path that covers the whole project (".") leaves nothing out, since it doesn't show any file is that change's work. Narrower ones like "src/" still work as approved. That's one clause and one criterion in REQ-cli-067, through a send-back with a red test first.' Recorded by t4c); recorded by t4c; a relayed claim, not authenticated
 - 0xLeif decided "Re-approval of specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments with a whole-project scope leaving nothing out (native approval)": "A: '.' leaves nothing out (Recommended)" (Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 22:02Z, to: 'Chough #404, an edge case the tester found in NFTMix. Under your Q2 "A", the paths check leaves out another active change's declared paths. But one NFTMix change declares the whole project ("."), so every other change's "outside the declared paths" findings disappear. Fix: a declared path that covers the whole project (".") leaves nothing out, since it doesn't show any file is that change's work. Narrower ones like "src/" still work as approved. That's one clause and one criterion in REQ-cli-067, through a send-back with a red test first.' Recorded by t4c); recorded by t4c; a relayed claim, not authenticated; ran specsync change approve specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments as 0xLeif
+- 0xLeif decided "Implementation review of specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments": "Go" (Standing OK 6(b): Leif's 'Go' to the six rules (Claude Code chat message of 2026-11-19, relayed by his planning session hc t4c), recording his implementation review of a batch with tester PASSes. The tester's rule-3 PASS of change ready on the 66 real open changes at d4f520f6; its NFTMix case (a change declaring '.') led to Leif's own 'A: . leaves nothing out' of 2026-11-20 about 22:02Z, recorded by t4c through a send-back that added exactly one clause and one criterion to REQ-cli-067 (f4b9df1d), built test first (d69a7c44). tester2's recheck PASS at d1f953a4: NFTMix's 32 findings back, the 66 changes matching the tester's run plus those 32, nothing new over main. corvid-agent approved #429 at a2500c4e and again at d1f953a4; its three notes answered (a docs line taken, two left as approved). Main e895943c and then 51352d33 merged in, each cleanly, t4b's script showing the 28 declared paths' own lines the same; the full lane green with SpecSync 6.4.0 at 7eb2db10. No approved sentence changed beyond Leif's '.' answer. Recorded by t4c); recorded by t4c; a relayed claim, not authenticated; ran specsync change review specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -316,4 +313,20 @@ Chough moves to SpecSync 6.4.0: change ready asks SpecSync's approval dry run an
   - revision: 7eb2db10031f5d2b254b117103f2a2986e40eddc
   - holds: accept
   - drives: review
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T23:45:10Z · gate-closed · accept → accept · Implementation review of specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments ^t-1dba42
+  - native_change: specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
+  - revision: f2781de4769eb919640066a080bdfea8138505fb
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Go
+    - where: Standing OK 6(b): Leif's 'Go' to the six rules (Claude Code chat message of 2026-11-19, relayed by his planning session hc t4c), recording his implementation review of a batch with tester PASSes. The tester's rule-3 PASS of change ready on the 66 real open changes at d4f520f6; its NFTMix case (a change declaring '.') led to Leif's own 'A: . leaves nothing out' of 2026-11-20 about 22:02Z, recorded by t4c through a send-back that added exactly one clause and one criterion to REQ-cli-067 (f4b9df1d), built test first (d69a7c44). tester2's recheck PASS at d1f953a4: NFTMix's 32 findings back, the 66 changes matching the tester's run plus those 32, nothing new over main. corvid-agent approved #429 at a2500c4e and again at d1f953a4; its three notes answered (a docs line taken, two left as approved). Main e895943c and then 51352d33 merged in, each cleanly, t4b's script showing the 28 declared paths' own lines the same; the full lane green with SpecSync 6.4.0 at 7eb2db10. No approved sentence changed beyond Leif's '.' answer. Recorded by t4c
+    - recorded_by: t4c
+    - native: specsync change review specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
+    - actor: 0xLeif
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T23:45:12Z · advance · accept → done · native:archived ^t-fd9a27
+  - native_change: specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
+  - gate: native:archived
+  - revision: f2781de4769eb919640066a080bdfea8138505fb
   - by: t4c (claude-opus-5-5, hc t4c)
