@@ -5,7 +5,7 @@ aliases: [doctor-fix-safety]
 objective: "doctor --fix never destroys or hangs: the archive finish keeps evidence its story does not hold (#381) and removes OS metadata (#377), next names the archive finish (#371), doctor names front-matter conflicts and gives no restore advice for a redaction (#374), and the spec walk stays inside the project and is bounded (#402)"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -176,9 +176,13 @@ observations:
   - 2026-11-20-tc-records-the-spec-walk-follows-no-link-and-is-bounded
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of doctor-fix-safety
+    holds: accept
+    drives: review
+    opened: 2026-11-20T01:14:55Z
 run_consents: []
-next: "Gate \"Re-approval of doctor-fix-safety for the three inbox edits to REQ-history-012\" closed (approved); run `chough stage advance` to move on."
+next: Continue accept
 ---
 # doctor --fix never destroys or hangs: the archive finish keeps evidence its story does not hold (#381) and removes OS metadata (#377), next names the archive finish (#371), doctor names front-matter conflicts and gives no restore advice for a redaction (#374), and the spec walk stays inside the project and is bounded (#402)
 
@@ -620,4 +624,20 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve doctor-fix-safety
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T01:14:25Z · advance · build → test · native:verifying ^t-ba1ed7
+  - native_change: doctor-fix-safety
+  - gate: native:verifying
+  - revision: 8a586283d6787f2b128ec9760d8c8cef31f26ed2
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T01:14:38Z · advance · test → accept · native:verifying ^t-6002d8
+  - native_change: doctor-fix-safety
+  - gate: native:verifying
+  - revision: 8a586283d6787f2b128ec9760d8c8cef31f26ed2
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T01:14:52Z · gate-opened · accept → accept · Implementation review of doctor-fix-safety ^t-29ba33
+  - native_change: doctor-fix-safety
+  - revision: 8a586283d6787f2b128ec9760d8c8cef31f26ed2
+  - holds: accept
+  - drives: review
   - by: chough-fixer (claude-opus-5-5, hc t4n)

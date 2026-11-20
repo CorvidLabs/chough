@@ -535,6 +535,13 @@
         "where": "Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 00:38Z, answering item 4 of t4c's eight-item round, on this text: REQ-history-012 keeps any file under agent/inbox/ outside its folded/ folder, gives a kept inbox file that chough inbox add would not take a drop-only way out, and adds one criterion for both; nothing else in any delta changed, and main through #413 changed none of this change's requirements, so standing OK (d) was not used; the earlier approvals stand for the rest of the delta: 'Approve, with the 3 recommended choices', the three wording answers, 'Yes' for the two sentences and four paths, standing OK (d) for the rebase onto main after #407, and 'B, fixer runs the send-back' for the #389 guard",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795137334,
+      "digest": "56e437594e1adf7b3e42c7084c7b93b1a5075177d7e3bd9f3113d2a68e89d02b",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],
