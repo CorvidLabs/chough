@@ -849,6 +849,31 @@ fn another_active_change_s_work_is_not_this_change_s() {
     );
 }
 
+/// REQ-cli-067 (#406, the tester's NFTMix case, Leif's "A"), TC-cli-ready-a-whole-project-scope-leaves-nothing-out:
+/// another active change that declares the whole project (`.`) shows no file is its work,
+/// so a file outside this change's paths is still named; that change's own folder is
+/// still left out.
+#[test]
+fn another_change_declaring_the_whole_project_leaves_nothing_out() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    let base = head(&fixture);
+    fixture.write(
+        ".specsync/changes/other/state.json",
+        &format!(
+            "{{\"state\":\"draft\",\"base_commit\":\"{base}\",\"affected_specs\":[],\"affected_paths\":[\".\"],\"no_spec_change\":true,\"selected_artifacts\":[]}}\n"
+        ),
+    );
+    fixture.write("docs/outside.md", "outside this change's paths\n");
+    fixture.commit("another change declares the whole project");
+    assert_report(
+        &fixture,
+        &[(
+            "changed file docs/outside.md is outside the declared paths",
+            "chough change answer demo affected_paths \"src/,docs/outside.md\"",
+        )],
+    );
+}
+
 /// REQ-cli-067 (#404), TC-cli-ready-makes-no-hash-file: in a project with no
 /// `.specsync/hashes.json`, the SpecSync check ready runs finds none.
 #[test]

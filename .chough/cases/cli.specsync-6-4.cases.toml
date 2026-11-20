@@ -129,3 +129,21 @@ expected = ["tests/package.rs::every_specsync_pin_names_6_4_0 passes"]
 adapter = "cargo-test"
 test_target = "package"
 test = "every_specsync_pin_names_6_4_0"
+
+[[case]]
+id = "TC-cli-ready-a-whole-project-scope-leaves-nothing-out"
+title = "Another active change declaring the whole project leaves nothing out of the paths check"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/ready.rs::another_change_declaring_the_whole_project_leaves_nothing_out passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "another_change_declaring_the_whole_project_leaves_nothing_out"
