@@ -5,11 +5,14 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Red tests in `tests/ready.rs` and `tests/package.rs`, committed failing.
-- [ ] `src/ready.rs`: the dry run, the two paths exceptions, the delta-set rule and the
+- [x] Red tests in `tests/ready.rs` and `tests/package.rs`, committed failing.
+- [x] `src/ready.rs`: the dry run, the two paths exceptions, the delta-set rule and the
       `.specsync/hashes.json` code removed.
-- [ ] The 6.4.0 pin in CI, `.github/scripts/`, `.specsync/config.toml`, `AGENTS.md`, the
+- [x] The 6.4.0 pin in CI, `.github/scripts/`, `.specsync/config.toml`, `AGENTS.md`, the
       README, docs and `src/change.rs`.
-- [ ] `.gitattributes` without the spec line; `.specsync/sdd.json` without `specs/`.
-- [ ] Cases, a changelog fragment, the full lane, the tester's real-repository run.
-- [ ] At 6.4.0's publish: the Action commit swapped, the lane again.
+- [x] `.gitattributes` without the spec line; `.specsync/sdd.json` without `specs/`.
+- [x] Cases, a changelog fragment, and the full lane with the candidate.
+
+After verification, outside this list: the tester's real-repository run of ready (the 66
+changes, as for #406), and at 6.4.0's publish, the Action commit swapped for the
+published tag's and the lane run again.

@@ -10,6 +10,16 @@
       "commands": [],
       "requirement_ids": [],
       "refusal": "tasks.md contains incomplete tasks: finish the 6 open tasks in `.specsync/changes/specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments/tasks.md` (line 8: \"Red tests in 'tests/ready.rs' and 'tests/package.rs', committed failing.\"; line 9: \"'src/ready.rs': the dry run, the two paths exceptions, the delta-set rule and th...\"; line 11: \"The 6.4.0 pin in CI, '.github/scripts/', '.specsync/config.toml', 'AGENTS.md', t...\"; line 13: \"'.gitattributes' without the spec line; '.specsync/sdd.json' without 'specs/'.\"; line 14: \"Cases, a changelog fragment, the full lane, the tester's real-repository run.\"; and 1 more) and mark each one `[x]`, then re-run `specsync change check specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments --commit`"
+    },
+    {
+      "timestamp": 1795201984,
+      "commit": "d8aec6f80f59fd86e9efbea3cca24395af1471a2",
+      "contract_digest": "",
+      "workspace_digest": "",
+      "passed": false,
+      "commands": [],
+      "requirement_ids": [],
+      "refusal": "tasks.md contains incomplete tasks: finish the 6 open tasks in `.specsync/changes/specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments/tasks.md` (line 8: \"Red tests in 'tests/ready.rs' and 'tests/package.rs', committed failing.\"; line 9: \"'src/ready.rs': the dry run, the two paths exceptions, the delta-set rule and th...\"; line 11: \"The 6.4.0 pin in CI, '.github/scripts/', '.specsync/config.toml', 'AGENTS.md', t...\"; line 13: \"'.gitattributes' without the spec line; '.specsync/sdd.json' without 'specs/'.\"; line 14: \"Cases, a changelog fragment, the full lane, the tester's real-repository run.\"; and 1 more) and mark each one `[x]`, then re-run `specsync change check specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments --commit`"
     }
   ]
 }
