@@ -5,7 +5,7 @@ aliases: [406-rebase-own-work]
 objective: chough change ready counts only the change's own work after a rebase onto main or a squash merge of main, so main's files are not named as outside the declared paths (#406, item 2)
 intent_scope: ""
 modules: []
-stage: intent
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Scope approval of fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # chough change ready counts only the change's own work after a rebase onto main or a squash merge of main, so main's files are not named as outside the declared paths (#406, item 2)
 
@@ -61,3 +61,16 @@ chough change ready counts only the change's own work after a rebase onto main o
     - native: specsync change approve fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main
     - actor: 0xLeif
   - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T04:20:55Z · advance · intent → design ·  ^t-3d853e
+  - native_change: fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main
+  - revision: e2f3380e758001e8ffd117e6c669ecf8dfc922ea
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T04:24:02Z · advance · design → plan ·  ^t-12cfae
+  - native_change: fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main
+  - revision: e2f3380e758001e8ffd117e6c669ecf8dfc922ea
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T04:24:09Z · advance · plan → build · native:approved ^t-e7409a
+  - native_change: fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main
+  - gate: native:approved
+  - revision: e2f3380e758001e8ffd117e6c669ecf8dfc922ea
+  - by: fable (claude-opus-5-5, hc t4b)
