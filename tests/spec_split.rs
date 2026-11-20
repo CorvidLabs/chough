@@ -51,7 +51,8 @@ const MOVED_REPORTING: [(&str, &str, &str); 3] = [
         // starts Cycle 1, and the wall-clock label is said once in the text header.
         // then by 0-6-1-chough-next-with-no-open-session-...: no gate-wait, segment or
         // estimate line repeats the elapsed wall-clock label.
-        "7f663a875714902132cc652098cb17920c34ca85ada5edcbd2f4839ec507de19",
+        // then by control-and-echo (#366): text it shows from a record is printed escaped.
+        "c1a813a8ca55a4ef6ce8367f4fe2c325aad1c89a270792761631cfbdd66c5923",
     ),
     (
         "REQ-cli-024",

@@ -1216,11 +1216,16 @@ fn log_line(at: u64, text: &str, actor: Option<&Actor>) -> String {
 
 /// Check every value a record would write (REQ-records-006), or redact it under
 /// `--redact`; returns how many values were redacted.
-fn guard(record: &mut Record, local: &Local) -> Result<usize> {
+fn guard(record: &mut Record, local: &Local, stored: Option<&Record>) -> Result<usize> {
+    // A control character is refused in what this write adds, under `--redact` too, never
+    // in text the stored record already holds (REQ-records-016).
+    record.check_controls(stored)?;
     if leaks::redacting() {
         return Ok(record.redact_leaks(local));
     }
-    record.check_leaks(local)?;
+    for (field, value) in record.fields() {
+        leaks::check_leaks_in(local, &field, &value)?;
+    }
     Ok(0)
 }
 
@@ -1327,9 +1332,12 @@ fn create(root: &Path, draft: Draft, redact: bool) -> Result<(Stored, usize)> {
     // The name comes from the checked title, so a redacted title never names the file.
     let local = Local::current();
     let redacted = if redact {
+        // Captured output nobody gave is stored as Chough prints it, so a control
+        // character in it is escaped, never refused (REQ-records-016).
+        record.make_printable();
         record.redact_leaks(local)
     } else {
-        guard(&mut record, local)?
+        guard(&mut record, local, None)?
     };
     let title = record.scalar("title").unwrap_or_default().to_string();
     let name = identity::dated_name(&identity::utc_date(at), &title, "bug");
@@ -1688,6 +1696,7 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     crate::sessions::lock_project(root)?;
     let bugs = read_all(root)?;
     let mut stored = find(&bugs, &args.id)?.clone();
+    let original = stored.record.clone();
     let id = stored.id().to_string();
     let at = now()?;
     let mut changes = vec![];
@@ -1835,7 +1844,7 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
         &(log_line(at, &text, Actor::current().as_ref()) + "\n"),
     )?;
     validate(&stored)?;
-    let redacted = guard(&mut stored.record, Local::current())?;
+    let redacted = guard(&mut stored.record, Local::current(), Some(&original))?;
     markdown::replace(root, &stored.path, &stored.record, Kind::Bug)?;
     join_active_session(root, &id, &links, false)?;
     let mut output = json!({
@@ -2737,7 +2746,11 @@ pub(super) fn run(root: &Path, command: BugCommand) -> Result<()> {
         BugCommand::Merge { base, ours, theirs } => merge::files(&base, &ours, &theirs),
         BugCommand::Report { id } => {
             let bug = load(root, &id)?;
-            print!("{}", report(&Evidence::new(root), &bug)?);
+            // REQ-records-016 (#366): the report shows a bug's text as Chough prints it.
+            print!(
+                "{}",
+                crate::leaks::printable(&report(&Evidence::new(root), &bug)?, false)
+            );
             Ok(())
         }
     }
@@ -2755,9 +2768,20 @@ mod merge {
     /// `ours` unchanged, naming each field or paragraph both sides changed differently.
     pub(super) fn files(base: &Path, ours: &Path, theirs: &Path) -> Result<()> {
         let read = |path: &Path| -> Result<(String, Record)> {
-            let text = crate::records::read_bounded_record(path, Kind::Bug.bound())?;
-            let record = markdown::parse(&path.display().to_string(), &text)
-                .with_context(|| format!("{} is not a bug record", path.display()))?;
+            // REQ-records-006 (#367): the file is named only as an error may show it, in
+            // the cause as well, so a path holding a leak is named by what it holds.
+            let full = path.display().to_string();
+            let name = crate::leaks::shown("file", &full);
+            let text =
+                crate::records::read_bounded_record(path, Kind::Bug.bound()).map_err(|error| {
+                    if name == full {
+                        error
+                    } else {
+                        anyhow::anyhow!("{name} could not be read as a bug record")
+                    }
+                })?;
+            let record = markdown::parse(&name, &text)
+                .with_context(|| format!("{name} is not a bug record"))?;
             Ok((text, record))
         };
         let (_, base) = read(base)?;

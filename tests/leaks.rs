@@ -1402,6 +1402,52 @@ fn every_user_variable_that_is_set_counts() {
     assert!(text.contains("<redacted:user-name>"), "{text}");
 }
 
+/// REQ-records-006, TC-records-a-file-url-is-checked-like-its-path: with the user named
+/// `dev`, `file:///opt/dev/x` is refused as a `user-name` leak, while
+/// `https://example.com/dev/guide` is still written; with `USER`, `LOGNAME` and
+/// `USERNAME` set to three names, each is refused inside an absolute path.
+#[test]
+fn a_file_url_is_checked_like_its_path_and_username_counts() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let dev = [("USER", "dev"), ("LOGNAME", "dev")];
+    let output = fixture.run_with_env(&["checkpoint", "--decision", "see file:///opt/dev/x"], &dev);
+    let said = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "file:///opt/dev/x was written");
+    assert!(said.contains("decision holds user-name"), "{said}");
+    let output = fixture.run_with_env(
+        &[
+            "checkpoint",
+            "--decision",
+            "see https://example.com/dev/guide",
+        ],
+        &dev,
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let env = [
+        ("USER", "SYNTHETICone"),
+        ("LOGNAME", "SYNTHETICtwo"),
+        ("USERNAME", "SYNTHETICthree"),
+    ];
+    for value in [
+        "see /opt/SYNTHETICone/x",
+        "see /opt/SYNTHETICtwo/x",
+        "see /opt/SYNTHETICthree/x",
+    ] {
+        let before = tree(fixture.root());
+        let output = fixture.run_with_env(&["checkpoint", "--decision", value], &env);
+        let said = String::from_utf8_lossy(&output.stderr).into_owned();
+        assert!(!output.status.success(), "{value} was written");
+        assert!(said.contains("decision holds user-name"), "{value}: {said}");
+        assert_eq!(tree(fixture.root()), before, "{value} changed a file");
+    }
+}
+
 /// REQ-records-006 (#407, tester2's check of the count): `--redact` says how many leaks a
 /// save replaced, counting only replacements it made: a new leaking decision is 1;
 /// `evidence add --redact` names its entry and no session-record count, since the

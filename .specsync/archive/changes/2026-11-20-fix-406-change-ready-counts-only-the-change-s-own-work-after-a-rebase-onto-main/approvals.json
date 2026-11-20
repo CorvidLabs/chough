@@ -1,0 +1,62 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795148371,
+      "digest": "c6a440b872461172d18465ad020073438a770b57888690919dd32f0c630fe908",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main (native approval)\": \"Approve (Recommended)\" (Leif's own answer, chosen in a Claude Code question dialog in his planning session (hc t4c) on 2026-11-20 at about 04:16Z, to the question: \"Chough #406 (rebase part): ... Approve its scope with the four recommended choices (A: decide by content; B: default branch with #1081's protections; C: a missing starting commit is named; D: several changes on one branch left for later)?\" Recorded by t4c itself, as his relayed answer, at the draft 5d492341). Relayed and recorded by t4c at 2026-11-20T04:19:29Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main",
+        "title": "Fix 406: change ready counts only the change's own work after a rebase onto main",
+        "description": "Fix 406: change ready counts only the change's own work after a rebase onto main",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.change-ready-rebase.cases.toml",
+          "changelog.d/",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "src/ready.rs",
+          "tests/ready.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "After a rebase onto the default branch or a squash merge of it, chough change ready names no file only the default branch changed and still names a file outside the declared paths that the change changed; with HEAD on the default branch, its tip at HEAD, or origin/HEAD naming HEAD's own branch, such a file is still named; with a base commit the repository lacks, it says so, prints no fatal: line and counts from the merge base, and with no default branch either it names one finding that the changed files could not be listed, never reporting that nothing is missing."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "cli lessons apply: the delta is frozen at approval, so each sentence is tried against Git first; the report stays read-only and adds no refusal; prefer a filter on the existing list over a new rule (rule 5)",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "40d88c3726cc9087384dddb0dceadeb7f6d2f7393531732f180052727618a79b"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-067": "4dd0f9a31dd013cd8fcb1734831e89d989cbc32fefb7dcd3798ae50bc3e85cd2"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve (Recommended)",
+        "where": "Leif's own answer, chosen in a Claude Code question dialog in his planning session (hc t4c) on 2026-11-20 at about 04:16Z, to the question: \"Chough #406 (rebase part): ... Approve its scope with the four recommended choices (A: decide by content; B: default branch with #1081's protections; C: a missing starting commit is named; D: several changes on one branch left for later)?\" Recorded by t4c itself, as his relayed answer, at the draft 5d492341",
+        "recorded_by": "t4c"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795184204,
+      "digest": "c1a4b52f449fe46688cf1533e23e9912b85412f08eeb598ab1eea695cac3f879",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
