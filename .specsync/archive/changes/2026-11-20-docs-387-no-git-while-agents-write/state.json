@@ -7,11 +7,11 @@
   "title": "Docs 387 no git while agents write",
   "description": "docs 387 no git while agents write",
   "kind": "documentation",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
   "created_at": 1795098858,
-  "updated_at": 1795138944,
+  "updated_at": 1795140953,
   "affected_specs": [
     "cli"
   ],

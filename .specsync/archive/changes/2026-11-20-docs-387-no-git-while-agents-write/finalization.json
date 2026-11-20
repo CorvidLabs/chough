@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "docs-387-no-git-while-agents-write",
+  "implementation_commit": "1b1ab5c124c9f3a26ae244dba1351505474d44b7",
+  "implementation_tree": "fbe1e08fcb1800465a6fa251f29e899eec58b43d",
+  "contract_digest": "b62cb6c7cd4bf9ff160f919c0734005df34e3d936641c6e0099b56f624b58a57",
+  "workspace_digest": "6e47ebd3f97caac46d443d7ad97e9bb5492da0a7f776483e27e3ef07c9dd1eac",
+  "closing_digest": "efc557e1f7e3ecf280b0dc310a5a4776238b5626086ab30fa88853e44e847c7f",
+  "review_digest": "f3a8feb01f09df95ba29fa6c5e1a8ae16306a88dddac7a2fdc6444dd4d490ef4",
+  "finalization_digest": "2ed10d09516fbb4ddd746935a53879cf0b4804a2490cecff42d2c1233a49d5ae",
+  "timestamp": 1795140951
+}

@@ -161,6 +161,13 @@
         "where": "His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval. Scope: his 'Yes I approve' of the delta at 0892b125 (relayed by hc t4c through fable-lead, 2026-11-19), delta unchanged. Send-back: his 'a, all yes.. im back' (relayed the same way, about 00:38Z on 2026-11-20, item 7), one send-back by t4b correcting only the acceptance-criteria answer",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795140951,
+      "digest": "efc557e1f7e3ecf280b0dc310a5a4776238b5626086ab30fa88853e44e847c7f",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],
