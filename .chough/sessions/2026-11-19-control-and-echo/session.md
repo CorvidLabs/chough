@@ -122,6 +122,23 @@ observations:
   - 2026-11-20-tc-records-a-fragment-of-a-stored-control-line-is-refused
   - 2026-11-20-tc-reporting-timing-prints-stored-text-escaped-593542
   - 2026-11-20-tc-records-tabs-in-values-read-back-936d51
+  - 2026-11-20-tc-cli-the-pull-request-shows-in-every-view-363716
+  - 2026-11-20-tc-cli-every-session-writer-keeps-the-pull-request-form-84c2f2
+  - 2026-11-20-tc-cli-the-post-links-only-a-pull-request-form-094d32
+  - 2026-11-20-tc-history-correct-names-what-a-given-entry-holds-24f590
+  - 2026-11-20-tc-records-a-control-character-is-refused-at-write-322676
+  - 2026-11-20-tc-records-a-line-feed-is-kept-where-a-field-takes-one-b60c5d
+  - 2026-11-20-tc-records-no-command-prints-a-stored-control-character-raw-2c65bb
+  - 2026-11-20-tc-records-generated-files-hold-text-as-printed-32f51c
+  - 2026-11-20-tc-records-reserved-words-are-written-quoted-ce0898
+  - 2026-11-20-tc-records-flags-stay-booleans-4026e1
+  - 2026-11-20-tc-records-no-command-echoes-a-given-value-d1cdc9
+  - 2026-11-20-tc-records-a-file-url-is-checked-like-its-path-730dc1
+  - 2026-11-20-tc-records-a-stored-inbox-entry-folds-printable-d6591f
+  - 2026-11-20-tc-records-bug-merge-never-shows-a-leaking-path-2fcaa8
+  - 2026-11-20-tc-records-a-fragment-of-a-stored-control-line-is-refused-a21996
+  - 2026-11-20-tc-reporting-timing-prints-stored-text-escaped-31d612
+  - 2026-11-20-tc-records-tabs-in-values-read-back-dfcbc2
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -252,6 +269,23 @@ Control and echo batch: control characters refused at write and escaped on print
 - [Ran cargo test --locked --test output_safety -- --exact a_fragment_of_a_stored_control_line_is_still_refused for TC-records-a-fragment-of-a-stored-control-line-is-refused: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-a-fragment-of-a-stored-control-line-is-refused.md)
 - [Ran cargo test --locked --test timing -- --exact timing_prints_a_stored_control_character_escaped for TC-reporting-timing-prints-stored-text-escaped: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-reporting-timing-prints-stored-text-escaped-593542.md)
 - [Ran cargo test --locked --test front_matter_writes -- --exact a_tab_in_a_given_value_is_refused_and_the_records_stay_readable for TC-records-tabs-in-values-read-back: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-tabs-in-values-read-back-936d51.md)
+- [Ran cargo test --locked --test checkpoint -- --exact the_pull_request_shows_in_next_status_context_and_the_checkpoint_view for TC-cli-the-pull-request-shows-in-every-view: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-the-pull-request-shows-in-every-view-363716.md)
+- [Ran cargo test --locked --test checkpoint -- --exact every_session_writer_keeps_the_pull_request_quoted_and_a_cleared_one_out for TC-cli-every-session-writer-keeps-the-pull-request-form: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-every-session-writer-keeps-the-pull-request-form-84c2f2.md)
+- [Ran cargo test --locked --test journal -- --exact a_stored_pr_that_is_neither_form_is_left_out_of_the_post for TC-cli-the-post-links-only-a-pull-request-form: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-the-post-links-only-a-pull-request-form-094d32.md)
+- [Ran cargo test --locked --test history -- --exact correct_names_what_a_given_entry_holds_and_never_echoes_it for TC-history-correct-names-what-a-given-entry-holds: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-history-correct-names-what-a-given-entry-holds-24f590.md)
+- [Ran cargo test --locked --test output_safety -- --exact a_control_character_is_refused_at_write_in_every_field for TC-records-a-control-character-is-refused-at-write: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-a-control-character-is-refused-at-write-322676.md)
+- [Ran cargo test --locked --test output_safety -- --exact a_line_feed_is_kept_where_a_field_takes_one_and_a_tab_is_refused for TC-records-a-line-feed-is-kept-where-a-field-takes-one: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-a-line-feed-is-kept-where-a-field-takes-one-b60c5d.md)
+- [Ran cargo test --locked --test output_safety -- --exact no_command_prints_a_stored_control_character_raw for TC-records-no-command-prints-a-stored-control-character-raw: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-no-command-prints-a-stored-control-character-raw-2c65bb.md)
+- [Ran cargo test --locked --test journal -- --exact generated_files_hold_stored_control_characters_as_printed for TC-records-generated-files-hold-text-as-printed: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-generated-files-hold-text-as-printed-32f51c.md)
+- [Ran cargo test --locked --test checkpoint -- --exact yaml_reserved_words_are_written_quoted_and_read_back_as_text for TC-records-reserved-words-are-written-quoted: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-reserved-words-are-written-quoted-ce0898.md)
+- [Ran cargo test --locked --test checkpoint -- --exact flags_stay_booleans_and_either_form_still_reads for TC-records-flags-stay-booleans: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-flags-stay-booleans-4026e1.md)
+- [Ran cargo test --locked --test output_safety -- --exact no_command_echoes_a_value_given_on_the_command_line for TC-records-no-command-echoes-a-given-value: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-no-command-echoes-a-given-value-d1cdc9.md)
+- [Ran cargo test --locked --test leaks -- --exact a_file_url_is_checked_like_its_path_and_username_counts for TC-records-a-file-url-is-checked-like-its-path: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-a-file-url-is-checked-like-its-path-730dc1.md)
+- [Ran cargo test --locked --test output_safety -- --exact a_stored_inbox_entry_with_a_control_character_folds_and_the_story_holds_none_raw for TC-records-a-stored-inbox-entry-folds-printable: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-a-stored-inbox-entry-folds-printable-d6591f.md)
+- [Ran cargo test --locked --test output_safety -- --exact bug_merge_never_shows_a_path_holding_a_token for TC-records-bug-merge-never-shows-a-leaking-path: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-bug-merge-never-shows-a-leaking-path-2fcaa8.md)
+- [Ran cargo test --locked --test output_safety -- --exact a_fragment_of_a_stored_control_line_is_still_refused for TC-records-a-fragment-of-a-stored-control-line-is-refused: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-a-fragment-of-a-stored-control-line-is-refused-a21996.md)
+- [Ran cargo test --locked --test timing -- --exact timing_prints_a_stored_control_character_escaped for TC-reporting-timing-prints-stored-text-escaped: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-reporting-timing-prints-stored-text-escaped-31d612.md)
+- [Ran cargo test --locked --test front_matter_writes -- --exact a_tab_in_a_given_value_is_refused_and_the_records_stay_readable for TC-records-tabs-in-values-read-back: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-tabs-in-values-read-back-dfcbc2.md)
 
 ## Open threads
 
