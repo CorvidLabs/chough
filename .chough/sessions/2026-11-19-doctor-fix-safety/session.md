@@ -5,7 +5,7 @@ aliases: [doctor-fix-safety]
 objective: "doctor --fix never destroys or hangs: the archive finish keeps evidence its story does not hold (#381) and removes OS metadata (#377), next names the archive finish (#371), doctor names front-matter conflicts and gives no restore advice for a redaction (#374), and the spec walk stays inside the project and is bounded (#402)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -176,13 +176,9 @@ observations:
   - 2026-11-20-tc-records-the-spec-walk-follows-no-link-and-is-bounded
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of doctor-fix-safety
-    holds: accept
-    drives: review
-    opened: 2026-11-20T01:14:55Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # doctor --fix never destroys or hangs: the archive finish keeps evidence its story does not hold (#381) and removes OS metadata (#377), next names the archive finish (#371), doctor names front-matter conflicts and gives no restore advice for a redaction (#374), and the spec walk stays inside the project and is bounded (#402)
 
@@ -206,6 +202,7 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
 - 0xLeif decided "Re-approval of doctor-fix-safety with the journal post dropped from the #389 guard": "B, fixer runs the send-back" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:46Z, choosing option B (drop the journal post from the #389 guard, with the criterion that an untracked or ignored journal post does not hold the finish) on this text; the earlier approvals stand for the rest of the delta: 'Approve, with the 3 recommended choices', the three wording answers, 'Yes' for the two sentences and four paths, and standing OK (d) for the rebase onto main after #407); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
 - 0xLeif decided "Send back doctor-fix-safety for the three inbox edits to REQ-history-012, run by the fixer": "a, all yes.. im back" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 00:38Z, answering item 4 of t4c's eight-item round: #414's three edits to REQ-history-012 (any file under agent/inbox/ outside its folded/ folder is kept; the way out for a kept inbox file chough inbox add would not take; one new criterion), with the fixer running the send-back); recorded by chough-fixer-t4g; a relayed claim, not authenticated
 - 0xLeif decided "Re-approval of doctor-fix-safety for the three inbox edits to REQ-history-012": "a, all yes.. im back" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 00:38Z, answering item 4 of t4c's eight-item round, on this text: REQ-history-012 keeps any file under agent/inbox/ outside its folded/ folder, gives a kept inbox file that chough inbox add would not take a drop-only way out, and adds one criterion for both; nothing else in any delta changed, and main through #413 changed none of this change's requirements, so standing OK (d) was not used; the earlier approvals stand for the rest of the delta: 'Approve, with the 3 recommended choices', the three wording answers, 'Yes' for the two sentences and four paths, standing OK (d) for the rebase onto main after #407, and 'B, fixer runs the send-back' for the #389 guard); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
+- 0xLeif decided "Implementation review of doctor-fix-safety": "Go" (Standing OK 6(b): Leif's 'Go' to t4c's six rules (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19), under which the builder records his implementation review of a batch with a tester PASS whose build changes no approved sentence (t4c's ruling of 2026-11-19: the review only; every merge still needs his yes after CI). For #414 at 8a586283: the tester's recheck PASS at 8a586283, corvid-agent APPROVED 8a586283 (2026-11-20 about 01:00Z, no finding), and fable-lead's read of 8a586283 passed; every sentence change in this batch carries Leif's own words (the scope approval, the three wording answers, the send-backs and standing OK (d)); relayed by fable-lead (hc t53), 2026-11-20); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review doctor-fix-safety as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -640,4 +637,20 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
   - revision: 8a586283d6787f2b128ec9760d8c8cef31f26ed2
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T01:16:05Z · gate-closed · accept → accept · Implementation review of doctor-fix-safety ^t-321c4d
+  - native_change: doctor-fix-safety
+  - revision: 8434469ab4eb3554a65bfd15e4a0152422adee8f
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Go
+    - where: Standing OK 6(b): Leif's 'Go' to t4c's six rules (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19), under which the builder records his implementation review of a batch with a tester PASS whose build changes no approved sentence (t4c's ruling of 2026-11-19: the review only; every merge still needs his yes after CI). For #414 at 8a586283: the tester's recheck PASS at 8a586283, corvid-agent APPROVED 8a586283 (2026-11-20 about 01:00Z, no finding), and fable-lead's read of 8a586283 passed; every sentence change in this batch carries Leif's own words (the scope approval, the three wording answers, the send-backs and standing OK (d)); relayed by fable-lead (hc t53), 2026-11-20
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review doctor-fix-safety
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T01:16:08Z · advance · accept → done · native:archived ^t-6d35b8
+  - native_change: doctor-fix-safety
+  - gate: native:archived
+  - revision: 8434469ab4eb3554a65bfd15e4a0152422adee8f
   - by: chough-fixer (claude-opus-5-5, hc t4n)
