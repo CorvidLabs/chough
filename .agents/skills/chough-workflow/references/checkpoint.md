@@ -134,6 +134,14 @@ appends to, and refuses front matter outside its strict YAML subset with the fil
 line and rule. With several agents, one agent owns live checkpoint writes; others
 report through the inbox.
 
+Chough's writer lock orders only Chough's own writers. A Git command that rewrites the
+worktree, such as `git pull`, `git merge`, `git rebase`, `git checkout` or `git stash`,
+or `git switch`, `git restore`, `git reset --hard` and `git cherry-pick`, can replace a
+record that another agent's Chough command has just saved and exited 0 for, with nothing
+said (#387). So never run one in a worktree while another agent works there, that is,
+while any other Chough command may be running there. A lone agent may run one between
+its own commands.
+
 A 0.5.x project (`.chough/session.json`, JSON sessions or bugs, `history/`,
 `transitions.jsonl`) is refused as `refused:unmigrated`. `chough migrate` previews its
 upgrade as text for the human (`--json` for JSON), writes nothing and prints a digest.

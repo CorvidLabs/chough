@@ -5,7 +5,7 @@ aliases: [docs-387-no-git-while-agents-write]
 objective: The docs and the workflow skill tell agents not to run git merge, rebase, checkout or stash in a worktree while Chough writers run there, since Git can drop writes that already exited 0 (#387)
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Scope approval of docs-387-no-git-while-agents-write with its corrected acceptance-criteria answer (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # The docs and the workflow skill tell agents not to run git merge, rebase, checkout or stash in a worktree while Chough writers run there, since Git can drop writes that already exited 0 (#387)
 
@@ -113,4 +113,9 @@ The docs and the workflow skill tell agents not to run git merge, rebase, checko
     - recorded_by: fable-t4b
     - native: specsync change approve docs-387-no-git-while-agents-write
     - actor: 0xLeif
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T00:46:00Z · advance · plan → build · native:approved ^t-a98dc9
+  - native_change: docs-387-no-git-while-agents-write
+  - gate: native:approved
+  - revision: 347d9344a245aa3df6366cf2a63ff3903c900f56
   - by: fable (claude-opus-5-5, hc t4b)

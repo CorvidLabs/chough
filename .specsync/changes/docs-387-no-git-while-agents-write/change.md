@@ -1,6 +1,6 @@
 ---
 id: docs-387-no-git-while-agents-write
-state: approved
+state: implementing
 type: documentation
 base_commit: 9d260310bca8553a0203e5ef90bc8372b4e15aae
 ---

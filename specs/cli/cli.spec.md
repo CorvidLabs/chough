@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 122
+version: 123
 status: active
 files:
   - src/main.rs
@@ -404,3 +404,4 @@ provider, runtime or hosted service.
 | 120 | 2026-11-19 | leaks-and-output: Leaks and output |
 | 121 | 2026-11-19 | readiness-report-before-change-approval: Readiness report before change approval |
 | 122 | 2026-11-19 | fix-g1-gates-and-pins-fail-closed: Fix g1 gates and pins fail closed |
+| 123 | 2026-11-20 | docs-387-no-git-while-agents-write: Docs 387 no git while agents write |
