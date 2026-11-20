@@ -38,3 +38,21 @@ expected = ["tests/output_safety.rs::an_explicit_evidence_id_is_named_by_what_it
 adapter = "cargo-test"
 test_target = "output_safety"
 test = "an_explicit_evidence_id_is_named_by_what_it_holds"
+
+[[case]]
+id = "TC-records-a-close-gate-value-is-named-by-what-it-holds"
+title = "change ship --close-gate given a value holding a token and an escape sequence, with and without the rest of the relay, refuses naming what the gate holds, and no output repeats either"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::change_ship_names_a_close_gate_value_by_what_it_holds passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "change_ship_names_a_close_gate_value_by_what_it_holds"

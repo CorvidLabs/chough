@@ -2082,3 +2082,43 @@ fn a_leaking_description_rationale_or_answer_is_refused_before_specsync_runs() {
     assert!(stderr.contains("refused:control-character"), "{stderr}");
     assert!(!fixture.exists(".stub-argv"), "specsync ran");
 }
+
+/// REQ-records-006 (#367, #412), TC-records-a-close-gate-value-is-named-by-what-it-holds:
+/// `change ship --close-gate` given a value holding a token and an escape sequence, with
+/// and without the rest of the relay, refuses naming what the gate holds, and no output
+/// repeats the token or the escape.
+#[test]
+fn change_ship_names_a_close_gate_value_by_what_it_holds() {
+    // No gate open, so the refusal names the gate given, which must not echo.
+    let fixture = shipping_session("accept", true, &[]);
+    let gate = concat!(
+        "x ghp_",
+        "abcdefghij0123456789",
+        "abcdefghij0123 \u{1b}[31my"
+    );
+    let relay = [
+        "--decided-by",
+        "SYNTHETIC-human",
+        "--words",
+        "ok",
+        "--where",
+        "chat",
+        "--recorded-by",
+        "probe",
+    ];
+    for with_relay in [true, false] {
+        let mut args = vec!["change", "ship", SHIP_ID, "--close-gate", gate];
+        if with_relay {
+            args.extend(relay);
+        }
+        let output = fixture.run(&args);
+        let said = format!(
+            "{}{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(!output.status.success(), "{said}");
+        assert!(!said.contains("ghp_") && !said.contains('\u{1b}'), "{said}");
+        assert!(said.contains("<gate holding"), "{said}");
+    }
+}
