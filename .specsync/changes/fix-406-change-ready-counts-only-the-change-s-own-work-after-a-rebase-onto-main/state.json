@@ -10,7 +10,7 @@
   "state": "draft",
   "base_commit": "1fb67c29295cc2472285bbd03b6a10cf8c5f6c40",
   "created_at": 1795147565,
-  "updated_at": 1795147611,
+  "updated_at": 1795147619,
   "affected_specs": [
     "cli"
   ],
@@ -32,8 +32,13 @@
     "context",
     "testing",
     "tasks",
-    "design"
+    "design",
+    "requirements",
+    "docs"
   ],
   "dependencies": [],
-  "answers": {}
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "yes"
+  }
 }
