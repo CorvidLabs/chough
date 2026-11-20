@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-260-a-new-record-is-written-whole-or-not-at-all",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "34fd2a92d1ad9a81db575af01bbd7430d9acd8e7",
+      "contract_digest": "a5d7dcff9d3d764f8f80be1a0e73adb45174db350c182b4052d75635442b04e5",
+      "execution_digest": "50f573b90fea8cd26401eb58cab551e83815fdf96578f1e5fe868747a2cd98a2",
+      "workspace_digest": "bd7db8887585963abf928dd10cb2be96767c54a36a79e9d104d9cbb348a147f8",
+      "timestamp": 1795201044,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Go",
+        "where": "Standing OK 6(b): Leif's 'Go' to the six rules (Claude Code chat message of 2026-11-19, relayed by his planning session hc t4c), recording his implementation review of a batch with a tester PASS that changes no approved sentence. The tester's PASS at 829d479b (0 cut-off records against main's 130 of 544; real repositories byte-identical; the full set 3 fixed, 0 new); corvid-agent's approval at 829d479b with its Linux run. Then corvid-agent's four notes at 73145abd: the temporary file goes through the symlink guard (a unit test red on 829d479b), a comment on the signal guard, a docs sentence on the unsynced folder, and the history row's order; no approved sentence changed. Main de49485f (#422) merged in at 50f0fd0c: t4b's script shows its own changed lines byte-identical before and after, the cli spec only renumbered to 130, and the full lane green at 34fd2a92. Recorded by t4c",
+        "recorded_by": "t4c"
+      }
+    }
+  ]
+}

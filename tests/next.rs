@@ -2878,7 +2878,16 @@ fn at_test_after_every_case_passed_next_names_stage_advance_and_no_superseded_ru
     fixture.init();
     fixture.write(".chough/cases/cli.f7.cases.toml", F7_CASE);
     fixture.commit("the F7 fixture");
-    fixture.ok(&["stage", "advance", "--to", "test", "--json"]);
+    // G2 (REQ-cli-031): without SpecSync, --to across an ungated plan needs a reason.
+    fixture.ok(&[
+        "stage",
+        "advance",
+        "--to",
+        "test",
+        "--reason",
+        "SYNTHETIC fixture with no human gate",
+        "--json",
+    ]);
     fixture.ok(&[
         "checkpoint",
         "--case",

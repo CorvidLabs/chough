@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-394-a-code-fence-that-never-closes-hides-no-section",
+  "slug": "fix-394-a-code-fence-that-never-closes-hides-no-section",
+  "title": "Fix 394: a code fence that never closes hides no section",
+  "description": "Fix 394: a code fence that never closes hides no section",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "056cbb8029f6535ff74f866a0523893916f682db",
+  "created_at": 1795165683,
+  "updated_at": 1795203255,
+  "affected_specs": [
+    "records",
+    "cli"
+  ],
+  "affected_paths": [
+    "src/markdown.rs",
+    "src/bugs.rs",
+    "tests/records.rs",
+    "tests/bugs.rs",
+    "docs/cli.md",
+    "specs/records/requirements.md",
+    "specs/records/records.spec.md",
+    "specs/cli/requirements.md",
+    "specs/cli/cli.spec.md",
+    "changelog.d/",
+    ".chough/cases/records.unclosed-fence.cases.toml",
+    ".chough/cases/cli.unclosed-fence-bug-merge.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A session whose body holds a code fence that never closes saves any number of times with each section once and chough next reads its decisions and questions, a closed fence still hides a heading it quotes, and two branches that each add a Log entry to a bug whose write-up holds an unclosed fence merge with both entries and no hand-resolved conflict."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "records and cli lessons apply: no new refusal and no approved sentence changed; one shared fence rule, not two copies (rule 5); a Chough heading quoted inside a closed fence stays hidden, as a test pins",
+    "public_contract": "no"
+  }
+}

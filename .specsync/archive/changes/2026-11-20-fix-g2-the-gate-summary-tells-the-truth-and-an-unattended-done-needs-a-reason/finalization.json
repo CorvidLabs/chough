@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason",
+  "implementation_commit": "b2031107b4baf73e8bd325b32c7287c3fc36ba69",
+  "implementation_tree": "c55c3e0af1ca6bd044034ed19ca674cd5fa16272",
+  "contract_digest": "fd9e3a22ef60708e191ad8cb7a99de4f8721012294c8d5e838d7c44770c226b2",
+  "workspace_digest": "853ba1dadf57ec83a0c0d53c00f39895d616dd5db25d56e26ef0f92199b0be2e",
+  "closing_digest": "298add55fb383d3e79cd449324ed7208bd396b02f1ab25f1de4c74716cb583ed",
+  "review_digest": "2bb11e2dc41554cf4ce46650c4f282b9ff55cb505373829e5fa2b670bca7e7f4",
+  "finalization_digest": "20fce117b0fe4962ce2f942d71aeb407858b0c0d35d0bf4e173c82411bbe0bc7",
+  "timestamp": 1795210484
+}

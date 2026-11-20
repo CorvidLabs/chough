@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason",
+  "slug": "fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason",
+  "title": "Fix G2: the gate summary tells the truth and an unattended done needs a reason",
+  "description": "Fix G2: the gate summary tells the truth and an unattended done needs a reason",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "7bf110dcca70bdd3565007086aee40a286f40eff",
+  "created_at": 1795190537,
+  "updated_at": 1795210488,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/gates.rs",
+    "src/stage.rs",
+    "src/doctor.rs",
+    "src/main.rs",
+    "tests/gates.rs",
+    "tests/stages.rs",
+    "tests/doctor.rs",
+    "docs/cli.md",
+    "specs/cli/requirements.md",
+    "specs/cli/cli.spec.md",
+    "specs/history/requirements.md",
+    "specs/history/history.spec.md",
+    "changelog.d/",
+    ".chough/cases/cli.g2-gate-summary.cases.toml",
+    "tests/next.rs"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "The gate summary counts a passing observation with no case, shows uncommitted work as git diff <base> and counts a session with no base from the first commit; doctor's unfinished_archive fix names the journal post and finishes no archive while it is uncommitted; without SpecSync, stage advance says no human decision is recorded for plan or accept, and --to across them refuses as refused:no-human-decision unless --reason is given, which lands in the Timeline."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "cli and history lessons apply: #390 is Leif's decision B; the new refusal names its way out and gets the tester's real-repository run (rule 3); every new free-text value (--reason) goes through the leak check with a leak-sample test",
+    "public_contract": "yes"
+  }
+}

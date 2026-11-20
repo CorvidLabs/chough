@@ -83,7 +83,7 @@ struct Approval {
 /// Print the readiness report and return 0 when it is empty, 1 when it is not.
 pub(super) fn run(root: &Path, id: &str) -> Result<i32> {
     if !valid_id(id) || !change_dir(root, id).join("state.json").is_file() {
-        let mut err = io::stderr().lock();
+        let mut err = crate::records::Quiet(io::stderr().lock());
         // An invalid id is not shown as typed: it can hold anything (REQ-records-006).
         if valid_id(id) {
             writeln!(err, "no change `{id}` to read")?;
@@ -96,7 +96,7 @@ pub(super) fn run(root: &Path, id: &str) -> Result<i32> {
     }
     let change = load(root, id)?;
     let findings = collect(root, &change);
-    let mut out = io::stdout().lock();
+    let mut out = crate::records::Quiet(io::stdout().lock());
     writeln!(out, "chough change ready {}", change.id)?;
     writeln!(out)?;
     if findings.is_empty() {

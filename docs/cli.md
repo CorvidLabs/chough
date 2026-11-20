@@ -74,7 +74,7 @@ example by an older Chough, is refused the same way. See [Migration](#migration)
 
 ## Commands
 
-Chough prints its help with the usual `--help`, `-h` and `-V` flags on every command, and the top-level `chough help --help` prints the top-level help, as `chough --help` does, while `chough help <command>` prints that command's help; the rows below name every command the helper lists and every flag it accepts.
+Chough prints its help with `--help` or `-h` on every command, and `chough -V` and `chough --version` print its version. The top-level `chough help --help` (or `-h`) prints the top-level help, as `chough --help` does, also after the global options `--root`, `--redact` and `--session` (#399), while `chough help <command>` prints that command's help. A command whose standard output or standard error is closed, as in `chough next | head -1`, stops printing and exits with the code it would have had, never a panic (#383); the rows below name every command the helper lists and every flag it accepts.
 
 | Command | Behavior |
 |---|---|
@@ -130,8 +130,16 @@ subagent without Chough (REQ-cli-036). `--at` is the original time, as
 
 ## Batched advance
 
-`chough stage advance --to <stage> [--note <text>]` moves forward through each main stage
-from the current one up to `<stage>`, as consecutive advances (REQ-cli-052, DRIVE-9).
+`chough stage advance --to <stage> [--note <text>] [--reason <text>]` moves forward
+through each main stage from the current one up to `<stage>`, as consecutive advances
+(REQ-cli-052, DRIVE-9).
+
+Without a native lifecycle gating it (`ungated:not-configured` or `ungated:sdd-disabled`),
+a move out of plan or accept that holds no human decision still goes on, but says
+`Note: no human decision is recorded for <stage>`, and so does the summary of the move
+into done. `--to` across such a plan or accept refuses as `refused:no-human-decision`,
+with nothing written, unless `--reason "<why>"` is given; the reason, checked for leaks
+like any recorded text, lands in the Timeline entry of the move (REQ-cli-031, #390).
 
 - `<stage>` is design, plan, build, test, accept or done, after the current stage. A
   target that is not ahead, a side or optional stage, or an unknown name is refused, and
@@ -249,9 +257,19 @@ Chough rewrites the front matter; a missing optional key takes its default; CRLF
 as LF. Chough owns only the front matter and the sections it appends to. A write
 replaces the front matter, appends list items to the end of a named section, or creates
 a missing named section at the end of the body, and does nothing else to an existing
-body, so a person's edit to a Goal, a bug's Steps or an entry's body survives. Files
+body, so a person's edit to a Goal, a bug's Steps or an entry's body survives. A
+heading inside a closed code fence is quoted, not a section, but a fence that never
+closes hides nothing after it, so a Goal of three backticks never makes a save repeat a
+section, and the bug merge driver still finds the Log (#394). Files
 are written with LF line endings by an atomic replace under the writer lock, or by
-create-new for a new record.
+create-new for a new record. A new record is written whole or not at all: to a
+temporary file in `.chough/local/`, synced, then given its name without replacing
+anything, so a full disk or a file-size limit leaves no file at the name; where the file
+system cannot rename that way, it is created at its name and removed again on any error.
+No hard link is used, so a volume without them, such as exFAT, works (#260, #424). The
+folder that holds the new name is not synced after the move, so a power loss just after a
+write can still lose the name; the record is then missing, never partial. An empty
+record file is named as empty, with the way out.
 
 | Record | Bound |
 |---|---|
@@ -931,7 +949,7 @@ native read, and never records a human decision, approval, review or consent.
 | `leak` | A file Git tracks under `.chough/` or the knowledge directory that matches the leak patterns of REQ-records-006, one finding per `line` and `match` (the kind), never the text | `chough doctor --fix --redact` replaces each match with `<redacted:<kind>>` in place; `--fix` alone skips it. Not a decision. An ID is never rewritten, since a redacted ID no longer reads (#320): a match on a front matter line that gives a record's `id`, its aliases or an ID it references keeps its line byte for byte, its finding stays `skipped` and names the recovery, `chough session shelve <id>` for a session record and a reviewed hand edit otherwise, while the record's other matches are still redacted. A session's `modules` and a bug's `regression_baseline` are ID lines too. A Markdown link in a record's body to a file whose name holds a match is redacted with the rest of the body, so that link no longer resolves; the record still reads, and the file keeps its name. A save refused for such an ID names the same recovery |
 | `stale_pointer` | The active pointer names a missing or archived session | Remove the pointer |
 | `finished_session` | An open session at done, or with its native change archived on HEAD | Archive it into its story; one with unfolded inbox entries is skipped, naming `chough inbox fold` |
-| `unfinished_archive` | A session folder whose story exists and that still holds files. `--fix` removes every committed file but two kinds, so no work is lost (#381): an evidence entry the story's receipts do not hold, by its ID and the receipt it gives now, compared on the fields the story's receipt holds, so a story an earlier release wrote still holds its entries, with the screenshot beside it, and an unfolded `agent/inbox/` entry. A merge that keeps main's archive of a session a branch added to leaves one. The finding is then `skipped`, naming each in `kept` and the way out by hand: move an evidence entry into an open session's `evidence/` with `git mv` and commit it, or drop it with `git rm`; add an inbox entry's text again in an open session with `chough inbox add`, then drop the kept copy with `git rm`. An evidence entry that cannot be read is kept and named too, with dropping it as its way out, since moving it would make an open session unreadable. Nothing is removed while the session's story is not committed at HEAD as it is, an edit after its commit or a story Git ignores included, and the finding names it to commit first, as a command (`git add -f` for an ignored story), so the folder never goes while the story is not committed; a journal post, which the finish never removes, holds nothing (#389). Each way out is printed as a whole command that runs as pasted, and with open sessions but none active it names them for the person to pick one. macOS metadata in the folder is removed whether committed or not (#377). A file the finish reads that cannot be read, such as an empty or cut-off entry or a story over its bound, leaves the finding `skipped` and removes nothing, while that file's own finding says why and the rest of `doctor` runs | Remove each file whose bytes are committed at HEAD; otherwise skipped, naming the commit to make |
+| `unfinished_archive` | A session folder whose story exists and that still holds files. Its fix names the files to commit, the session's journal post among them while it is not committed, though an untracked or ignored post never holds the finish (#389). `--fix` removes every committed file but two kinds, so no work is lost (#381): an evidence entry the story's receipts do not hold, by its ID and the receipt it gives now, compared on the fields the story's receipt holds, so a story an earlier release wrote still holds its entries, with the screenshot beside it, and an unfolded `agent/inbox/` entry. A merge that keeps main's archive of a session a branch added to leaves one. The finding is then `skipped`, naming each in `kept` and the way out by hand: move an evidence entry into an open session's `evidence/` with `git mv` and commit it, or drop it with `git rm`; add an inbox entry's text again in an open session with `chough inbox add`, then drop the kept copy with `git rm`. An evidence entry that cannot be read is kept and named too, with dropping it as its way out, since moving it would make an open session unreadable. Nothing is removed while the session's story is not committed at HEAD as it is, an edit after its commit or a story Git ignores included, and the finding names it to commit first, as a command (`git add -f` for an ignored story), so the folder never goes while the story is not committed; a journal post, which the finish never removes, holds nothing (#389). Each way out is printed as a whole command that runs as pasted, and with open sessions but none active it names them for the person to pick one. macOS metadata in the folder is removed whether committed or not (#377). A file the finish reads that cannot be read, such as an empty or cut-off entry or a story over its bound, leaves the finding `skipped` and removes nothing, while that file's own finding says why and the rest of `doctor` runs | Remove each file whose bytes are committed at HEAD; otherwise skipped, naming the commit to make |
 | `stale_gates` | A finished session with open awaiting-human gates, whose native change is archived | A decision: withdraw the gates as `checkpoint --clear-awaiting-human` does, recording no human decision, write the reason on each withdrawn gate's `gate-closed` Timeline entry as `withdrawn: <reason>`, which the archived story keeps, then archive the session. A decision fix that was applied echoes the reason as `decision_reason` |
 | `skill_outdated` | An installed skill file that is byte-identical to an earlier release's copy | None of doctor's own: run `chough skill update`. A file a person edited is not reported |
 | `skill_uninspected` | A host's skill folder that doctor could not inspect, such as `.codex/skills` when it is a symlink to the shared copy. Advice only: it never makes doctor exit 1, and it hides no outdated file in another folder | None: check the copy it points to |
@@ -1521,11 +1539,18 @@ Each gate gets a one-screen summary of at most 24 lines and 4,096 bytes, with:
   reads the files and runs no tool for it;
 - the tests: how many cases passed, failed and were not run, by the latest observation
   of each case that links a requirement the change's deltas add or modify (or that the
-  session's observations name), with the failing case IDs;
+  session's observations name), with the failing case IDs, and each observation the
+  session names that links no case, by its own entry, so evidence recorded with
+  `chough evidence add` and no case counts (#389);
 - the risks: the first 8 lines of the change's `plan.md` section "Risks", or "none
   recorded";
 - a diff link: a GitHub compare URL from the base to HEAD when `origin` is on GitHub,
-  otherwise `git diff <base>..<HEAD>`.
+  otherwise `git diff <base>..<HEAD>`; while work is not committed yet, `git diff <base>`,
+  which shows it, and says so (#389).
+
+A session with no native change records no base, as one started before the repository's
+first commit; when the repository has exactly one first commit, what changed and the
+diff count from it, and the summary says why there is no base (#389).
 
 Each summary's digest is the SHA-256 of its text. The list is saved untracked as
 `.chough/local/gate-lists/<list>.json`, where `<list>` is the first 12 hex digits of its

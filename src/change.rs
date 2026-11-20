@@ -593,7 +593,7 @@ fn short_summary(lines: &[String]) -> String {
 
 /// Print the short summary (REQ-cli-059).
 fn print_summary(lines: &[String]) -> Result<()> {
-    let mut stdout = io::stdout().lock();
+    let mut stdout = crate::records::Quiet(io::stdout().lock());
     for line in short_summary(lines).lines() {
         writeln!(stdout, "{line}")?;
     }
@@ -642,10 +642,10 @@ fn native_deadline(value: Option<&OsStr>) -> Result<Duration, String> {
 
 /// Copy SpecSync's bytes to Chough's own streams, unchanged.
 fn pass_through(stdout: &[u8], stderr: &[u8]) -> Result<()> {
-    let mut out = io::stdout().lock();
+    let mut out = crate::records::Quiet(io::stdout().lock());
     out.write_all(stdout)?;
     out.flush()?;
-    let mut err = io::stderr().lock();
+    let mut err = crate::records::Quiet(io::stderr().lock());
     err.write_all(stderr)?;
     err.flush()?;
     Ok(())
