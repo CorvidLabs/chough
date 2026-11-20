@@ -3781,6 +3781,28 @@ fn without_specsync_a_done_across_plan_and_accept_needs_a_reason() {
     );
 }
 
+/// G2, #390 (corvid-agent's note on #428): with both `--note` and `--reason`, the move's
+/// Timeline entry holds both; neither is dropped.
+#[test]
+fn a_note_and_a_reason_both_reach_the_timeline() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "solo", "--objective", "A solo spike"]);
+    fixture.ok(&[
+        "stage",
+        "advance",
+        "--to",
+        "build",
+        "--note",
+        "SYNTHETIC note on the move",
+        "--reason",
+        "SYNTHETIC reason for no review",
+        "--json",
+    ]);
+    let story = fixture.read(&fixture.session_file());
+    assert!(story.contains("SYNTHETIC note on the move"), "{story}");
+    assert!(story.contains("SYNTHETIC reason for no review"), "{story}");
+}
+
 /// G2, #390 (REQ-cli-031): without SpecSync, the summary of the move into done names
 /// every plan or accept passed with no human decision, also when single advances got
 /// there and plan was left moves earlier.

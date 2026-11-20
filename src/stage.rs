@@ -2807,8 +2807,13 @@ pub(super) fn run(root: &Path, command: StageCommand, as_json: bool) -> Result<(
             if let Some(reason) = &reason {
                 ensure_text("reason", reason)?;
             }
-            // The reason, when given, is what the Timeline entry records.
-            let recorded = reason.as_deref().or(note.as_deref());
+            // The Timeline entry records the note and the reason, each when given, so
+            // neither is dropped when both are.
+            let both = match (&note, &reason) {
+                (Some(note), Some(reason)) => Some(format!("{note}; reason: {reason}")),
+                _ => None,
+            };
+            let recorded = both.as_deref().or(reason.as_deref()).or(note.as_deref());
             let earlier = passed_unattended(&session);
             let (mut applied, _) = match to {
                 Some(target) => {

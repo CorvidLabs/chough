@@ -110,3 +110,21 @@ expected = ["tests/doctor.rs::the_unfinished_archive_fix_names_the_journal_post 
 adapter = "cargo-test"
 test_target = "doctor"
 test = "the_unfinished_archive_fix_names_the_journal_post"
+
+[[case]]
+id = "TC-cli-g2-a-note-and-a-reason-both-reach-the-timeline"
+title = "With both --note and --reason, the move's Timeline entry holds both"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-031"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_note_and_a_reason_both_reach_the_timeline passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_note_and_a_reason_both_reach_the_timeline"
