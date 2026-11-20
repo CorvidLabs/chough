@@ -183,6 +183,13 @@
         "where": "Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this path-only addition: tests/next.rs joins G2's paths so one older test gives its stage advance --to the --reason G2's approved refusal asks for; no delta word changes, no new refusal. Recorded by t4c",
         "recorded_by": "t4c"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795210484,
+      "digest": "298add55fb383d3e79cd449324ed7208bd396b02f1ab25f1de4c74716cb583ed",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],

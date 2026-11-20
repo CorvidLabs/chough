@@ -5,7 +5,7 @@ aliases: [g2-gate-summary]
 objective: "The gate summary counts evidence without a case, shows uncommitted work in its diff and a base for a session started before the first commit; doctor names the journal post to commit; without SpecSync, --to done across plan or accept says no human decided and needs --reason (#389, #390)"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -46,9 +46,17 @@ observations:
   - 2026-11-20-tc-cli-g2-an-uncommitted-definition-in-the-diff-line
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason
+    holds: accept
+    drives: review
+    opened: 2026-11-20T21:34:10Z
 run_consents: []
-next: "Gate \"Re-approval of fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason with tests/next.rs added to its paths (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Continue accept
+title: The gate summary tells the truth, and an unattended done needs a reason
+summary:
+  - "#389: a gate summary's Tests line counts evidence with no case; work not committed yet shows as git diff <base>; a session with no native change counts from the first commit and says why; the unfinished_archive fix names the journal post among the files to commit, and an untracked post never holds the finish (option B kept). #390, Leif's decision B: without SpecSync, a move past plan or accept with no human decision says so, and stage advance --to across one needs --reason, which lands in the Timeline."
+  - "Verified: tester2's full PASS at b2031107 on macOS and Linux (F14 at a scope approval fixed); the tester's run of the refusal on 22 real repositories and Chough; corvid-agent's approval at 83ba5d1f and its notes taken; main 562ef738 merged in, own lines the same per file; full lane green at b2031107."
 ---
 # The gate summary counts evidence without a case, shows uncommitted work in its diff and a base for a session started before the first commit; doctor names the journal post to commit; without SpecSync, --to done across plan or accept says no human decided and needs --reason (#389, #390)
 
@@ -218,4 +226,20 @@ The gate summary counts evidence without a case, shows uncommitted work in its d
     - recorded_by: t4c
     - native: specsync change approve fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason
     - actor: 0xLeif
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T21:34:09Z · advance · build → test · native:verifying ^t-9da70d
+  - native_change: fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason
+  - gate: native:verifying
+  - revision: b2031107b4baf73e8bd325b32c7287c3fc36ba69
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T21:34:09Z · advance · test → accept · native:verifying ^t-2df481
+  - native_change: fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason
+  - gate: native:verifying
+  - revision: b2031107b4baf73e8bd325b32c7287c3fc36ba69
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T21:34:10Z · gate-opened · accept → accept · Implementation review of fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason ^t-555ef4
+  - native_change: fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason
+  - revision: b2031107b4baf73e8bd325b32c7287c3fc36ba69
+  - holds: accept
+  - drives: review
   - by: t4c (claude-opus-5-5, hc t4c)

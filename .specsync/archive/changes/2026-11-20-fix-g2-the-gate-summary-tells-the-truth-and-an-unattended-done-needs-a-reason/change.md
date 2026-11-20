@@ -1,6 +1,6 @@
 ---
 id: fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 7bf110dcca70bdd3565007086aee40a286f40eff
 ---

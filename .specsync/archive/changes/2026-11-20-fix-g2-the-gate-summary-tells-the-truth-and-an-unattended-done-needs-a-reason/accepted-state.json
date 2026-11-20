@@ -7,11 +7,11 @@
   "title": "Fix G2: the gate summary tells the truth and an unattended done needs a reason",
   "description": "Fix G2: the gate summary tells the truth and an unattended done needs a reason",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "7bf110dcca70bdd3565007086aee40a286f40eff",
   "created_at": 1795190537,
-  "updated_at": 1795208998,
+  "updated_at": 1795210484,
   "affected_specs": [
     "cli",
     "history"
