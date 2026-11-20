@@ -74,7 +74,7 @@ example by an older Chough, is refused the same way. See [Migration](#migration)
 
 ## Commands
 
-Chough prints its help with the usual `--help`, `-h` and `-V` flags on every command, and the top-level `chough help --help` prints the top-level help, as `chough --help` does, while `chough help <command>` prints that command's help; the rows below name every command the helper lists and every flag it accepts.
+Chough prints its help with `--help` or `-h` on every command, and `chough -V` and `chough --version` print its version. The top-level `chough help --help` (or `-h`) prints the top-level help, as `chough --help` does, also after the global options `--root`, `--redact` and `--session` (#399), while `chough help <command>` prints that command's help. A command whose standard output or standard error is closed, as in `chough next | head -1`, stops printing and exits with the code it would have had, never a panic (#383); the rows below name every command the helper lists and every flag it accepts.
 
 | Command | Behavior |
 |---|---|

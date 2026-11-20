@@ -1,0 +1,2 @@
+- A closed pipe no longer crashes Chough (#383). A command whose standard output or standard error is closed, as in `chough next | head -1`, stops printing and exits with the code it would have had. It no longer exits 101 with a panic, or 1 with `Error: Broken pipe`. A write command still saves.
+- `chough help --help` and `chough help -h` work after the global options `--root`, `--redact` and `--session` (#399). The CLI reference names `--help` and `-h` as the help flags, and `chough -V` and `--version` as the top-level version flags.

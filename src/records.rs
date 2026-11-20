@@ -102,6 +102,57 @@ fn native_trace_line(source: &str, state: &str, elapsed_ms: u128) -> String {
     format!("{head}{}...", &source[..cut])
 }
 
+/// A stream that takes a write to a pipe whose reader has gone as written (#383), so a
+/// command whose output nobody reads finishes and exits with its own code; any other
+/// error is returned as it is.
+pub(super) struct Quiet<W>(pub(super) W);
+
+impl<W: std::io::Write> std::io::Write for Quiet<W> {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        match self.0.write(buf) {
+            Err(error) if error.kind() == std::io::ErrorKind::BrokenPipe => Ok(buf.len()),
+            other => other,
+        }
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        match self.0.flush() {
+            Err(error) if error.kind() == std::io::ErrorKind::BrokenPipe => Ok(()),
+            other => other,
+        }
+    }
+}
+
+/// What the crate's `print!`, `println!`, `eprint!` and `eprintln!` run (#383): `args`, and
+/// a line break when `line`, to standard error when `to_stderr` or else standard output,
+/// through [`Quiet`]. Any other write error panics, as std's macros do.
+pub(super) fn print_quietly(to_stderr: bool, line: bool, args: std::fmt::Arguments) {
+    use std::io::Write;
+    let written = if to_stderr {
+        let mut stream = Quiet(std::io::stderr().lock());
+        stream.write_fmt(args).and_then(|()| {
+            if line {
+                stream.write_all(b"\n")
+            } else {
+                Ok(())
+            }
+        })
+    } else {
+        let mut stream = Quiet(std::io::stdout().lock());
+        stream.write_fmt(args).and_then(|()| {
+            if line {
+                stream.write_all(b"\n")
+            } else {
+                Ok(())
+            }
+        })
+    };
+    if let Err(error) = written {
+        let stream = if to_stderr { "stderr" } else { "stdout" };
+        panic!("failed printing to {stream}: {error}");
+    }
+}
+
 pub(super) fn print_json(value: &Value) -> Result<()> {
     println!("{}", json_text(value, true)?);
     Ok(())
