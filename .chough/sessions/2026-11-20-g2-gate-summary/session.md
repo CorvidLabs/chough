@@ -23,6 +23,12 @@ observations:
   - 2026-11-20-tc-cli-g2-an-unattended-done-needs-a-reason
   - 2026-11-20-tc-cli-g2-a-move-past-plan-says-whether-a-human-decided
   - 2026-11-20-tc-cli-g2-the-fix-names-the-journal-post
+  - 2026-11-20-tc-cli-g2-evidence-with-no-case-counts-05d119
+  - 2026-11-20-tc-cli-g2-uncommitted-work-in-the-diff-line-694a1e
+  - 2026-11-20-tc-cli-g2-a-session-before-the-first-commit-1d6151
+  - 2026-11-20-tc-cli-g2-an-unattended-done-needs-a-reason-d31721
+  - 2026-11-20-tc-cli-g2-a-move-past-plan-says-whether-a-human-decided-64807b
+  - 2026-11-20-tc-cli-g2-the-fix-names-the-journal-post-52da8f
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -53,6 +59,12 @@ The gate summary counts evidence without a case, shows uncommitted work in its d
 - [Ran cargo test --locked --test stages -- --exact without_specsync_a_done_across_plan_and_accept_needs_a_reason for TC-cli-g2-an-unattended-done-needs-a-reason: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-an-unattended-done-needs-a-reason.md)
 - [Ran cargo test --locked --test stages -- --exact without_specsync_a_move_past_plan_says_whether_a_human_decided for TC-cli-g2-a-move-past-plan-says-whether-a-human-decided: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-a-move-past-plan-says-whether-a-human-decided.md)
 - [Ran cargo test --locked --test doctor -- --exact the_unfinished_archive_fix_names_the_journal_post for TC-cli-g2-the-fix-names-the-journal-post: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-the-fix-names-the-journal-post.md)
+- [Ran cargo test --locked --test gates -- --exact evidence_with_no_case_counts_in_the_tests_line for TC-cli-g2-evidence-with-no-case-counts: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-evidence-with-no-case-counts-05d119.md)
+- [Ran cargo test --locked --test gates -- --exact uncommitted_work_is_shown_by_the_diff_line for TC-cli-g2-uncommitted-work-in-the-diff-line: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-uncommitted-work-in-the-diff-line-694a1e.md)
+- [Ran cargo test --locked --test gates -- --exact a_session_started_before_the_first_commit_counts_from_it for TC-cli-g2-a-session-before-the-first-commit: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-a-session-before-the-first-commit-1d6151.md)
+- [Ran cargo test --locked --test stages -- --exact without_specsync_a_done_across_plan_and_accept_needs_a_reason for TC-cli-g2-an-unattended-done-needs-a-reason: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-an-unattended-done-needs-a-reason-d31721.md)
+- [Ran cargo test --locked --test stages -- --exact without_specsync_a_move_past_plan_says_whether_a_human_decided for TC-cli-g2-a-move-past-plan-says-whether-a-human-decided: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-a-move-past-plan-says-whether-a-human-decided-64807b.md)
+- [Ran cargo test --locked --test doctor -- --exact the_unfinished_archive_fix_names_the_journal_post for TC-cli-g2-the-fix-names-the-journal-post: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-g2-the-fix-names-the-journal-post-52da8f.md)
 
 ## Open threads
 
