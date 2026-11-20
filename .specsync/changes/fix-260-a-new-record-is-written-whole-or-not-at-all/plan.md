@@ -7,41 +7,41 @@ artifact: plan
 
 ## Approach
 
-Option A of the design: in `records::write_new_bytes`, write the new record to a
-temporary file in its folder, sync it, then give it its name without replacing anything
-(`renamex_np(RENAME_EXCL)` on macOS, `renameat2(RENAME_NOREPLACE)` on Linux, and under
-the writer lock a free-name check and rename elsewhere). Remove the temporary file on
-every error. Ignore SIGXFSZ at start, so a file-size limit is an error the write
-returns. Name an empty record file as empty in the reader's message.
+Option A of the design: a temporary file in `.chough/local/`, synced, then a rename into
+the target folder that never replaces; where that rename is not supported, create-new
+at the final name with a sync and removal on error. SIGXFSZ ignored only around each
+record write. An empty record named as empty.
 
 ## Out of scope
 
-- A sweep of temporary files a SIGKILL leaves beside bugs and journal posts (#385).
+- A sweep of temporary files a SIGKILL leaves in `.chough/local/` (#385).
 - Readers that list the readable records and name the broken one instead of stopping
   (#352's comment of 2026-11-18).
+- Taking the writer lock in the six sites that create without it.
 - Replacing writes (`write_replace`), which are already a temporary file and a rename.
 
 ## Steps
 
-1. Red tests in `tests/records.rs` for `bug add` and `journal add` under `ulimit -f`
-   and for an empty bug file.
-2. The whole-or-nothing create-new and the SIGXFSZ setting.
+1. After D2 merges: red tests in `tests/records.rs` for `bug add` and `journal add`
+   under `ulimit -f`, for an empty bug file, and for a case command that still dies of
+   SIGXFSZ under a size limit.
+2. The whole-or-nothing create-new, its fallback and the scoped SIGXFSZ setting.
 3. The empty-record message.
-4. Docs, the case and the changelog; every verify step; tester2 on Linux and a Docker
-   Desktop mount; the tester on full volumes, exFAT and the real repositories.
+4. Docs, the case and the changelog; every verify step; tester2 on Linux, a Docker
+   Desktop mount and exFAT; the tester on full volumes and the real repositories.
 
 ## Risks
 
-- `renamex_np` or `renameat2` unsupported on some file systems (exFAT, network
-  mounts): the fallback under the writer lock covers them; tested on exFAT.
-- A writer that does not hold the lock would race the fallback: each of the 19
-  callers of `write_new_bytes` is to be checked for it in step 2, before the fallback is
-  relied on (REQ-cli-040 lists the writers; not yet checked).
-- Ignoring SIGXFSZ changes a kill into an error for every write in the process, which
-  is what each write's error handling already expects.
+- The no-replace rename unsupported where a person keeps a project (exFAT, network or
+  Docker mounts): the fallback is create-new, never a replace; tested by tester2.
+- `.chough/local/` on another file system than a record folder (a knowledge directory
+  elsewhere): `EXDEV` takes the fallback.
+- Six create-new sites run without the writer lock on some path: the design's fallback
+  does not rely on it.
 
 ## Constraints consulted
 
 REQ-cli-023 (atomic create-new), REQ-records-001 (create-new for a new record), #313
-(no hard links: exFAT), REQ-cli-040 (every record writer holds the writer lock),
-REQ-cli-068 (readers skip metadata names; a temporary file is not `*.md`).
+(no hard links: exFAT), REQ-cli-040 (the writer lock), REQ-cli-068 (readers skip
+metadata names), REQ-cli-011 (children of the helper), D1's archive-finish rule that
+every removed byte is committed.
