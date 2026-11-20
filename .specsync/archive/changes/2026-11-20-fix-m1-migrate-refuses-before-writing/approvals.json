@@ -1,0 +1,339 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795135499,
+      "digest": "087a50c59e8dd4e4051075da76d0a0ca7edf3fb0c9c4a0a73eb30ed7f0ec0f62",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-m1-migrate-refuses-before-writing (native approval)\": \"Approve with the 3 choices\" (Scope: his 'Approve with the 3 choices' of the draft at a82f0e4e (Claude Code chat message relayed by hc t4c through fable-lead, hc t53, 2026-11-19). The one path tests/fixtures/migrate/ added on his 'a, all yes.. im back' (relayed the same way, about 00:38Z on 2026-11-20, item 8). Recording confirmed by his direct answer 'Yes, record it' in t4b's Claude Code session, 2026-11-20). Relayed and recorded by fable-t4b at 2026-11-20T00:44:58Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-m1-migrate-refuses-before-writing",
+        "title": "Fix m1 migrate refuses before writing",
+        "description": "fix m1 migrate refuses before writing",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.doctor-keeps-alias-pointer.cases.toml",
+          ".chough/cases/records.migrate-refuses.cases.toml",
+          "changelog.d/",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/records/records.spec.md",
+          "specs/records/requirements.md",
+          "src/bugs.rs",
+          "src/doctor.rs",
+          "src/library.rs",
+          "src/migrate.rs",
+          "tests/doctor.rs",
+          "tests/fixtures/migrate/",
+          "tests/migrate.rs",
+          "tests/migrate_bugs.rs",
+          "tests/migrate_knowledge.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "doctor --fix after an in-place migration keeps a pointer that names an open session by alias; any entry at a migration target or receipt name counts as taken, the preview never waits and says the apply would refuse, and refusals name relative paths with nothing written; a returning 0.5.x record whose ID is already held is refused by name, and the generated index and feed are rebuilt in place; of several applies of one digest only one applies and records its consent"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "records and cli lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval, so each sentence was tried against the binary first. File boundary from the lead's plan: in doctor.rs only the stale-pointer check after a fix is touched. #375 and #338 are left out until Leif chooses.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "08bf8d75715dad4e7570c4a1125bef1b065a0f8c277bb1c84257dd73de8d4e98",
+        "records": "835fcc1b54e9c11bd1d4bcc36f236c2b7874128035eda848807048978b48b007"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "b47f0d70bf523998e236696369699fb0ffa688bf44cecb966e20401ad334de14",
+        "records: REQUIREMENT REQ-records-009": "49a0b563cb02a8f2e9089d25fd9def927a10bc47c3f4e1d72c3aed6455ec9f62",
+        "records: REQUIREMENT REQ-records-015": "4e73641bf1b285d81f27ce8fa004bafd52ea6ba12ca81dbc44a44b276d7d6604"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve with the 3 choices",
+        "where": "Scope: his 'Approve with the 3 choices' of the draft at a82f0e4e (Claude Code chat message relayed by hc t4c through fable-lead, hc t53, 2026-11-19). The one path tests/fixtures/migrate/ added on his 'a, all yes.. im back' (relayed the same way, about 00:38Z on 2026-11-20, item 8). Recording confirmed by his direct answer 'Yes, record it' in t4b's Claude Code session, 2026-11-20",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795137385,
+      "digest": "087a50c59e8dd4e4051075da76d0a0ca7edf3fb0c9c4a0a73eb30ed7f0ec0f62",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of fix-m1-migrate-refuses-before-writing with REQ-cli-055 rebased onto main under standing OK (d) (native approval)\": \"Yes, record it\" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval under standing OK (d): his 'yes to both' (relayed by hc t4c through fable-lead, hc t53, about 15:02Z on 2026-11-19) lets a delta stale only because main changed the same requirement be rebased onto main's text with exactly the same added and removed words, checked by fable-lead's script, which passed on 2026-11-20 (delta sha256 15ebb4b32eec2b93...). Scope as approved by his 'Approve with the 3 choices' (2026-11-19) with tests/fixtures/migrate/ added (item 8, 2026-11-20); answers and the 17 paths unchanged). Relayed and recorded by fable-t4b at 2026-11-20T01:16:24Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-m1-migrate-refuses-before-writing",
+        "title": "Fix m1 migrate refuses before writing",
+        "description": "fix m1 migrate refuses before writing",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.doctor-keeps-alias-pointer.cases.toml",
+          ".chough/cases/records.migrate-refuses.cases.toml",
+          "changelog.d/",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/records/records.spec.md",
+          "specs/records/requirements.md",
+          "src/bugs.rs",
+          "src/doctor.rs",
+          "src/library.rs",
+          "src/migrate.rs",
+          "tests/doctor.rs",
+          "tests/fixtures/migrate/",
+          "tests/migrate.rs",
+          "tests/migrate_bugs.rs",
+          "tests/migrate_knowledge.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "doctor --fix after an in-place migration keeps a pointer that names an open session by alias; any entry at a migration target or receipt name counts as taken, the preview never waits and says the apply would refuse, and refusals name relative paths with nothing written; a returning 0.5.x record whose ID is already held is refused by name, and the generated index and feed are rebuilt in place; of several applies of one digest only one applies and records its consent"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "records and cli lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval, so each sentence was tried against the binary first. File boundary from the lead's plan: in doctor.rs only the stale-pointer check after a fix is touched. #375 and #338 are left out until Leif chooses.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "77f0cec39b981506673bd3dbe6ccaef9eb4c029f68428f5fd2093d9f93594458",
+        "records": "835fcc1b54e9c11bd1d4bcc36f236c2b7874128035eda848807048978b48b007"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "cf2bfff972cac9bad9c6e2db63460390bcb4d2830e09605f9f6abdc490b74440",
+        "records: REQUIREMENT REQ-records-009": "49a0b563cb02a8f2e9089d25fd9def927a10bc47c3f4e1d72c3aed6455ec9f62",
+        "records: REQUIREMENT REQ-records-015": "4e73641bf1b285d81f27ce8fa004bafd52ea6ba12ca81dbc44a44b276d7d6604"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes, record it",
+        "where": "His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval under standing OK (d): his 'yes to both' (relayed by hc t4c through fable-lead, hc t53, about 15:02Z on 2026-11-19) lets a delta stale only because main changed the same requirement be rebased onto main's text with exactly the same added and removed words, checked by fable-lead's script, which passed on 2026-11-20 (delta sha256 15ebb4b32eec2b93...). Scope as approved by his 'Approve with the 3 choices' (2026-11-19) with tests/fixtures/migrate/ added (item 8, 2026-11-20); answers and the 17 paths unchanged",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795138416,
+      "digest": "4d4c94a15d5bc426e89019a4a938807ecc9025863f66436a6d3ad418219a8151",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of fix-m1-migrate-refuses-before-writing with the #263 case file added to its paths (native approval)\": \"Yes, record it\" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval after his relayed 'A' (hc t4c through fable-lead, about 01:24Z on 2026-11-20): keep what he approved, the file gets replaced, the preview says so, #263's test is updated to match, one test file added through a send-back t4b runs, no wording change. The one path added is .chough/cases/records.migrate-case-colliding-target.cases.toml; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 (2026-11-20) and standing OK (d), as recorded before). Relayed and recorded by fable-t4b at 2026-11-20T01:33:33Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-m1-migrate-refuses-before-writing",
+        "title": "Fix m1 migrate refuses before writing",
+        "description": "fix m1 migrate refuses before writing",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.doctor-keeps-alias-pointer.cases.toml",
+          ".chough/cases/records.migrate-case-colliding-target.cases.toml",
+          ".chough/cases/records.migrate-refuses.cases.toml",
+          "changelog.d/",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/records/records.spec.md",
+          "specs/records/requirements.md",
+          "src/bugs.rs",
+          "src/doctor.rs",
+          "src/library.rs",
+          "src/migrate.rs",
+          "tests/doctor.rs",
+          "tests/fixtures/migrate/",
+          "tests/migrate.rs",
+          "tests/migrate_bugs.rs",
+          "tests/migrate_knowledge.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "doctor --fix after an in-place migration keeps a pointer that names an open session by alias; any entry at a migration target or receipt name counts as taken, the preview never waits and says the apply would refuse, and refusals name relative paths with nothing written; a returning 0.5.x record whose ID is already held is refused by name, and the generated index and feed are rebuilt in place; of several applies of one digest only one applies and records its consent"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "records and cli lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval, so each sentence was tried against the binary first. File boundary from the lead's plan: in doctor.rs only the stale-pointer check after a fix is touched. #375 and #338 are left out until Leif chooses.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "77f0cec39b981506673bd3dbe6ccaef9eb4c029f68428f5fd2093d9f93594458",
+        "records": "835fcc1b54e9c11bd1d4bcc36f236c2b7874128035eda848807048978b48b007"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "cf2bfff972cac9bad9c6e2db63460390bcb4d2830e09605f9f6abdc490b74440",
+        "records: REQUIREMENT REQ-records-009": "49a0b563cb02a8f2e9089d25fd9def927a10bc47c3f4e1d72c3aed6455ec9f62",
+        "records: REQUIREMENT REQ-records-015": "4e73641bf1b285d81f27ce8fa004bafd52ea6ba12ca81dbc44a44b276d7d6604"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes, record it",
+        "where": "His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval after his relayed 'A' (hc t4c through fable-lead, about 01:24Z on 2026-11-20): keep what he approved, the file gets replaced, the preview says so, #263's test is updated to match, one test file added through a send-back t4b runs, no wording change. The one path added is .chough/cases/records.migrate-case-colliding-target.cases.toml; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 (2026-11-20) and standing OK (d), as recorded before",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795144942,
+      "digest": "15813525ef23940a6ee1c909b02dc89e3dee084d362b0eec887f287058b3883a",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of fix-m1-migrate-refuses-before-writing with the macOS-metadata case file added to its paths (native approval)\": \"Yes, all of it\" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, after his relayed 'Ok' (hc t4c through fable-lead, about 03:00Z, item 3): the one path .chough/cases/records.migrate-macos-metadata.cases.toml added; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 and 'A' (2026-11-20) and standing OK (d), as recorded before). Relayed and recorded by fable-t4b at 2026-11-20T03:22:21Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-m1-migrate-refuses-before-writing",
+        "title": "Fix m1 migrate refuses before writing",
+        "description": "fix m1 migrate refuses before writing",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.doctor-keeps-alias-pointer.cases.toml",
+          ".chough/cases/records.migrate-case-colliding-target.cases.toml",
+          ".chough/cases/records.migrate-macos-metadata.cases.toml",
+          ".chough/cases/records.migrate-refuses.cases.toml",
+          "changelog.d/",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/records/records.spec.md",
+          "specs/records/requirements.md",
+          "src/bugs.rs",
+          "src/doctor.rs",
+          "src/library.rs",
+          "src/migrate.rs",
+          "tests/doctor.rs",
+          "tests/fixtures/migrate/",
+          "tests/migrate.rs",
+          "tests/migrate_bugs.rs",
+          "tests/migrate_knowledge.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "doctor --fix after an in-place migration keeps a pointer that names an open session by alias; any entry at a migration target or receipt name counts as taken, the preview never waits and says the apply would refuse, and refusals name relative paths with nothing written; a returning 0.5.x record whose ID is already held is refused by name, and the generated index and feed are rebuilt in place; of several applies of one digest only one applies and records its consent"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "records and cli lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval, so each sentence was tried against the binary first. File boundary from the lead's plan: in doctor.rs only the stale-pointer check after a fix is touched. #375 and #338 are left out until Leif chooses.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "77f0cec39b981506673bd3dbe6ccaef9eb4c029f68428f5fd2093d9f93594458",
+        "records": "835fcc1b54e9c11bd1d4bcc36f236c2b7874128035eda848807048978b48b007"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "cf2bfff972cac9bad9c6e2db63460390bcb4d2830e09605f9f6abdc490b74440",
+        "records: REQUIREMENT REQ-records-009": "49a0b563cb02a8f2e9089d25fd9def927a10bc47c3f4e1d72c3aed6455ec9f62",
+        "records: REQUIREMENT REQ-records-015": "4e73641bf1b285d81f27ce8fa004bafd52ea6ba12ca81dbc44a44b276d7d6604"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes, all of it",
+        "where": "His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, after his relayed 'Ok' (hc t4c through fable-lead, about 03:00Z, item 3): the one path .chough/cases/records.migrate-macos-metadata.cases.toml added; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 and 'A' (2026-11-20) and standing OK (d), as recorded before",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795155860,
+      "digest": "b2fda32efbcf5e11a29386d0cdb1e0bb148f684f90f0d8cd75e0d6eb97d63d33",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "fix-m1-migrate-refuses-before-writing",
+      "actor": "0xLeif",
+      "reason": "REQ-cli-055 went stale only because main (#407, #365) changed the same requirement; the delta is rebased onto main's text with exactly the same added words and nothing removed, checked by fable-lead's script (standing OK (d), relayed via t4c)",
+      "timestamp": 1795136742,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
+    },
+    {
+      "schema_version": 1,
+      "change_id": "fix-m1-migrate-refuses-before-writing",
+      "actor": "0xLeif",
+      "reason": "Add the #263 case file .chough/cases/records.migrate-case-colliding-target.cases.toml to the paths, since the approved exception replaces #263's refusal of a separate regular knowledge/index.md and its test and case are updated to match; no delta word changes (run by t4b on Leif's relayed word, via t4c, 2026-11-20)",
+      "timestamp": 1795137921,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 2,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
+    },
+    {
+      "schema_version": 1,
+      "change_id": "fix-m1-migrate-refuses-before-writing",
+      "actor": "0xLeif",
+      "reason": "Add the macOS-metadata case file .chough/cases/records.migrate-macos-metadata.cases.toml to the paths, since the approved REQ-records-015 criterion replaces its title's 'every one of them is still there after'; no delta word changes (run by t4b on Leif's relayed word, via t4c, 2026-11-20)",
+      "timestamp": 1795144932,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 3,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true,
+      "applied_items": [
+        {
+          "module": "records",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-records-009",
+          "content": "Migration from 0.5.x. `chough migrate` SHALL read a project's 0.5.x records, write nothing, and print the plan, as text by default, since a person consents to it, and as JSON with `--json`, both with the same plan and digest: each 0.5.x file with its SHA-256 and what it becomes, each 0.6.0 file it would write, every value it would redact by kind (REQ-records-006), and every file it would remove without carrying it, with why, and SHALL end with the plan's SHA-256; while any native change in the project is not archived, the preview SHALL also say that `--apply` will refuse until it is, naming each such change. `chough migrate --apply <plan digest>` SHALL refuse, writing nothing, unless the plan it builds has that digest, so nothing is migrated that was not previewed first; it SHALL also refuse, writing nothing, while any native change in the project is not archived, naming each, so it never runs while a change is open, and unless the human's consent is given, either as `--consent <source>` naming who consented, their words and where, which the receipt records as a relayed claim, or as a standing `migration` preference with its source (REQ-cli-013), and Chough SHALL NOT infer consent from the digest or from any other record; it SHALL also refuse, writing nothing, while a 0.5.x file to be removed differs from its bytes at HEAD or is untracked, naming each, so Git holds every byte it removes. It SHALL check every file it would write, the receipt included, before it writes any, and SHALL refuse, writing nothing, when one already exists with other bytes; anything else at such a path, a directory, a file it cannot read or a special file, SHALL count as existing with other bytes and SHALL never be opened in a way that can wait; the refusal SHALL name the path relative to the project, SHALL say that a path appeared while migrating only of one that was absent when the apply checked, and the preview SHALL say that the apply would refuse and why. It SHALL remove no 0.5.x file until every file the plan writes, the receipt included, holds its planned bytes on disk: a file whose name differs only in letter case from one the plan removes, as `knowledge/index.md` beside a 0.5.x `knowledge/INDEX.md`, SHALL be written under a temporary name in the same folder and take its name by rename, replacing that file, never by create-new after the removal, so a file system that folds case or still holds the old name, as a Docker Desktop mount of a macOS folder does, cannot leave the sources removed and a planned file missing (#338). `knowledge/index.md` and `knowledge/journal/feed.xml`, which Chough generates from their sources (REQ-cli-043), are the exception: a regular file there with other bytes SHALL be replaced by the rebuilt one, as `chough library index` replaces it, and the plan SHALL say so. A 0.5.x file that a receipt of an earlier migration lists among the files it read SHALL never be migrated a second time, an earlier migration's receipt being one that Git holds committed with the bytes on disk, while a receipt Git has never held is this migration's own, written by an apply that was interrupted, and is used again as before and judges nothing; a receipt that Git holds but whose bytes on disk differ from the committed ones, as one edited, half merged or redacted and not committed, is neither, and SHALL make the preview and the apply refuse naming it and the way on, to commit it or to restore it from the last commit: with the bytes that receipt lists, the plan SHALL remove it as already migrated, naming the receipt, whether or not the 0.6.0 record it was carried into is still where the receipt says, since that record may since have been archived, folded or removed; with other bytes, the preview and the apply SHALL refuse, naming each such file in one refusal with its receipt and the way on, to carry what is wanted into the 0.6.0 records by hand, an edit into the record the receipt names, or, where the file is a fixed path that holds whatever was current, as `.chough/session.json` does, a different session as a new one, then remove the 0.5.x file, commit and run `chough migrate` again, so an edited or different bug, session or history event never becomes a second record and is never dropped as if it had no place. To judge this, while any 0.5.x file is present the plan SHALL read every entry of `.chough/archive/migrations/` whose name ends in `.md`, the only names a receipt has, leaving out a `.DS_Store` and a name that starts with `._` (REQ-records-015) and any other name, and an `.md` entry that is not a receipt it can read, a directory or special file, a file it cannot read or that is not UTF-8, one over the receipt bound, or one with no list of files read, SHALL make the preview and the apply refuse naming it and saying to move or remove it, without waiting and without treating any file as new. A 0.5.x record at any other path whose ID a 0.6.0 record already holds as an alias SHALL be refused the same way, naming that record, so no second record takes the alias (REQ-records-003). `chough migrate --apply` SHALL hold the writer lock (REQ-cli-040) from before it reads the records it plans from until it has finished, so of two applies of one digest the second finds nothing left to migrate, says so, applies nothing and records no consent; the Git-ignored lock file under `.chough/local/` is not a write of the migration; it SHALL then write the 0.6.0 tree by create-new only and SHALL refuse, writing nothing more, when a file it would write appears with other bytes meanwhile; it SHALL read each written file back and compare its digest; it SHALL write the receipt, whose path the plan names and so its digest covers: `.chough/archive/migrations/<YYYY-MM-DD>-from-0-5.md`, or, while a receipt of that name exists for another plan, the first free `<YYYY-MM-DD>-from-0-5-<n>.md` with `<n>` counting from 2, so a second migration on one day keeps the first receipt as it is and a receipt this plan's interrupted apply wrote is used again; the receipt lists, for every file before and after, its path, size and SHA-256, the redactions by file, field and kind, every removed file with why and the commit that holds it, and the old-to-new ID map, with `none` under any of its sections that has nothing to list; and only then SHALL it remove the 0.5.x files, each only when its bytes still match the plan. It SHALL never weaken a SpecSync archive: before removing anything it SHALL read the native validity of every archived change whose acceptance manifest lists a file it would remove, at most 8 reads at once, read them again after the removal, and, if any archive that read valid no longer does, restore every removed file byte for byte and refuse, naming those archives. A file written by an interrupted apply with the planned bytes SHALL count as done on the next apply, and a second apply on a migrated tree SHALL report nothing to do; on a tree with no 0.5.x record the preview SHALL likewise say there is nothing to migrate and give no plan digest. When the project's installed skill copy is not current, as `chough skill status` reports it (REQ-cli-016), the plan's and the receipt's follow-ups SHALL name `chough skill update`, so the copy that still names 0.5.x commands and paths is updated. The plan's and the receipt's follow-ups SHALL also name what `chough doctor` will report on the migrated tree (REQ-history-012): each session it will report as `finished_session`, to archive with `chough doctor --fix`, and each it will report as `stale_gates`, with each open gate's text and the decision it needs, `chough doctor --fix --reason`, computed by doctor's own session check on the planned records, so one consent round covers both. The mapping SHALL be: each open session, legacy `.chough/session.json` included, becomes a session folder whose timeline holds, in order, every transition of its selected history lineage, the legacy log's entries going to the session that adopted them; each archived session, and each session rolled into `knowledge/attachments/`, becomes an archived story; each observation an open session references becomes an evidence entry of that session, each one an archived session or a bug references becomes a receipt of that story or bug, and others are removed; a PNG or JPEG artifact of a carried observation that fits the bounds of REQ-records-013 is kept beside its session or story, and other artifacts are removed; each bug becomes a Markdown bug; inbox entries move to their session's `agent/inbox/`; every 0.5.x ID is kept as an alias (REQ-records-003), and an ID whose record was removed without being carried SHALL resolve as `removed`, naming the receipt, never as current or passed; and `.chough/transitions.jsonl`, `.chough/history/`, `.chough/pruned.jsonl`, `.chough/session.v1.json`, `.chough/artifacts/` other than files an open bug names, shelved 0.5.x sessions and the generated or copied vault content of REQ-cli-044 are removed after they are listed. Every file migration writes SHALL pass REQ-records-006 with redaction, so no home-folder path, user name or credential survives in a rewritten record; a file it keeps byte for byte (an open bug's fixture, a `library/` snapshot or brief) that matches SHALL be listed in the plan and the receipt as a `leak` finding for a person to fix, never changed silently and never kept unreported. The receipt SHALL say that Git history still holds what earlier commits leaked, which this migration does not rewrite. Case definitions and preferences SHALL stay byte-identical. Removal SHALL follow REQ-records-012. Trace: DRIVE-27, LIFE-20, LIFE-21, LIFE-8, KNOW-10, KNOW-11, KNOW-30, KNOW-31, KNOW-34, LIFE-26.\n\nAcceptance Criteria\n- Fixtures captured from a project at every released 0.x version, 0.1.0 to 0.5.0, each built from its release tag, migrate to the same kind of 0.6.0 tree with every record readable (#213).\n- `--apply` without a digest, or with the digest of an earlier plan, refuses and writes nothing; `--apply` with the preview's digest proceeds.\n- With a native change that is not archived, or with neither `--consent` nor a standing `migration` preference, `--apply` with the preview's digest refuses and writes nothing, naming the open change or the missing consent; with consent the receipt records its source.\n- With a SpecSync stub whose archive reads invalid once a listed file is gone, `--apply` restores every removed file byte for byte and refuses naming that archive.\n- A rewritten record that held a home-folder path holds `<redacted:home-path>` and the receipt counts it; a kept fixture holding one is listed as a `leak` finding and left unchanged; the receipt says Git history is not rewritten.\n- On a 0.5.x fixture with a legacy checkpoint, adopted history, two open and seven archived sessions, rolled sessions in the vault, a bug of each ID form, inbox entries and old proof, `chough migrate` writes nothing and lists every file, target, redaction and removal.\n- `--apply` with an uncommitted or untracked 0.5.x file refuses naming it, with nothing written.\n- `--apply` writes every planned file and the receipt, removes the 0.5.x files, and afterwards every record, alias and timeline entry is readable by `next`, `status`, `bug show`, `session list` and `timing`; the receipt's before and after digests match the files at the earlier and the new commit.\n- With a target that already exists with other bytes, `--apply` refuses and writes nothing more; after an apply interrupted between writes, the next apply completes and the result equals an uninterrupted one; a second apply on the result reports nothing to do.\n- Case definition files and `.chough/preferences.json` are byte-identical before and after.\n- Every transition of the selected lineage appears once, in order, in its session's timeline, and every archived session, the rolled ones included, is an archived story.\n- A bug linking an observation that was removed without being carried shows it as `removed` with the receipt named, and `chough next` never counts it as current or passed.\n- Regression for the local bug where history writes refused once the adopting session rolled into the vault: a 0.5.x fixture whose adopting session sits in `knowledge/attachments/`, with `.chough/transitions.jsonl` unchanged, migrates; the legacy entries land in that session's archived story, and afterwards `checkpoint --awaiting-human`, `--close-gate` and a stage move all succeed. The same writes are first recorded refusing on the last build before #142 (90e5de6f^), with the same tree recorded as observed on 0.5.0.\n- With a native change open, the preview names it and says `--apply` will refuse, and writes nothing; the apply then refuses with `refused:change-open`.\n- A migration with no redaction, no kept leak and nothing left uncarried writes a receipt whose Redactions, Kept with leaks and Not carried sections each say `none`.\n- On a migrated tree, `chough migrate` says there is nothing to migrate and prints no plan digest, and writes nothing.\n- `chough migrate` prints the plan as text naming each file, target, redaction and removal and the digest, and `chough migrate --json` prints the same plan and digest as JSON.\n- On a 0.5.x fixture whose installed skill copy is a 0.5.x release, the preview's and the receipt's follow-ups name `chough skill update`; with a current copy they do not.\n- On a 0.5.x fixture with a finished session and a session whose native change is archived and that waits on two human gates, the preview's and the receipt's follow-ups name the first as `finished_session` and the second as `stale_gates` with both gates' text and `chough doctor --fix --reason`, and `chough doctor` after the apply reports exactly those two findings.\n- With a directory, a file without read permission or a FIFO at `knowledge/index.md`, the preview returns without waiting and says the apply would refuse, and the apply refuses naming the project-relative path, with every 0.5.x file still there and no 0.6.0 file or receipt written.\n- With a directory, a file without read permission, a file that is not UTF-8, a FIFO, or a file with no list of files read, each named `*.md`, in `.chough/archive/migrations/`, the preview returns without waiting and says the apply would refuse naming that entry, and the apply refuses naming it, with every 0.5.x file still there and no 0.6.0 file or receipt written; no refusal says a path that was there before appeared while migrating. A receipt of another plan at today's receipt name is passed over for the next free name as before.\n- An apply on a file system that folds case, one that does not, and a Docker Desktop mount of a macOS folder each end with `knowledge/index.md` spelled so and holding its planned bytes and no `knowledge/INDEX.md`; an apply whose planned write fails leaves every 0.5.x file in place.\n- On a migrated tree, a 0.5.x bug file that comes back with an edited title makes the preview and the apply refuse, naming that file, the receipt that lists it and the way on, with nothing written, and once that file is removed and the removal committed `chough migrate` says there is nothing to migrate.\n- On a migrated tree, a 0.5.x open session file that comes back with an edited objective is refused the same way and no second session is created, and a 0.5.x history event that comes back with edited bytes is refused the same way rather than planned as removed.\n- On a migrated tree, two returning files with other bytes are both named in one refusal; a `.chough/session.json` that returns holding a different session than the one migrated is refused with the way on naming a new session; and a returning file with the bytes its receipt lists is removed as already migrated even after its session was archived, and no archived session becomes open again.\n- The receipts this repository and its sibling projects hold from released 0.6.0 and 0.6.1 builds are read by the rule: each lists the files read with their SHA-256 under the same heading.\n- After an apply stopped once it had written its receipt, with every 0.5.x file still there and the receipt not committed, the preview plans no file as already migrated, the next apply completes, and the result equals an uninterrupted one; once that receipt is committed with 0.5.x files it lists still there, they are planned as removed as already migrated.\n- With a committed receipt changed on disk and not committed, while a 0.5.x file is present, the preview says the apply would refuse and the apply refuses, naming that receipt and that it is to be committed or restored, with nothing written; after either, the migration judges by it again.\n- A `.DS_Store`, a `._` file and a `.gitkeep` in `.chough/archive/migrations/` change neither the plan nor its digest and stop neither the preview nor the apply.\n- A 0.5.x file that comes back with the bytes its receipt lists is planned as removed as already migrated, and a 0.5.x bug the tree never held migrates as a new record with `knowledge/index.md` rebuilt in place.\n- Three applies of one digest started together leave one receipt holding one consent; each of the other two either refuses or reports that nothing is left to migrate, and none reports `applied: true`.",
+          "previous_content": "Migration from 0.5.x. `chough migrate` SHALL read a project's 0.5.x records, write nothing, and print the plan, as text by default, since a person consents to it, and as JSON with `--json`, both with the same plan and digest: each 0.5.x file with its SHA-256 and what it becomes, each 0.6.0 file it would write, every value it would redact by kind (REQ-records-006), and every file it would remove without carrying it, with why, and SHALL end with the plan's SHA-256; while any native change in the project is not archived, the preview SHALL also say that `--apply` will refuse until it is, naming each such change. `chough migrate --apply <plan digest>` SHALL refuse, writing nothing, unless the plan it builds has that digest, so nothing is migrated that was not previewed first; it SHALL also refuse, writing nothing, while any native change in the project is not archived, naming each, so it never runs while a change is open, and unless the human's consent is given, either as `--consent <source>` naming who consented, their words and where, which the receipt records as a relayed claim, or as a standing `migration` preference with its source (REQ-cli-013), and Chough SHALL NOT infer consent from the digest or from any other record; it SHALL also refuse, writing nothing, while a 0.5.x file to be removed differs from its bytes at HEAD or is untracked, naming each, so Git holds every byte it removes. It SHALL check every file it would write, the receipt included, before it writes any, and SHALL refuse, writing nothing, when one already exists with other bytes; it SHALL then write the 0.6.0 tree by create-new only and SHALL refuse, writing nothing more, when a file it would write appears with other bytes meanwhile; it SHALL read each written file back and compare its digest; it SHALL write the receipt, whose path the plan names and so its digest covers: `.chough/archive/migrations/<YYYY-MM-DD>-from-0-5.md`, or, while a receipt of that name exists for another plan, the first free `<YYYY-MM-DD>-from-0-5-<n>.md` with `<n>` counting from 2, so a second migration on one day keeps the first receipt as it is and a receipt this plan's interrupted apply wrote is used again; the receipt lists, for every file before and after, its path, size and SHA-256, the redactions by file, field and kind, every removed file with why and the commit that holds it, and the old-to-new ID map, with `none` under any of its sections that has nothing to list; and only then SHALL it remove the 0.5.x files, each only when its bytes still match the plan. It SHALL never weaken a SpecSync archive: before removing anything it SHALL read the native validity of every archived change whose acceptance manifest lists a file it would remove, at most 8 reads at once, read them again after the removal, and, if any archive that read valid no longer does, restore every removed file byte for byte and refuse, naming those archives. A file written by an interrupted apply with the planned bytes SHALL count as done on the next apply, and a second apply on a migrated tree SHALL report nothing to do; on a tree with no 0.5.x record the preview SHALL likewise say there is nothing to migrate and give no plan digest. When the project's installed skill copy is not current, as `chough skill status` reports it (REQ-cli-016), the plan's and the receipt's follow-ups SHALL name `chough skill update`, so the copy that still names 0.5.x commands and paths is updated. The plan's and the receipt's follow-ups SHALL also name what `chough doctor` will report on the migrated tree (REQ-history-012): each session it will report as `finished_session`, to archive with `chough doctor --fix`, and each it will report as `stale_gates`, with each open gate's text and the decision it needs, `chough doctor --fix --reason`, computed by doctor's own session check on the planned records, so one consent round covers both. The mapping SHALL be: each open session, legacy `.chough/session.json` included, becomes a session folder whose timeline holds, in order, every transition of its selected history lineage, the legacy log's entries going to the session that adopted them; each archived session, and each session rolled into `knowledge/attachments/`, becomes an archived story; each observation an open session references becomes an evidence entry of that session, each one an archived session or a bug references becomes a receipt of that story or bug, and others are removed; a PNG or JPEG artifact of a carried observation that fits the bounds of REQ-records-013 is kept beside its session or story, and other artifacts are removed; each bug becomes a Markdown bug; inbox entries move to their session's `agent/inbox/`; every 0.5.x ID is kept as an alias (REQ-records-003), and an ID whose record was removed without being carried SHALL resolve as `removed`, naming the receipt, never as current or passed; and `.chough/transitions.jsonl`, `.chough/history/`, `.chough/pruned.jsonl`, `.chough/session.v1.json`, `.chough/artifacts/` other than files an open bug names, shelved 0.5.x sessions and the generated or copied vault content of REQ-cli-044 are removed after they are listed. Every file migration writes SHALL pass REQ-records-006 with redaction, so no home-folder path, user name or credential survives in a rewritten record; a file it keeps byte for byte (an open bug's fixture, a `library/` snapshot or brief) that matches SHALL be listed in the plan and the receipt as a `leak` finding for a person to fix, never changed silently and never kept unreported. The receipt SHALL say that Git history still holds what earlier commits leaked, which this migration does not rewrite. Case definitions and preferences SHALL stay byte-identical. Removal SHALL follow REQ-records-012. Trace: DRIVE-27, LIFE-20, LIFE-21, LIFE-8, KNOW-10, KNOW-11, KNOW-30, KNOW-31, KNOW-34, LIFE-26.\n\nAcceptance Criteria\n- Fixtures captured from a project at every released 0.x version, 0.1.0 to 0.5.0, each built from its release tag, migrate to the same kind of 0.6.0 tree with every record readable (#213).\n- `--apply` without a digest, or with the digest of an earlier plan, refuses and writes nothing; `--apply` with the preview's digest proceeds.\n- With a native change that is not archived, or with neither `--consent` nor a standing `migration` preference, `--apply` with the preview's digest refuses and writes nothing, naming the open change or the missing consent; with consent the receipt records its source.\n- With a SpecSync stub whose archive reads invalid once a listed file is gone, `--apply` restores every removed file byte for byte and refuses naming that archive.\n- A rewritten record that held a home-folder path holds `<redacted:home-path>` and the receipt counts it; a kept fixture holding one is listed as a `leak` finding and left unchanged; the receipt says Git history is not rewritten.\n- On a 0.5.x fixture with a legacy checkpoint, adopted history, two open and seven archived sessions, rolled sessions in the vault, a bug of each ID form, inbox entries and old proof, `chough migrate` writes nothing and lists every file, target, redaction and removal.\n- `--apply` with an uncommitted or untracked 0.5.x file refuses naming it, with nothing written.\n- `--apply` writes every planned file and the receipt, removes the 0.5.x files, and afterwards every record, alias and timeline entry is readable by `next`, `status`, `bug show`, `session list` and `timing`; the receipt's before and after digests match the files at the earlier and the new commit.\n- With a target that already exists with other bytes, `--apply` refuses and writes nothing more; after an apply interrupted between writes, the next apply completes and the result equals an uninterrupted one; a second apply on the result reports nothing to do.\n- Case definition files and `.chough/preferences.json` are byte-identical before and after.\n- Every transition of the selected lineage appears once, in order, in its session's timeline, and every archived session, the rolled ones included, is an archived story.\n- A bug linking an observation that was removed without being carried shows it as `removed` with the receipt named, and `chough next` never counts it as current or passed.\n- Regression for the local bug where history writes refused once the adopting session rolled into the vault: a 0.5.x fixture whose adopting session sits in `knowledge/attachments/`, with `.chough/transitions.jsonl` unchanged, migrates; the legacy entries land in that session's archived story, and afterwards `checkpoint --awaiting-human`, `--close-gate` and a stage move all succeed. The same writes are first recorded refusing on the last build before #142 (90e5de6f^), with the same tree recorded as observed on 0.5.0.\n- With a native change open, the preview names it and says `--apply` will refuse, and writes nothing; the apply then refuses with `refused:change-open`.\n- A migration with no redaction, no kept leak and nothing left uncarried writes a receipt whose Redactions, Kept with leaks and Not carried sections each say `none`.\n- On a migrated tree, `chough migrate` says there is nothing to migrate and prints no plan digest, and writes nothing.\n- `chough migrate` prints the plan as text naming each file, target, redaction and removal and the digest, and `chough migrate --json` prints the same plan and digest as JSON.\n- On a 0.5.x fixture whose installed skill copy is a 0.5.x release, the preview's and the receipt's follow-ups name `chough skill update`; with a current copy they do not.\n- On a 0.5.x fixture with a finished session and a session whose native change is archived and that waits on two human gates, the preview's and the receipt's follow-ups name the first as `finished_session` and the second as `stale_gates` with both gates' text and `chough doctor --fix --reason`, and `chough doctor` after the apply reports exactly those two findings."
+        },
+        {
+          "module": "records",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-records-015",
+          "content": "Migration skips macOS metadata files. `chough migrate`, its preview and `--apply` alike, SHALL skip a `.DS_Store` file and a file or folder whose name starts with `._` among a project's 0.5.x records, in `.chough/` and in the knowledge directory alike (REQ-cli-068): it SHALL neither read, carry nor list such a file, so the file never stops the preview or the apply and the plan, its digest and the receipt are the same as without it. A folder the migration empties of its 0.5.x records and that then holds nothing but such files SHALL be removed with them once the apply has succeeded, and the apply's output SHALL name each folder removed that way with the number of such files it held; such a file beside a record or folder that stays SHALL stay (#375). Trace: DRIVE-14, DRIVE-27, LIFE-20.\n\nAcceptance Criteria\n- A 0.5.x project with AppleDouble `._` files and `.DS_Store` files beside its bugs, sessions, archived sessions, inbox entries, evidence, history events and knowledge notes previews with the same plan digest as without them, the apply of that digest succeeds, each folder the migration emptied of its records is gone with the metadata files it held and is named in the apply's output, and each such file beside records that stay is still there.",
+          "previous_content": "Migration skips macOS metadata files. `chough migrate`, its preview and `--apply` alike, SHALL skip a `.DS_Store` file and a file or folder whose name starts with `._` among a project's 0.5.x records, in `.chough/` and in the knowledge directory alike (REQ-cli-068): it SHALL neither read, carry, list nor remove such a file, so the file never stops the preview or the apply and the plan and its digest are the same as without it. A folder the migration empties of its 0.5.x records SHALL stay while such a file is in it, since macOS removes orphaned `._*` files with a folder it removes. Trace: DRIVE-14, DRIVE-27, LIFE-20.\n\nAcceptance Criteria\n- A 0.5.x project with AppleDouble `._` files and `.DS_Store` files beside its bugs, sessions, archived sessions, inbox entries, evidence, history events and knowledge notes previews with the same plan digest as without them, the apply of that digest succeeds, and every one of those files is still there after it."
+        },
+        {
+          "module": "cli",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-cli-055",
+          "content": "Chough doctor. `chough doctor` SHALL report the Chough debt of REQ-history-012 and each committed record, or case definition that does not parse as TOML, that holds a Git conflict marker (REQ-records-001, #339) as JSON with `schema_version` 1, `mode` (`report`, `dry-run` or `fix`) and `findings`, each with `kind`, `target`, `fix` (the Chough command that fixes it), `decision` (whether the fix is a decision) and `status` (`found`, `fixed` or `skipped`, with a `reason` when skipped). With no flag, or with `--dry-run`, it SHALL change nothing and report each finding as `found`. With `--fix` it SHALL apply each fix that is not a decision. After its fixes it SHALL remove the active pointer only when the pointer names no open session by ID, alias or bare slug (REQ-history-006), so a pointer that an in-place migration kept stays. A lone `=======` outside a conflict in a committed record, or in a case definition that does not parse as TOML, SHALL be a `possible_conflict_separator` finding naming its line, \"possible leftover conflict separator at line N\", marked `advisory`: a warning only, which SHALL never make `chough doctor` exit 1 (#339). A Git conflict marker line inside a closed code fence of a committed record SHALL be a `possible_fenced_conflict` finding naming its line and marker, \"possible conflict markers inside a code fence at line N\", also marked `advisory`, since a real conflict there cannot be told from a quoted one (#339). Each such finding SHALL name the marker by its seven characters only, never the rest of its line (REQ-records-001, #365). A fix that would leave a record unreadable, such as redacting an ID (REQ-history-012), SHALL NOT be applied: its finding SHALL be `skipped`, with the reason and the recovery, and the record SHALL stay byte for byte as it was on that line. It SHALL apply a decision fix only when `--reason <text>` is given, and SHALL otherwise report it as `skipped` with a fix that names `--reason`. It SHALL exit 0 when no finding is left `found` or `skipped`, and 1 otherwise. It SHALL make no native read, and SHALL never record a human decision, approval, review or consent. Its per-session findings (`finished_session`, `stale_gates`) SHALL come from one session check that `chough migrate`'s plan also runs on the planned records (REQ-records-009), so a migration's follow-ups name what the doctor will report. Trace: DRIVE-17.\n\nAcceptance Criteria\n- With no flag and with `--dry-run`, the doctor reports the same findings, each with a `chough` fix, exits 1, and leaves every file under `.chough/` unchanged.\n- `--fix` without `--reason` applies the fixes that are not decisions and reports each decision fix as `skipped`, naming `--reason`; a project with no debt reports no findings and exits 0.\n- No doctor run calls SpecSync.\n- On a tree just migrated from 0.5.x, `chough doctor` reports exactly the `finished_session` and `stale_gates` sessions the migration's follow-ups named.\n- `--fix --redact` on a committed session record whose ID reference holds a token leaves that line unchanged and the session readable, and reports the finding `skipped`, naming `chough session shelve <id>`.\n- A committed record whose body holds a conflict gives a `conflict_markers` finding with no fix, and `--fix` reports it `skipped`.\n- A committed case definition holding a conflict gives a `conflict_markers` finding for each marker line, naming the file, the line and the marker; a valid definition quoting a marker in a string gives none.\n- A lone `=======` in a committed record gives one advisory `possible_conflict_separator` finding naming its line, and doctor's exit status is what it is without it.\n- A Git conflict left inside a code fence of a committed session gives one advisory `possible_fenced_conflict` finding per marker line, naming it, and doctor's exit status is what it is without it.\n- A committed conflict whose `>>>>>>>` line names a branch holding a token gives `conflict_markers` findings whose `marker` is `>>>>>>>`, and doctor's output holds no part of the branch name (#365).\n- On a tree just migrated in place whose active pointer still holds a 0.5.x session name, `chough doctor --fix` reports no `stale_pointer`, leaves the pointer byte-identical, and `chough next` still shows that session.",
+          "previous_content": "Chough doctor. `chough doctor` SHALL report the Chough debt of REQ-history-012 and each committed record, or case definition that does not parse as TOML, that holds a Git conflict marker (REQ-records-001, #339) as JSON with `schema_version` 1, `mode` (`report`, `dry-run` or `fix`) and `findings`, each with `kind`, `target`, `fix` (the Chough command that fixes it), `decision` (whether the fix is a decision) and `status` (`found`, `fixed` or `skipped`, with a `reason` when skipped). With no flag, or with `--dry-run`, it SHALL change nothing and report each finding as `found`. With `--fix` it SHALL apply each fix that is not a decision. A lone `=======` outside a conflict in a committed record, or in a case definition that does not parse as TOML, SHALL be a `possible_conflict_separator` finding naming its line, \"possible leftover conflict separator at line N\", marked `advisory`: a warning only, which SHALL never make `chough doctor` exit 1 (#339). A Git conflict marker line inside a closed code fence of a committed record SHALL be a `possible_fenced_conflict` finding naming its line and marker, \"possible conflict markers inside a code fence at line N\", also marked `advisory`, since a real conflict there cannot be told from a quoted one (#339). Each such finding SHALL name the marker by its seven characters only, never the rest of its line (REQ-records-001, #365). A fix that would leave a record unreadable, such as redacting an ID (REQ-history-012), SHALL NOT be applied: its finding SHALL be `skipped`, with the reason and the recovery, and the record SHALL stay byte for byte as it was on that line. It SHALL apply a decision fix only when `--reason <text>` is given, and SHALL otherwise report it as `skipped` with a fix that names `--reason`. It SHALL exit 0 when no finding is left `found` or `skipped`, and 1 otherwise. It SHALL make no native read, and SHALL never record a human decision, approval, review or consent. Its per-session findings (`finished_session`, `stale_gates`) SHALL come from one session check that `chough migrate`'s plan also runs on the planned records (REQ-records-009), so a migration's follow-ups name what the doctor will report. Trace: DRIVE-17.\n\nAcceptance Criteria\n- With no flag and with `--dry-run`, the doctor reports the same findings, each with a `chough` fix, exits 1, and leaves every file under `.chough/` unchanged.\n- `--fix` without `--reason` applies the fixes that are not decisions and reports each decision fix as `skipped`, naming `--reason`; a project with no debt reports no findings and exits 0.\n- No doctor run calls SpecSync.\n- On a tree just migrated from 0.5.x, `chough doctor` reports exactly the `finished_session` and `stale_gates` sessions the migration's follow-ups named.\n- `--fix --redact` on a committed session record whose ID reference holds a token leaves that line unchanged and the session readable, and reports the finding `skipped`, naming `chough session shelve <id>`.\n- A committed record whose body holds a conflict gives a `conflict_markers` finding with no fix, and `--fix` reports it `skipped`.\n- A committed case definition holding a conflict gives a `conflict_markers` finding for each marker line, naming the file, the line and the marker; a valid definition quoting a marker in a string gives none.\n- A lone `=======` in a committed record gives one advisory `possible_conflict_separator` finding naming its line, and doctor's exit status is what it is without it.\n- A Git conflict left inside a code fence of a committed session gives one advisory `possible_fenced_conflict` finding per marker line, naming it, and doctor's exit status is what it is without it.\n- A committed conflict whose `>>>>>>>` line names a branch holding a token gives `conflict_markers` findings whose `marker` is `>>>>>>>`, and doctor's output holds no part of the branch name (#365)."
+        }
+      ],
+      "applied_modules": [
+        "records",
+        "cli"
+      ]
+    }
+  ]
+}

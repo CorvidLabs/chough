@@ -68,7 +68,12 @@ impl Kind {
     }
 
     fn parse(text: &str) -> Result<Kind> {
-        Kind::from_str(text, true).map_err(|_| anyhow::anyhow!("unknown evidence kind: {text}"))
+        Kind::from_str(text, true).map_err(|_| {
+            anyhow::anyhow!(
+                "unknown evidence kind: {}",
+                crate::leaks::shown("kind", text)
+            )
+        })
     }
 }
 
@@ -101,7 +106,8 @@ impl Outcome {
     }
 
     fn parse(text: &str) -> Result<Outcome> {
-        Outcome::from_str(text, true).map_err(|_| anyhow::anyhow!("unknown result: {text}"))
+        Outcome::from_str(text, true)
+            .map_err(|_| anyhow::anyhow!("unknown result: {}", crate::leaks::shown("result", text)))
     }
 }
 
@@ -506,8 +512,9 @@ pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Res
         entry.screenshot = Some(format!("{name}.{extension}"));
     }
     let mut record = entry.to_record(&name);
+    let mut redacted = 0;
     if leaks::redacting() {
-        record.redact_leaks(leaks::Local::current());
+        redacted = record.redact_leaks(leaks::Local::current());
     } else {
         record.check_leaks(leaks::Local::current())?;
     }
@@ -535,6 +542,11 @@ pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Res
         session.observations.push(name.clone());
     }
     crate::checkpoint::save_checkpoint(root, &mut session)?;
+    // REQ-records-006 (#368): `--redact` says how many values it redacted, as every other
+    // write does, once the whole write has succeeded.
+    if redacted > 0 {
+        eprintln!("chough: redacted {redacted} value(s) in evidence entry {name} (--redact)");
+    }
     Ok(target)
 }
 
@@ -786,8 +798,12 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
     validate_evidence_links(root, &args.contracts, &args.requirements)?;
     let mut case_refs = vec![];
     for id in &args.cases {
-        let digest = cases::current_digest(root, id)?
-            .with_context(|| format!("unknown or retired case: {id}"))?;
+        let digest = cases::current_digest(root, id)?.with_context(|| {
+            format!(
+                "unknown or retired case: {}",
+                crate::leaks::shown("case ID", id)
+            )
+        })?;
         case_refs.push(CaseRef {
             id: id.clone(),
             digest,
@@ -893,7 +909,11 @@ impl Drop for RedactGuard {
 }
 
 pub(super) fn validate_record(evidence: &Evidence, name: &str) -> Result<()> {
-    ensure!(valid_name(&evidence.id), "invalid evidence ID: {name}");
+    ensure!(
+        valid_name(&evidence.id),
+        "invalid evidence ID: {}",
+        crate::leaks::shown("evidence ID", name)
+    );
     ensure!(
         evidence
             .criteria
@@ -1882,7 +1902,8 @@ pub(super) fn validate_criteria(root: &Path, criteria: &[String]) -> Result<()> 
         }
         ensure!(
             find_id(&exports[family], criterion),
-            "unknown or retired criterion: {criterion}"
+            "unknown or retired criterion: {}",
+            crate::leaks::shown("criterion", criterion)
         );
     }
     Ok(())
@@ -2724,56 +2745,95 @@ pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Vec<(Stri
             .then_with(|| left.id.cmp(&right.id))
     });
     for evidence in entries {
-        let mut map: Vec<(String, String)> = vec![("id".into(), evidence.id.clone())];
-        if !evidence.aliases.is_empty() {
-            map.push(("aliases".into(), evidence.aliases.join(", ")));
-        }
-        map.push(("claim".into(), evidence.summary.clone()));
-        map.push(("result".into(), evidence.outcome.name().to_string()));
-        if !evidence.argv.is_empty() {
-            map.push(("command".into(), evidence.argv.join(" ")));
-        }
-        map.push(("revision".into(), evidence.snapshot.revision.clone()));
-        map.push(("environment".into(), evidence.environment.clone()));
-        if let Some(content) = &evidence.snapshot.content {
-            map.push(("content".into(), content.clone()));
-        }
-        if let Some(fingerprint) = &evidence.fingerprint {
-            map.push(("fingerprint".into(), fingerprint.clone()));
-        }
-        if let Some(raw_log) = &evidence.raw_log {
-            map.push(("raw_log".into(), raw_log.clone()));
-        }
-        if let Some(case) = evidence.cases.first() {
-            map.push(("case".into(), case.id.clone()));
-            map.push(("case_digest".into(), case.digest.clone()));
-        }
-        // #286: what the entry was verified against, and its stated limits.
-        if !evidence.criteria.is_empty() {
-            map.push(("criteria".into(), evidence.criteria.join(", ")));
-        }
-        if !evidence.requirements.is_empty() {
-            map.push(("requirements".into(), evidence.requirements.join(", ")));
-        }
-        if !evidence.limitations.is_empty() {
-            map.push(("limitations".into(), evidence.limitations.join("; ")));
-        }
-        if let Some(screenshot) = &evidence.screenshot {
-            map.push(("screenshot".into(), screenshot.clone()));
-        }
-        map.push((
-            "observed".into(),
-            iso_time(evidence.observed_at_unix_seconds),
-        ));
-        if let Some(duration) = evidence.duration_seconds {
-            map.push(("duration_seconds".into(), duration.to_string()));
-        }
-        if let Some(actor) = &evidence.actor {
-            map.push(("actor".into(), actor.display()));
-        }
-        receipts.push(map);
+        receipts.push(receipt(&evidence));
     }
     Ok(receipts)
+}
+
+/// The receipt evidence entry `evidence` gives (REQ-history-006).
+fn receipt(evidence: &Evidence) -> Vec<(String, String)> {
+    let mut map: Vec<(String, String)> = vec![("id".into(), evidence.id.clone())];
+    if !evidence.aliases.is_empty() {
+        map.push(("aliases".into(), evidence.aliases.join(", ")));
+    }
+    map.push(("claim".into(), evidence.summary.clone()));
+    map.push(("result".into(), evidence.outcome.name().to_string()));
+    if !evidence.argv.is_empty() {
+        map.push(("command".into(), evidence.argv.join(" ")));
+    }
+    map.push(("revision".into(), evidence.snapshot.revision.clone()));
+    map.push(("environment".into(), evidence.environment.clone()));
+    if let Some(content) = &evidence.snapshot.content {
+        map.push(("content".into(), content.clone()));
+    }
+    if let Some(fingerprint) = &evidence.fingerprint {
+        map.push(("fingerprint".into(), fingerprint.clone()));
+    }
+    if let Some(raw_log) = &evidence.raw_log {
+        map.push(("raw_log".into(), raw_log.clone()));
+    }
+    if let Some(case) = evidence.cases.first() {
+        map.push(("case".into(), case.id.clone()));
+        map.push(("case_digest".into(), case.digest.clone()));
+    }
+    // #286: what the entry was verified against, and its stated limits.
+    if !evidence.criteria.is_empty() {
+        map.push(("criteria".into(), evidence.criteria.join(", ")));
+    }
+    if !evidence.requirements.is_empty() {
+        map.push(("requirements".into(), evidence.requirements.join(", ")));
+    }
+    if !evidence.limitations.is_empty() {
+        map.push(("limitations".into(), evidence.limitations.join("; ")));
+    }
+    if let Some(screenshot) = &evidence.screenshot {
+        map.push(("screenshot".into(), screenshot.clone()));
+    }
+    map.push((
+        "observed".into(),
+        iso_time(evidence.observed_at_unix_seconds),
+    ));
+    if let Some(duration) = evidence.duration_seconds {
+        map.push(("duration_seconds".into(), duration.to_string()));
+    }
+    if let Some(actor) = &evidence.actor {
+        map.push(("actor".into(), actor.display()));
+    }
+    map
+}
+
+/// An evidence entry's ID, the file's name without `.md`, and the receipt it gives, or
+/// None when it cannot be read.
+pub(super) type EntryReceipt = (String, Option<Vec<(String, String)>>);
+
+/// Each evidence entry of session `session_id`'s folder by its ID, the file's name
+/// without `.md`, with the receipt it gives, or None when it cannot be read or parsed, as
+/// an empty or cut-off entry: the archive finish keeps such a file and names it, and the
+/// rest of `doctor` runs (REQ-history-012, #381).
+pub(super) fn entry_receipts(root: &Path, session_id: &str) -> Result<Vec<EntryReceipt>> {
+    let dir = evidence_dir(session_id);
+    let folder = local_path(root, &dir)?;
+    let Ok(entries) = fs::read_dir(&folder) else {
+        return Ok(vec![]);
+    };
+    let mut names: Vec<String> = entries
+        .filter_map(|entry| entry.ok())
+        .filter_map(|entry| entry.file_name().into_string().ok())
+        .filter(|name| name.ends_with(".md") && !is_os_metadata(name))
+        .collect();
+    names.sort();
+    Ok(names
+        .into_iter()
+        .map(|name| {
+            let relative = format!("{dir}/{name}");
+            let given = read_bounded_record(&folder.join(&name), markdown::RECORD_BOUND)
+                .ok()
+                .and_then(|text| markdown::parse(&relative, &text).ok())
+                .and_then(|record| Evidence::from_record(&record).ok())
+                .map(|evidence| receipt(&evidence));
+            (name.trim_end_matches(".md").to_string(), given)
+        })
+        .collect())
 }
 
 /// Move a finishing session's screenshots to the folder beside its story,

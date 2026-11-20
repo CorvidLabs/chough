@@ -3317,3 +3317,354 @@ fn at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_refer
         "the unreferenced run {newer} counted as the latest: {action}"
     );
 }
+
+/// REQ-cli-021, REQ-history-006 (#371), TC-history-next-names-finishing-the-archive:
+/// after the move into done, while the archived session's folder still holds files,
+/// `chough next` names committing the session folder, the story and the journal post,
+/// then `chough doctor --fix`; after the commit it names `chough doctor --fix`; once the
+/// folder is gone it names only `chough session new <key>`. In every state it says there
+/// is no open session and names `chough session new <key>` (REQ-history-006).
+#[test]
+fn next_names_finishing_the_archive_until_the_folder_is_gone() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let id = fixture.active_id();
+    for _ in 0..5 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    fixture.commit("alpha at accept");
+    fixture.ok(&["stage", "advance", "--json"]);
+    let folder = format!(".chough/sessions/{id}/");
+    let story = format!(".chough/archive/sessions/{id}.md");
+    assert!(
+        fixture.exists(&folder),
+        "the move into done removed the folder"
+    );
+    let posts: Vec<String> = std::fs::read_dir(fixture.root().join("knowledge/journal"))
+        .map(|entries| {
+            entries
+                .flatten()
+                .map(|entry| entry.file_name().to_string_lossy().into_owned())
+                .filter(|name| name.ends_with(".md"))
+                .collect()
+        })
+        .unwrap_or_default();
+    assert!(
+        !posts.is_empty(),
+        "the move into done wrote no journal post"
+    );
+    let shown = text(&fixture, &["next"]);
+    assert!(
+        shown.contains(&format!("Finish the archive of session {id}")),
+        "{shown}"
+    );
+    assert!(shown.contains(&folder) && shown.contains(&story), "{shown}");
+    for post in &posts {
+        assert!(shown.contains(post.as_str()), "{post}: {shown}");
+    }
+    assert!(
+        shown.contains("git commit") && shown.contains("chough doctor --fix"),
+        "{shown}"
+    );
+    assert!(
+        shown.contains("no open session") && shown.contains("chough session new <key>"),
+        "{shown}"
+    );
+
+    fixture.commit("the archive");
+    let shown = text(&fixture, &["next"]);
+    assert!(
+        shown.contains(&format!(
+            "Finish the archive of session {id} with chough doctor --fix"
+        )),
+        "{shown}"
+    );
+    assert!(shown.contains("Run: chough doctor --fix"), "{shown}");
+    assert!(
+        shown.contains("no open session") && shown.contains("chough session new <key>"),
+        "{shown}"
+    );
+
+    let _ = fixture.run(&["doctor", "--fix"]);
+    assert!(!fixture.exists(&folder));
+    let shown = text(&fixture, &["next"]);
+    assert!(
+        shown.contains("no open session") && shown.contains("chough session new <key>"),
+        "{shown}"
+    );
+    assert!(!shown.contains("doctor --fix"), "{shown}");
+}
+
+/// The `alpha` session moved into done with its files left uncommitted, so its folder
+/// stays; returns its ID.
+fn archived_and_left(fixture: &Fixture) -> String {
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let id = fixture.active_id();
+    for _ in 0..5 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    fixture.commit("alpha at accept");
+    fixture.ok(&["stage", "advance", "--json"]);
+    assert!(fixture.exists(&format!(".chough/sessions/{id}")));
+    id
+}
+
+/// REQ-cli-021 (#371, fable-lead's review of D1), TC-cli-next-names-the-archive-with-a-session-open:
+/// with another session open while an archived session's folder still holds files, `next`
+/// names finishing the archive on the line right below the objective, and in JSON as
+/// `unfinished_archive`; the next valid action stays the open session's. Once the folder
+/// is gone the line and the field are gone.
+#[test]
+fn next_with_a_session_open_names_an_unfinished_archive_first() {
+    let fixture = Fixture::new();
+    let id = archived_and_left(&fixture);
+    fixture.ok(&["session", "new", "beta", "--objective", "Ship beta"]);
+    let shown = text(&fixture, &["next"]);
+    let lines: Vec<&str> = shown.lines().collect();
+    assert_eq!(lines[0], "Objective: Ship beta", "{shown}");
+    let archive = lines
+        .iter()
+        .position(|line| line.starts_with(&format!("Archive: Finish the archive of session {id}")))
+        .unwrap_or_else(|| panic!("{shown}"));
+    let stage = lines
+        .iter()
+        .position(|line| line.starts_with("Stage: "))
+        .unwrap();
+    assert!(archive < stage, "{shown}");
+    assert!(lines[archive].contains("Run: git add -- "), "{shown}");
+    let view = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        view["unfinished_archive"]["session"],
+        id.as_str(),
+        "{view:#}"
+    );
+    assert_eq!(view["unfinished_archive"]["others"], 0, "{view:#}");
+    let status = fixture.ok(&["status", "--json"]);
+    assert_eq!(
+        view["next_valid_action"]["command"], status["summary"]["next_valid_action"]["command"],
+        "{view:#}\n{status:#}"
+    );
+    assert!(
+        !view["next_valid_action"]["action"]
+            .as_str()
+            .unwrap_or_default()
+            .contains("Finish the archive"),
+        "{view:#}"
+    );
+
+    fixture.commit("the archive and beta");
+    let _ = fixture.run(&["doctor", "--fix"]);
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+    let shown = text(&fixture, &["next"]);
+    assert!(!shown.contains("Archive: "), "{shown}");
+    let view = fixture.ok(&["next", "--json"]);
+    assert_eq!(view["unfinished_archive"], Value::Null, "{view:#}");
+}
+
+/// REQ-cli-021 (#371, fable-lead's review of D1), TC-cli-the-finish-command-quotes-each-path:
+/// `next` reads Git's status with `-z`, so a journal post whose name Git would quote is
+/// named, and its Run command quotes each path for the shell and leaves macOS metadata
+/// out: run as given, it commits the folder, the story and the post, and not a
+/// `.DS_Store` in the folder.
+#[cfg(unix)]
+#[test]
+fn the_finish_command_quotes_each_path_and_leaves_metadata_out() {
+    let fixture = Fixture::new();
+    let id = archived_and_left(&fixture);
+    let journal = fixture.root().join("knowledge/journal");
+    let post = std::fs::read_dir(&journal)
+        .unwrap()
+        .flatten()
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .find(|name| name.ends_with(".md"))
+        .unwrap();
+    let renamed = format!("knowledge/journal/café {post}");
+    std::fs::rename(journal.join(&post), fixture.root().join(&renamed)).unwrap();
+    fixture.write(&format!(".chough/sessions/{id}/.DS_Store"), "finder\n");
+    let view = fixture.ok(&["next", "--json"]);
+    let command = view["next_valid_action"]["command"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    assert!(command.contains(&format!("'{renamed}'")), "{command}");
+    let commit = command
+        .strip_suffix(" && chough doctor --fix")
+        .unwrap_or_else(|| panic!("{command}"));
+    let output = std::process::Command::new("sh")
+        .current_dir(fixture.root())
+        .env("GIT_AUTHOR_NAME", "Test")
+        .env("GIT_AUTHOR_EMAIL", "test@example.invalid")
+        .env("GIT_COMMITTER_NAME", "Test")
+        .env("GIT_COMMITTER_EMAIL", "test@example.invalid")
+        .args(["-c", commit])
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{commit}: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let status = std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args(["status", "--porcelain", "-z", "--untracked-files=all"])
+        .output()
+        .unwrap();
+    let left = String::from_utf8_lossy(&status.stdout).into_owned();
+    let left: Vec<&str> = left.split('\0').filter(|line| !line.is_empty()).collect();
+    assert_eq!(
+        left,
+        vec![format!("?? .chough/sessions/{id}/.DS_Store")],
+        "{left:?}"
+    );
+    let shown = text(&fixture, &["next"]);
+    assert!(
+        shown.contains(&format!(
+            "Finish the archive of session {id} with chough doctor --fix"
+        )),
+        "{shown}"
+    );
+}
+
+/// Run `command` exactly as a person pastes what follows `Run:`, in the fixture's root,
+/// with this build's `chough` on PATH, the fixture's user configuration and a committer.
+#[cfg(unix)]
+fn run_printed(fixture: &Fixture, command: &str) -> std::process::Output {
+    let mut paths = vec![
+        std::path::Path::new(env!("CARGO_BIN_EXE_chough"))
+            .parent()
+            .unwrap()
+            .to_path_buf(),
+    ];
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    let mut shell = std::process::Command::new("sh");
+    shell
+        .current_dir(fixture.root())
+        .env("PATH", std::env::join_paths(paths).unwrap())
+        .env("XDG_CONFIG_HOME", fixture.root().join(common::USER_CONFIG))
+        .env("GIT_AUTHOR_NAME", "Test")
+        .env("GIT_AUTHOR_EMAIL", "test@example.invalid")
+        .env("GIT_COMMITTER_NAME", "Test")
+        .env("GIT_COMMITTER_EMAIL", "test@example.invalid")
+        .env("GIT_CONFIG_COUNT", "1")
+        .env("GIT_CONFIG_KEY_0", "commit.gpgsign")
+        .env("GIT_CONFIG_VALUE_0", "false");
+    for name in common::ACTOR_VARIABLES {
+        shell.env_remove(name);
+    }
+    shell.args(["-c", command]).output().unwrap()
+}
+
+/// The files the last commit holds.
+#[cfg(unix)]
+fn last_commit(fixture: &Fixture) -> (String, Vec<String>) {
+    let output = std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args(["log", "-1", "--name-only", "--format=%s"])
+        .output()
+        .unwrap();
+    let text = String::from_utf8_lossy(&output.stdout).into_owned();
+    let mut lines = text.lines().filter(|line| !line.is_empty());
+    let subject = lines.next().unwrap_or_default().to_string();
+    (subject, lines.map(str::to_string).collect())
+}
+
+/// REQ-cli-021 (#371, tester2's run of D1 on real repositories): with other archived
+/// folders waiting and a session open, what follows `Run:` on the Archive line is the
+/// command alone, the count of the others before it, and run as printed it commits the
+/// first archive's files and story and finishes it.
+#[cfg(unix)]
+#[test]
+fn the_archive_line_runs_as_printed_with_other_archives_waiting() {
+    let fixture = Fixture::new();
+    let first = archived_and_left(&fixture);
+    // A second archive, moved into done with nothing committed, so neither folder's
+    // files are committed when the line is read.
+    fixture.ok(&["session", "new", "beta", "--objective", "Ship beta"]);
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    fixture.ok(&["session", "new", "gamma", "--objective", "Ship gamma"]);
+    let shown = text(&fixture, &["next"]);
+    let line = shown
+        .lines()
+        .find(|line| line.starts_with("Archive: "))
+        .unwrap_or_else(|| panic!("{shown}"));
+    let (before, command) = line.split_once(" Run: ").unwrap();
+    assert!(
+        before.contains("1 more archived session folder(s) wait too"),
+        "{line}"
+    );
+    assert!(
+        command.starts_with("git add -- ") && command.ends_with("chough doctor --fix"),
+        "{line}"
+    );
+    let output = run_printed(&fixture, command);
+    let said = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        !said.contains("syntax error")
+            && !said.contains("not found")
+            && !said.contains("unexpected"),
+        "{command}: {said}"
+    );
+    let (_, files) = last_commit(&fixture);
+    let story = format!(".chough/archive/sessions/{first}.md");
+    assert!(files.contains(&story), "{files:?}");
+    assert!(
+        !fixture.exists(&format!(".chough/sessions/{first}")),
+        "{said}"
+    );
+}
+
+/// REQ-cli-021 (#371, tester2 on Apple Git): the printed command stages the archived
+/// story with a journal post and without one, so the commit holds it and the finish
+/// leaves it tracked; the message names the post only when there is one.
+#[cfg(unix)]
+#[test]
+fn the_printed_command_commits_the_story_with_or_without_a_journal_post() {
+    for with_post in [true, false] {
+        let fixture = Fixture::new();
+        let id = archived_and_left(&fixture);
+        if !with_post {
+            for entry in std::fs::read_dir(fixture.root().join("knowledge/journal")).unwrap() {
+                let path = entry.unwrap().path();
+                if path.extension().is_some_and(|extension| extension == "md") {
+                    std::fs::remove_file(path).unwrap();
+                }
+            }
+        }
+        fixture.write(&format!(".chough/sessions/{id}/.DS_Store"), "finder\n");
+        let view = fixture.ok(&["next", "--json"]);
+        let command = view["next_valid_action"]["command"]
+            .as_str()
+            .unwrap()
+            .to_string();
+        assert!(!command.contains("exclude"), "{command}");
+        let output = run_printed(&fixture, &command);
+        // The fixture installs no merge drivers, so doctor still reports `merge_drivers`
+        // after the finish; the commit and the finish are what this checks.
+        let report = String::from_utf8_lossy(&output.stdout);
+        assert!(
+            report.contains("\"kind\": \"unfinished_archive\"")
+                && report.contains("\"status\": \"fixed\""),
+            "{command}: {report}{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let (subject, files) = last_commit(&fixture);
+        let story = format!(".chough/archive/sessions/{id}.md");
+        assert!(files.contains(&story), "with_post {with_post}: {files:?}");
+        assert_eq!(subject.contains("journal post"), with_post, "{subject}");
+        assert!(
+            !files.iter().any(|file| file.ends_with(".DS_Store")),
+            "{files:?}"
+        );
+        let tracked = std::process::Command::new("git")
+            .current_dir(fixture.root())
+            .args(["ls-files", "--error-unmatch", &story])
+            .output()
+            .unwrap();
+        assert!(tracked.status.success(), "the story is not tracked");
+        assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+    }
+}

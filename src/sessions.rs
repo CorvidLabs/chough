@@ -307,7 +307,7 @@ pub(super) fn resolve_any(root: &Path, name: &str) -> Result<String> {
         Ok(id) => return Ok(session_file(&id)),
         Err(error) => {
             let message = error.to_string();
-            if message != format!("no session {name}") && !message.ends_with("is archived") {
+            if !message.starts_with("no session ") && !message.ends_with("is archived") {
                 return Err(error);
             }
         }
@@ -332,20 +332,7 @@ pub(super) fn resolve_any(root: &Path, name: &str) -> Result<String> {
 }
 
 pub(super) fn resolve_open(root: &Path, name: &str) -> Result<String> {
-    let ids = open_ids(root)?;
-    if ids.iter().any(|id| id == name) {
-        return Ok(name.to_string());
-    }
-    let mut found: Vec<String> = vec![];
-    for id in &ids {
-        let aliases = read_at(root, &session_file(id))
-            .map(|session| session.meta.aliases)
-            .unwrap_or_default();
-        let bare = id.get(11..).unwrap_or_default();
-        if aliases.iter().any(|alias| alias == name) || bare == name {
-            found.push(id.clone());
-        }
-    }
+    let found = open_matches(root, name)?;
     match found.as_slice() {
         [id] => Ok(id.clone()),
         [] => {
@@ -357,16 +344,40 @@ pub(super) fn resolve_open(root: &Path, name: &str) -> Result<String> {
                     || id.get(11..) == Some(name)
                     || aliases.iter().any(|alias| alias == name)
                 {
-                    bail!("session {name} is archived");
+                    // REQ-records-006 (#367): a name is shown only when clean.
+                    bail!(
+                        "session {} is archived",
+                        crate::leaks::shown("session name", name)
+                    );
                 }
             }
-            bail!("no session {name}")
+            bail!("no session {}", crate::leaks::shown("session name", name))
         }
         _ => bail!(
             "{name} names more than one open session ({}); use the full ID",
             found.join(", ")
         ),
     }
+}
+
+/// The open sessions `name` names: itself when it is an open session's ID, otherwise
+/// each open session that has it as an alias or bare slug.
+pub(super) fn open_matches(root: &Path, name: &str) -> Result<Vec<String>> {
+    let ids = open_ids(root)?;
+    if ids.iter().any(|id| id == name) {
+        return Ok(vec![name.to_string()]);
+    }
+    let mut found: Vec<String> = vec![];
+    for id in &ids {
+        let aliases = read_at(root, &session_file(id))
+            .map(|session| session.meta.aliases)
+            .unwrap_or_default();
+        let bare = id.get(11..).unwrap_or_default();
+        if aliases.iter().any(|alias| alias == name) || bare == name {
+            found.push(id.clone());
+        }
+    }
+    Ok(found)
 }
 
 pub(super) fn pointer(root: &Path) -> Result<Option<String>> {
@@ -722,10 +733,14 @@ pub(super) fn create(
     let mut session = checkpoint::new_checkpoint(objective, intent_scope, modules);
     session.meta.aliases = vec![key.to_string()];
     crate::stage::log_start(root, &mut session, &start)?;
+    // How many leaks `--redact` replaced, said once the session is written.
+    let redacted = std::cell::Cell::new(0);
     let render = |id: &str| -> Result<String> {
         let mut draft = session.clone();
         draft.meta.id = id.to_string();
-        Ok(checkpoint::render_checkpoint(&draft)?.render())
+        let (record, count) = checkpoint::render_counted(&draft)?;
+        redacted.set(count);
+        Ok(record.render())
     };
     let id = if local_path(root, &archive_file(&name))?.exists() {
         // An archived session's ID is never reused: one suffix is drawn, and a second
@@ -753,6 +768,12 @@ pub(super) fn create(
             render,
         )?
     };
+    if crate::leaks::redacting() && redacted.get() > 0 {
+        eprintln!(
+            "chough: redacted {} value(s) in the session record (--redact)",
+            redacted.get()
+        );
+    }
     point(root, &id)?;
     Ok(id)
 }
@@ -833,7 +854,24 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
         SessionCommand::Close { key, reason } => print_json(&close_session(root, &key, &reason)?),
         SessionCommand::Shelve { key } => {
             lock_project(root)?;
-            shelve(root, &key)
+            // REQ-cli-037 (#372): a session folder's name is that folder; any other key
+            // resolves as `session use` resolves it, by alias or bare slug.
+            let folder =
+                if valid_change_id(&key) && local_path(root, &format!("{DIR}/{key}"))?.is_dir() {
+                    key
+                } else {
+                    // A key that names several sessions is refused as `session use`
+                    // refuses it; one that names none falls through to the folder check.
+                    match open_matches(root, &key)?.as_slice() {
+                        [id] => id.clone(),
+                        [] => key,
+                        // Several: refused with `session use`'s own message. Should the two
+                        // reads ever disagree, the session it resolves is shelved, never a
+                        // panic.
+                        _ => resolve_open(root, &key)?,
+                    }
+                };
+            shelve(root, &folder)
         }
     }
 }
@@ -890,7 +928,7 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     // line links its file and becomes its receipt line below, never a bare ID beside it.
     let mut linked = session.clone();
     linked.evidence_links = checkpoint::evidence_links(root, &linked);
-    let mut record = checkpoint::render_checkpoint(&linked)?;
+    let (mut record, redacted) = checkpoint::render_counted(&linked)?;
     // REQ-history-006 (#344): when the objective changed after the Goal was filled, the
     // story says so in one line after the Goal paragraph; nothing is rewritten.
     let objective = session
@@ -960,6 +998,11 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
         written == text,
         "{story} did not read back as written; nothing was removed"
     );
+    // REQ-records-006: under `--redact`, the count of what the story's write replaced,
+    // once the story is written, as `session close` over a stored leak needs.
+    if crate::leaks::redacting() && redacted > 0 {
+        eprintln!("chough: redacted {redacted} value(s) in the archived story {story} (--redact)");
+    }
     let mut kept = crate::evidence::move_screenshots_at_finish(root, id)?;
     // A screenshot that is not committed yet is kept by both steps; list it once.
     for file in remove_committed(root, &format!("{DIR}/{id}"))? {
@@ -1167,24 +1210,277 @@ pub(super) fn unfinished_archives(root: &Path) -> Result<Vec<String>> {
     Ok(ids)
 }
 
-/// The files of archived session `id`'s folder that are not committed at HEAD as they are.
-pub(super) fn uncommitted_files(root: &Path, id: &str) -> Result<Vec<String>> {
+/// The files of archived session `id`'s folder that are not committed at HEAD as they
+/// are, leaving out macOS metadata, which the archive finish removes as it is (#377), and
+/// the entries the story does not hold, which it keeps (#381).
+pub(super) fn uncommitted_files(root: &Path, id: &str, unheld: &[String]) -> Result<Vec<String>> {
     let mut files = vec![];
     collect_files(root, &format!("{DIR}/{id}"), &mut files)?;
     Ok(files
         .into_iter()
+        .filter(|file| !os_metadata(file))
         .filter(|file| !committed_at_head(root, file))
+        // An entry the story does not hold is kept, but one Git does not track yet is
+        // committed first, so its printed way out (`git mv`, `git rm`) runs as printed
+        // (#381, rule 3).
+        .filter(|file| !unheld.contains(file) || !tracked_by_git(root, file))
         .collect())
 }
 
-/// Remove an archived session's folder, each file only when committed at HEAD; returns
-/// the files kept (REQ-records-012).
-pub(super) fn remove_archived_folder(root: &Path, id: &str) -> Result<Vec<String>> {
+/// The files of archived session `id`'s folder that its story does not hold, which the
+/// archive finish keeps so no work is lost (REQ-history-012, #381): each evidence entry,
+/// with the files beside it under its name, unless one of the story's receipts has its
+/// ID and equals the receipt it gives now, and each entry of `agent/inbox/`, unfolded
+/// while it is there. Without a story nothing is held.
+pub(super) fn unheld_files(root: &Path, id: &str) -> Result<Vec<String>> {
+    let folder = format!("{DIR}/{id}");
+    if !local_path(root, &folder)?.is_dir() {
+        return Ok(vec![]);
+    }
+    let story = archive_file(id);
+    let held: Vec<Vec<(String, String)>> = match local_path(root, &story) {
+        Ok(path) if path.is_file() => {
+            // Named by its path in the project, never the absolute path the reader gives.
+            let text = read_bounded_record(&path, RecordKind::Story.bound()).map_err(|_| {
+                anyhow::anyhow!(
+                    "the story {story} cannot be read within its bound of {} bytes",
+                    RecordKind::Story.bound()
+                )
+            })?;
+            crate::markdown::parse(&story, &text)?.story_receipts(&story)?
+        }
+        _ => vec![],
+    };
+    let mut unheld_ids = vec![];
+    for (name, receipt) in crate::evidence::entry_receipts(root, id)? {
+        // An entry that cannot be read is not held: the finish keeps it and names it.
+        let Some(receipt) = receipt else {
+            unheld_ids.push(name);
+            continue;
+        };
+        let entry = receipt
+            .iter()
+            .find(|(key, _)| key == "id")
+            .map(|(_, value)| value.clone())
+            .unwrap_or_default();
+        // Held when a story receipt has the entry's ID and agrees with the receipt the
+        // entry gives now in every field it holds, so a story an earlier release wrote,
+        // whose receipts hold fewer fields, still holds its entries (REQ-history-012).
+        let holds = |story: &Vec<(String, String)>| {
+            story
+                .iter()
+                .any(|(key, value)| key == "id" && *value == entry)
+                && story
+                    .iter()
+                    .all(|field| receipt.iter().any(|given| given == field))
+        };
+        // Kept by the file that was read, which may be named other than its ID (renamed,
+        // or its `id` edited), and by the ID, which names the files beside it (#381).
+        if !held.iter().any(holds) {
+            unheld_ids.push(name);
+            unheld_ids.push(entry);
+        }
+    }
+    let mut files = vec![];
+    collect_files(root, &format!("{folder}/evidence"), &mut files)?;
+    let mut unheld: Vec<String> = files
+        .into_iter()
+        .filter(|file| {
+            // A file belongs to an entry when its name is the entry's name or ID and then
+            // a dot, so a name holding a dot of its own is kept too; over-keeping a sibling
+            // is the safe side (corvid-agent's review of #414).
+            let name = file.rsplit('/').next().unwrap_or_default();
+            !os_metadata(file)
+                && unheld_ids.iter().any(|entry| {
+                    name.strip_prefix(entry.as_str())
+                        .is_some_and(|rest| rest.starts_with('.'))
+                })
+        })
+        .collect();
+    // Every file in the inbox, whatever its name: an unfolded entry renamed with a dot or
+    // a capital letter is someone's work too (#381). What `inbox fold` moved into
+    // `folded/` is held by the session, and goes with the folder.
+    let mut inbox = vec![];
+    collect_files(root, &inbox_dir(id), &mut inbox)?;
+    let folded = format!("{}/folded/", inbox_dir(id));
+    unheld.extend(
+        inbox
+            .into_iter()
+            .filter(|file| !os_metadata(file) && !file.starts_with(&folded)),
+    );
+    unheld.sort();
+    Ok(unheld)
+}
+
+/// What a person commits to finish archived session `id`'s archive (REQ-cli-021, #371):
+/// each file of its folder, its story and its journal post that Git does not hold as it is,
+/// read with one `git status`. A post is the session's when its `record` is the story.
+/// None when Git cannot be read, as in a project that is not a repository, where no
+/// commit can finish it.
+pub(super) fn archive_to_commit(root: &Path, id: &str) -> Option<Vec<String>> {
+    let folder = format!("{DIR}/{id}");
+    let story = archive_file(id);
+    let journal = crate::prefs::effective(root, "library-dir")
+        .map(|(dir, _)| format!("{}/journal", dir.trim_end_matches('/')))
+        .unwrap_or_else(|_| "knowledge/journal".into());
+    let Ok(output) = crate::records::run_owned(
+        std::process::Command::new("git")
+            .arg("-C")
+            .arg(root)
+            .args(["status", "--porcelain", "-z", "--untracked-files=all", "--"])
+            .args([&folder, &story, &journal]),
+        None,
+    ) else {
+        return None;
+    };
+    if !output.status.success() {
+        return None;
+    }
+    // With `-z` each path is given as it is, never quoted or escaped, and a rename or a
+    // copy gives its source in the field after it.
+    let listed = String::from_utf8_lossy(&output.stdout).into_owned();
+    let mut fields = listed.split('\0').filter(|field| !field.is_empty());
+    let mut changed = vec![];
+    while let Some(field) = fields.next() {
+        let (Some(status), Some(path)) = (field.get(..2), field.get(3..)) else {
+            continue;
+        };
+        changed.push(path.to_string());
+        if (status.contains('R') || status.contains('C'))
+            && let Some(source) = fields.next()
+        {
+            changed.push(source.to_string());
+        }
+    }
+    let mut paths = vec![];
+    for path in &changed {
+        let path = path.as_str();
+        // macOS metadata needs no commit: the finish removes it as it is (#377).
+        if os_metadata(path) {
+            continue;
+        }
+        // Each file by name, never the folder: a pathspec for the folder would also take
+        // its macOS metadata, which needs no commit (#377).
+        let post = path.starts_with(&format!("{journal}/"))
+            && local_path(root, path)
+                .ok()
+                .and_then(|full| fs::read_to_string(full).ok())
+                .and_then(|text| crate::markdown::parse(path, &text).ok())
+                .is_some_and(|post| post.scalar("record") == Some(story.as_str()));
+        if !(path.starts_with(&format!("{folder}/")) || path == story || post) {
+            continue;
+        }
+        let wanted = path.to_string();
+        if !paths.contains(&wanted) {
+            paths.push(wanted);
+        }
+    }
+    Some(paths)
+}
+
+/// The story archived session `id`'s finish waits on (#389, Leif's option B), with
+/// whether Git ignores it, while HEAD does not hold it as it is; None once it does, or
+/// when there is no story. The journal post never holds the finish, since the finish
+/// never removes it.
+pub(super) fn held_story(root: &Path, id: &str) -> Option<(String, bool)> {
+    let story = archive_file(id);
+    if !local_path(root, &story).is_ok_and(|path| path.is_file()) || committed_at_head(root, &story)
+    {
+        return None;
+    }
+    let ignored = ignored_by_git(root, &story);
+    Some((story, ignored))
+}
+
+/// `text` as one single-quoted POSIX shell word.
+pub(super) fn shell_quoted(text: &str) -> String {
+    format!("'{}'", text.replace('\'', "'\\''"))
+}
+
+/// The command that commits `plain` and, with `-f` since Git ignores them, `forced`, as
+/// `doctor` and `next` both print it, each path quoted (REQ-cli-021, #371, #389).
+pub(super) fn commit_command(plain: &[String], forced: &[String], message: &str) -> String {
+    let quoted = |files: &[String]| {
+        files
+            .iter()
+            .map(|file| shell_quoted(file))
+            .collect::<Vec<_>>()
+            .join(" ")
+    };
+    let mut adds = vec![];
+    if !plain.is_empty() {
+        adds.push(format!("git add -- {}", quoted(plain)));
+    }
+    if !forced.is_empty() {
+        adds.push(format!("git add -f -- {}", quoted(forced)));
+    }
+    format!(
+        "{} && git commit -q -m {}",
+        adds.join(" && "),
+        shell_quoted(message)
+    )
+}
+
+/// Whether Git can read the project's HEAD commit.
+pub(super) fn head_readable(root: &Path) -> bool {
+    crate::records::run_owned(
+        std::process::Command::new("git").arg("-C").arg(root).args([
+            "rev-parse",
+            "--verify",
+            "--quiet",
+            "HEAD",
+        ]),
+        None,
+    )
+    .is_ok_and(|output| output.status.success())
+}
+
+/// Whether Git tracks the file at `relative`.
+pub(super) fn tracked_by_git(root: &Path, relative: &str) -> bool {
+    crate::records::run_owned(
+        std::process::Command::new("git").arg("-C").arg(root).args([
+            "ls-files",
+            "--error-unmatch",
+            "--",
+            relative,
+        ]),
+        None,
+    )
+    .is_ok_and(|output| output.status.success())
+}
+
+/// Whether Git ignores the file at `relative`.
+pub(super) fn ignored_by_git(root: &Path, relative: &str) -> bool {
+    crate::records::run_owned(
+        std::process::Command::new("git").arg("-C").arg(root).args([
+            "check-ignore",
+            "-q",
+            "--",
+            relative,
+        ]),
+        None,
+    )
+    .is_ok_and(|output| output.status.success())
+}
+
+/// Whether the file at `relative` is macOS metadata (REQ-cli-068).
+fn os_metadata(relative: &str) -> bool {
+    crate::evidence::is_os_metadata(relative.rsplit('/').next().unwrap_or_default())
+}
+
+/// Remove an archived session's folder, each file only when committed at HEAD, keeping
+/// the entries its story does not hold (#381) and removing macOS metadata as it is
+/// (#377); returns the files kept (REQ-records-012).
+pub(super) fn remove_archived_folder(
+    root: &Path,
+    id: &str,
+    unheld: &[String],
+) -> Result<Vec<String>> {
     ensure!(
         local_path(root, &archive_file(id))?.is_file(),
         "session {id} has no story; it is not archived"
     );
-    remove_committed(root, &format!("{DIR}/{id}"))
+    remove_committed_except(root, &format!("{DIR}/{id}"), unheld)
 }
 
 /// Archive open session `id` as finished, for `chough doctor --fix`.
@@ -1196,11 +1492,20 @@ pub(super) fn archive_open(root: &Path, id: &str) -> Result<()> {
 /// Remove each file under `folder` whose exact bytes are committed at HEAD, then the
 /// folders left empty; return the files kept (REQ-records-012).
 fn remove_committed(root: &Path, folder: &str) -> Result<Vec<String>> {
+    remove_committed_except(root, folder, &[])
+}
+
+/// As [`remove_committed`], keeping each file `keep` names, and removing macOS metadata
+/// whether committed or not, since it holds no work and would keep the folder forever
+/// (REQ-history-012, #377).
+fn remove_committed_except(root: &Path, folder: &str, keep: &[String]) -> Result<Vec<String>> {
     let mut files = vec![];
     collect_files(root, folder, &mut files)?;
     let mut kept = vec![];
     for file in files {
-        if committed_at_head(root, &file) {
+        if keep.contains(&file) {
+            kept.push(file);
+        } else if os_metadata(&file) || committed_at_head(root, &file) {
             fs::remove_file(local_path(root, &file)?)
                 .with_context(|| format!("removing {file}"))?;
         } else {
@@ -1371,7 +1676,11 @@ fn shelve(root: &Path, key: &str) -> Result<()> {
     ensure_key(key)?;
     let source = format!("{DIR}/{key}");
     let from = local_path(root, &source)?;
-    ensure!(from.is_dir(), "no session folder {source} to shelve");
+    ensure!(
+        from.is_dir(),
+        "no session folder {} to shelve",
+        crate::leaks::shown("session folder", &source)
+    );
     let target = format!("{SHELVED}/{key}");
     let note = format!("{target}/{SHELVED_NOTE}");
     ensure!(
@@ -1499,6 +1808,28 @@ fn pending(root: &Path, key: &str) -> Result<Vec<(String, Entry)>> {
     Ok(entries)
 }
 
+/// The `from`, kind and text of inbox file `file` when `chough inbox add` takes them again
+/// as they are, read and checked as `inbox fold` reads an entry; None for any other file a
+/// person left in an inbox, whose only way out is to drop it (#381, rule 3).
+pub(super) fn entry_to_add_again(
+    root: &Path,
+    file: &str,
+) -> Option<(String, &'static str, String)> {
+    let content = read_bounded_record(&local_path(root, file).ok()?, INBOX_LIMIT).ok()?;
+    let record = crate::markdown::parse(file, &content).ok()?;
+    let field = |name: &str| record.scalar(name).unwrap_or_default().to_string();
+    let kind = match field("kind").as_str() {
+        "observation" => Kind::Observation,
+        "decision" => Kind::Decision,
+        "completed" => Kind::Completed,
+        "question" => Kind::Question,
+        _ => return None,
+    };
+    let (from, text) = (field("from"), field("value"));
+    validate_entry(&from, kind, &text).ok()?;
+    Some((from, kind.name(), text))
+}
+
 /// The Markdown record of a new inbox entry named `name`.
 pub(super) fn render_entry(
     name: &str,
@@ -1554,8 +1885,12 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             // entries, so taking it here means the entry is either seen by that archive
             // (the session stays open) or refused below; never stranded (#98).
             lock_project(root)?;
-            let session = resolve_open(root, &session)
-                .map_err(|_| anyhow::anyhow!("no open session {session}"))?;
+            let session = resolve_open(root, &session).map_err(|_| {
+                anyhow::anyhow!(
+                    "no open session {}",
+                    crate::leaks::shown("session name", &session)
+                )
+            })?;
             validate_entry(&from, kind, &text)?;
             // REQ-records-006: an inbox entry is committed with the session; its values
             // pass the leak guard, refused or redacted under --redact.
@@ -1609,7 +1944,12 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             print_json(&added)
         }
         InboxCommand::List => {
-            let key = active(root)?;
+            // REQ-history-009 (#393): the pinned session, as `inbox fold` resolves it.
+            let relative = checkpoint_path(root)?;
+            let key = match id_of(&relative) {
+                Some(key) => key,
+                None => active(root)?,
+            };
             let mut entries = vec![];
             for (_, entry) in pending(root, &key)? {
                 let recorded = (entry.kind == Kind::Observation.name())

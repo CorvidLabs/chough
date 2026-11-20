@@ -1,6 +1,6 @@
 ---
 module: history
-version: 30
+version: 33
 status: active
 files:
   - src/history.rs
@@ -83,14 +83,6 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | Version | Date | Changes |
 |---------|------|---------|
 | 1 | 2026-11-03 | Split from cli with REQ-cli-018 and REQ-cli-025 to REQ-cli-027 renamed REQ-history-001 to REQ-history-004, wording unchanged |
-| 2 | 2026-11-03 | split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to: Split the cli spec: move the retention and transition-history requirements REQ-cli-018 and REQ-cli-025 to REQ-cli-027 to a new history module as REQ-history-001 to REQ-history-004 with wording unchanged and a documented ID mapping, so the cli requirements companion has headroom under the 65536-byte record bound |
-| 3 | 2026-11-04 | record-a-stage-gate-that-already-happened-with-its-original-time-quoted-evidence-and-a-backfilled-flag-that-timing: Record a stage gate that already happened with its original time, quoted evidence and a backfilled flag that timing reports separately (DRIVE-5) |
-| 4 | 2026-11-04 | keep-one-session-per-objective-or-native-change-under-chough-sessions-with-append-only-transitions-an-active-pointer: Keep one session per objective or native change under .chough/sessions with append-only transitions, an active pointer, automatic archiving and an append-only subagent inbox (DRIVE-3) |
-| 5 | 2026-11-04 | show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no: Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue 84) |
-| 6 | 2026-11-04 | keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy: Keep the checkpoint writer lock in the project so every temp directory shares it, name the file being written when busy, and specify serialized writers and the local state directory (issue 83) |
-| 7 | 2026-11-04 | remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that: Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82) |
-| 8 | 2026-11-04 | lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention: Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98) |
-| 9 | 2026-11-06 | size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each: Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125) |
 | 10 | 2026-11-06 | keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29: Keep the five most recent archived sessions and roll older ones into the knowledge vault (KNOW-29) |
 | 11 | 2026-11-06 | record-relayed-human-decisions-at-gates-as-claims-not-authentication-123-d7: Record relayed human decisions at gates as claims, not authentication (123, D7) |
 | 12 | 2026-11-06 | keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143: Keep the archived session that holds the legacy history anchor out of the roll-up (143) |
@@ -102,6 +94,7 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 17 | 2026-11-07 | chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21: chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20) |
 | 18 | 2026-11-07 | make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: Make evidence prune --apply recheck protections and restore partial removals (65) |
 | 19 | 2026-11-07 | correct-prune-capture-authority-and-unsafe-rollback-for-pr-197: Correct prune capture authority and unsafe rollback for PR 197 |
+| 2 | 2026-11-03 | split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to: Split the cli spec: move the retention and transition-history requirements REQ-cli-018 and REQ-cli-025 to REQ-cli-027 to a new history module as REQ-history-001 to REQ-history-004 with wording unchanged and a documented ID mapping, so the cli requirements companion has headroom under the 65536-byte record bound |
 | 20 | 2026-11-10 | keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181: Keep finished sessions with open human gates open on session use/new, naming doctor's decision fix (#181) |
 | 21 | 2026-11-12 | chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an: Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt |
 | 22 | 2026-11-12 | prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood: Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found |
@@ -113,4 +106,14 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 27 | 2026-11-18 | fix-250: Fix 250 |
 | 28 | 2026-11-18 | fix-269-post: Fix 269 post |
 | 29 | 2026-11-19 | fix-349: Fix 349 |
+| 3 | 2026-11-04 | record-a-stage-gate-that-already-happened-with-its-original-time-quoted-evidence-and-a-backfilled-flag-that-timing: Record a stage gate that already happened with its original time, quoted evidence and a backfilled flag that timing reports separately (DRIVE-5) |
 | 30 | 2026-11-19 | fix-347: Fix 347 |
+| 31 | 2026-11-19 | leaks-and-output: Leaks and output |
+| 32 | 2026-11-19 | doctor-fix-safety: Doctor fix safety |
+| 33 | 2026-11-19 | fix-g1-gates-and-pins-fail-closed: Fix g1 gates and pins fail closed |
+| 4 | 2026-11-04 | keep-one-session-per-objective-or-native-change-under-chough-sessions-with-append-only-transitions-an-active-pointer: Keep one session per objective or native change under .chough/sessions with append-only transitions, an active pointer, automatic archiving and an append-only subagent inbox (DRIVE-3) |
+| 5 | 2026-11-04 | show-open-questions-in-next-and-status-report-an-archived-session-as-archived-and-warn-when-an-inbox-observation-has-no: Show open questions in next and status, report an archived session as archived, and warn when an inbox observation has no record (issue 84) |
+| 6 | 2026-11-04 | keep-the-checkpoint-writer-lock-in-the-project-so-every-temp-directory-shares-it-name-the-file-being-written-when-busy: Keep the checkpoint writer lock in the project so every temp directory shares it, name the file being written when busy, and specify serialized writers and the local state directory (issue 83) |
+| 7 | 2026-11-04 | remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that: Remove the history events a command published when its save is refused because the session file vanished, and test that session use waits for stage advance (issue 82) |
+| 8 | 2026-11-04 | lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention: Lock inbox add against a concurrent archive and protect observations named by unfolded inbox entries from retention (issue 98) |
+| 9 | 2026-11-06 | size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each: Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125) |

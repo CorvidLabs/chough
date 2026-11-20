@@ -1207,12 +1207,12 @@ fn doctor_reports_conflict_markers_in_committed_records_only() {
     assert_eq!(
         named,
         [
-            (story.to_string(), 10, "<<<<<<< HEAD".to_string()),
+            (story.to_string(), 10, "<<<<<<<".to_string()),
             (story.to_string(), 12, "=======".to_string()),
-            (story.to_string(), 14, ">>>>>>> branch".to_string()),
-            (cases.to_string(), 2, "<<<<<<< HEAD".to_string()),
+            (story.to_string(), 14, ">>>>>>>".to_string()),
+            (cases.to_string(), 2, "<<<<<<<".to_string()),
             (cases.to_string(), 3, "=======".to_string()),
-            (cases.to_string(), 4, ">>>>>>> branch".to_string()),
+            (cases.to_string(), 4, ">>>>>>>".to_string()),
         ],
         "{report:#}"
     );
@@ -1427,4 +1427,329 @@ fn root_level_code_gets_the_exclude_advice_instead_of_narrowing() {
     assert!(!advice.contains("to exclude_dirs"), "{advice}");
     assert!(advice.contains("CorvidLabs/spec-sync#1083"), "{advice}");
     assert_eq!(fixture.read(".specsync/config.toml"), narrowed_config);
+}
+
+/// REQ-records-001, REQ-cli-055 (#365), TC-records-a-conflict-marker-is-named-by-its-seven-characters:
+/// a conflict whose marker lines name a branch, or a rebase's commit subject, that holds
+/// a token is reported by doctor as `conflict_markers` and `possible_fenced_conflict`
+/// findings whose `marker` is only `<<<<<<<`, `=======` or `>>>>>>>`, and the refused
+/// write names only the marker too: no output holds the branch or the subject.
+#[test]
+fn a_conflict_marker_is_named_by_its_seven_characters() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let branch = concat!("fix-ghp_", "abcdefghij0123456789", "abcdefghij0123");
+    let subject = concat!("1a2b3c4 (rotate ", "sk-", "SYNTHETICabcdefghij0123456789)");
+    let story = ".chough/archive/sessions/2026-01-01-old.md";
+    let conflict = format!(
+        "<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> {branch}\n\n```text\n<<<<<<< HEAD\nquoted\n=======\nquoted\n>>>>>>> {subject}\n```\n"
+    );
+    fixture.write(
+        story,
+        &format!("---\nkind: session\nid: 2026-01-01-old\n---\n# Old\n\n## Goal\n\n{conflict}"),
+    );
+    fixture.commit("an old story with a conflict naming a branch");
+    let output = fixture.run(&["doctor"]);
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!said.contains("ghp_"), "doctor printed the branch: {said}");
+    assert!(
+        !said.contains("rotate"),
+        "doctor printed the subject: {said}"
+    );
+    let report: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    let markers: Vec<String> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["target"] == story)
+        .filter_map(|finding| finding["marker"].as_str().map(str::to_string))
+        .collect();
+    assert_eq!(
+        markers,
+        [
+            "<<<<<<<", "=======", ">>>>>>>", "<<<<<<<", "=======", ">>>>>>>"
+        ],
+        "{report:#}"
+    );
+
+    let file = fixture.session_file();
+    let text = fixture.read(&file).replacen(
+        "## Goal\n\nShip a focused change\n",
+        &format!("## Goal\n\n<<<<<<< {branch}\nShip it\n=======\nShip that\n>>>>>>> HEAD\n"),
+        1,
+    );
+    fixture.write(&file, &text);
+    let refused = fixture.fails(&["checkpoint", "--decision", "never written"]);
+    assert!(refused.contains("refused:conflict-markers"), "{refused}");
+    assert!(refused.contains("`<<<<<<<`"), "{refused}");
+    assert!(
+        !refused.contains("ghp_"),
+        "the refusal printed the branch: {refused}"
+    );
+}
+
+/// REQ-records-001, REQ-history-012 (#374), TC-records-a-front-matter-conflict-is-named:
+/// a committed session whose front matter holds a Git conflict, as two branches that
+/// each set `--objective` leave after a merge, gives a `conflict_markers` finding for
+/// each marker line, and its `unreadable` finding names resolving the conflict, not
+/// `chough session shelve`.
+#[test]
+fn a_front_matter_conflict_is_named_and_resolved_not_shelved() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let line = text
+        .lines()
+        .find(|line| line.starts_with("objective: "))
+        .unwrap()
+        .to_string();
+    let conflicted = text.replacen(
+        &format!("{line}\n"),
+        "<<<<<<< HEAD\nobjective: Ship it our way\n=======\nobjective: Ship it their way\n>>>>>>> other\n",
+        1,
+    );
+    assert_ne!(conflicted, text);
+    fixture.write(&file, &conflicted);
+    fixture.commit("a merged front matter conflict");
+    let expected: Vec<u64> = conflicted
+        .lines()
+        .enumerate()
+        .filter(|(_, line)| {
+            line.starts_with("<<<<<<<") || line.starts_with(">>>>>>>") || *line == "======="
+        })
+        .map(|(index, _)| index as u64 + 1)
+        .collect();
+    let (_, report) = doctor(&fixture, &[]);
+    let lines: Vec<u64> = of_kind(&report, "conflict_markers")
+        .iter()
+        .filter(|finding| finding["target"] == file)
+        .map(|finding| finding["line"].as_u64().unwrap())
+        .collect();
+    assert_eq!(lines, expected, "{report:#}");
+    let unreadable = of_kind(&report, "unreadable");
+    let finding = unreadable
+        .iter()
+        .find(|finding| finding["target"] == file)
+        .unwrap_or_else(|| panic!("{report:#}"));
+    let fix = finding["fix"].as_str().unwrap_or_default();
+    assert!(fix.contains("resolve the Git conflict"), "{finding:#}");
+    assert!(!fix.contains("shelve"), "{finding:#}");
+}
+
+/// REQ-history-012 (#374), TC-history-a-redacted-timeline-entry-is-not-rewritten: after
+/// `doctor --fix --redact` redacts a leak in a committed Timeline entry, the next run
+/// reports no `timeline_rewritten`, since the entry equals HEAD's redacted again; a hand
+/// edit that writes `<redacted:token>` over ordinary words of another entry still is.
+#[test]
+fn a_redacted_timeline_entry_is_not_rewritten_but_a_hand_edit_is() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let entries: Vec<String> = text
+        .lines()
+        .filter(|line| line.starts_with("- 20") && line.contains(" · "))
+        .map(str::to_string)
+        .collect();
+    assert!(entries.len() >= 2, "{text}");
+    // An older Chough let a home path into the first entry.
+    let leaking = format!("{} /Users/SYNTHETIC-person/notes", entries[0]);
+    fixture.write(&file, &text.replacen(&entries[0], &leaking, 1));
+    fixture.commit("an entry holding a home path");
+    let output = fixture.run(&["--redact", "doctor", "--fix"]);
+    assert!(
+        fixture.read(&file).contains("<redacted:home-path>"),
+        "{}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+    let (_, report) = doctor(&fixture, &[]);
+    assert!(
+        of_kind(&report, "timeline_rewritten").is_empty(),
+        "{report:#}"
+    );
+    // A hand edit that blanks words with a redaction marker is still a rewrite.
+    let text = fixture.read(&file);
+    let edited = entries[1].replacen(" · ", " · <redacted:token> ", 1);
+    assert_ne!(edited, entries[1]);
+    fixture.write(&file, &text.replacen(&entries[1], &edited, 1));
+    let (_, report) = doctor(&fixture, &[]);
+    assert!(
+        !of_kind(&report, "timeline_rewritten").is_empty(),
+        "{report:#}"
+    );
+}
+
+/// REQ-history-012 (#374, with #407's in-place redaction), TC-history-a-redacting-save-leaves-no-timeline-rewrite:
+/// a save under `--redact`, such as `checkpoint --decision`, redacts a leak an older
+/// Chough left in a committed Timeline entry where it stands, and the next `doctor`
+/// reports no `timeline_rewritten`, since the entry equals HEAD's redacted again; the
+/// save also says how many values it redacted.
+#[test]
+fn a_redacting_save_leaves_no_timeline_rewrite() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["stage", "advance", "--json"]);
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let entry = text
+        .lines()
+        .find(|line| line.starts_with("- 20") && line.contains(" · "))
+        .unwrap_or_else(|| panic!("{text}"))
+        .to_string();
+    // An older Chough let a home path into the entry's text, before its `^t-` ID.
+    let leaking = entry.replacen(" ^t-", " /Users/SYNTHETIC-person/notes ^t-", 1);
+    assert_ne!(leaking, entry);
+    fixture.write(&file, &text.replacen(&entry, &leaking, 1));
+    fixture.commit("an entry holding a home path");
+    let output = fixture.run(&[
+        "--redact",
+        "checkpoint",
+        "--decision",
+        "SYNTHETIC keep going",
+    ]);
+    let said = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(output.status.success(), "{said}");
+    assert!(
+        said.contains("redacted 1 value(s) in the session record"),
+        "{said}"
+    );
+    let saved = fixture.read(&file);
+    assert!(!saved.contains("/Users/SYNTHETIC-person"), "{saved}");
+    assert!(saved.contains("<redacted:home-path>"), "{saved}");
+    let (_, report) = doctor(&fixture, &[]);
+    assert!(
+        of_kind(&report, "timeline_rewritten").is_empty(),
+        "{report:#}"
+    );
+}
+
+/// REQ-records-014 (#402), TC-records-the-spec-walk-follows-no-link-and-is-bounded: with
+/// `source_dirs = ["."]` and `specs/` holding a link to a spec outside the project, a
+/// folder link outside it and two folder links back to the project, `doctor` and `init`
+/// finish and give the advice they give without them; a `specs/` with more entries than
+/// the walk reads gives the advice with a note naming the bound.
+#[cfg(unix)]
+#[test]
+fn the_spec_walk_follows_no_link_and_is_bounded() {
+    let outside = tempfile::tempdir().unwrap();
+    std::fs::write(
+        outside.path().join("outside.spec.md"),
+        "---\nmodule: outside\nfiles:\n  - outside.py\n---\n# outside\n",
+    )
+    .unwrap();
+    let fixture = Fixture::new();
+    fixture.stubs();
+    let config = "specs_dir = \"specs\"\nsource_dirs = [\".\"]\n";
+    fixture.write(".specsync/config.toml", config);
+    fixture.write(
+        "specs/x/x.spec.md",
+        "---\nmodule: x\nfiles:\n  - src/main.rs\n---\n# x\n",
+    );
+    let specs = fixture.root().join("specs");
+    std::os::unix::fs::symlink(
+        outside.path().join("outside.spec.md"),
+        specs.join("outside.spec.md"),
+    )
+    .unwrap();
+    std::os::unix::fs::symlink(outside.path(), specs.join("away")).unwrap();
+    std::os::unix::fs::symlink(fixture.root(), specs.join("a")).unwrap();
+    std::os::unix::fs::symlink(fixture.root(), specs.join("b")).unwrap();
+    let started = std::time::Instant::now();
+    let init = fixture.ok(&[
+        "init",
+        "--objective",
+        "SYNTHETIC objective",
+        "--intent-scope",
+        "LIFE",
+    ]);
+    let advice = init["records_in_verification"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string();
+    assert!(advice.contains("for example [\"src\"]"), "{init:#}");
+    assert!(!advice.contains("outside.py"), "{init:#}");
+    let (_, report) = doctor(&fixture, &[]);
+    assert!(
+        started.elapsed() < std::time::Duration::from_secs(20),
+        "init and doctor took {:?}",
+        started.elapsed()
+    );
+    assert!(!report.to_string().contains("outside.py"), "{report:#}");
+
+    for index in 0..4_100 {
+        fixture.write(&format!("specs/many/{index}.md"), "x\n");
+    }
+    let init = fixture.ok(&["init"]);
+    let advice = init["records_in_verification"].as_str().unwrap_or_default();
+    assert!(
+        advice.contains("The spec walk stopped at its bound of 4096 entries"),
+        "{init:#}"
+    );
+}
+
+/// A project holding `tests/fixtures/migrate/<name>`, committed.
+fn migrate_fixture(name: &str) -> Fixture {
+    fn copy(from: &Path, to: &Path) {
+        fs::create_dir_all(to).unwrap();
+        for entry in fs::read_dir(from).unwrap().flatten() {
+            let target = to.join(entry.file_name());
+            if entry.path().is_dir() {
+                copy(&entry.path(), &target);
+            } else {
+                fs::copy(entry.path(), target).unwrap();
+            }
+        }
+    }
+    let fixture = Fixture::new();
+    copy(
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/migrate")
+            .join(name),
+        fixture.root(),
+    );
+    fixture
+}
+
+/// #376 (REQ-cli-055, REQ-history-006), TC-cli-doctor-keeps-a-migrated-alias-pointer:
+/// on a tree just migrated in place whose active pointer still holds a 0.5.x session
+/// name, `chough doctor --fix` reports no `stale_pointer`, leaves the pointer
+/// byte-identical, and `chough next` still shows that session.
+#[test]
+fn doctor_fix_keeps_a_pointer_that_names_an_open_session_by_alias() {
+    let fixture = migrate_fixture("adopted");
+    fixture.write(".chough/local/active-session", "open-one\n");
+    fixture.commit("a 0.5.x project");
+    let plan = fixture.ok(&["migrate", "--json"]);
+    let digest = plan["plan_digest"].as_str().unwrap().to_string();
+    let applied = fixture.ok(&[
+        "migrate",
+        "--apply",
+        &digest,
+        "--consent",
+        "SYNTHETIC-human said migrate it (fixture)",
+    ]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+    fixture.commit("migrated");
+    let pointer = fs::read(fixture.root().join(".chough/local/active-session")).unwrap();
+    let (_, report) = doctor(&fixture, &["--fix"]);
+    assert!(
+        !findings(&report)
+            .iter()
+            .any(|(kind, _, _)| kind == "stale_pointer"),
+        "{report:#}"
+    );
+    assert_eq!(
+        fs::read(fixture.root().join(".chough/local/active-session")).ok(),
+        Some(pointer),
+        "doctor --fix changed or removed the pointer"
+    );
+    let next = fixture.ok_text(&["next"]);
+    assert!(next.contains("Open work one"), "{next}");
 }

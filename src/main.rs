@@ -22,6 +22,7 @@ mod native;
 mod native_check;
 mod policy;
 mod prefs;
+mod ready;
 mod records;
 mod session_md;
 mod sessions;
@@ -185,6 +186,8 @@ enum Commands {
     },
     /// Run SpecSync's change new, answer, check (with --commit) and status steps and pass
     /// their output, refusals and exit code through unchanged (REQ-cli-057).
+    /// `ready` lists everything still missing before approval and writes nothing
+    /// (REQ-cli-067).
     Change {
         #[command(subcommand)]
         command: change::ChangeCommand,
@@ -198,6 +201,40 @@ enum Commands {
     /// Find the Chough debt that stops a fresh worktree from entering Chough; `--fix`
     /// fixes it, and decision fixes also need `--reason` (DRIVE-17).
     Doctor(Box<doctor::DoctorArgs>),
+}
+
+/// The command line, parsed. A usage error is printed as the argument parser words it,
+/// except that a value it quotes that holds a leak or a control character is named by
+/// what it holds, never shown (REQ-records-006, #367); help and version print as they do.
+fn parse_cli() -> Cli {
+    match Cli::try_parse() {
+        Ok(cli) => cli,
+        Err(error) if !error.use_stderr() => error.exit(),
+        Err(error) => {
+            eprint!("{}", usage_error_text(&error));
+            std::process::exit(error.exit_code());
+        }
+    }
+}
+
+/// A usage error as Chough prints it (REQ-records-006, #367): the parser's words, with a
+/// value it quotes that holds a leak or a control character replaced whole by what it
+/// holds, and anything else that would leak or act on the terminal masked.
+fn usage_error_text(error: &clap::Error) -> String {
+    use clap::error::{ContextKind, ContextValue};
+    let mut text = error.render().to_string();
+    for kind in [
+        ContextKind::InvalidValue,
+        ContextKind::InvalidArg,
+        ContextKind::InvalidSubcommand,
+    ] {
+        if let Some(ContextValue::String(value)) = error.get(kind)
+            && let Some(held) = leaks::unshowable(value)
+        {
+            text = text.replace(value.as_str(), &format!("<value holding {held}>"));
+        }
+    }
+    leaks::masked(&text)
 }
 
 fn main() -> Result<()> {
@@ -220,7 +257,7 @@ fn main() -> Result<()> {
         print!("{text}");
         return Ok(());
     }
-    let cli = Cli::parse();
+    let cli = parse_cli();
     leaks::set_redacting(cli.redact);
     let root = cli.root.canonicalize().context("project root must exist")?;
     ensure!(root.is_dir(), "project root must be a directory");
@@ -271,7 +308,7 @@ fn main() -> Result<()> {
                 .filter(|value| !value.trim().is_empty())
                 .map(|name| (name, "CHOUGH_SESSION"))
         });
-    if let Some((name, source)) = requested
+    if let Some((name, source)) = &requested
         && !matches!(
             &cli.command,
             Commands::Init { .. }
@@ -283,7 +320,7 @@ fn main() -> Result<()> {
                 }
         )
     {
-        pin_session(&root, &name, source)?;
+        pin_session(&root, name, source)?;
     }
     match cli.command {
         Commands::Init {
@@ -381,7 +418,24 @@ fn main() -> Result<()> {
         Commands::Journal { command } => journal::run(&root, command)?,
         Commands::Timing(args) => timing::run(&root, *args)?,
         Commands::Skill { command } => skill::run(&root, command)?,
-        Commands::Session { command } => sessions::run(&root, command)?,
+        Commands::Session { command } => {
+            let sets_pointer = matches!(
+                command,
+                sessions::SessionCommand::New { .. } | sessions::SessionCommand::Use { .. }
+            );
+            sessions::run(&root, command)?;
+            // REQ-cli-037 (#372): these two set the pointer and ignore the pin, so say
+            // when the pin still names another open session that later commands use.
+            if sets_pointer
+                && let Some((name, source)) = &requested
+                && let Ok(pinned) = sessions::resolve_open(&root, name)
+                && sessions::pointed(&root).ok().flatten().as_deref() != Some(pinned.as_str())
+            {
+                eprintln!(
+                    "note: {source} still names session {pinned}; commands given it keep using that session, not the one made active"
+                );
+            }
+        }
         Commands::Inbox { command } => sessions::inbox(&root, command)?,
         Commands::Change { command } => {
             let code = change::run(&root, command)?;
@@ -1055,26 +1109,36 @@ fn merge_in_progress(git: &doctor::GitOperation) -> Value {
 /// session refuses before anything is read or written.
 fn pin_session(root: &Path, name: &str, source: &str) -> Result<()> {
     let resolved = sessions::resolve_open(root, name);
+    // REQ-records-006 (#367): the name is shown only when it holds no leak and no control
+    // character; otherwise the refusal says what the option or variable holds.
+    let held = leaks::unshowable(name);
     // #334: with no session open at all, the way on is a new session, which `chough
     // session list` would not show. The detail still says when the named session is
     // archived, and an option is dropped where the variable is unset.
     if sessions::open_ids(root)?.is_empty() {
-        let detail = match &resolved {
-            Err(error) => format!(" ({error:#})"),
-            Ok(_) => String::new(),
-        };
         let leave = if source.starts_with("--") {
             "drop"
         } else {
             "unset"
         };
+        let names = match (&held, &resolved) {
+            (Some(held), _) => format!("{source} holds {held}, and no session is open"),
+            (None, Err(error)) => {
+                format!("{source} names {name}, but no session is open ({error:#})")
+            }
+            (None, Ok(_)) => format!("{source} names {name}, but no session is open"),
+        };
         bail!(
-            "refused:session-not-open: {source} names {name}, but no session is open{detail}; run `chough session new <key>` to start one, or {leave} {source}; nothing was written"
+            "refused:session-not-open: {names}; run `chough session new <key>` to start one, or {leave} {source}; nothing was written"
         );
     }
     let id = resolved.map_err(|error| {
+        let names = match &held {
+            Some(held) => format!("{source} holds {held}, so it names no open session"),
+            None => format!("{source} names {name}, which is not an open session ({error:#})"),
+        };
         anyhow::anyhow!(
-            "refused:session-not-open: {name}, named by {source}, is not an open session ({error:#}); run `chough session list` for the open ones; nothing was written"
+            "refused:session-not-open: {names}; run `chough session list` for the open ones; nothing was written"
         )
     })?;
     sessions::pin(root, &sessions::session_file(&id));
@@ -1100,16 +1164,82 @@ fn host_update_line(updates: &[String]) -> Option<String> {
     ))
 }
 
+/// REQ-cli-021 (#371): finishing the first archived session whose folder still holds
+/// files: commit what is not committed, then `chough doctor --fix`. None while no folder
+/// does, or where Git cannot be read, as in a project that is not a repository, where no
+/// commit can finish it. `next` names it first, as its next valid action with no session
+/// open and on the line below the objective with one open.
+fn archive_finish(root: &Path) -> Option<Value> {
+    let unfinished = sessions::unfinished_archives(root).ok()?;
+    let id = unfinished.first()?;
+    let mut commit = sessions::archive_to_commit(root, id)?;
+    // The story the finish waits on, from the same check as doctor's finding: one Git
+    // ignores never shows in `git status`, and is added with `-f` (#389).
+    let mut forced = vec![];
+    if let Some((story, true)) = sessions::held_story(root, id) {
+        commit.retain(|path| *path != story);
+        forced.push(story);
+    }
+    let command = if commit.is_empty() && forced.is_empty() {
+        "chough doctor --fix".to_string()
+    } else {
+        // Each file by name, so macOS metadata stays out and every Git stages the story;
+        // the message names the journal post only when there is one.
+        let post = commit.iter().any(|path| !path.starts_with(".chough/"));
+        format!(
+            "{} && chough doctor --fix",
+            sessions::commit_command(
+                &commit,
+                &forced,
+                &format!(
+                    "Archive the {id} session{}.",
+                    if post { " and its journal post" } else { "" }
+                )
+            )
+        )
+    };
+    commit.extend(forced);
+    // An entry the story does not hold stays until it is moved or dropped by hand, as the
+    // finding's way out says (#381).
+    let kept = sessions::unheld_files(root, id).is_ok_and(|files| !files.is_empty());
+    let action = if !commit.is_empty() {
+        format!(
+            "Finish the archive of session {id}: commit {}, then run chough doctor --fix.",
+            commit.join(", ")
+        )
+    } else if kept {
+        format!(
+            "Finish the archive of session {id} with chough doctor --fix, then move or drop by hand each entry it keeps, as its finding says."
+        )
+    } else {
+        format!("Finish the archive of session {id} with chough doctor --fix.")
+    };
+    Some(json!({
+        "session": id,
+        "others": unfinished.len() - 1,
+        "action": action,
+        "reason": format!("There is no open session: the move into done archived session {id}, and its folder stays until its files are committed and `chough doctor --fix` removes them; then start the next piece of work with `chough session new <key>`."),
+        "command": command,
+    }))
+}
+
 fn no_open_session(root: &Path, as_json: bool) -> String {
     // REQ-cli-016 (#361): the skill nudge shows with no session open too.
     let scan = skill::known_outdated(root);
     let skill_outdated = scan.outdated.len();
     let host_updates = scan.host_updates();
-    let action = json!({
-        "action": "Start the next piece of work in a new session.",
-        "reason": "There is no open session, the normal state after the move into done archives one.",
-        "command": NEW_SESSION,
-    });
+    let action = match archive_finish(root) {
+        Some(finish) => json!({
+            "action": finish["action"],
+            "reason": finish["reason"],
+            "command": finish["command"],
+        }),
+        None => json!({
+            "action": "Start the next piece of work in a new session.",
+            "reason": "There is no open session, the normal state after the move into done archives one.",
+            "command": NEW_SESSION,
+        }),
+    };
     if as_json {
         return format!(
             "{}\n",
@@ -1129,9 +1259,10 @@ fn no_open_session(root: &Path, as_json: bool) -> String {
         String::new()
     };
     format!(
-        "Session: none open\n{nudge}Next: {}\n  Why: {}\n  Run: {NEW_SESSION}\n",
+        "Session: none open\n{nudge}Next: {}\n  Why: {}\n  Run: {}\n",
         action["action"].as_str().unwrap_or_default(),
-        action["reason"].as_str().unwrap_or_default()
+        action["reason"].as_str().unwrap_or_default(),
+        action["command"].as_str().unwrap_or_default()
     )
 }
 
@@ -1233,6 +1364,14 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         // REQ-cli-016 (#361): how many installed skill files are an earlier release's.
         "skill_outdated": skill_scan.outdated.len(),
         "skill_update": skill_scan.host_updates(),
+        // REQ-cli-021 (#371): an archived session's folder that still holds files, named
+        // first, beside the open session's own next valid action.
+        "unfinished_archive": archive_finish(root).map(|finish| json!({
+            "session": finish["session"],
+            "others": finish["others"],
+            "action": finish["action"],
+            "command": finish["command"],
+        })),
         "native_check": native_check::view(root, change.as_deref(), summary)?,
         "direct_writes": direct_writes::view(root, change.as_deref()),
         "native": native,
@@ -1344,6 +1483,20 @@ fn next_text(view: &Value) -> String {
             })
             .unwrap_or_default();
         lines.extend(host_update_line(&updates));
+    }
+    // REQ-cli-021 (#371): finishing an archive comes first, on one line.
+    if let Some(action) = view["unfinished_archive"]["action"].as_str() {
+        let others = view["unfinished_archive"]["others"].as_u64().unwrap_or(0);
+        // The count goes before `Run:`, so what follows `Run:` is the command alone.
+        let more = if others > 0 {
+            format!(" {others} more archived session folder(s) wait too; chough doctor names each.")
+        } else {
+            String::new()
+        };
+        lines.push(format!(
+            "Archive: {action}{more} Run: {}",
+            text(&view["unfinished_archive"]["command"])
+        ));
     }
     let stage = &view["stage"];
     if stage.is_null() {
@@ -1865,5 +2018,89 @@ mod tests {
                 observation["record"]["id"]
             );
         }
+    }
+}
+
+#[cfg(test)]
+mod usage_error_tests {
+    use super::{Cli, usage_error_text};
+    use clap::{CommandFactory, Parser};
+
+    /// Every command path below `command`, with the command itself.
+    fn commands(
+        command: &clap::Command,
+        path: Vec<String>,
+        out: &mut Vec<(Vec<String>, clap::Command)>,
+    ) {
+        out.push((path.clone(), command.clone()));
+        for sub in command.get_subcommands() {
+            if sub.get_name() == "help" {
+                continue;
+            }
+            let mut next = path.clone();
+            next.push(sub.get_name().to_string());
+            commands(sub, next, out);
+        }
+    }
+
+    /// REQ-records-006 (#367): every value slot of every command, given a value holding a
+    /// token and an escape sequence, and an unexpected argument holding them, gives a usage
+    /// error that Chough prints without either. The walk covers the whole command tree, so
+    /// a new command or option cannot bring the echo back.
+    #[test]
+    fn no_usage_error_shows_a_dirty_value() {
+        let dirty = concat!(
+            "q ghp_",
+            "A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8",
+            " \u{1b}[31me"
+        );
+        let mut root = Cli::command();
+        root.build();
+        let mut all = vec![];
+        commands(&root, vec![], &mut all);
+        let mut errors = 0;
+        for (path, command) in &all {
+            let mut trials: Vec<Vec<String>> = vec![];
+            for arg in command.get_arguments() {
+                if !arg.get_action().takes_values() {
+                    continue;
+                }
+                let mut argv: Vec<String> = path.clone();
+                if arg.is_positional() {
+                    argv.push(dirty.to_string());
+                } else if let Some(long) = arg.get_long() {
+                    argv.push(format!("--{long}"));
+                    argv.push(dirty.to_string());
+                } else {
+                    continue;
+                }
+                trials.push(argv);
+            }
+            let mut unexpected = path.clone();
+            unexpected.push(format!("--{dirty}"));
+            trials.push(unexpected);
+            let mut stray = path.clone();
+            stray.push(dirty.to_string());
+            trials.push(stray);
+            for argv in trials {
+                let parsed = Cli::try_parse_from(
+                    std::iter::once("chough".to_string()).chain(argv.iter().cloned()),
+                );
+                let Err(error) = parsed else {
+                    continue;
+                };
+                if !error.use_stderr() {
+                    continue;
+                }
+                errors += 1;
+                let text = usage_error_text(&error);
+                assert!(!text.contains("ghp_"), "{argv:?} showed the token: {text}");
+                assert!(
+                    !text.contains('\u{1b}'),
+                    "{argv:?} printed the escape: {text:?}"
+                );
+            }
+        }
+        assert!(errors > 100, "only {errors} usage errors were checked");
     }
 }

@@ -1,6 +1,6 @@
 ---
 module: records
-version: 19
+version: 22
 status: active
 files:
   - src/markdown.rs
@@ -139,6 +139,7 @@ or redacting every value before it is written.
 | `names` | Each of a list of 0.5.x observation IDs by the name of the entry or receipt it became, once each and in order; a removed one keeps its ID. |
 | `legacy_paths` | Every 0.5.x record path in the project, sorted; any one makes the tree unmigrated (REQ-records-010). |
 | `receipt_path` | The migration receipt's path under `.chough/archive/migrations/`, fixed when the plan is built. |
+| `already_migrated` | Whether the plan being built removes a 0.5.x file as already migrated, because a committed receipt of an earlier migration lists it with these bytes, so no mapper carries it again (#370). |
 | `LOGS` | `.chough/local/logs`, where an executed case's raw log stays machine-local (REQ-records-005). |
 | `EXTERNAL` | `.chough/local/external-artifacts.toml`, the map of external artifacts' paths and fingerprints by neutral ID. |
 | `log_path` | The local raw log of an executed case's evidence entry. |
@@ -227,3 +228,6 @@ use this one for every record they write.
 | 17 | 2026-11-18 | fix-269-post: Fix 269 post |
 | 18 | 2026-11-18 | fix-251: Fix 251 |
 | 19 | 2026-11-18 | fix-339: Fix 339 |
+| 20 | 2026-11-19 | leaks-and-output: Leaks and output |
+| 21 | 2026-11-19 | doctor-fix-safety: Doctor fix safety |
+| 22 | 2026-11-20 | fix-m1-migrate-refuses-before-writing: Fix m1 migrate refuses before writing |
