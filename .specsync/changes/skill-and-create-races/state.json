@@ -7,10 +7,11 @@
   "title": "Skill and create races",
   "description": "skill and create races",
   "kind": "feature",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
   "created_at": 1795074277,
-  "updated_at": 1795184587,
+  "updated_at": 1795185369,
   "affected_specs": [
     "cli",
     "history"
