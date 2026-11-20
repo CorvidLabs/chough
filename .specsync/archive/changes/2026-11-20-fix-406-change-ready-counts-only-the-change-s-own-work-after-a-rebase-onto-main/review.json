@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "0b50b7aaf73452f835f072d8419ee85b08173ae5",
+  "contract_digest": "c6a440b872461172d18465ad020073438a770b57888690919dd32f0c630fe908",
+  "execution_digest": "2e826fd0a6b66fa61e7e3550e7ab6eed3c720c8e0d600cfcbef0a9e33440ae4e",
+  "workspace_digest": "0cf48e65ff1365b299e60730a520ad5860b41dcd97c4f2a24ba163c83f5c5ed7",
+  "timestamp": 1795184195,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Go",
+    "where": "Standing OK 6(b): Leif's 'Go' to the six rules (Claude Code chat message of 2026-11-19, relayed by his planning session hc t4c), recording his implementation review of a batch with a tester PASS that changes no approved sentence. At df9914cd: the tester's PASS on the rebased branch (690 and 684 findings down to 9 and 3, every dropped one main's) and on the 66 changes (none dropped), tester2's Linux PASS with Git 2.39, corvid-agent's approval, fable-lead's read; no approved sentence changed by the build. Then main 643420a9 (#418) merged in at 0b50b7aa: t4b's script shows its own 469 changed lines byte-identical before and after, the cli spec only renumbered to 127, and the lane green again. Recorded by t4c",
+    "recorded_by": "t4c"
+  }
+}

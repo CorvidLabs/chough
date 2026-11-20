@@ -1,6 +1,6 @@
 ---
 id: fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 1fb67c29295cc2472285bbd03b6a10cf8c5f6c40
 ---

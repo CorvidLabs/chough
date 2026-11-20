@@ -49,6 +49,13 @@
         "where": "Leif's own answer, chosen in a Claude Code question dialog in his planning session (hc t4c) on 2026-11-20 at about 04:16Z, to the question: \"Chough #406 (rebase part): ... Approve its scope with the four recommended choices (A: decide by content; B: default branch with #1081's protections; C: a missing starting commit is named; D: several changes on one branch left for later)?\" Recorded by t4c itself, as his relayed answer, at the draft 5d492341",
         "recorded_by": "t4c"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795184204,
+      "digest": "c1a4b52f449fe46688cf1533e23e9912b85412f08eeb598ab1eea695cac3f879",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

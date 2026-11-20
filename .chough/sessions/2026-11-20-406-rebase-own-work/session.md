@@ -5,7 +5,7 @@ aliases: [406-rebase-own-work]
 objective: chough change ready counts only the change's own work after a rebase onto main or a squash merge of main, so main's files are not named as outside the declared paths (#406, item 2)
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -31,9 +31,17 @@ observations:
   - 2026-11-20-tc-cli-change-ready-names-a-missing-base-plainly-e3d8cf
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main
+    holds: accept
+    drives: review
+    opened: 2026-11-20T14:16:32Z
 run_consents: []
-next: Continue build
+next: Continue accept
+title: change ready counts only a change's own work after a rebase
+summary:
+  - "chough change ready no longer names the default branch's files as outside the declared paths after a rebase onto it or a squash merge of it: a committed file whose content at HEAD is the default branch's, at its tip or at the merge base, is not the change's own, never on the default branch itself; a missing base commit is said plainly (#406)."
+  - "Verified at df9914cd: eleven verify steps and four cases on macOS; the tester's PASS (rebased branch 690 and 684 findings down to 9 and 3, every dropped one main's; 66 changes, none dropped); tester2's Linux PASS; corvid-agent's approval; fable-lead's read; main 643420a9 merged in at 0b50b7aa, own lines unchanged, lane green."
 ---
 # chough change ready counts only the change's own work after a rebase onto main or a squash merge of main, so main's files are not named as outside the declared paths (#406, item 2)
 
@@ -99,3 +107,19 @@ chough change ready counts only the change's own work after a rebase onto main o
   - gate: native:approved
   - revision: e2f3380e758001e8ffd117e6c669ecf8dfc922ea
   - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T14:16:31Z · advance · build → test · native:verifying ^t-e9096b
+  - native_change: fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main
+  - gate: native:verifying
+  - revision: 0b50b7aaf73452f835f072d8419ee85b08173ae5
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T14:16:31Z · advance · test → accept · native:verifying ^t-2073a5
+  - native_change: fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main
+  - gate: native:verifying
+  - revision: 0b50b7aaf73452f835f072d8419ee85b08173ae5
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T14:16:31Z · gate-opened · accept → accept · Implementation review of fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main ^t-e00ea6
+  - native_change: fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main
+  - revision: 0b50b7aaf73452f835f072d8419ee85b08173ae5
+  - holds: accept
+  - drives: review
+  - by: t4c (claude-opus-5-5, hc t4c)
