@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 129
+version: 130
 status: active
 files:
   - src/main.rs
@@ -314,7 +314,8 @@ provider, runtime or hosted service.
 | 126 | 2026-11-20 | control-and-echo: Control and echo |
 | 127 | 2026-11-20 | fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main: Fix 406: change ready counts only the change's own work after a rebase onto main |
 | 128 | 2026-11-20 | skill-and-create-races: Skill and create races |
-| 129 | 2026-11-20 | fix-260-a-new-record-is-written-whole-or-not-at-all: Fix 260: a new record is written whole or not at all |
+| 129 | 2026-11-20 | bug-add-leaves-the-session: Bug add leaves the session |
+| 130 | 2026-11-20 | fix-260-a-new-record-is-written-whole-or-not-at-all: Fix 260: a new record is written whole or not at all |
 | 13 | 2026-11-02 | use-slug-identities-for-all-new-chough-records: Use slug identities for all new Chough records |
 | 14 | 2026-11-02 | make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound: Make chough timing read each native change at most once, skip archived history the requested report does not show, bound total native wait per report with explicit unknown states, and add an opt-in phase trace |
 | 15 | 2026-11-02 | fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer: Fresh-agent handoff from existing records: chough next shows recent decisions, the last failure and a lessons pointer, names a new cycle after the native change is archived, and the skill labels lesson certainty and closes out inside the open change |

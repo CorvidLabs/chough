@@ -1,6 +1,6 @@
 ---
 module: history
-version: 35
+version: 36
 status: active
 files:
   - src/history.rs
@@ -119,3 +119,4 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 9 | 2026-11-06 | size-the-checkpoint-from-measured-use-a-1-mib-cap-with-at-cap-budgets-session-shelve-and-sessions-that-never-break-each: Size the checkpoint from measured use: a 1 MiB cap with at-cap budgets, session shelve, and sessions that never break each other (DRIVE-14, 125) |
 | 34 | 2026-11-20 | control-and-echo: Control and echo |
 | 35 | 2026-11-20 | skill-and-create-races: Skill and create races |
+| 36 | 2026-11-20 | bug-add-leaves-the-session: Bug add leaves the session |
