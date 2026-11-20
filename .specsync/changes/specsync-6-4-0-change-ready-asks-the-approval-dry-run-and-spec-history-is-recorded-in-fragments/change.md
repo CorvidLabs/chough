@@ -1,6 +1,6 @@
 ---
 id: specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
-state: approved
+state: implementing
 type: migration
 base_commit: de49485fc5fb93f05bb15db7cd471023beebd8a8
 ---
