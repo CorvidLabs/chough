@@ -1,6 +1,6 @@
 ---
 module: records
-version: 20
+version: 21
 status: active
 files:
   - src/markdown.rs
@@ -229,3 +229,4 @@ use this one for every record they write.
 | 18 | 2026-11-18 | fix-251: Fix 251 |
 | 19 | 2026-11-18 | fix-339: Fix 339 |
 | 20 | 2026-11-19 | leaks-and-output: Leaks and output |
+| 21 | 2026-11-19 | doctor-fix-safety: Doctor fix safety |

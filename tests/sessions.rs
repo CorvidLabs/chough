@@ -329,8 +329,13 @@ fn sessions_live_in_folders_and_finish_into_one_story() {
     );
     assert!(!fixture.exists(&format!(".chough/sessions/{id}/agent/notes.md")));
     assert!(!fixture.exists(".chough/local/active-session"));
+    // REQ-cli-021 (#371): while the folder still holds session.md, `next` names
+    // finishing the archive before a new session.
     let next = fixture.ok_text(&["next"]);
-    assert!(next.contains("chough session new <key>"), "{next}");
+    assert!(
+        next.contains(&format!("Finish the archive of session {id}")),
+        "{next}"
+    );
     // With no session open, `history show` reads the story it finished into.
     let shown = fixture.ok(&["history", "show"]);
     assert_eq!(shown["session"], id.as_str(), "{shown:#}");
@@ -1405,10 +1410,11 @@ fn an_uncommitted_file_keeps_the_folder_until_a_commit_and_doctor_fix() {
     let kept = moved["applied"]["session_archive"]["kept"].to_string();
     assert!(kept.contains("agent/scratch.md"), "{moved:#}");
     assert!(fixture.exists(&format!(".chough/sessions/{id}/agent/scratch.md")));
+    // REQ-cli-021 (#371): `next` names finishing the archive while the folder holds files.
+    let next = fixture.ok_text(&["next"]);
     assert!(
-        fixture
-            .ok_text(&["next"])
-            .contains("chough session new <key>")
+        next.contains(&format!("Finish the archive of session {id}")),
+        "{next}"
     );
     let blocked = fixture.run(&["doctor", "--fix"]);
     let report: Value = serde_json::from_slice(&blocked.stdout).unwrap();
@@ -1424,6 +1430,8 @@ fn an_uncommitted_file_keeps_the_folder_until_a_commit_and_doctor_fix() {
     assert_eq!(report["findings"][0]["status"], "fixed", "{report:#}");
     assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
     assert!(fixture.is_archived("alpha"));
+    let next = fixture.ok_text(&["next"]);
+    assert!(next.contains("chough session new <key>"), "{next}");
 }
 
 /// REQ-records-006: a value written into the session record that holds a local path is
@@ -2042,18 +2050,1075 @@ fn after_the_move_into_done_next_exits_0_and_status_refuses() {
         "{moved:#}"
     );
     let before = snapshot(&fixture);
+    // REQ-cli-021 (#371): while the archived folder still holds files, `next` names
+    // finishing the archive first, and writes nothing.
     let next = fixture.ok_text(&["next"]);
-    assert!(next.contains("no open session"), "{next}");
-    assert!(next.contains("Run: chough session new <key>"), "{next}");
+    assert!(next.contains("Finish the archive of session"), "{next}");
     assert_eq!(snapshot(&fixture), before, "next wrote a record");
     let refused = fixture.fails(&["status"]);
     assert!(
         refused.contains("no open session; run `chough session new <key>`"),
         "{refused}"
     );
+    fixture.commit("the archive");
+    let _ = fixture.run(&["doctor", "--fix"]);
+    let before = snapshot(&fixture);
+    let next = fixture.ok_text(&["next"]);
+    assert!(next.contains("no open session"), "{next}");
+    assert!(next.contains("Run: chough session new <key>"), "{next}");
+    assert_eq!(snapshot(&fixture), before, "next wrote a record");
     fixture.ok(&["session", "new", "beta", "--objective", "Ship beta"]);
     let next = fixture.ok_text(&["next"]);
     assert!(next.starts_with("Objective: Ship beta\n"), "{next}");
+}
+
+/// An `evidence add` in the active session with `summary`, for the stubbed specs; its ID.
+#[cfg(unix)]
+fn evidence_entry(fixture: &Fixture, summary: &str) -> String {
+    fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        summary,
+    ])["observation"]
+        .as_str()
+        .unwrap()
+        .to_string()
+}
+
+/// Git in the fixture, with a committer, whatever its exit status.
+#[cfg(unix)]
+fn git(fixture: &Fixture, args: &[&str]) -> std::process::Output {
+    std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args([
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=test@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+        ])
+        .args(args)
+        .output()
+        .unwrap()
+}
+
+/// REQ-history-012, REQ-history-006 (#381), TC-history-the-archive-finish-keeps-what-the-story-does-not-hold:
+/// a branch adds an evidence entry and an inbox entry to a session that main closes and
+/// archives; the merge keeps main's deletion of `session.md`. `doctor --fix` then removes
+/// the folder's other files but keeps both entries, byte for byte, and its
+/// `unfinished_archive` finding is `skipped`, naming each and the way out by hand.
+#[cfg(unix)]
+#[test]
+fn the_archive_finish_keeps_what_the_story_does_not_hold() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("start");
+    let id = fixture.active_id();
+    let held = evidence_entry(&fixture, "SYNTHETIC check the story holds");
+    fixture.commit("a session with one entry");
+    assert!(
+        git(&fixture, &["checkout", "-q", "-b", "late"])
+            .status
+            .success()
+    );
+    let late = evidence_entry(&fixture, "SYNTHETIC late check on the branch");
+    let note = add_entry(&fixture, &id, "decision", "SYNTHETIC late decision");
+    fixture.commit("late work on the branch");
+    assert!(git(&fixture, &["checkout", "-q", "main"]).status.success());
+    fixture.ok(&[
+        "session",
+        "close",
+        &id,
+        "--reason",
+        "SYNTHETIC done elsewhere",
+    ]);
+    fixture.commit("the session closed");
+    let _ = fixture.run(&["doctor", "--fix"]);
+    fixture.commit("its archive finished");
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+    let merged = git(&fixture, &["merge", "--no-edit", "late"]);
+    assert!(!merged.status.success(), "the merge had no conflict");
+    let session = format!(".chough/sessions/{id}/session.md");
+    assert!(git(&fixture, &["rm", "-q", &session]).status.success());
+    assert!(
+        git(&fixture, &["commit", "-q", "--no-edit"])
+            .status
+            .success()
+    );
+    let entry = format!(".chough/sessions/{id}/evidence/{late}.md");
+    let inbox = format!(".chough/sessions/{id}/agent/inbox/{note}.md");
+    let entry_bytes = fixture.read(&entry);
+    let inbox_bytes = fixture.read(&inbox);
+
+    let output = fixture.run(&["doctor", "--fix"]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    let finding = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|finding| finding["kind"] == "unfinished_archive")
+        .unwrap_or_else(|| panic!("{report:#}"))
+        .clone();
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    let said = finding.to_string();
+    assert!(said.contains(&late), "{said}");
+    assert!(said.contains(&note), "{said}");
+    // With no session open, the way out says to open one, and dropping is printed whole.
+    assert!(said.contains("chough session new <key>"), "{said}");
+    assert!(said.contains("git rm -q -- "), "{said}");
+    assert!(!said.contains(&held), "the held entry was named: {said}");
+    assert_eq!(fixture.read(&entry), entry_bytes);
+    assert_eq!(fixture.read(&inbox), inbox_bytes);
+    // REQ-cli-021: while only kept entries hold the folder, `next` names the way out
+    // by hand after `doctor --fix`, not `doctor --fix` alone.
+    let next = fixture.ok_text(&["next"]);
+    assert!(
+        next.contains("move or drop by hand each entry it keeps"),
+        "{next}"
+    );
+
+    // The way out by hand, run exactly as printed once a session is open: move the
+    // evidence entry into it, add the inbox entry's text again there and drop the kept
+    // copy. The archive then finishes and the entry resolves again.
+    fixture.ok(&[
+        "session",
+        "new",
+        "next",
+        "--objective",
+        "Pick up the late work",
+    ]);
+    let (finding, report, _) = archive_finding(&fixture, &["doctor"]);
+    let fix = finding["fix"].as_str().unwrap_or_default().to_string();
+    let commands = printed_commands(&fix);
+    let keep = commands
+        .iter()
+        .find(|command| command.starts_with("mkdir -p "))
+        .unwrap_or_else(|| panic!("no keep command: {report:#}"));
+    let add = commands
+        .iter()
+        .find(|command| command.starts_with("chough inbox add "))
+        .unwrap_or_else(|| panic!("no inbox command: {report:#}"));
+    for command in [keep, add] {
+        let output = run_printed(&fixture, command);
+        assert!(
+            output.status.success(),
+            "{command}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    let output = fixture.run(&["doctor", "--fix"]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert!(
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|finding| finding["kind"] != "unfinished_archive" || finding["status"] == "fixed"),
+        "{report:#}"
+    );
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+    fixture.ok(&["checkpoint", "--observation", &late]);
+}
+
+/// REQ-history-012 (#381): an evidence entry whose ID a receipt of the story holds, but
+/// whose receipt it no longer matches, is kept too; an exact copy of what the story holds
+/// is removed.
+#[cfg(unix)]
+#[test]
+fn an_entry_that_differs_from_its_receipt_is_kept() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("start");
+    let id = fixture.active_id();
+    let first = evidence_entry(&fixture, "SYNTHETIC first check");
+    let second = evidence_entry(&fixture, "SYNTHETIC second check");
+    fixture.commit("two entries");
+    let path = |entry: &str| format!(".chough/sessions/{id}/evidence/{entry}.md");
+    let (first_bytes, second_bytes) = (fixture.read(&path(&first)), fixture.read(&path(&second)));
+    fixture.ok(&["session", "close", &id, "--reason", "SYNTHETIC done"]);
+    fixture.commit("closed");
+    let _ = fixture.run(&["doctor", "--fix"]);
+    fixture.commit("archive finished");
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+    // A later commit brings both back: one as the story holds it, one changed.
+    fixture.write(&path(&first), &first_bytes);
+    fixture.write(
+        &path(&second),
+        &second_bytes.replace("SYNTHETIC second check", "SYNTHETIC second check, changed"),
+    );
+    fixture.commit("the entries came back");
+    let output = fixture.run(&["doctor", "--fix"]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    let said = report.to_string();
+    assert!(!fixture.exists(&path(&first)), "{said}");
+    assert!(fixture.exists(&path(&second)), "{said}");
+    assert!(said.contains(&second), "{said}");
+}
+
+/// REQ-history-012 (#377), TC-history-macos-metadata-never-blocks-the-archive-finish: a
+/// `.DS_Store` that Finder writes and a `._session.md` that an exFAT volume leaves in an
+/// archived session's folder are not committed, yet they do not block `doctor --fix`,
+/// which removes them with the folder.
+#[test]
+fn macos_metadata_never_blocks_the_archive_finish() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    advance_to(&fixture, "accept");
+    let id = fixture.id_of("alpha");
+    fixture.commit("alpha at accept");
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.commit("the story");
+    fixture.write(&format!(".chough/sessions/{id}/.DS_Store"), "finder\n");
+    fixture.write(
+        &format!(".chough/sessions/{id}/._session.md"),
+        "appledouble\n",
+    );
+    let fixed = fixture.run(&["doctor", "--fix"]);
+    let report: Value = serde_json::from_slice(&fixed.stdout).unwrap();
+    let archive = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|finding| finding["kind"] == "unfinished_archive")
+        .unwrap_or_else(|| panic!("{report:#}"))
+        .clone();
+    assert_eq!(archive["status"], "fixed", "{report:#}");
+    assert!(
+        !fixture.exists(&format!(".chough/sessions/{id}")),
+        "{report:#}"
+    );
+}
+
+/// An archived session whose evidence entry was not committed at the move into done, so
+/// the folder keeps it, with everything committed after; returns the session's ID and the
+/// entry's file.
+#[cfg(unix)]
+fn archived_with_a_kept_entry(fixture: &Fixture) -> (String, String) {
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("start");
+    let id = fixture.active_id();
+    advance_to(fixture, "accept");
+    fixture.commit("at accept");
+    let entry = evidence_entry(fixture, "SYNTHETIC check at accept");
+    fixture.ok(&["stage", "advance", "--json"]);
+    let file = format!(".chough/sessions/{id}/evidence/{entry}.md");
+    assert!(fixture.exists(&file), "the move into done removed {file}");
+    (id, file)
+}
+
+/// The `unfinished_archive` finding a `doctor` run reports, with its exit status, stdout
+/// and stderr.
+#[cfg(unix)]
+fn archive_finding(fixture: &Fixture, args: &[&str]) -> (Value, Value, String) {
+    let output = fixture.run(args);
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let report: Value = serde_json::from_slice(&output.stdout)
+        .unwrap_or_else(|error| panic!("{args:?} gave no report ({error}): {said}"));
+    let finding = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|finding| finding["kind"] == "unfinished_archive")
+        .unwrap_or_else(|| panic!("{report:#}"))
+        .clone();
+    (finding, report, said)
+}
+
+/// REQ-history-012 (#381, fable-lead's review of D1), TC-history-a-story-an-earlier-release-wrote-still-holds-its-entries:
+/// a story that 0.6.0 or 0.6.1 wrote has receipts without the `criteria`, `requirements`
+/// and `limitations` fields #342 added. An entry it holds is still held, compared on the
+/// fields its receipt holds, so `doctor --fix` finishes the archive.
+#[cfg(unix)]
+#[test]
+fn a_story_an_earlier_release_wrote_still_holds_its_entries() {
+    let fixture = Fixture::new();
+    let (id, file) = archived_with_a_kept_entry(&fixture);
+    let story = format!(".chough/archive/sessions/{id}.md");
+    let text = fixture.read(&story);
+    let (told, receipts) = text.split_once("\n## Receipts\n").unwrap();
+    let older: String = receipts
+        .lines()
+        .filter(|line| {
+            let field = line.trim_start();
+            !["criteria: ", "requirements: ", "limitations: "]
+                .iter()
+                .any(|name| field.starts_with(name))
+        })
+        .map(|line| format!("{line}\n"))
+        .collect();
+    assert_ne!(
+        older, receipts,
+        "the receipt held no criteria or requirements"
+    );
+    fixture.write(&story, &format!("{told}\n## Receipts\n{older}"));
+    fixture.commit("archived by an earlier release");
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "fixed", "{report:#}");
+    assert!(!fixture.exists(&file));
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+}
+
+/// REQ-history-012 (#381, fable-lead's review of D1, tester2), TC-history-an-unreadable-file-never-stops-doctor:
+/// a 0-byte evidence entry, a cut-off one and a story over its bound in an archived
+/// session's folder each leave `doctor` and `doctor --fix` reporting, as on main, with the
+/// file's own finding there and no absolute path in any output: an entry that cannot be
+/// read is kept and named, with dropping it as the way out, and a story that cannot be read
+/// leaves `unfinished_archive` removing nothing and saying why.
+#[cfg(unix)]
+#[test]
+fn an_unreadable_file_in_an_archived_folder_never_stops_doctor() {
+    for case in ["empty entry", "cut-off entry", "oversize story"] {
+        let fixture = Fixture::new();
+        let (id, file) = archived_with_a_kept_entry(&fixture);
+        let story = format!(".chough/archive/sessions/{id}.md");
+        let damaged = match case {
+            "empty entry" => {
+                fixture.write(&file, "");
+                file.clone()
+            }
+            "cut-off entry" => {
+                let text = fixture.read(&file);
+                fixture.write(&file, &text[..text.len() / 2]);
+                file.clone()
+            }
+            _ => {
+                let text = fixture.read(&story);
+                fixture.write(&story, &format!("{text}\n{}\n", "x".repeat(1_100_000)));
+                story.clone()
+            }
+        };
+        fixture.commit(case);
+        let root = fixture.root().to_string_lossy().into_owned();
+        let canonical = fixture
+            .root()
+            .canonicalize()
+            .unwrap()
+            .to_string_lossy()
+            .into_owned();
+        for args in [&["doctor"][..], &["doctor", "--fix"][..]] {
+            let (finding, report, said) = archive_finding(&fixture, args);
+            assert!(
+                !said.contains(&root) && !said.contains(&canonical),
+                "{case}, {args:?}: an absolute path: {said}"
+            );
+            let named =
+                report["findings"].as_array().unwrap().iter().any(|other| {
+                    other["kind"] != "unfinished_archive" && other["target"] == damaged
+                });
+            assert!(
+                named,
+                "{case}, {args:?}: no finding names {damaged}: {report:#}"
+            );
+            if args.len() > 1 {
+                assert_eq!(finding["status"], "skipped", "{case}: {report:#}");
+                let said = finding.to_string();
+                if case == "oversize story" {
+                    assert!(
+                        said.contains("removes nothing until it reads"),
+                        "{case}: {finding:#}"
+                    );
+                } else {
+                    // An entry that cannot be read is kept and named, and only dropping it
+                    // is advised, since moving it would make an open session unreadable.
+                    assert!(
+                        finding["kept"].to_string().contains(&file),
+                        "{case}: {finding:#}"
+                    );
+                    assert!(
+                        said.contains("cannot be read") && said.contains("git rm"),
+                        "{case}: {finding:#}"
+                    );
+                    assert!(!said.contains("git mv"), "{case}: {finding:#}");
+                }
+            }
+            assert!(fixture.exists(&file), "{case}, {args:?}: the entry went");
+        }
+    }
+}
+
+/// The archived session `alpha` with its folder's files committed by name, and its story
+/// and journal post left as the move into done wrote them; returns the session's ID, its
+/// story and its post.
+#[cfg(unix)]
+fn archived_with_the_folder_committed(fixture: &Fixture) -> (String, String, String) {
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    advance_to(fixture, "accept");
+    let id = fixture.id_of("alpha");
+    fixture.commit("alpha at accept");
+    fixture.ok(&["stage", "advance", "--json"]);
+    let folder = format!(".chough/sessions/{id}");
+    assert!(
+        fixture.exists(&folder),
+        "the move into done removed the folder"
+    );
+    assert!(git(fixture, &["add", "--", &folder]).status.success());
+    assert!(
+        git(fixture, &["commit", "-q", "-m", "only the folder"])
+            .status
+            .success()
+    );
+    let story = format!(".chough/archive/sessions/{id}.md");
+    let post = std::fs::read_dir(fixture.root().join("knowledge/journal"))
+        .unwrap()
+        .flatten()
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .find(|name| name.ends_with(".md") && name != "index.md")
+        .map(|name| format!("knowledge/journal/{name}"))
+        .expect("the move into done wrote no journal post");
+    (id, story, post)
+}
+
+/// Whether Git tracks `path` in the fixture.
+#[cfg(unix)]
+fn tracked(fixture: &Fixture, path: &str) -> bool {
+    git(fixture, &["ls-files", "--error-unmatch", "--", path])
+        .status
+        .success()
+}
+
+/// REQ-history-012 (#389, tester2's run of D1 on real repositories),
+/// TC-history-the-finish-waits-for-the-story-to-be-committed: with the folder's files
+/// committed but the story and its journal post untracked, `doctor --fix` removes nothing
+/// and its `unfinished_archive` finding names the story to commit; once the story alone is
+/// committed, it removes the folder, and the untracked post holds nothing (option B).
+#[cfg(unix)]
+#[test]
+fn the_finish_waits_until_the_story_and_post_are_committed() {
+    let fixture = Fixture::new();
+    let (id, story, post) = archived_with_the_folder_committed(&fixture);
+    assert!(!tracked(&fixture, &story) && !tracked(&fixture, &post));
+    let folder = format!(".chough/sessions/{id}");
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    let fix = finding["fix"].as_str().unwrap_or_default().to_string();
+    assert!(fix.contains(&story), "{finding:#}");
+    assert!(
+        fixture.exists(&folder),
+        "the folder went before the story was committed"
+    );
+    assert!(fixture.exists(&story));
+
+    // Only the story is committed: the untracked post does not hold the finish.
+    assert!(git(&fixture, &["add", "--", &story]).status.success());
+    assert!(
+        git(&fixture, &["commit", "-q", "-m", "the story"])
+            .status
+            .success()
+    );
+    assert!(!tracked(&fixture, &post));
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "fixed", "{report:#}");
+    assert!(!fixture.exists(&folder));
+    assert!(tracked(&fixture, &story));
+}
+
+/// REQ-history-012 (#389): an archived story edited after its commit, as `chough correct`
+/// appends to its Timeline, holds the finish back until that edit is committed, and the
+/// finding names the story.
+#[cfg(unix)]
+#[test]
+fn a_story_edited_after_its_commit_holds_the_finish() {
+    let fixture = Fixture::new();
+    let (id, story, post) = archived_with_the_folder_committed(&fixture);
+    assert!(
+        git(&fixture, &["add", "--", &story, &post])
+            .status
+            .success()
+    );
+    assert!(
+        git(&fixture, &["commit", "-q", "-m", "the story and its post"])
+            .status
+            .success()
+    );
+    let text = fixture.read(&story);
+    let entry = text
+        .lines()
+        .filter_map(|line| line.rsplit_once(" ^").map(|(_, id)| id.trim().to_string()))
+        .next_back()
+        .expect("the story has no Timeline entry");
+    fixture.ok(&[
+        "correct",
+        &format!("{id}#^{entry}"),
+        "--reason",
+        "SYNTHETIC correction after the commit",
+    ]);
+    assert_ne!(fixture.read(&story), text);
+    let folder = format!(".chough/sessions/{id}");
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    assert!(finding.to_string().contains(&story), "{finding:#}");
+    assert!(fixture.exists(&folder));
+
+    assert!(git(&fixture, &["add", "--", &story]).status.success());
+    assert!(
+        git(&fixture, &["commit", "-q", "-m", "the correction"])
+            .status
+            .success()
+    );
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "fixed", "{report:#}");
+    assert!(!fixture.exists(&folder));
+}
+
+/// REQ-history-012 (#389, fable-lead's read of D1): a story Git ignores is never listed
+/// by `git status`, so the finish asks Git whether it is committed. With the story
+/// ignored, `doctor --fix` removes nothing, and its finding names a way out that works,
+/// `git add -f`; once it is committed, the folder goes.
+#[cfg(unix)]
+#[test]
+fn an_ignored_story_holds_the_finish_and_names_git_add_f() {
+    let fixture = Fixture::new();
+    let (id, story, post) = archived_with_the_folder_committed(&fixture);
+    fixture.write(".gitignore", &format!("{story}\n"));
+    assert!(
+        git(&fixture, &["add", "--", ".gitignore", &post])
+            .status
+            .success()
+    );
+    assert!(
+        git(&fixture, &["commit", "-q", "-m", "ignore the story"])
+            .status
+            .success()
+    );
+    assert!(!tracked(&fixture, &story));
+    let folder = format!(".chough/sessions/{id}");
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    let fix = finding["fix"].as_str().unwrap_or_default().to_string();
+    assert!(
+        fix.contains(&format!("git add -f -- '{story}'")),
+        "{finding:#}"
+    );
+    assert!(
+        fixture.exists(&folder),
+        "the folder went while the story was ignored"
+    );
+
+    // The way out, run exactly as printed.
+    let command = printed_commands(&fix)
+        .into_iter()
+        .find(|command| command.starts_with("git add "))
+        .unwrap_or_else(|| panic!("{finding:#}"));
+    let output = run_printed(&fixture, &command);
+    assert!(
+        output.status.success(),
+        "{command}: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "fixed", "{report:#}");
+    assert!(!fixture.exists(&folder));
+}
+
+/// REQ-history-012 (#389, Leif's option B), TC-history-an-ignored-journal-post-does-not-hold-the-finish:
+/// only an uncommitted story holds the archive finish. In a project that ignores its
+/// vault on purpose (`knowledge/` in `.gitignore`, as algochat does), the journal post is
+/// never committed, and the finish still goes through once the story is.
+#[cfg(unix)]
+#[test]
+fn an_ignored_journal_post_does_not_hold_the_finish() {
+    let fixture = Fixture::new();
+    let (id, story, post) = archived_with_the_folder_committed(&fixture);
+    fixture.write(".gitignore", "knowledge/\n");
+    assert!(
+        git(&fixture, &["add", "--", ".gitignore", &story])
+            .status
+            .success()
+    );
+    assert!(
+        git(&fixture, &["commit", "-q", "-m", "ignore the vault"])
+            .status
+            .success()
+    );
+    assert!(!tracked(&fixture, &post));
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "fixed", "{report:#}");
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+    assert!(fixture.exists(&post), "the finish removed the journal post");
+}
+
+/// REQ-history-012 (#389): when Git cannot read HEAD, the finish removes nothing and its
+/// finding names that, not files that only seem uncommitted.
+#[cfg(unix)]
+#[test]
+fn a_failed_git_read_holds_the_finish_and_says_so() {
+    let fixture = Fixture::new();
+    let (id, story, post) = archived_with_the_folder_committed(&fixture);
+    assert!(
+        git(&fixture, &["add", "--", &story, &post])
+            .status
+            .success()
+    );
+    assert!(
+        git(&fixture, &["commit", "-q", "-m", "the story and its post"])
+            .status
+            .success()
+    );
+    let output = fixture.run_with_env(&["doctor", "--fix"], &[("GIT_DIR", "/nonexistent-git-dir")]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap_or_else(|error| {
+        panic!(
+            "no report ({error}): {}",
+            String::from_utf8_lossy(&output.stderr)
+        )
+    });
+    let finding = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|finding| finding["kind"] == "unfinished_archive")
+        .unwrap_or_else(|| panic!("{report:#}"))
+        .clone();
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    let reason = finding["reason"].as_str().unwrap_or_default();
+    assert!(reason.contains("Git cannot read HEAD"), "{finding:#}");
+    assert!(fixture.exists(&format!(".chough/sessions/{id}")));
+}
+
+/// The whole commands a way out prints, each between backticks.
+fn printed_commands(text: &str) -> Vec<String> {
+    text.split('`')
+        .skip(1)
+        .step_by(2)
+        .filter(|span| {
+            ["git ", "mkdir ", "chough inbox add "]
+                .iter()
+                .any(|start| span.starts_with(start))
+        })
+        .map(str::to_string)
+        .collect()
+}
+
+/// Run `command` exactly as a person pastes it, in the fixture's root, with this build's
+/// `chough` on PATH, the fixture's user configuration and a committer.
+#[cfg(unix)]
+fn run_printed(fixture: &Fixture, command: &str) -> std::process::Output {
+    let mut paths = vec![
+        std::path::Path::new(env!("CARGO_BIN_EXE_chough"))
+            .parent()
+            .unwrap()
+            .to_path_buf(),
+    ];
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    let mut shell = std::process::Command::new("sh");
+    shell
+        .current_dir(fixture.root())
+        .env("PATH", std::env::join_paths(paths).unwrap())
+        .env("XDG_CONFIG_HOME", fixture.root().join(common::USER_CONFIG))
+        .env("GIT_AUTHOR_NAME", "Test")
+        .env("GIT_AUTHOR_EMAIL", "test@example.invalid")
+        .env("GIT_COMMITTER_NAME", "Test")
+        .env("GIT_COMMITTER_EMAIL", "test@example.invalid")
+        .env("GIT_CONFIG_COUNT", "1")
+        .env("GIT_CONFIG_KEY_0", "commit.gpgsign")
+        .env("GIT_CONFIG_VALUE_0", "false");
+    for name in common::ACTOR_VARIABLES {
+        shell.env_remove(name);
+    }
+    shell.args(["-c", command]).output().unwrap()
+}
+
+/// REQ-history-012 (#381, tester2's planted cases, rule 3): with an evidence entry that
+/// cannot be read, the first `doctor --fix` removes the folder's committed files and keeps
+/// the entry. `next` then names committing the removal, and its command, run as printed,
+/// commits it; the finding's drop command, run as printed, drops the entry; the next fix
+/// finishes the archive.
+#[cfg(unix)]
+#[test]
+fn an_unreadable_entry_is_dropped_by_the_printed_commands() {
+    let fixture = Fixture::new();
+    let (id, file) = archived_with_a_kept_entry(&fixture);
+    fixture.write(&file, "");
+    fixture.commit("an entry a killed run left empty");
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    assert!(fixture.exists(&file));
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}/session.md")));
+
+    // What `next` prints now: commit the removal, then run the fix again.
+    let view = fixture.ok(&["next", "--json"]);
+    let command = view["next_valid_action"]["command"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string();
+    assert!(
+        command.starts_with("git add -- ") && command.contains("session.md"),
+        "{view:#}"
+    );
+    let output = run_printed(&fixture, &command);
+    let said = String::from_utf8_lossy(&output.stdout);
+    assert!(said.contains("unfinished_archive"), "{command}: {said}");
+
+    // The finding's drop command, as printed.
+    let (finding, report, _) = archive_finding(&fixture, &["doctor"]);
+    let fix = finding["fix"].as_str().unwrap_or_default().to_string();
+    let drop = printed_commands(&fix)
+        .into_iter()
+        .find(|command| command.starts_with("git rm "))
+        .unwrap_or_else(|| panic!("no drop command: {report:#}"));
+    assert!(!fix.contains("git mv"), "{fix}");
+    let output = run_printed(&fixture, &drop);
+    assert!(
+        output.status.success(),
+        "{drop}: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let output = fixture.run(&["doctor", "--fix"]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert!(
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|finding| finding["kind"] != "unfinished_archive" || finding["status"] == "fixed"),
+        "{report:#}"
+    );
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+}
+
+/// REQ-history-012 (#381, tester2's run of D1 on real repositories): an entry is kept by
+/// the file that was read, not by the ID inside it. An entry whose claim was edited after
+/// the story and that was then renamed with `git mv`, so its file name is not its ID, is
+/// kept, a name with a dot in it included, and so is one whose `id` field was edited;
+/// none goes with the folder.
+#[cfg(unix)]
+#[test]
+fn a_kept_entry_is_kept_by_its_file_whatever_its_id() {
+    for case in ["renamed", "renamed with a dot", "id edited"] {
+        let fixture = Fixture::new();
+        let (id, file) = archived_with_a_kept_entry(&fixture);
+        fixture.commit("the archive");
+        let text = fixture.read(&file);
+        let kept = match case {
+            "renamed" | "renamed with a dot" => {
+                let edited = text.replacen(
+                    "SYNTHETIC check at accept",
+                    "SYNTHETIC check at accept, edited",
+                    1,
+                );
+                assert_ne!(edited, text);
+                fixture.write(&file, &edited);
+                // corvid-agent's review: a name with a dot in it, as `renamed.v2`.
+                let renamed = if case == "renamed" {
+                    format!(".chough/sessions/{id}/evidence/2026-11-19-renamed-entry.md")
+                } else {
+                    format!(".chough/sessions/{id}/evidence/2026-11-19-renamed.v2.md")
+                };
+                assert!(
+                    git(&fixture, &["mv", "--", &file, &renamed])
+                        .status
+                        .success()
+                );
+                renamed
+            }
+            _ => {
+                let stem = file.rsplit('/').next().unwrap().trim_end_matches(".md");
+                let moved =
+                    text.replacen(&format!("id: {stem}\n"), &format!("id: {stem}-edited\n"), 1);
+                assert_ne!(moved, text, "no id line in {file}");
+                fixture.write(&file, &moved);
+                file.clone()
+            }
+        };
+        fixture.commit(case);
+        let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+        assert_eq!(finding["status"], "skipped", "{case}: {report:#}");
+        assert!(
+            finding["kept"].to_string().contains(&kept),
+            "{case}: {finding:#}"
+        );
+        assert!(fixture.exists(&kept), "{case}: the kept entry went");
+    }
+}
+
+/// REQ-cli-021, REQ-history-012 (#371, #389, tester2): with the story ignored by Git,
+/// `next` names the same commit the finding does, `git add -f`, so running what `next`
+/// prints, as printed, until it names no archive finish ends the archive; it never loops
+/// on `chough doctor --fix` alone.
+#[cfg(unix)]
+#[test]
+fn next_finishes_an_ignored_story_as_printed() {
+    let fixture = Fixture::new();
+    let (id, story, post) = archived_with_the_folder_committed(&fixture);
+    fixture.write(".gitignore", &format!("{story}\n"));
+    assert!(
+        git(&fixture, &["add", "--", ".gitignore", &post])
+            .status
+            .success()
+    );
+    assert!(
+        git(&fixture, &["commit", "-q", "-m", "ignore the story"])
+            .status
+            .success()
+    );
+    for round in 0..3 {
+        let view = fixture.ok(&["next", "--json"]);
+        let action = view["next_valid_action"]["action"]
+            .as_str()
+            .unwrap_or_default();
+        if !action.starts_with("Finish the archive") {
+            assert!(
+                !fixture.exists(&format!(".chough/sessions/{id}")),
+                "{view:#}"
+            );
+            assert!(tracked(&fixture, &story));
+            return;
+        }
+        let command = view["next_valid_action"]["command"]
+            .as_str()
+            .unwrap_or_default()
+            .to_string();
+        assert_ne!(
+            command, "chough doctor --fix",
+            "round {round}: next loops: {view:#}"
+        );
+        let output = run_printed(&fixture, &command);
+        let _ = output;
+    }
+    panic!("next still names the archive finish after three rounds");
+}
+
+/// REQ-history-012 (#381, tester2 on jackdaw: six open sessions, none active): with open
+/// sessions but no active pointer, the way out names them and says to pick one, with
+/// `chough session use <id>` or the move into `<id>`'s `evidence/`, never `chough session
+/// new` beside them.
+#[cfg(unix)]
+#[test]
+fn the_way_out_names_the_open_sessions_when_none_is_active() {
+    let fixture = Fixture::new();
+    let (id, file) = archived_with_a_kept_entry(&fixture);
+    fixture.commit("the archive");
+    let text = fixture.read(&file);
+    fixture.write(
+        &file,
+        &text.replacen(
+            "SYNTHETIC check at accept",
+            "SYNTHETIC check at accept, edited",
+            1,
+        ),
+    );
+    fixture.ok(&["session", "new", "beta", "--objective", "Ship beta"]);
+    let beta = fixture.active_id();
+    fixture.ok(&["session", "new", "gamma", "--objective", "Ship gamma"]);
+    let gamma = fixture.active_id();
+    std::fs::remove_file(fixture.root().join(".chough/local/active-session")).unwrap();
+    fixture.commit("two open sessions, none active");
+    let (finding, report, _) = archive_finding(&fixture, &["doctor"]);
+    let fix = finding["fix"].as_str().unwrap_or_default().to_string();
+    assert!(fix.contains(&beta) && fix.contains(&gamma), "{report:#}");
+    assert!(fix.contains("chough session use"), "{fix}");
+    assert!(!fix.contains("chough session new"), "{fix}");
+    assert!(fixture.exists(&format!(".chough/sessions/{id}")));
+}
+
+/// REQ-history-012 (#381, corvid-agent's review of #414, rule 3): an entry the story does
+/// not hold that Git does not track yet holds the finish like any uncommitted file, and is
+/// named in the commit to make, so the kept entry's way out (`git rm`, `git mv`) then runs
+/// as printed; once it is committed and dropped as printed, the archive finishes.
+#[cfg(unix)]
+#[test]
+fn an_untracked_kept_entry_is_committed_first_so_its_way_out_runs() {
+    let fixture = Fixture::new();
+    let (id, file) = archived_with_a_kept_entry(&fixture);
+    fixture.commit("the archive");
+    let extra = format!(".chough/sessions/{id}/evidence/2026-11-19-extra-entry.md");
+    let stem = file.rsplit('/').next().unwrap().trim_end_matches(".md");
+    let text = fixture
+        .read(&file)
+        .replacen(&format!("id: {stem}\n"), "id: 2026-11-19-extra-entry\n", 1)
+        .replacen("SYNTHETIC check at accept", "SYNTHETIC extra check", 1);
+    fixture.write(&extra, &text);
+    assert!(!tracked(&fixture, &extra));
+    let folder = format!(".chough/sessions/{id}");
+
+    // Held: the untracked entry is named in the commit to make.
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    let fix = finding["fix"].as_str().unwrap_or_default().to_string();
+    let commit = printed_commands(&fix)
+        .into_iter()
+        .find(|command| command.starts_with("git add "))
+        .unwrap_or_else(|| panic!("no commit command: {report:#}"));
+    assert!(commit.contains(&extra), "{commit}");
+    assert!(fixture.exists(&extra));
+    let output = run_printed(&fixture, &commit);
+    assert!(
+        output.status.success(),
+        "{commit}: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(tracked(&fixture, &extra));
+
+    // Now kept and tracked: its drop runs as printed, and the archive finishes.
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    let fix = finding["fix"].as_str().unwrap_or_default().to_string();
+    let drop = printed_commands(&fix)
+        .into_iter()
+        .find(|command| command.starts_with("git rm ") && command.contains("extra-entry"))
+        .unwrap_or_else(|| panic!("no drop command: {report:#}"));
+    let output = run_printed(&fixture, &drop);
+    assert!(
+        output.status.success(),
+        "{drop}: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let output = fixture.run(&["doctor", "--fix"]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert!(
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|finding| finding["kind"] != "unfinished_archive" || finding["status"] == "fixed"),
+        "{report:#}"
+    );
+    assert!(!fixture.exists(&folder));
+}
+
+/// REQ-history-012 (#381, the sweep after corvid-agent's review of #414): every file in
+/// an archived session's `agent/inbox/` is kept, whatever its name, so an unfolded entry
+/// renamed with a dot or a capital letter does not go with the folder.
+#[cfg(unix)]
+#[test]
+fn an_inbox_entry_is_kept_whatever_its_name() {
+    let fixture = Fixture::new();
+    let (id, _) = archived_with_a_kept_entry(&fixture);
+    let names = [
+        format!(".chough/sessions/{id}/agent/inbox/2026-11-19-note.v2.md"),
+        format!(".chough/sessions/{id}/agent/inbox/Note-From-A-Person.md"),
+    ];
+    for name in &names {
+        fixture.write(
+            name,
+            "---\nkind: decision\nfrom: worker\nvalue: SYNTHETIC unfolded\n---\nSYNTHETIC unfolded\n",
+        );
+    }
+    fixture.commit("the archive with two oddly named inbox entries");
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    for name in &names {
+        assert!(
+            fixture.exists(name),
+            "{name} went with the folder: {report:#}"
+        );
+        assert!(
+            finding["kept"].to_string().contains(name.as_str()),
+            "{finding:#}"
+        );
+    }
+}
+
+/// REQ-history-012 (#381, the inbox sweep in #414): an entry folded before the move into
+/// done is held by the session, so the files `inbox fold` leaves under
+/// `agent/inbox/folded/`, there at the finish when the fold came after the last commit,
+/// never hold it; only what is left unfolded in the inbox is kept.
+#[cfg(unix)]
+#[test]
+fn a_folded_inbox_entry_does_not_hold_the_finish() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    advance_to(&fixture, "accept");
+    fixture.commit("alpha at accept");
+    // Folded after the last commit, so the move into done leaves `folded/` for the finish.
+    add_entry(&fixture, "alpha", "decision", "SYNTHETIC folded decision");
+    fixture.ok(&["inbox", "fold"]);
+    let id = fixture.id_of("alpha");
+    let folded = format!(".chough/sessions/{id}/agent/inbox/folded");
+    assert!(
+        fixture.exists(&folded),
+        "inbox fold left nothing in {folded}"
+    );
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.commit("the archive");
+    assert!(
+        fixture.exists(&folded),
+        "the move into done left no {folded} for the finish to meet"
+    );
+    let output = fixture.run(&["doctor", "--fix"]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert!(
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|finding| finding["kind"] != "unfinished_archive" || finding["status"] == "fixed"),
+        "{report:#}"
+    );
+    assert!(
+        !fixture.exists(&format!(".chough/sessions/{id}")),
+        "{report:#}"
+    );
+}
+
+/// REQ-history-012 (#381, rule 3): a kept file in `agent/inbox/` that `chough inbox add`
+/// would not take again as it is, such as plain notes or an entry with no text, is named
+/// as such and only dropped, after copying what is needed from it. Doctor never prints an
+/// `inbox add` that is refused, or sends the person to `chough session use` and back for a
+/// command it cannot print; the drop runs as printed and the archive finishes.
+#[cfg(unix)]
+#[test]
+fn an_inbox_file_inbox_add_would_not_take_is_only_dropped() {
+    let fixture = Fixture::new();
+    let (id, _) = archived_with_a_kept_entry(&fixture);
+    fixture.ok(&["session", "new", "beta", "--objective", "Ship beta"]);
+    let names = [
+        format!(".chough/sessions/{id}/agent/inbox/notes.txt"),
+        format!(".chough/sessions/{id}/agent/inbox/2026-11-19-no-text.md"),
+    ];
+    fixture.write(&names[0], "SYNTHETIC plain notes\n");
+    fixture.write(&names[1], "---\nkind: decision\nfrom: worker\n---\n\n");
+    fixture.commit("the archive with two inbox files inbox add would not take");
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    let fix = finding["fix"].as_str().unwrap_or_default().to_string();
+    assert!(!fix.contains("chough session use"), "{fix}");
+    assert!(!fix.contains("chough inbox add"), "{fix}");
+    for name in &names {
+        let drop = printed_commands(&fix)
+            .into_iter()
+            .find(|command| command.starts_with("git rm ") && command.contains(name.as_str()))
+            .unwrap_or_else(|| panic!("no drop for {name}: {fix}"));
+        let output = run_printed(&fixture, &drop);
+        assert!(
+            output.status.success(),
+            "{drop}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    let output = fixture.run(&["doctor", "--fix"]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert!(
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|finding| finding["kind"] != "unfinished_archive" || finding["status"] == "fixed"),
+        "{report:#}"
+    );
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
 }
 
 /// REQ-cli-037 (#372): `session shelve` takes a key that is a session folder's name as
