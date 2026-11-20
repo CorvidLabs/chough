@@ -806,3 +806,34 @@ fn bug_merge_never_shows_a_path_holding_a_token() {
     assert!(!said.contains(TOKEN), "bug merge showed the token: {said}");
     assert!(said.contains("holding"), "{said}");
 }
+
+/// REQ-records-016 (corvid-agent's review of #418): a fragment of a line a session's body
+/// holds, with a control character written there by hand, is a value a person gives, so
+/// `--objective`, `--decision` and `--blocker` given one are each refused with the file
+/// byte-identical, while a save that gives no new control character still works.
+#[test]
+fn a_fragment_of_a_stored_control_line_is_still_refused() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.init();
+    let file = fixture.session_file();
+    let text = fixture.read(&file) + "\nhand note \u{1b}]0;owned\u{7} here\n";
+    fixture.write(&file, &text);
+    fixture.commit("a hand-written line holding a control sequence");
+    let before = fixture.read(&file);
+    for args in [
+        ["checkpoint", "--objective", "\u{1b}]0;owned\u{7}"],
+        ["checkpoint", "--decision", "note \u{1b}]0;owned\u{7}"],
+        ["checkpoint", "--blocker", "\u{1b}]0;owned"],
+    ] {
+        let refused = fixture.fails(&args);
+        assert!(
+            refused.contains("refused:control-character"),
+            "{args:?}: {refused}"
+        );
+        assert_eq!(fixture.read(&file), before, "{args:?} changed the session");
+    }
+    fixture.ok(&["checkpoint", "--next-action", "SYNTHETIC next step"]);
+    let after = fixture.read(&file);
+    assert_eq!(after.matches('\u{1b}').count(), 1, "{after:?}");
+}

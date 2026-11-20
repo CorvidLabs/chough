@@ -182,3 +182,21 @@ expected = ["tests/output_safety.rs::bug_merge_never_shows_a_path_holding_a_toke
 adapter = "cargo-test"
 test_target = "output_safety"
 test = "bug_merge_never_shows_a_path_holding_a_token"
+
+[[case]]
+id = "TC-records-a-fragment-of-a-stored-control-line-is-refused"
+title = "A fragment of a session body line holding a hand-written control character, given to --objective, --decision or --blocker, is refused with the file byte-identical, and a save giving no new control character still works"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-016"]
+paths = ["src/checkpoint.rs", "tests/output_safety.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/output_safety.rs::a_fragment_of_a_stored_control_line_is_still_refused passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "output_safety"
+test = "a_fragment_of_a_stored_control_line_is_still_refused"

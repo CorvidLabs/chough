@@ -12,7 +12,7 @@ callers: []
 native_change: control-and-echo
 pr: "418"
 criteria: [LIFE-26, DRIVE-26, LIFE-3]
-requirements: [REQ-records-006, REQ-cli-007, REQ-history-015]
+requirements: [REQ-records-006, REQ-cli-007, REQ-history-015, REQ-records-016, REQ-reporting-001]
 cases: []
 design: []
 files: []

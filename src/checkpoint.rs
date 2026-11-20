@@ -645,9 +645,18 @@ fn guard_leaks(session: &mut Checkpoint, stored: &str, kept: Kept) -> Result<usi
         // when printed and never blocks a save (REQ-records-016).
         let held = match &kept {
             Kept::All => true,
+            // Held only as a whole: a value the stored front matter holds, or a value
+            // each of whose lines is a whole line of the stored body, with or without
+            // its `- `. A fragment of a stored line is a value a person gives
+            // (corvid-agent's review of #418).
             Kept::From(values) => {
-                (!stored.is_empty() && !original.is_empty() && stored.contains(original.as_str()))
-                    || values.iter().any(|value| value == &original)
+                values.iter().any(|value| value == &original)
+                    || (!original.is_empty()
+                        && original.lines().all(|line| {
+                            stored.lines().any(|stored| {
+                                stored == line || stored.strip_prefix("- ") == Some(line)
+                            })
+                        }))
             }
         };
         let found = if held {
