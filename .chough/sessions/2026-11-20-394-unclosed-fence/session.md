@@ -5,7 +5,7 @@ aliases: [394-unclosed-fence]
 objective: A code fence that never closes hides nothing after it, so saving a session never repeats its sections and the bug merge driver still finds the Log (#394)
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -29,13 +29,9 @@ observations:
   - 2026-11-20-tc-cli-an-unclosed-fence-keeps-the-bug-log-mergeable-d21131
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-394-a-code-fence-that-never-closes-hides-no-section
-    holds: accept
-    drives: review
-    opened: 2026-11-20T19:34:02Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: A code fence that never closes hides no section
 summary:
   - "A code fence hides the lines up to its close only when it closes, in one rule the session reader and the bug merge driver share: a session whose Goal opens a fence that never closes saves any number of times with each section once, and two branches' Log entries on such a bug merge. The closes are found in one backward pass with a stack per fence character, linear for fences of any length (#394, #356)."
@@ -52,6 +48,7 @@ A code fence that never closes hides nothing after it, so saving a session never
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-394-a-code-fence-that-never-closes-hides-no-section (native approval)": "Standing OK, tell me after" (Leif's standing OK for scope approvals (2026-11-20 dialog, relayed via t4c): his answer 'Standing OK, tell me after' in a Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 04:17Z. Confirmed by t4c for this change on fable-lead's summary (one criterion added to each changed requirement, nothing removed, no refusal). Recorded by t4c itself, at the draft d05ac518); recorded by t4c; a relayed claim, not authenticated; ran specsync change approve fix-394-a-code-fence-that-never-closes-hides-no-section as 0xLeif
+- 0xLeif decided "Implementation review of fix-394-a-code-fence-that-never-closes-hides-no-section": "Go" (Standing OK 6(b): Leif's 'Go' to the six rules (Claude Code chat message of 2026-11-19, relayed by his planning session hc t4c), recording his implementation review of a batch with a tester PASS that changes no approved sentence. corvid-agent requested changes at 14c8ea20 (the fence search was quadratic past 16 characters); fixed at 71e05c1b with a linear stack, its own scenario 36.5 s down to 0.56 s; corvid-agent approved at 71e05c1b and again at 1999ea5d. The tester's PASS holds at 1999ea5d (the same src patch as 71e05c1b). No approved sentence changed. Main de49485f merged in at 44db4eb9 and main 50345a3b (#426) at a70869e1, each conflict keeping both sides' tests and criteria; t4b's script shows its own changed lines the same per file before and after, the specs only renumbered (records 25, cli 131), and the full lane green at 00667016. Recorded by t4c); recorded by t4c; a relayed claim, not authenticated; ran specsync change review fix-394-a-code-fence-that-never-closes-hides-no-section as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -118,4 +115,20 @@ A code fence that never closes hides nothing after it, so saving a session never
   - revision: 00667016496539c7959f1481aab0b3af616cd13b
   - holds: accept
   - drives: review
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T19:34:45Z · gate-closed · accept → accept · Implementation review of fix-394-a-code-fence-that-never-closes-hides-no-section ^t-74f6f7
+  - native_change: fix-394-a-code-fence-that-never-closes-hides-no-section
+  - revision: 9f1ea35ef62b3c9588bee1d5041ea43178c355de
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Go
+    - where: Standing OK 6(b): Leif's 'Go' to the six rules (Claude Code chat message of 2026-11-19, relayed by his planning session hc t4c), recording his implementation review of a batch with a tester PASS that changes no approved sentence. corvid-agent requested changes at 14c8ea20 (the fence search was quadratic past 16 characters); fixed at 71e05c1b with a linear stack, its own scenario 36.5 s down to 0.56 s; corvid-agent approved at 71e05c1b and again at 1999ea5d. The tester's PASS holds at 1999ea5d (the same src patch as 71e05c1b). No approved sentence changed. Main de49485f merged in at 44db4eb9 and main 50345a3b (#426) at a70869e1, each conflict keeping both sides' tests and criteria; t4b's script shows its own changed lines the same per file before and after, the specs only renumbered (records 25, cli 131), and the full lane green at 00667016. Recorded by t4c
+    - recorded_by: t4c
+    - native: specsync change review fix-394-a-code-fence-that-never-closes-hides-no-section
+    - actor: 0xLeif
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T19:34:46Z · advance · accept → done · native:archived ^t-ee724e
+  - native_change: fix-394-a-code-fence-that-never-closes-hides-no-section
+  - gate: native:archived
+  - revision: 9f1ea35ef62b3c9588bee1d5041ea43178c355de
   - by: t4c (claude-opus-5-5, hc t4c)
