@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-260-a-new-record-is-written-whole-or-not-at-all",
+  "implementation_commit": "34fd2a92d1ad9a81db575af01bbd7430d9acd8e7",
+  "implementation_tree": "f684d8314f0223dd051fc0fbe107982277424c9c",
+  "contract_digest": "a5d7dcff9d3d764f8f80be1a0e73adb45174db350c182b4052d75635442b04e5",
+  "workspace_digest": "bd7db8887585963abf928dd10cb2be96767c54a36a79e9d104d9cbb348a147f8",
+  "closing_digest": "ef766741d098b79a898b510d22dcd1839e4461172b35e4aca689e9919b423b2e",
+  "review_digest": "004c53ae469e73447b8a0a4ef7f1259cad7218dee038b12e2340ae8dc7526dfd",
+  "finalization_digest": "95363e6f8e6425cbe6f5f82650ab5da3e8a12507c7a36cba1f61fadb5c90b26d",
+  "timestamp": 1795201053
+}

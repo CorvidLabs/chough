@@ -724,6 +724,11 @@ pub(crate) fn parse(file: &str, text: &str) -> Result<Record> {
     let mut lines = text.split_inclusive('\n');
     match lines.next() {
         Some("---\n") | Some("---") => {}
+        // #260: an empty file, as a write cut off by a full disk leaves one, is named as
+        // empty, with the way out.
+        _ if text.trim().is_empty() => bail!(
+            "{file} is empty, as a write cut off by a full disk or a size limit leaves a record; remove it, then run the command that writes it again"
+        ),
         _ => bail!("{file}:1: a record starts with a `---` line before its front matter"),
     }
     let mut front = vec![];

@@ -1612,3 +1612,161 @@ fn a_code_fence_that_never_closes_hides_no_section() {
         }
     }
 }
+
+/// `chough <args>` in `fixture` under a file-size limit of `blocks` (`ulimit -f`), with the
+/// environment `Fixture::run` gives it.
+#[cfg(unix)]
+fn run_limited(fixture: &Fixture, blocks: u32, args: &[&str]) -> std::process::Output {
+    let chough = env!("CARGO_BIN_EXE_chough");
+    let mut command = std::process::Command::new("sh");
+    command
+        .arg("-c")
+        .arg(format!("ulimit -f {blocks}; exec \"$0\" \"$@\""))
+        .arg(chough)
+        .arg("--root")
+        .arg(fixture.root())
+        .args(args);
+    let mut paths = vec![fixture.root().join("bin")];
+    if let Some(build) = Path::new(chough).parent() {
+        paths.push(build.to_path_buf());
+    }
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    command.env("PATH", std::env::join_paths(paths).unwrap());
+    for name in common::ACTOR_VARIABLES {
+        command.env_remove(name);
+    }
+    command.env("XDG_CONFIG_HOME", fixture.root().join(common::USER_CONFIG));
+    command.output().unwrap()
+}
+
+/// Every file under `relative` of the project, by name.
+#[cfg(unix)]
+fn names_under(fixture: &Fixture, relative: &str) -> BTreeSet<String> {
+    std::fs::read_dir(fixture.root().join(relative))
+        .map(|entries| {
+            entries
+                .flatten()
+                .map(|entry| entry.file_name().to_string_lossy().into_owned())
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+/// #260 (REQ-records-001, REQ-cli-023), TC-records-a-cut-off-write-leaves-no-record:
+/// `chough bug add` and `chough journal add` stopped by a file-size limit exit non-zero,
+/// leave no file at the new record's name and no temporary file in `.chough/local/`, and
+/// every reader then works as before.
+#[cfg(unix)]
+#[test]
+fn a_write_cut_off_by_a_size_limit_leaves_no_record() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("init");
+    let bugs = names_under(&fixture, ".chough/bugs");
+    let posts = names_under(&fixture, "knowledge/journal");
+    let long = "y".repeat(3_000);
+    let bug = run_limited(
+        &fixture,
+        4,
+        &[
+            "bug",
+            "add",
+            "--title",
+            "a cut-off bug",
+            "--symptom",
+            &long,
+            "--trigger",
+            &long,
+            "--expected",
+            &long,
+            "--actual",
+            &long,
+            "--environment",
+            "local",
+        ],
+    );
+    assert!(!bug.status.success(), "bug add succeeded under the limit");
+    let post = run_limited(
+        &fixture,
+        1,
+        &[
+            "journal",
+            "add",
+            "--kind",
+            "learned",
+            "--title",
+            "a cut-off post",
+            "--body",
+            &"z".repeat(1_100),
+        ],
+    );
+    assert!(
+        !post.status.success(),
+        "journal add succeeded under the limit"
+    );
+    assert_eq!(
+        names_under(&fixture, ".chough/bugs"),
+        bugs,
+        "a bug file was left"
+    );
+    assert_eq!(
+        names_under(&fixture, "knowledge/journal"),
+        posts,
+        "a post was left"
+    );
+    let temporaries: Vec<String> = names_under(&fixture, ".chough/local")
+        .into_iter()
+        .filter(|name| name.starts_with('.') && name.ends_with(".new"))
+        .collect();
+    assert!(temporaries.is_empty(), "{temporaries:?}");
+    for args in [
+        &["bug", "list"][..],
+        &["status"][..],
+        &["next"][..],
+        &["library", "index", "--check"][..],
+    ] {
+        let output = fixture.run(args);
+        assert!(
+            output.status.success(),
+            "{args:?}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+}
+
+/// #260: an empty record file, as a full disk leaves one, is named as empty with the way
+/// out, not as a record missing its `---` line.
+#[test]
+fn an_empty_record_is_named_as_empty() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.write(".chough/bugs/2026-01-01-empty.md", "");
+    let refused = fixture.fails(&["status"]);
+    assert!(
+        refused.contains(".chough/bugs/2026-01-01-empty.md") && refused.contains("is empty"),
+        "{refused}"
+    );
+    assert!(!refused.contains("starts with a `---` line"), "{refused}");
+}
+
+/// #260 (guard, passes on main too): Chough ignores SIGXFSZ only around a record's write,
+/// so a case's own command still dies of SIGXFSZ under a file-size limit, as it would run
+/// on its own; it never inherits the ignored signal.
+#[cfg(unix)]
+#[test]
+fn a_case_command_still_dies_of_sigxfsz() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-0001\"\ntitle = \"A size limit kills the command\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-cli-001\"]\npaths = [\"src/\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"dd dies of SIGXFSZ\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"sh\", \"-c\", \"ulimit -f 4; dd if=/dev/zero of=big bs=1024 count=100 2>/dev/null; echo exit=$?\"]\nexpect_output = [\"exit=153\"]\n",
+    );
+    fixture.init();
+    fixture.commit("fixture");
+    let output = fixture.run(&["cases", "run", "TC-cli-0001", "--environment", "test-local"]);
+    let report: serde_json::Value = serde_json::from_slice(&output.stdout)
+        .unwrap_or_else(|_| panic!("{}", String::from_utf8_lossy(&output.stderr)));
+    assert_eq!(report["outcome"], "passed", "{report:#}");
+}
