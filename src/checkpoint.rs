@@ -853,15 +853,6 @@ pub(super) fn evidence_links(
 
 /// Save the checkpoint and its queued Timeline entries in one atomic replace; the
 /// checkpoint then holds the record written and no queued entry.
-/// Check, with nothing written, that `session` would save as [`save_checkpoint`] saves
-/// it: the same links, validation, rendering and bound (#343 review). The error says why
-/// it would not.
-pub(super) fn check_save(root: &Path, session: &Checkpoint) -> Result<()> {
-    let mut session = session.clone();
-    session.evidence_links = evidence_links(root, &session);
-    render_checkpoint(&session).map(|_| ())
-}
-
 pub(super) fn save_checkpoint(root: &Path, session: &mut Checkpoint) -> Result<()> {
     lock_checkpoint(root)?;
     remove_orphaned_session_temps(root)?;
@@ -1965,6 +1956,8 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         .then(|| crate::direct_writes::settle(root, session.native_change.as_deref()).err())
         .flatten();
     let mut output = json!({"schema_version": 1, "saved": changed, "checkpoint": session});
+    // REQ-cli-012: the session's bugs, those its checkpoint holds and those filed in it.
+    output["checkpoint"]["bugs"] = json!(crate::bugs::of_session(root, &session));
     // REQ-cli-007 (#353): the checkpoint view shows the session's pull request.
     if !session.meta.pr.is_empty() {
         output["checkpoint"]["pr"] = json!(session.meta.pr);

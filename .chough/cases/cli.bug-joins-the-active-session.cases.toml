@@ -6,7 +6,7 @@ module = "cli"
 
 [[case]]
 id = "TC-cli-bug-add-joins-the-active-session"
-title = "A blocking bug added while a session is active, with nothing linked, is on that session's bugs list and stops it leaving test"
+title = "A blocking bug added while a session is active, with nothing linked, is one of that session's bugs and stops it leaving test"
 status = "active"
 track = "functional"
 method = "automated"
@@ -23,11 +23,14 @@ test_target = "bugs"
 test = "a_blocking_bug_added_in_a_session_stops_it"
 
 # The #343 review: with the session full, bug add wrote a bug it then could not link.
+# Retired by bug-add-leaves-the-session (#382, #395): bug add no longer writes the
+# session, so a full checkpoint no longer refuses it
+# (TC-cli-bug-add-files-a-bug-beside-a-full-checkpoint).
 
 [[case]]
 id = "TC-cli-bug-add-refuses-before-writing-when-the-session-is-full"
 title = "With the active session holding its 200 bug links, bug add refuses before writing anything, naming the session and the limit, and no bug record is left behind"
-status = "active"
+status = "retired"
 track = "functional"
 method = "automated"
 criteria = ["LIFE-5"]
