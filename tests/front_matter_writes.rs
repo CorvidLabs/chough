@@ -76,63 +76,81 @@ fn a_block_list_item_starting_with_a_hyphen_reads_back() {
     reads_back(&fixture, "a failing sh -c case run");
 }
 
-/// REQ-records-001, TC-records-tabs-in-values-read-back (R5): a tab in an objective,
-/// a next action, a claim, a limitation or a bug title is stored as a space, so each
-/// write leaves the session, its evidence and the bug readable.
+/// REQ-records-001 and REQ-records-016, TC-records-tabs-in-values-read-back (R5, #366): a
+/// tab given in an objective, a next action, a claim, a limitation or a bug title is
+/// refused as `refused:control-character` naming U+0009, with nothing written, so each
+/// record stays readable; a tab is a control character like any other.
 #[test]
-fn a_tab_in_a_value_is_stored_as_a_space_and_reads_back() {
+fn a_tab_in_a_given_value_is_refused_and_the_records_stay_readable() {
     let fixture = Fixture::new();
     fixture.stubs();
     fixture.init();
     fixture.commit("fixture");
-    fixture.ok(&["checkpoint", "--objective", "SYNTHETIC obj\tx"]);
-    reads_back(&fixture, "an objective with a tab");
-    fixture.ok(&["checkpoint", "--next-action", "SYNTHETIC next\taction"]);
-    reads_back(&fixture, "a next action with a tab");
-    let session = fixture.read(&fixture.session_file());
-    assert!(session.contains("SYNTHETIC obj x"), "{session}");
-    assert!(session.contains("SYNTHETIC next action"), "{session}");
-    fixture.ok(&[
-        "evidence",
-        "add",
-        "--criterion",
-        "LIFE-1",
-        "--requirement",
-        "REQ-cli-001",
-        "--contract",
-        "specs/cli/cli.spec.md",
-        "--kind",
-        "human-observation",
-        "--outcome",
-        "passed",
-        "--environment",
-        "local",
-        "--summary",
-        "SYNTHETIC a\tb",
-        "--limitation",
-        "tab\tinside",
-    ]);
-    reads_back(&fixture, "a claim and a limitation with a tab");
-    fixture.ok(&[
-        "bug",
-        "add",
-        "--title",
-        "SYNTHETIC tab\ttitle",
-        "--symptom",
-        "SYNTHETIC symptom",
-        "--trigger",
-        "SYNTHETIC trigger",
-        "--expected",
-        "SYNTHETIC expected",
-        "--actual",
-        "SYNTHETIC actual",
-        "--environment",
-        "local",
-    ]);
-    reads_back(&fixture, "a bug title with a tab");
-    let listed = fixture.ok(&["bug", "list"]);
+    let file = fixture.session_file();
+    let before = fixture.read(&file);
+    let evidence = |summary: &'static str, limitation: &'static str| {
+        vec![
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "human-observation",
+            "--outcome",
+            "passed",
+            "--environment",
+            "local",
+            "--summary",
+            summary,
+            "--limitation",
+            limitation,
+        ]
+    };
+    let writes: Vec<Vec<&str>> = vec![
+        vec!["checkpoint", "--objective", "SYNTHETIC obj\tx"],
+        vec!["checkpoint", "--next-action", "SYNTHETIC next\taction"],
+        evidence("SYNTHETIC a\tb", "none"),
+        evidence("SYNTHETIC claim", "tab\tinside"),
+        vec![
+            "bug",
+            "add",
+            "--title",
+            "SYNTHETIC tab\ttitle",
+            "--symptom",
+            "SYNTHETIC symptom",
+            "--trigger",
+            "SYNTHETIC trigger",
+            "--expected",
+            "SYNTHETIC expected",
+            "--actual",
+            "SYNTHETIC actual",
+            "--environment",
+            "local",
+        ],
+    ];
+    for args in &writes {
+        for redact in [false, true] {
+            let mut all: Vec<&str> = if redact { vec!["--redact"] } else { vec![] };
+            all.extend(args.iter().copied());
+            let refused = fixture.fails(&all);
+            assert!(
+                refused.contains("refused:control-character") && refused.contains("U+0009"),
+                "{all:?}: {refused}"
+            );
+            reads_back(&fixture, "a refused write holding a tab");
+        }
+    }
+    assert_eq!(
+        fixture.read(&file),
+        before,
+        "a refused write changed the session"
+    );
     assert!(
-        listed.to_string().contains("SYNTHETIC tab title"),
-        "{listed:#}"
+        !fixture.exists(".chough/bugs"),
+        "a refused bug add wrote a bug"
     );
 }

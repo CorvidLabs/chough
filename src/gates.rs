@@ -956,8 +956,8 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
         .collect::<std::result::Result<_, _>>()
         .map_err(|_| {
             anyhow::anyhow!(
-                "refused:not-listed: --gates must be listed numbers such as 1,3; got {:?}, so nothing was written.\nRun `chough gate list` to see the numbers.",
-                args.gates
+                "refused:not-listed: --gates must be listed numbers such as 1,3; got {}, so nothing was written.\nRun `chough gate list` to see the numbers.",
+                crate::leaks::shown("--gates", &args.gates)
             )
         })?;
     let mut checked: Vec<Listed> = vec![];

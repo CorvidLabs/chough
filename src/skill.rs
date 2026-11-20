@@ -588,7 +588,8 @@ fn directory(host: &str) -> Result<String> {
         .map(|(_, path)| format!("{path}/chough-workflow"))
         .ok_or_else(|| {
             anyhow::anyhow!(
-                "unknown host {host}; supported: {}",
+                "unknown host {}; supported: {}",
+                crate::leaks::shown("--host", host),
                 host_names().join(", ")
             )
         })
@@ -636,7 +637,8 @@ fn legacy_directory(host: &str) -> Result<String> {
         .ok_or_else(|| {
             let names: Vec<&str> = LEGACY.iter().map(|(name, _)| *name).collect();
             anyhow::anyhow!(
-                "no legacy copy is known for host {host}; legacy hosts: {}",
+                "no legacy copy is known for host {}; legacy hosts: {}",
+                crate::leaks::shown("--host", host),
                 names.join(", ")
             )
         })

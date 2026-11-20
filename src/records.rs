@@ -103,8 +103,40 @@ fn native_trace_line(source: &str, state: &str, elapsed_ms: u128) -> String {
 }
 
 pub(super) fn print_json(value: &Value) -> Result<()> {
-    println!("{}", serde_json::to_string_pretty(value)?);
+    println!("{}", json_text(value, true)?);
     Ok(())
+}
+
+/// `value` as JSON text (REQ-records-016, #366): serde_json escapes the C0 controls, and
+/// DEL, the C1 controls and the bidirectional characters it leaves raw are escaped as `\u`
+/// too, so no JSON view prints a control character raw and it parses back the same.
+pub(super) fn json_text(value: &Value, pretty: bool) -> Result<String> {
+    let text = if pretty {
+        serde_json::to_string_pretty(value)?
+    } else {
+        serde_json::to_string(value)?
+    };
+    Ok(escape_json_controls(text))
+}
+
+/// `text`, serialized JSON, with each control character serde_json left raw escaped. A
+/// raw C0 control never stands in serde_json's strings, so a line feed here is layout.
+pub(super) fn escape_json_controls(text: String) -> String {
+    if !text
+        .chars()
+        .any(|character| character != '\n' && crate::leaks::control(character))
+    {
+        return text;
+    }
+    let mut out = String::with_capacity(text.len() + 8);
+    for character in text.chars() {
+        if character != '\n' && crate::leaks::control(character) {
+            out.push_str(&format!("\\u{:04x}", character as u32));
+        } else {
+            out.push(character);
+        }
+    }
+    out
 }
 
 pub(super) fn now() -> Result<u64> {

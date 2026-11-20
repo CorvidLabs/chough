@@ -124,7 +124,7 @@ impl Run {
         record.set_scalar("kind", "evidence")?;
         record.set_scalar("id", id)?;
         record.set("aliases", Front::List(self.aliases.clone()))?;
-        record.set_scalar("validation_run", "true")?;
+        record.set_bool("validation_run", true)?;
         record.set_scalar(
             "claim",
             &format!("Repeated validation run of {}", self.case),
@@ -384,6 +384,8 @@ fn render(root: &Path, run: &Run, id: &str) -> Result<String> {
     let revision = crate::records::head_revision(root).unwrap_or_default();
     let mut record = run.record(id, &revision)?;
     let local = crate::leaks::Local::current();
+    // A control character is refused under `--redact` too (REQ-records-016).
+    record.check_controls(None)?;
     if crate::leaks::redacting() {
         let redacted = record.redact_leaks(local);
         if redacted > 0 {
@@ -463,7 +465,7 @@ fn load(root: &Path, id: &str) -> Result<Run> {
         .collect();
     match found.len() {
         1 => Ok(found.remove(0)),
-        0 => bail!("unknown validation run: {id}"),
+        0 => bail!("unknown validation run: {}", crate::leaks::shown("run", id)),
         _ => bail!(
             "refused: validation run {id} is ambiguous: it is {}",
             found

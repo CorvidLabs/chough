@@ -227,11 +227,13 @@ pub(crate) fn require_explicit_observation_id(id: &str) -> Result<()> {
     crate::leaks::check_name(crate::leaks::Local::current(), "id", id)?;
     ensure!(
         !valid_observation_id(id) && !valid_validation_id(id) && !valid_snapshot_id(id),
-        "old-style observation ID {id:?} cannot be used for a new write; omit the ID for automatic allocation"
+        "old-style observation ID {} cannot be used for a new write; omit the ID for automatic allocation",
+        crate::leaks::shown("ID", id)
     );
     ensure!(
         valid_dated_name(id),
-        "invalid evidence ID {id:?} (a date and slug name, such as 2026-11-10-fix-login); omit the ID for automatic allocation"
+        "invalid evidence ID {} (a date and slug name, such as 2026-11-10-fix-login); omit the ID for automatic allocation",
+        crate::leaks::shown("ID", id)
     );
     Ok(())
 }
