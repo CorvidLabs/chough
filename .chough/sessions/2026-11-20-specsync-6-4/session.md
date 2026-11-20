@@ -5,7 +5,7 @@ aliases: [specsync-6-4]
 objective: "Chough moves to SpecSync 6.4.0: change ready asks SpecSync's approval dry run and stops copying its delta-set rule, spec history is recorded in fragments with no spec merge line, and change ready leaves .specsync/hashes.json alone (#404, #406, #307)"
 intent_scope: ""
 modules: []
-stage: design
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Scope approval of specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # Chough moves to SpecSync 6.4.0: change ready asks SpecSync's approval dry run and stops copying its delta-set rule, spec history is recorded in fragments with no spec merge line, and change ready leaves .specsync/hashes.json alone (#404, #406, #307)
 
@@ -64,3 +64,12 @@ Chough moves to SpecSync 6.4.0: change ready asks SpecSync's approval dry run an
     - native: specsync change approve specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
     - actor: 0xLeif
   - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T18:52:41Z · advance · design → plan ·  ^t-2f5d5b
+  - native_change: specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
+  - revision: df5af25555a000155084b5aa1426cb9ecaf4a657
+  - by: fable (claude-opus-5-5, hc t85)
+- 2026-11-20T18:52:41Z · advance · plan → build · native:approved ^t-152041
+  - native_change: specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
+  - gate: native:approved
+  - revision: df5af25555a000155084b5aa1426cb9ecaf4a657
+  - by: fable (claude-opus-5-5, hc t85)
