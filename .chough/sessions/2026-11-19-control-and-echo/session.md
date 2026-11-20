@@ -5,7 +5,7 @@ aliases: [control-and-echo]
 objective: "Control and echo batch: control characters refused at write and escaped on print (#366), --pr takes a number or an http(s) URL and is shown in next, status, context and the checkpoint view (#353), the remaining sites echo no value (part of #367), and a file URL holds the user name"
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Approve the scope of control-and-echo\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # Control and echo batch: control characters refused at write and escaped on print (#366), --pr takes a number or an http(s) URL and is shown in next, status, context and the checkpoint view (#353), the remaining sites echo no value (part of #367), and a file URL holds the user name
 
@@ -82,4 +82,9 @@ Control and echo batch: control characters refused at write and escaped on print
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve control-and-echo
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T01:42:57Z · advance · plan → build · native:approved ^t-206354
+  - native_change: control-and-echo
+  - gate: native:approved
+  - revision: 0e29a28a355707d0b1403a4059b9a564f7a84b6f
   - by: chough-fixer (claude-opus-5-5, hc t4n)
