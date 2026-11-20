@@ -57,6 +57,13 @@
         "where": "Leif's standing OK for scope approvals (2026-11-20 dialog, relayed via t4c): his answer 'Standing OK, tell me after' in a Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 04:17Z. Confirmed by t4c for this change on fable-lead's summary (one criterion added to each changed requirement, nothing removed, no refusal). Recorded by t4c itself, at the draft d05ac518",
         "recorded_by": "t4c"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795203255,
+      "digest": "bc8f4ce695aa737ac425f060aef5661ba1d05b2deafbc8277eb31c60f77a6bbc",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

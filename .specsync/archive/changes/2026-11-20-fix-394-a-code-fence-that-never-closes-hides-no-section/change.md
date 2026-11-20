@@ -1,6 +1,6 @@
 ---
 id: fix-394-a-code-fence-that-never-closes-hides-no-section
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 056cbb8029f6535ff74f866a0523893916f682db
 ---

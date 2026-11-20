@@ -5,7 +5,7 @@ aliases: [394-unclosed-fence]
 objective: A code fence that never closes hides nothing after it, so saving a session never repeats its sections and the bug merge driver still finds the Log (#394)
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -29,9 +29,17 @@ observations:
   - 2026-11-20-tc-cli-an-unclosed-fence-keeps-the-bug-log-mergeable-d21131
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-394-a-code-fence-that-never-closes-hides-no-section
+    holds: accept
+    drives: review
+    opened: 2026-11-20T19:34:02Z
 run_consents: []
-next: Continue build
+next: Continue accept
+title: A code fence that never closes hides no section
+summary:
+  - "A code fence hides the lines up to its close only when it closes, in one rule the session reader and the bug merge driver share: a session whose Goal opens a fence that never closes saves any number of times with each section once, and two branches' Log entries on such a bug merge. The closes are found in one backward pass with a stack per fence character, linear for fences of any length (#394, #356)."
+  - "Verified: corvid-agent's blocker on long fences fixed at 71e05c1b (its scenario 36.5 s down to 0.56 s) and its approval at 1999ea5d; the tester's PASS at 1999ea5d; main 50345a3b merged in at a70869e1, own lines the same per file; full lane green at 00667016."
 ---
 # A code fence that never closes hides nothing after it, so saving a session never repeats its sections and the bug merge driver still finds the Log (#394)
 
@@ -95,3 +103,19 @@ A code fence that never closes hides nothing after it, so saving a session never
   - gate: native:approved
   - revision: cb89694a8a27346a84c8f7352c0351404940268c
   - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T19:34:02Z · advance · build → test · native:verifying ^t-08d4a6
+  - native_change: fix-394-a-code-fence-that-never-closes-hides-no-section
+  - gate: native:verifying
+  - revision: 00667016496539c7959f1481aab0b3af616cd13b
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T19:34:02Z · advance · test → accept · native:verifying ^t-a3764e
+  - native_change: fix-394-a-code-fence-that-never-closes-hides-no-section
+  - gate: native:verifying
+  - revision: 00667016496539c7959f1481aab0b3af616cd13b
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T19:34:02Z · gate-opened · accept → accept · Implementation review of fix-394-a-code-fence-that-never-closes-hides-no-section ^t-823549
+  - native_change: fix-394-a-code-fence-that-never-closes-hides-no-section
+  - revision: 00667016496539c7959f1481aab0b3af616cd13b
+  - holds: accept
+  - drives: review
+  - by: t4c (claude-opus-5-5, hc t4c)
