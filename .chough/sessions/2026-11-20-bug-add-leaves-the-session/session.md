@@ -9,7 +9,7 @@ stage: plan
 stage_status: active
 iteration: 1
 callers: []
-native_change: ""
+native_change: bug-add-leaves-the-session
 pr: ""
 criteria: [LIFE-5, DRIVE-12]
 requirements: [REQ-cli-012, REQ-cli-054, REQ-history-006]
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Read scoped intent and native status, then choose the next action within the authorized scope.
+next: "Gate \"Approve the scope of bug-add-leaves-the-session\" closed (approved); run `chough stage advance` to move on."
 ---
 # bug add records the session on the new bug and never writes the session, so parallel filing merges and filing costs the same at any size (#382, #395)
 
@@ -32,6 +32,8 @@ bug add records the session on the new bug and never writes the session, so para
 ## Where it stands
 
 ## Decisions and why
+
+- 0xLeif decided "Approve the scope of bug-add-leaves-the-session": "A: on the bug (Recommended)" (Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 14:13Z, relayed by hc t4c through fable-lead (hc t53); the question as shown: 'Chough R2a (#382, #395, two regressions from #343). Where should a bug's "filed in this session" link live?'; on R2a bug-add-leaves-the-session at 51a848c6 with choice A); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve bug-add-leaves-the-session as 0xLeif
 
 ## What was verified
 
@@ -47,4 +49,21 @@ bug add records the session on the new bug and never writes the session, so para
   - by: chough-fixer (claude-opus-5-5, hc t4n)
 - 2026-11-20T11:19:15Z · skip · design → plan · Nothing visual changes: bug add stops writing the session and a bug records the session it was filed in. ^t-a49bfd
   - revision: 056cbb8029f6535ff74f866a0523893916f682db
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T14:25:36Z · gate-opened · plan → plan · Approve the scope of bug-add-leaves-the-session ^t-e41443
+  - native_change: bug-add-leaves-the-session
+  - revision: 51a848c6029a17796df8b75c4a3cd9e051ca7774
+  - holds: plan
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T14:25:36Z · gate-closed · plan → plan · Approve the scope of bug-add-leaves-the-session ^t-b2943a
+  - native_change: bug-add-leaves-the-session
+  - revision: 51a848c6029a17796df8b75c4a3cd9e051ca7774
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: A: on the bug (Recommended)
+    - where: Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 14:13Z, relayed by hc t4c through fable-lead (hc t53); the question as shown: 'Chough R2a (#382, #395, two regressions from #343). Where should a bug's "filed in this session" link live?'; on R2a bug-add-leaves-the-session at 51a848c6 with choice A
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve bug-add-leaves-the-session
+    - actor: 0xLeif
   - by: chough-fixer (claude-opus-5-5, hc t4n)

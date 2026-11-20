@@ -1,6 +1,6 @@
 ---
 id: bug-add-leaves-the-session
-state: draft
+state: approved
 type: bug_fix
 base_commit: 056cbb8029f6535ff74f866a0523893916f682db
 ---
