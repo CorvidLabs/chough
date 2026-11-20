@@ -1,4 +1,66 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795190676,
+      "digest": "296445c4fa4813deb4f224bb5461f372020592c504e3a902a4671662ad15d9ed",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason (native approval)\": \"Approve (Recommended)\" (Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 16:04Z, to: 'Chough G2 (#389's gate summary and #390), scope approval. Four truth-telling fixes found on main ... It changes some of your approved words (REQ-cli-061's cases and its diff range) and adds that one refusal, so it's not a standing-OK case. Approve the scope as drafted?' Recorded by t4c itself, at the draft 17e01d68). Relayed and recorded by t4c at 2026-11-20T16:04:34Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason",
+        "title": "Fix G2: the gate summary tells the truth and an unattended done needs a reason",
+        "description": "Fix G2: the gate summary tells the truth and an unattended done needs a reason",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.g2-gate-summary.cases.toml",
+          "changelog.d/",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/history/history.spec.md",
+          "specs/history/requirements.md",
+          "src/doctor.rs",
+          "src/gates.rs",
+          "src/main.rs",
+          "src/stage.rs",
+          "tests/doctor.rs",
+          "tests/gates.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "The gate summary counts a passing observation with no case, shows uncommitted work as git diff <base> and counts a session with no base from the first commit; doctor's unfinished_archive fix names the journal post and finishes no archive while it is uncommitted; without SpecSync, stage advance says no human decision is recorded for plan or accept, and --to across them refuses as refused:no-human-decision unless --reason is given, which lands in the Timeline."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "cli and history lessons apply: #390 is Leif's decision B; the new refusal names its way out and gets the tester's real-repository run (rule 3); every new free-text value (--reason) goes through the leak check with a leak-sample test",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "d28c37e8486f9b9e5074a5696ec45fb78dc699c6a2a06d4ff038bcf9dd0994af",
+        "history": "763db0c5d0406a3d57a367a1f0e303f2d816820caa041a9a11cb32044a89137b"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-031": "9405daef8898af5b77e687e0d166edf025f944e472bb8999385a44886e0d1918",
+        "cli: REQUIREMENT REQ-cli-061": "49fb7a4d9af92011fc1859feaf004b62386a46422039a28122ab9e4e7ec0460d",
+        "history: REQUIREMENT REQ-history-012": "9cf9bd28c16e7ca0d79184dc4739dc35839d750b68ca47300d05a4017621221f"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve (Recommended)",
+        "where": "Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 16:04Z, to: 'Chough G2 (#389's gate summary and #390), scope approval. Four truth-telling fixes found on main ... It changes some of your approved words (REQ-cli-061's cases and its diff range) and adds that one refusal, so it's not a standing-OK case. Approve the scope as drafted?' Recorded by t4c itself, at the draft 17e01d68",
+        "recorded_by": "t4c"
+      }
+    }
+  ],
   "reopenings": []
 }
