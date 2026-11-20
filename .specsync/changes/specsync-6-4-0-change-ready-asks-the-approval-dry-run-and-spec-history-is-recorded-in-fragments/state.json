@@ -7,10 +7,11 @@
   "title": "SpecSync 6.4.0: change ready asks the approval dry run, and spec history is recorded in fragments",
   "description": "SpecSync 6.4.0: change ready asks the approval dry run, and spec history is recorded in fragments",
   "kind": "migration",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "de49485fc5fb93f05bb15db7cd471023beebd8a8",
   "created_at": 1795199292,
-  "updated_at": 1795212279,
+  "updated_at": 1795212597,
   "affected_specs": [
     "cli"
   ],
