@@ -133,6 +133,77 @@
         "where": "Two of Leif's standing OKs, relayed via t4c: (e) for case files only (his 'Ok', about 03:00Z on 2026-11-20), for .chough/cases/cli.change-ready.cases.toml, whose case TC-cli-change-ready-no-spec-change the approved removal of the delta-set rule (his Q1 'A: drop it') makes false; and his standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c, for three files the approved pin move makes false: skills/chough-workflow/references/lifecycle.md, .agents/skills/chough-workflow/references/lifecycle.md and docs/exercises/feature-bug-loop.md. Path-only: no delta word changes, no new refusal. Recorded by t4c",
         "recorded_by": "t4c"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795203290,
+      "digest": "f10e25af09515a77f3d5447c3fdf55f65f2da4eeffa3a22628ef8904b1993fc4",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments with the skill-release fixture added (native approval)\": \"Standing OK, tell me after\" (Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this path-only addition: tests/fixtures/skill-releases/manifest.json and tests/skill_releases.rs, which pin the current skill bundle that the approved pin move's skill reference changes, as #351 did; no delta word changes, no new refusal. Recorded by t4c). Relayed and recorded by t4c at 2026-11-20T19:34:49Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments",
+        "title": "SpecSync 6.4.0: change ready asks the approval dry run, and spec history is recorded in fragments",
+        "description": "SpecSync 6.4.0: change ready asks the approval dry run, and spec history is recorded in fragments",
+        "kind": "migration",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/lifecycle.md",
+          ".chough/cases/cli.change-ready.cases.toml",
+          ".chough/cases/cli.specsync-6-4.cases.toml",
+          ".chough/cases/cli.specsync-merge-driver.cases.toml",
+          ".gitattributes",
+          ".github/scripts/check-specsync-archive.py",
+          ".github/scripts/test-specsync-archive.py",
+          ".github/workflows/ci.yml",
+          ".specsync/config.toml",
+          ".specsync/sdd.json",
+          "AGENTS.md",
+          "README.md",
+          "changelog.d/",
+          "docs/ci.md",
+          "docs/cli.md",
+          "docs/exercises/feature-bug-loop.md",
+          "docs/integrations.md",
+          "docs/walkthrough.md",
+          "skills/chough-workflow/references/lifecycle.md",
+          "specs/cli/history/",
+          "specs/cli/requirements.md",
+          "src/change.rs",
+          "src/ready.rs",
+          "tests/change.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/package.rs",
+          "tests/ready.rs",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "The criteria in deltas/cli.md (REQ-cli-067): ready names whatever SpecSync's approval dry run refuses, drops its delta-set rule, leaves SpecSync's own untracked files and another active change's paths out, and touches no .specsync/hashes.json; the pins name 6.4.0 and the spec merge line is gone."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "Leif's rule 5 (prefer removing rules), his 'Ask SpecSync itself' for #406, and rule 3 (the tester's real-repository run for a changed refusal); every machine and merge driver moves to 6.4.0 when this lands; the public text says only what Chough's code does.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "ea6f311880eaeb7eac55fd78e23d7d83b2c349929d9551935f1b244e33f70728"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-067": "b77f895431b03c027759e832b498f50ee00c76024badcb121d293760fae62a67"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Standing OK, tell me after",
+        "where": "Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this path-only addition: tests/fixtures/skill-releases/manifest.json and tests/skill_releases.rs, which pin the current skill bundle that the approved pin move's skill reference changes, as #351 did; no delta word changes, no new refusal. Recorded by t4c",
+        "recorded_by": "t4c"
+      }
     }
   ],
   "reopenings": [],
@@ -146,6 +217,18 @@
       "from_state": "approved",
       "to_state": "draft",
       "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
+    },
+    {
+      "schema_version": 1,
+      "change_id": "specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments",
+      "actor": "0xLeif",
+      "reason": "Add tests/fixtures/skill-releases/manifest.json and tests/skill_releases.rs, which pin the current skill bundle the approved pin move changes (Leif's standing OK for scope approvals, relayed via t4c); no delta word changes",
+      "timestamp": 1795203287,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 2,
       "cancelled_review_attempts": 0,
       "canonical_applied": false
     }
