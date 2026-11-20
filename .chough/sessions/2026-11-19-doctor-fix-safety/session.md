@@ -149,7 +149,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Re-approval of doctor-fix-safety with the journal post dropped from the #389 guard\" closed (approved); run `chough stage advance` to move on."
+next: "Gate \"Send back doctor-fix-safety for the three inbox edits to REQ-history-012, run by the fixer\" closed; run `chough stage advance` to move on."
 ---
 # doctor --fix never destroys or hangs: the archive finish keeps evidence its story does not hold (#381) and removes OS metadata (#377), next names the archive finish (#371), doctor names front-matter conflicts and gives no restore advice for a redaction (#374), and the spec walk stays inside the project and is bounded (#402)
 
@@ -171,6 +171,7 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
 - 0xLeif decided "Re-approval of doctor-fix-safety rebased onto main after #407 (standing OK (d))": "yes to both" (Standing OK (d), Leif's Claude Code chat message relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:02Z; the delta was rebased onto main's REQ-records-001 and REQ-history-006 after #407 with exactly #407's added and removed words, and fable-lead verified by script that nothing else changed); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
 - 0xLeif decided "Send back doctor-fix-safety to drop the journal post from the #389 guard, run by the fixer": "B, fixer runs the send-back" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:46Z); recorded by chough-fixer-t4g; a relayed claim, not authenticated
 - 0xLeif decided "Re-approval of doctor-fix-safety with the journal post dropped from the #389 guard": "B, fixer runs the send-back" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:46Z, choosing option B (drop the journal post from the #389 guard, with the criterion that an untracked or ignored journal post does not hold the finish) on this text; the earlier approvals stand for the rest of the delta: 'Approve, with the 3 recommended choices', the three wording answers, 'Yes' for the two sentences and four paths, and standing OK (d) for the rebase onto main after #407); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
+- 0xLeif decided "Send back doctor-fix-safety for the three inbox edits to REQ-history-012, run by the fixer": "a, all yes.. im back" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 00:38Z, answering item 4 of t4c's eight-item round: #414's three edits to REQ-history-012 (any file under agent/inbox/ outside its folded/ folder is kept; the way out for a kept inbox file chough inbox add would not take; one new criterion), with the fixer running the send-back); recorded by chough-fixer-t4g; a relayed claim, not authenticated
 
 ## What was verified
 
@@ -517,4 +518,19 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve doctor-fix-safety
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T00:41:06Z · gate-opened · build → build · Send back doctor-fix-safety for the three inbox edits to REQ-history-012, run by the fixer ^t-2f72a1
+  - native_change: doctor-fix-safety
+  - revision: 011b33f5c2cb1c55d17e09d723facc34b358b8cd
+  - holds: build
+  - drives: none
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T00:41:07Z · gate-closed · build → build · Send back doctor-fix-safety for the three inbox edits to REQ-history-012, run by the fixer ^t-840be2
+  - native_change: doctor-fix-safety
+  - revision: 011b33f5c2cb1c55d17e09d723facc34b358b8cd
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: a, all yes.. im back
+    - where: Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 00:38Z, answering item 4 of t4c's eight-item round: #414's three edits to REQ-history-012 (any file under agent/inbox/ outside its folded/ folder is kept; the way out for a kept inbox file chough inbox add would not take; one new criterion), with the fixer running the send-back
+    - recorded_by: chough-fixer-t4g
   - by: chough-fixer (claude-opus-5-5, hc t4n)
