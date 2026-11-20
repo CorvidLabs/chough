@@ -3679,3 +3679,127 @@ fn checkpoint_help_names_the_eleven_list_valued_flags() {
         );
     }
 }
+
+/// The state `skill status` gives `file` in its first host, or in the host named `host`.
+fn skill_state(report: &Value, host: Option<&str>, file: &str) -> Value {
+    report["hosts"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|entry| host.is_none_or(|host| entry["host"] == host))
+        .and_then(|entry| {
+            entry["files"]
+                .as_array()?
+                .iter()
+                .find(|entry| entry["file"] == file)
+                .cloned()
+        })
+        .map_or(Value::Null, |entry| entry["state"].clone())
+}
+
+/// REQ-cli-016 (#373), TC-cli-a-crlf-skill-copy-reads-as-its-lf-state: a copy of each
+/// bundle file with CRLF line breaks reads current or known-outdated as its LF bytes do,
+/// and `chough skill update` refreshes a known-outdated one, writing CRLF line breaks.
+#[test]
+fn a_crlf_skill_copy_reads_as_its_lf_state_and_is_refreshed_with_crlf() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let installed = fixture.root().join(".agents/skills/chough-workflow");
+    fs::write(installed.join("references/accept.md"), ACCEPT_AT_2756DC2).unwrap();
+    let mut files = vec![];
+    for entry in walk(&installed) {
+        let bytes = fs::read(&entry).unwrap();
+        let text = String::from_utf8(bytes).unwrap().replace("\r\n", "\n").replace('\n', "\r\n");
+        fs::write(&entry, text).unwrap();
+        files.push(entry.strip_prefix(&installed).unwrap().to_string_lossy().into_owned());
+    }
+    let status = fixture.ok(&["skill", "status"]);
+    for file in &files {
+        let want = if file == "references/accept.md" { "known-outdated" } else { "current" };
+        assert_eq!(skill_state(&status, None, file), want, "{file}: {status:#}");
+    }
+    fixture.ok(&["skill", "update"]);
+    let status = fixture.ok(&["skill", "status"]);
+    assert_eq!(skill_state(&status, None, "references/accept.md"), "current", "{status:#}");
+    let refreshed = fs::read_to_string(installed.join("references/accept.md")).unwrap();
+    assert!(refreshed.contains("\r\n") && !refreshed.replace("\r\n", "").contains('\n'), "not CRLF");
+}
+
+/// Every file under `dir`, recursively.
+fn walk(dir: &Path) -> Vec<PathBuf> {
+    let mut out = vec![];
+    for entry in fs::read_dir(dir).unwrap().flatten() {
+        let path = entry.path();
+        if path.is_dir() {
+            out.extend(walk(&path));
+        } else {
+            out.push(path);
+        }
+    }
+    out.sort();
+    out
+}
+
+/// REQ-cli-016 (#403), TC-cli-a-symlinked-host-is-skipped-and-the-rest-updated: with
+/// `.codex/skills` a symbolic link to `../.agents/skills`, plain `chough skill status`
+/// and `chough skill update` exit 0, report codex as `uninspected` with its directory
+/// relative to the project, and update `.agents`, while `--host codex` refuses naming the
+/// host and that directory; no output holds an absolute path.
+#[cfg(unix)]
+#[test]
+fn a_symlinked_host_is_skipped_and_the_rest_updated() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let installed = fixture.root().join(".agents/skills/chough-workflow");
+    fs::write(installed.join("references/accept.md"), ACCEPT_AT_2756DC2).unwrap();
+    fs::create_dir_all(fixture.root().join(".codex")).unwrap();
+    std::os::unix::fs::symlink("../.agents/skills", fixture.root().join(".codex/skills")).unwrap();
+    let root = fixture.root().to_string_lossy().into_owned();
+    for args in [&["skill", "status"][..], &["skill", "update"][..]] {
+        let output = fixture.run(args);
+        let said = format!(
+            "{}{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(output.status.success(), "{args:?}: {said}");
+        assert!(said.contains("uninspected") && said.contains(".codex/skills"), "{args:?}: {said}");
+        assert!(!said.contains(&root), "{args:?} showed an absolute path: {said}");
+    }
+    let status = fixture.ok(&["skill", "status"]);
+    assert_eq!(
+        skill_state(&status, Some("openai"), "references/accept.md"),
+        "current",
+        "{status:#}"
+    );
+    let output = fixture.run(&["skill", "update", "--host", "codex"]);
+    let said = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "--host codex was not refused");
+    assert!(said.contains("codex") && said.contains(".codex/skills"), "{said}");
+    assert!(!said.contains(&root), "an absolute path: {said}");
+}
+
+/// REQ-cli-016 (#373), TC-cli-a-skill-file-it-cannot-write-is-refused-plainly: a missing
+/// bundle file in a folder `skill update` cannot write is refused naming the file,
+/// relative to the project, and the reason, never internal assertion text.
+#[cfg(unix)]
+#[test]
+fn a_skill_file_it_cannot_write_is_refused_plainly() {
+    use std::os::unix::fs::PermissionsExt;
+    let fixture = Fixture::new();
+    fixture.init();
+    let references = fixture.root().join(".agents/skills/chough-workflow/references");
+    fs::remove_file(references.join("lifecycle.md")).unwrap();
+    fs::set_permissions(&references, fs::Permissions::from_mode(0o555)).unwrap();
+    let output = fixture.run(&["skill", "update"]);
+    fs::set_permissions(&references, fs::Permissions::from_mode(0o755)).unwrap();
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!output.status.success(), "{said}");
+    assert!(said.contains("references/lifecycle.md"), "{said}");
+    assert!(!said.contains("Condition failed") && !said.contains("write_new"), "{said}");
+    assert!(!said.contains(&fixture.root().to_string_lossy().into_owned()), "{said}");
+}

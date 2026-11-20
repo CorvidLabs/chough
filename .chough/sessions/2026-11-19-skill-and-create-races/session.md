@@ -5,7 +5,7 @@ aliases: [skill-and-create-races]
 objective: "Skill and create-new batch: skill update writes CRLF copies and names a file it cannot write (#373), parallel skill update and init runs all succeed (#386), a host folder that cannot be inspected is skipped and reported while the rest update (#403), and doctor reads an uncommitted session that fails validation (#408)"
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Approve the scope of skill-and-create-races\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # Skill and create-new batch: skill update writes CRLF copies and names a file it cannot write (#373), parallel skill update and init runs all succeed (#386), a host folder that cannot be inspected is skipped and reported while the rest update (#403), and doctor reads an uncommitted session that fails validation (#408)
 
@@ -66,4 +66,9 @@ Skill and create-new batch: skill update writes CRLF copies and names a file it 
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve skill-and-create-races
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T09:10:10Z · advance · plan → build · native:approved ^t-bca690
+  - native_change: skill-and-create-races
+  - gate: native:approved
+  - revision: f37fc73fb8f76e7c872a50ce6cdda4f69b3a1aa8
   - by: chough-fixer (claude-opus-5-5, hc t4n)
