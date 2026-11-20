@@ -435,6 +435,7 @@ Acceptance Criteria
 - `git check-attr` reports `chough-bug` for `.chough/bugs/x.md` and `chough-generated` for `knowledge/index.md` and `knowledge/journal/feed.xml`.
 - In a Git repository where `chough init` ran, with no other setup, two branches that each add a journal post merge with no conflict, the merged `feed.xml` parses as XML, and one `chough library index` makes `library index --check` pass, listing both posts.
 - Over a `.gitattributes` that already declares some of the merge lines, `chough init` appends only the missing ones after its last line and changes no line. With `library-dir notes`, the lines name `notes/`. A driver the clone already sets is kept.
+- Two branches that each add a Log entry to a bug whose write-up holds a code fence that never closes merge with both entries and no hand-resolved conflict.
 
 ### REQ-cli-050
 

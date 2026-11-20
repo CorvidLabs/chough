@@ -16,7 +16,9 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-20-tc-records-an-unclosed-fence-hides-no-section
+  - 2026-11-20-tc-cli-an-unclosed-fence-keeps-the-bug-log-mergeable
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -36,6 +38,9 @@ A code fence that never closes hides nothing after it, so saving a session never
 - 0xLeif decided "Scope approval of fix-394-a-code-fence-that-never-closes-hides-no-section (native approval)": "Standing OK, tell me after" (Leif's standing OK for scope approvals (2026-11-20 dialog, relayed via t4c): his answer 'Standing OK, tell me after' in a Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 04:17Z. Confirmed by t4c for this change on fable-lead's summary (one criterion added to each changed requirement, nothing removed, no refusal). Recorded by t4c itself, at the draft d05ac518); recorded by t4c; a relayed claim, not authenticated; ran specsync change approve fix-394-a-code-fence-that-never-closes-hides-no-section as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test records -- --exact a_code_fence_that_never_closes_hides_no_section for TC-records-an-unclosed-fence-hides-no-section: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-an-unclosed-fence-hides-no-section.md)
+- [Ran cargo test --locked --test bugs -- --exact a_bug_with_an_unclosed_fence_still_merges_both_log_entries for TC-cli-an-unclosed-fence-keeps-the-bug-log-mergeable: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-an-unclosed-fence-keeps-the-bug-log-mergeable.md)
 
 ## Open threads
 

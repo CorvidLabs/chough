@@ -54,6 +54,7 @@ Acceptance Criteria
 - Resolving an open question keeps its line and appends the answer, and `chough next` no longer lists it as open.
 - A person's rewrite of the Goal paragraph is kept after a decision and a stage move.
 - A session started without an objective, given one with `chough checkpoint --objective`, has that objective as its title and Goal; a later objective change rewrites neither, its journal post and archived story carry the objective and not the placeholder, and a Goal a person wrote over the placeholder is kept byte for byte.
+- A session whose body holds a code fence that never closes, as a Goal that is three backticks, saves any number of times with each of its sections once, and `chough next` reads its decisions and open questions: such a fence hides nothing after it, as it hides no conflict (REQ-records-001), while a closed fence still hides the headings it quotes.
 
 ### REQ-records-005
 
