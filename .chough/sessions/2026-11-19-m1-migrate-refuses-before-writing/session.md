@@ -48,7 +48,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Re-approval of fix-m1-migrate-refuses-before-writing with the #263 case file added to its paths (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: "Gate \"Re-approval of fix-m1-migrate-refuses-before-writing with the macOS-metadata case file added to its paths (native approval)\" closed (approved); run `chough stage advance` to move on."
 ---
 # Migration refuses before it writes and leaves a working tree: any entry at a target or receipt name counts as taken, parallel applies cannot both apply, a returning 0.5.x record already migrated is refused by name with the generated index rebuilt, and doctor --fix keeps a pointer that names an open session by alias (#376, #370, #337, #378; #375 and #338 await Leif's choice)
 
@@ -64,6 +64,8 @@ Migration refuses before it writes and leaves a working tree: any entry at a tar
 - 0xLeif decided "Re-approval of fix-m1-migrate-refuses-before-writing with REQ-cli-055 rebased onto main under standing OK (d) (native approval)": "Yes, record it" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval under standing OK (d): his 'yes to both' (relayed by hc t4c through fable-lead, hc t53, about 15:02Z on 2026-11-19) lets a delta stale only because main changed the same requirement be rebased onto main's text with exactly the same added and removed words, checked by fable-lead's script, which passed on 2026-11-20 (delta sha256 15ebb4b32eec2b93...). Scope as approved by his 'Approve with the 3 choices' (2026-11-19) with tests/fixtures/migrate/ added (item 8, 2026-11-20); answers and the 17 paths unchanged); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-m1-migrate-refuses-before-writing as 0xLeif
 - 0xLeif decided "One send-back of fix-m1-migrate-refuses-before-writing to add the #263 case file to its paths, run by t4b": "A" (Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 01:24Z on 2026-11-20, choosing the option t4c put to him: 'A (recommended): keep what you approved. The file gets replaced, the preview says so, and #263's test is updated to match. This adds one test file to M1's scope, through a send-back t4b runs. The wording doesn't change.'); recorded by fable-t4b; a relayed claim, not authenticated
 - 0xLeif decided "Re-approval of fix-m1-migrate-refuses-before-writing with the #263 case file added to its paths (native approval)": "Yes, record it" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval after his relayed 'A' (hc t4c through fable-lead, about 01:24Z on 2026-11-20): keep what he approved, the file gets replaced, the preview says so, #263's test is updated to match, one test file added through a send-back t4b runs, no wording change. The one path added is .chough/cases/records.migrate-case-colliding-target.cases.toml; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 (2026-11-20) and standing OK (d), as recorded before); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-m1-migrate-refuses-before-writing as 0xLeif
+- 0xLeif decided "One send-back of fix-m1-migrate-refuses-before-writing to add the macOS-metadata case file to its paths, run by t4b": "Yes, all of it" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, after his relayed 'Ok' (hc t4c through fable-lead, about 03:00Z on 2026-11-20, item 3 of t4c's six-item list): record that word, run one send-back adding .chough/cases/records.migrate-macos-metadata.cases.toml to M1's paths with no delta word changed, retitle that case to the approved REQ-records-015 criterion, and record his re-approval); recorded by fable-t4b; a relayed claim, not authenticated
+- 0xLeif decided "Re-approval of fix-m1-migrate-refuses-before-writing with the macOS-metadata case file added to its paths (native approval)": "Yes, all of it" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, after his relayed 'Ok' (hc t4c through fable-lead, about 03:00Z, item 3): the one path .chough/cases/records.migrate-macos-metadata.cases.toml added; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 and 'A' (2026-11-20) and standing OK (d), as recorded before); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-m1-migrate-refuses-before-writing as 0xLeif
 
 ## What was verified
 
@@ -196,6 +198,49 @@ Migration refuses before it writes and leaves a working tree: any entry at a tar
     - decided_by: 0xLeif
     - words: Yes, record it
     - where: His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval after his relayed 'A' (hc t4c through fable-lead, about 01:24Z on 2026-11-20): keep what he approved, the file gets replaced, the preview says so, #263's test is updated to match, one test file added through a send-back t4b runs, no wording change. The one path added is .chough/cases/records.migrate-case-colliding-target.cases.toml; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 (2026-11-20) and standing OK (d), as recorded before
+    - recorded_by: fable-t4b
+    - native: specsync change approve fix-m1-migrate-refuses-before-writing
+    - actor: 0xLeif
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T03:22:11Z · gate-opened · build → build · One send-back of fix-m1-migrate-refuses-before-writing to add the macOS-metadata case file to its paths, run by t4b ^t-7b1811
+  - native_change: fix-m1-migrate-refuses-before-writing
+  - revision: bacde95a18ce2a789814bb4b1b6b7179ec381125
+  - holds: build
+  - drives: none
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T03:22:11Z · gate-closed · build → build · One send-back of fix-m1-migrate-refuses-before-writing to add the macOS-metadata case file to its paths, run by t4b ^t-789ae8
+  - native_change: fix-m1-migrate-refuses-before-writing
+  - revision: bacde95a18ce2a789814bb4b1b6b7179ec381125
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, all of it
+    - where: His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, after his relayed 'Ok' (hc t4c through fable-lead, about 03:00Z on 2026-11-20, item 3 of t4c's six-item list): record that word, run one send-back adding .chough/cases/records.migrate-macos-metadata.cases.toml to M1's paths with no delta word changed, retitle that case to the approved REQ-records-015 criterion, and record his re-approval
+    - recorded_by: fable-t4b
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T03:22:21Z · gate-opened · build → build · Re-approval of fix-m1-migrate-refuses-before-writing with the macOS-metadata case file added to its paths (native approval) ^t-3b6dc4
+  - native_change: fix-m1-migrate-refuses-before-writing
+  - revision: bacde95a18ce2a789814bb4b1b6b7179ec381125
+  - holds: build
+  - drives: approve
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T03:22:21Z · direct-native-write · build → build · fix-m1-migrate-refuses-before-writing's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-48f3ae
+  - native_change: fix-m1-migrate-refuses-before-writing
+  - revision: bacde95a18ce2a789814bb4b1b6b7179ec381125
+  - direct_write:
+    - change: fix-m1-migrate-refuses-before-writing
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T03:22:21Z · gate-closed · build → build · Re-approval of fix-m1-migrate-refuses-before-writing with the macOS-metadata case file added to its paths (native approval) ^t-0b6fb4
+  - native_change: fix-m1-migrate-refuses-before-writing
+  - revision: bacde95a18ce2a789814bb4b1b6b7179ec381125
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, all of it
+    - where: His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, after his relayed 'Ok' (hc t4c through fable-lead, about 03:00Z, item 3): the one path .chough/cases/records.migrate-macos-metadata.cases.toml added; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 and 'A' (2026-11-20) and standing OK (d), as recorded before
     - recorded_by: fable-t4b
     - native: specsync change approve fix-m1-migrate-refuses-before-writing
     - actor: 0xLeif
