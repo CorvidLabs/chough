@@ -48,6 +48,17 @@ observations:
   - 2026-11-20-tc-cli-specsync-merge-driver-wired-a2a004
   - 2026-11-20-tc-cli-change-ready-draft-fixes-88ee6f
   - 2026-11-20-tc-cli-change-ready-missing-specsync-0c52e1
+  - 2026-11-20-tc-cli-ready-names-the-approval-dry-run-s-refusals-51a037
+  - 2026-11-20-tc-cli-ready-leaves-the-delta-set-to-specsync-45be9c
+  - 2026-11-20-tc-cli-ready-without-a-dry-run-names-6-4-0-4a584e
+  - 2026-11-20-tc-cli-ready-leaves-out-specsync-s-own-files-6eb1dd
+  - 2026-11-20-tc-cli-ready-leaves-out-another-change-s-work-7a75ed
+  - 2026-11-20-tc-cli-ready-makes-no-hash-file-3b08a5
+  - 2026-11-20-tc-cli-every-specsync-pin-names-6-4-0-72629b
+  - 2026-11-20-tc-cli-ready-a-whole-project-scope-leaves-nothing-out-8bfa41
+  - 2026-11-20-tc-cli-specsync-merge-driver-wired-b97ff6
+  - 2026-11-20-tc-cli-change-ready-draft-fixes-0d0d83
+  - 2026-11-20-tc-cli-change-ready-missing-specsync-ed7d72
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -105,6 +116,17 @@ Chough moves to SpecSync 6.4.0: change ready asks SpecSync's approval dry run an
 - [Ran cargo test --locked --test package -- --exact requirements_merge_through_specsync_s_driver_and_spec_files_need_none for TC-cli-specsync-merge-driver-wired: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-specsync-merge-driver-wired-a2a004.md)
 - [Ran cargo test --locked --test ready -- --exact a_draft_names_each_missing_fix_and_passes_once_they_are_fixed for TC-cli-change-ready-draft-fixes: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-change-ready-draft-fixes-88ee6f.md)
 - [Ran cargo test --locked --test ready -- --exact a_missing_specsync_names_the_install_command for TC-cli-change-ready-missing-specsync: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-change-ready-missing-specsync-0c52e1.md)
+- [Ran cargo test --locked --test ready -- --exact a_refusal_of_the_approval_dry_run_is_named_with_its_fix for TC-cli-ready-names-the-approval-dry-run-s-refusals: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-ready-names-the-approval-dry-run-s-refusals-51a037.md)
+- [Ran cargo test --locked --test ready -- --exact a_missing_delta_is_named_by_specsync_alone for TC-cli-ready-leaves-the-delta-set-to-specsync: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-ready-leaves-the-delta-set-to-specsync-45be9c.md)
+- [Ran cargo test --locked --test ready -- --exact a_specsync_without_the_dry_run_names_the_install_command for TC-cli-ready-without-a-dry-run-names-6-4-0: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-ready-without-a-dry-run-names-6-4-0-4a584e.md)
+- [Ran cargo test --locked --test ready -- --exact specsync_s_own_untracked_files_are_not_outside_the_declared_paths for TC-cli-ready-leaves-out-specsync-s-own-files: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-ready-leaves-out-specsync-s-own-files-6eb1dd.md)
+- [Ran cargo test --locked --test ready -- --exact another_active_change_s_work_is_not_this_change_s for TC-cli-ready-leaves-out-another-change-s-work: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-ready-leaves-out-another-change-s-work-7a75ed.md)
+- [Ran cargo test --locked --test ready -- --exact ready_makes_no_hash_file_for_specsync_to_find for TC-cli-ready-makes-no-hash-file: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-ready-makes-no-hash-file-3b08a5.md)
+- [Ran cargo test --locked --test package -- --exact every_specsync_pin_names_6_4_0 for TC-cli-every-specsync-pin-names-6-4-0: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-every-specsync-pin-names-6-4-0-72629b.md)
+- [Ran cargo test --locked --test ready -- --exact another_change_declaring_the_whole_project_leaves_nothing_out for TC-cli-ready-a-whole-project-scope-leaves-nothing-out: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-ready-a-whole-project-scope-leaves-nothing-out-8bfa41.md)
+- [Ran cargo test --locked --test package -- --exact requirements_merge_through_specsync_s_driver_and_spec_files_need_none for TC-cli-specsync-merge-driver-wired: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-specsync-merge-driver-wired-b97ff6.md)
+- [Ran cargo test --locked --test ready -- --exact a_draft_names_each_missing_fix_and_passes_once_they_are_fixed for TC-cli-change-ready-draft-fixes: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-change-ready-draft-fixes-0d0d83.md)
+- [Ran cargo test --locked --test ready -- --exact a_missing_specsync_names_the_install_command for TC-cli-change-ready-missing-specsync: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-change-ready-missing-specsync-ed7d72.md)
 
 ## Open threads
 
