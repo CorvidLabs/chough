@@ -5,7 +5,7 @@ aliases: [260-whole-or-nothing]
 objective: "A new record is written whole or not at all, so a full disk or a file-size limit never leaves a 0-byte or cut-off record at its name, and an empty record is named as such (#260, #352)"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -25,9 +25,17 @@ observations:
   - 2026-11-20-tc-records-an-empty-record-is-named-as-empty-113250
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-260-a-new-record-is-written-whole-or-not-at-all
+    holds: accept
+    drives: review
+    opened: 2026-11-20T18:57:21Z
 run_consents: []
-next: "Gate \"Re-approval of fix-260-a-new-record-is-written-whole-or-not-at-all with src/checkpoint.rs added to its paths (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Continue accept
+title: A new record is written whole or not at all
+summary:
+  - "chough bug add and journal add write a new record to .chough/local/ first, sync it, and give it its name without replacing anything, so a full disk or a file-size limit leaves no file at the name; where the file system cannot rename that way it is created at its name and removed on any error. No hard link is used, so exFAT works (#260, #424). An empty record is named as empty, with the way out."
+  - "Verified: the tester's PASS at 829d479b; corvid-agent's approval and Linux run; its four notes taken at 73145abd (the temporary file goes through the symlink guard); main de49485f merged in at 50f0fd0c, own lines byte-identical; full lane green at 34fd2a92."
 ---
 # A new record is written whole or not at all, so a full disk or a file-size limit never leaves a 0-byte or cut-off record at its name, and an empty record is named as such (#260, #352)
 
@@ -131,4 +139,20 @@ A new record is written whole or not at all, so a full disk or a file-size limit
     - recorded_by: t4c
     - native: specsync change approve fix-260-a-new-record-is-written-whole-or-not-at-all
     - actor: 0xLeif
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T18:57:20Z · advance · build → test · native:verifying ^t-fa5ae8
+  - native_change: fix-260-a-new-record-is-written-whole-or-not-at-all
+  - gate: native:verifying
+  - revision: 34fd2a92d1ad9a81db575af01bbd7430d9acd8e7
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T18:57:20Z · advance · test → accept · native:verifying ^t-9c6f15
+  - native_change: fix-260-a-new-record-is-written-whole-or-not-at-all
+  - gate: native:verifying
+  - revision: 34fd2a92d1ad9a81db575af01bbd7430d9acd8e7
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T18:57:20Z · gate-opened · accept → accept · Implementation review of fix-260-a-new-record-is-written-whole-or-not-at-all ^t-f2965f
+  - native_change: fix-260-a-new-record-is-written-whole-or-not-at-all
+  - revision: 34fd2a92d1ad9a81db575af01bbd7430d9acd8e7
+  - holds: accept
+  - drives: review
   - by: t4c (claude-opus-5-5, hc t4c)

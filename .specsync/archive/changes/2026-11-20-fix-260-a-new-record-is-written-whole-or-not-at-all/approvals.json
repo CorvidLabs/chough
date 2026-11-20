@@ -114,6 +114,13 @@
         "where": "Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this path-only addition: src/checkpoint.rs joins #260's paths so its approved exFAT criterion holds, and #260 also closes #424; no delta word changes, no new refusal. Recorded by t4c",
         "recorded_by": "t4c"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795201053,
+      "digest": "ef766741d098b79a898b510d22dcd1839e4461172b35e4aca689e9919b423b2e",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],
