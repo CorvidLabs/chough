@@ -16,7 +16,9 @@ requirements: [REQ-cli-040]
 cases: []
 design: []
 files: []
-observations: [2026-11-20-tc-cli-the-docs-say-not-to-rewrite-the-worktree-while-another]
+observations:
+  - 2026-11-20-tc-cli-the-docs-say-not-to-rewrite-the-worktree-while-another
+  - 2026-11-20-tc-cli-the-docs-say-not-to-rewrite-the-worktree-while-another-6bd32f
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -40,6 +42,7 @@ The docs and the workflow skill tell agents not to run git merge, rebase, checko
 ## What was verified
 
 - [Ran cargo test --locked --test docs -- --exact the_docs_say_not_to_rewrite_the_worktree_while_another_agent_works for TC-cli-the-docs-say-not-to-rewrite-the-worktree-while-another-agent-works: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-the-docs-say-not-to-rewrite-the-worktree-while-another.md)
+- [Ran cargo test --locked --test docs -- --exact the_docs_say_not_to_rewrite_the_worktree_while_another_agent_works for TC-cli-the-docs-say-not-to-rewrite-the-worktree-while-another-agent-works: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-the-docs-say-not-to-rewrite-the-worktree-while-another-6bd32f.md)
 
 ## Open threads
 
