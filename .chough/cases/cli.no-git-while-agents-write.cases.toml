@@ -1,0 +1,24 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# #387: a Git command that rewrites the worktree can replace a record another agent's
+# Chough writer just saved, so the docs and the skill say not to run one while another
+# agent works there.
+
+[[case]]
+id = "TC-cli-the-docs-say-not-to-rewrite-the-worktree-while-another-agent-works"
+title = "The skill's checkpoint reference, in the bundle and in an installed copy, and docs/cli.md each say not to run git pull, merge, rebase, checkout or stash while another agent works in the worktree, why, and that a lone agent may run one between its own commands"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-11", "DRIVE-3"]
+requirements = ["REQ-cli-040"]
+paths = ["skills/chough-workflow/references/checkpoint.md", "docs/cli.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::the_docs_say_not_to_rewrite_the_worktree_while_another_agent_works passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "the_docs_say_not_to_rewrite_the_worktree_while_another_agent_works"

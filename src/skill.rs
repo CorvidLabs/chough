@@ -162,6 +162,13 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/stages.md",
         "515693d51d4b40ab515f0223dc41f5c16bbf00e1eb0830e40de5a8e019c6452c",
     ),
+    // v0.6.1 (tag at cef86e26): the released checkpoint reference, replaced when the
+    // skill said not to rewrite the worktree with Git while another agent works there
+    // (#387), so a 0.6.1 install updates.
+    (
+        "references/checkpoint.md",
+        "1dc5e92b4715e69d5498dc244667275c92be37a0df4db64119afe882a422763b",
+    ),
     // v0.6.1 (tag at cef86e26): the released lifecycle reference, replaced when the
     // skill learned `--no-native-change` (#351), so a 0.6.1 install updates.
     (
