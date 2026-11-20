@@ -59,7 +59,8 @@ fn files(root: &Path) -> BTreeMap<String, Vec<u8>> {
                 walk(root, &name, out);
             } else if entry.file_type().is_ok_and(|kind| kind.is_file()) {
                 // A file without read permission is named, never read.
-                let bytes = std::fs::read(entry.path()).unwrap_or_else(|_| b"<unreadable>".to_vec());
+                let bytes =
+                    std::fs::read(entry.path()).unwrap_or_else(|_| b"<unreadable>".to_vec());
                 out.insert(name, bytes);
             } else {
                 // A FIFO or other special file is named, never opened, so no read waits.
@@ -1886,7 +1887,9 @@ fn migrate_skips_macos_metadata_beside_0_5_records() {
             "{folder} stayed with only metadata in it"
         );
         assert!(
-            emptied.iter().any(|(named, count)| named == folder && *count > 0),
+            emptied
+                .iter()
+                .any(|(named, count)| named == folder && *count > 0),
             "{folder} is not named: {emptied:?}"
         );
     }
@@ -1957,7 +1960,8 @@ fn migrate_refuses_a_plan_whose_files_would_hold_conflict_markers() {
     );
     let text = String::from_utf8_lossy(&fixture.run(&["migrate"]).stdout).into_owned();
     assert!(
-        text.contains("The apply would refuse now (refused:conflict-markers)") && text.contains(entry),
+        text.contains("The apply would refuse now (refused:conflict-markers)")
+            && text.contains(entry),
         "{text}"
     );
     // A plan the apply would refuse is not offered to apply.
@@ -2079,8 +2083,14 @@ fn adopted_bytes(path: &str) -> String {
 fn refused_preview(fixture: &Fixture) -> String {
     let output = fixture.run(&["migrate"]);
     let stdout = String::from_utf8_lossy(&output.stdout).into_owned();
-    assert!(!output.status.success(), "the preview did not refuse: {stdout}");
-    assert!(!stdout.contains("Plan digest"), "a refused preview gave a plan: {stdout}");
+    assert!(
+        !output.status.success(),
+        "the preview did not refuse: {stdout}"
+    );
+    assert!(
+        !stdout.contains("Plan digest"),
+        "a refused preview gave a plan: {stdout}"
+    );
     String::from_utf8_lossy(&output.stderr).into_owned()
 }
 
@@ -2088,6 +2098,9 @@ fn refused_preview(fixture: &Fixture) -> String {
 fn refused_apply(fixture: &Fixture) -> String {
     fixture.fails(&["migrate", "--apply", &"0".repeat(64), "--consent", CONSENT])
 }
+
+/// Puts something at a path for a test: a directory, a file, a FIFO.
+type Place = fn(&Path);
 
 const OPEN_ONE: &str = ".chough/sessions/open-one.json";
 const EVENT: &str =
@@ -2119,7 +2132,11 @@ fn a_returning_edited_session_is_refused_naming_it_and_its_receipt() {
         );
         assert!(!refusal.contains("appeared"), "{refusal}");
     }
-    assert_eq!(files(fixture.root()), before, "a refused migrate changed a file");
+    assert_eq!(
+        files(fixture.root()),
+        before,
+        "a refused migrate changed a file"
+    );
     assert_eq!(fixture.open_ids(), sessions_before);
     fixture.git(&["rm", "-q", OPEN_ONE]);
     fixture.commit("the returning file removed");
@@ -2147,7 +2164,10 @@ fn returning_files_with_other_bytes_are_all_named_in_one_refusal() {
     );
     fixture.commit("a session returns too");
     let refusal = refused_preview(&fixture);
-    assert!(refusal.contains(EVENT) && refusal.contains(OPEN_ONE), "{refusal}");
+    assert!(
+        refusal.contains(EVENT) && refusal.contains(OPEN_ONE),
+        "{refusal}"
+    );
     assert_eq!(refusal.matches("refused:").count(), 1, "{refusal}");
 }
 
@@ -2168,7 +2188,9 @@ fn a_returning_file_with_its_receipt_bytes_is_removed_as_already_migrated() {
     );
     let sessions_written: Vec<String> = written(&plan)
         .into_iter()
-        .filter(|path| path.starts_with(".chough/sessions/") || path.starts_with(".chough/archive/sessions/"))
+        .filter(|path| {
+            path.starts_with(".chough/sessions/") || path.starts_with(".chough/archive/sessions/")
+        })
         .collect();
     assert!(sessions_written.is_empty(), "{sessions_written:?}");
     let digest = plan["plan_digest"].as_str().unwrap();
@@ -2243,17 +2265,19 @@ fn an_uncommitted_receipt_judges_nothing_and_a_committed_one_does() {
 #[test]
 fn an_entry_in_the_receipt_folder_that_is_no_receipt_is_refused_without_waiting() {
     let name = ".chough/archive/migrations/2026-01-01-from-0-5.md";
-    let kinds: [(&str, fn(&Path)); 5] = [
+    let kinds: [(&str, Place); 5] = [
         ("a directory", |path| std::fs::create_dir_all(path).unwrap()),
         ("unreadable", |path| {
             std::fs::write(path, "# receipt\n").unwrap();
             #[cfg(unix)]
             {
                 use std::os::unix::fs::PermissionsExt;
-                std::fs::set_permissions(path, std::fs::Permissions::from_mode(0)).unwrap();
+                std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o000)).unwrap();
             }
         }),
-        ("not UTF-8", |path| std::fs::write(path, b"# receipt \xff\xfe\n").unwrap()),
+        ("not UTF-8", |path| {
+            std::fs::write(path, b"# receipt \xff\xfe\n").unwrap()
+        }),
         ("a FIFO", |path| {
             #[cfg(unix)]
             assert!(
@@ -2275,7 +2299,10 @@ fn an_entry_in_the_receipt_folder_that_is_no_receipt_is_refused_without_waiting(
         place(&path);
         let started = std::time::Instant::now();
         let preview = refused_preview(&fixture);
-        assert!(started.elapsed().as_secs() < 10, "{kind}: the preview waited");
+        assert!(
+            started.elapsed().as_secs() < 10,
+            "{kind}: the preview waited"
+        );
         let apply = refused_apply(&fixture);
         #[cfg(unix)]
         {
@@ -2293,9 +2320,15 @@ fn an_entry_in_the_receipt_folder_that_is_no_receipt_is_refused_without_waiting(
                 "{kind}: {refusal}"
             );
         }
-        assert!(preview.contains("the apply would refuse"), "{kind}: {preview}");
+        assert!(
+            preview.contains("the apply would refuse"),
+            "{kind}: {preview}"
+        );
         assert!(fixture.exists(OPEN_ONE), "{kind}: a 0.5.x file went");
-        assert!(fixture.open_ids().is_empty(), "{kind}: a 0.6.0 session was written");
+        assert!(
+            fixture.open_ids().is_empty(),
+            "{kind}: a 0.6.0 session was written"
+        );
     }
     let plain = migrate_project("adopted", &[]);
     let with_metadata = migrate_project("adopted", &[]);
@@ -2315,14 +2348,14 @@ fn an_entry_in_the_receipt_folder_that_is_no_receipt_is_refused_without_waiting(
 /// 0.6.0 file or receipt written.
 #[test]
 fn a_directory_unreadable_file_or_fifo_at_a_target_is_refused_without_waiting() {
-    let kinds: [(&str, fn(&Path)); 3] = [
+    let kinds: [(&str, Place); 3] = [
         ("a directory", |path| std::fs::create_dir_all(path).unwrap()),
         ("unreadable", |path| {
             std::fs::write(path, "# x\n").unwrap();
             #[cfg(unix)]
             {
                 use std::os::unix::fs::PermissionsExt;
-                std::fs::set_permissions(path, std::fs::Permissions::from_mode(0)).unwrap();
+                std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o000)).unwrap();
             }
         }),
         ("a FIFO", |path| {
@@ -2349,7 +2382,10 @@ fn a_directory_unreadable_file_or_fifo_at_a_target_is_refused_without_waiting() 
         let before = files(fixture.root());
         let started = std::time::Instant::now();
         let preview = fixture.run(&["migrate"]);
-        assert!(started.elapsed().as_secs() < 10, "{kind}: the preview waited");
+        assert!(
+            started.elapsed().as_secs() < 10,
+            "{kind}: the preview waited"
+        );
         let text = String::from_utf8_lossy(&preview.stdout).into_owned();
         assert!(
             text.contains("would refuse") && text.contains("knowledge/index.md"),
@@ -2443,7 +2479,11 @@ fn a_new_0_5_x_bug_on_a_migrated_tree_migrates_with_the_index_rebuilt_in_place()
     fixture.write(".chough/bugs/BUG-0001.json", LEGACY_BUG);
     fixture.commit("a new 0.5.x bug from an old branch");
     let plan = fixture.ok(&["migrate", "--json"]);
-    assert_eq!(plan["replaces"], serde_json::json!(["knowledge/index.md"]), "{plan:#}");
+    assert_eq!(
+        plan["replaces"],
+        serde_json::json!(["knowledge/index.md"]),
+        "{plan:#}"
+    );
     let bug = written(&plan)
         .into_iter()
         .find(|path| path.starts_with(".chough/bugs/") && path.ends_with(".md"))
@@ -2482,7 +2522,10 @@ fn a_0_5_x_record_whose_id_a_record_holds_as_an_alias_is_refused() {
         .into_iter()
         .find(|path| path.starts_with(".chough/bugs/") && path.ends_with(".md"))
         .unwrap_or_else(|| panic!("no bug planned: {plan:#}"));
-    fixture.write(".chough/bugs/BUG-a-copy-under-another-name.json", LEGACY_BUG);
+    fixture.write(
+        ".chough/bugs/BUG-a-copy-under-another-name.json",
+        LEGACY_BUG,
+    );
     fixture.commit("the same bug ID at another path");
     let before = files(fixture.root());
     for refusal in [refused_preview(&fixture), refused_apply(&fixture)] {
@@ -2546,8 +2589,14 @@ fn an_apply_whose_planned_write_fails_leaves_every_0_5_x_file() {
     std::fs::set_permissions(&blocked, std::fs::Permissions::from_mode(0o555)).unwrap();
     let output = fixture.run(&["migrate", "--apply", digest, "--consent", CONSENT]);
     std::fs::set_permissions(&blocked, std::fs::Permissions::from_mode(0o755)).unwrap();
-    assert!(!output.status.success(), "the apply succeeded with knowledge/ read-only");
+    assert!(
+        !output.status.success(),
+        "the apply succeeded with knowledge/ read-only"
+    );
     for path in before {
-        assert!(fixture.exists(&path), "{path} was removed although a planned write failed");
+        assert!(
+            fixture.exists(&path),
+            "{path} was removed although a planned write failed"
+        );
     }
 }

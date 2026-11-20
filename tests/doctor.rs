@@ -1692,6 +1692,8 @@ fn the_spec_walk_follows_no_link_and_is_bounded() {
         advice.contains("The spec walk stopped at its bound of 4096 entries"),
         "{init:#}"
     );
+}
+
 /// A project holding `tests/fixtures/migrate/<name>`, committed.
 fn migrate_fixture(name: &str) -> Fixture {
     fn copy(from: &Path, to: &Path) {

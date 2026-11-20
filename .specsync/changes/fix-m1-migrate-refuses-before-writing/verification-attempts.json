@@ -10,6 +10,16 @@
       "commands": [],
       "requirement_ids": [],
       "refusal": "tasks.md contains incomplete tasks: finish the 9 open tasks in `.specsync/changes/fix-m1-migrate-refuses-before-writing/tasks.md` (line 8: \"Failing tests first, one per issue, each red on main.\"; line 9: \"#376: the after-fix pointer check in doctor resolves aliases and bare slugs.\"; line 10: \"#337: one no-follow check of every target and receipt name before any write.\"; line 11: \"#370: refuse a returning record whose ID is already held; rebuild the index\"; line 13: \"The change-open refusal, when built: plural wording, one change id per line,\"; and 4 more) and mark each one `[x]`, then re-run `specsync change check fix-m1-migrate-refuses-before-writing --commit`"
+    },
+    {
+      "timestamp": 1795141469,
+      "commit": "26802b19311270e800e3b7bbe52b65dab1bd79a4",
+      "contract_digest": "",
+      "workspace_digest": "",
+      "passed": false,
+      "commands": [],
+      "requirement_ids": [],
+      "refusal": "tasks.md contains incomplete tasks: finish the 9 open tasks in `.specsync/changes/fix-m1-migrate-refuses-before-writing/tasks.md` (line 8: \"Failing tests first, one per issue, each red on main.\"; line 9: \"#376: the after-fix pointer check in doctor resolves aliases and bare slugs.\"; line 10: \"#337: one no-follow check of every target and receipt name before any write.\"; line 11: \"#370: refuse a returning record whose ID is already held; rebuild the index\"; line 13: \"The change-open refusal, when built: plural wording, one change id per line,\"; and 4 more) and mark each one `[x]`, then re-run `specsync change check fix-m1-migrate-refuses-before-writing --commit`"
     }
   ]
 }

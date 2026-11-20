@@ -445,7 +445,10 @@ fn a_separate_case_colliding_target_is_replaced_only_as_previewed() {
         "{plan:#}"
     );
     let text = fixture.ok_text(&["migrate"]);
-    assert!(text.contains("Replaces") && text.contains("`knowledge/index.md`"), "{text}");
+    assert!(
+        text.contains("Replaces") && text.contains("`knowledge/index.md`"),
+        "{text}"
+    );
     let applied = fixture.ok(&[
         "migrate",
         "--apply",

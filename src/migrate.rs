@@ -229,7 +229,8 @@ static GUARD_EXEMPT: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBo
 /// The 0.5.x files the plan being built removes as already migrated, because a committed
 /// receipt of an earlier migration lists them with these bytes (REQ-records-009, #370).
 /// The mappers leave them out, so none is carried a second time.
-static ALREADY_MIGRATED: std::sync::Mutex<BTreeSet<String>> = std::sync::Mutex::new(BTreeSet::new());
+static ALREADY_MIGRATED: std::sync::Mutex<BTreeSet<String>> =
+    std::sync::Mutex::new(BTreeSet::new());
 
 /// Whether the plan being built removes `path` as already migrated, so no mapper reads it.
 pub(crate) fn already_migrated(path: &str) -> bool {
@@ -861,24 +862,38 @@ fn target_refusal(root: &Path, plan: &Plan, digest: &str) -> Result<Option<Strin
 /// a planned removal, or a generated file the plan replaces. Then read it back.
 fn write_by_rename(root: &Path, written: &Planned, written_now: &mut Vec<String>) -> Result<()> {
     let path = local_path(root, &written.path)?;
-    let listed = path.parent().zip(path.file_name()).is_some_and(|(folder, name)| {
-        std::fs::read_dir(folder).is_ok_and(|entries| entries.flatten().any(|entry| entry.file_name() == name))
-    });
-    let done = listed && matches!(at_target(root, &written.path)?, AtTarget::Bytes(bytes) if bytes == written.bytes);
+    let listed = path
+        .parent()
+        .zip(path.file_name())
+        .is_some_and(|(folder, name)| {
+            std::fs::read_dir(folder)
+                .is_ok_and(|entries| entries.flatten().any(|entry| entry.file_name() == name))
+        });
+    let done = listed
+        && matches!(at_target(root, &written.path)?, AtTarget::Bytes(bytes) if bytes == written.bytes);
     if !done {
         let folder = path.parent().context("a planned file has no folder")?;
         std::fs::create_dir_all(folder)?;
-        let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
+        let name = path
+            .file_name()
+            .map(|name| name.to_string_lossy().into_owned())
+            .unwrap_or_default();
         let temporary = folder.join(format!(".{name}.{}.migrating", std::process::id()));
         let _ = std::fs::remove_file(&temporary);
         {
-            let mut file = std::fs::OpenOptions::new().write(true).create_new(true).open(&temporary)?;
+            let mut file = std::fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&temporary)?;
             std::io::Write::write_all(&mut file, &written.bytes)?;
             file.sync_all()?;
         }
         if let Err(error) = std::fs::rename(&temporary, &path) {
             let _ = std::fs::remove_file(&temporary);
-            bail!("{} could not take its name ({error}); no 0.5.x file was removed", written.path);
+            bail!(
+                "{} could not take its name ({error}); no 0.5.x file was removed",
+                written.path
+            );
         }
         // On a file system that folds case the rename replaces the file's bytes but can
         // keep its old spelling, as `knowledge/INDEX.md`; a case-only rename then gives it
@@ -891,7 +906,9 @@ fn write_by_rename(root: &Path, written: &Planned, written_now: &mut Vec<String>
                 entries.flatten().map(|entry| entry.file_name()).collect();
             if !names.iter().any(|listed| listed == name)
                 && let Some(listed) = names.iter().find(|listed| {
-                    listed.to_string_lossy().eq_ignore_ascii_case(&name.to_string_lossy())
+                    listed
+                        .to_string_lossy()
+                        .eq_ignore_ascii_case(&name.to_string_lossy())
                 })
             {
                 std::fs::rename(folder.join(listed), &path)?;
@@ -901,7 +918,10 @@ fn write_by_rename(root: &Path, written: &Planned, written_now: &mut Vec<String>
     }
     match at_target(root, &written.path)? {
         AtTarget::Bytes(back) if back == written.bytes => Ok(()),
-        _ => bail!("{} did not read back as planned; no 0.5.x file was removed", written.path),
+        _ => bail!(
+            "{} did not read back as planned; no 0.5.x file was removed",
+            written.path
+        ),
     }
 }
 
@@ -928,7 +948,11 @@ fn only_metadata(path: &Path) -> Option<u64> {
     for entry in std::fs::read_dir(path).ok()?.flatten() {
         let kind = entry.file_type().ok()?;
         if crate::evidence::is_os_metadata(&entry.file_name().to_string_lossy()) {
-            count += if kind.is_dir() { files_under(&entry.path()) } else { 1 };
+            count += if kind.is_dir() {
+                files_under(&entry.path())
+            } else {
+                1
+            };
         } else if kind.is_dir() {
             count += only_metadata(&entry.path())?;
         } else {
@@ -959,7 +983,9 @@ fn remove_emptied_folders<'a>(
     let mut emptied: Vec<(String, u64)> = vec![];
     for folder in ordered {
         if folder == ".chough"
-            || emptied.iter().any(|(gone, _)| folder.starts_with(&format!("{gone}/")))
+            || emptied
+                .iter()
+                .any(|(gone, _)| folder.starts_with(&format!("{gone}/")))
         {
             continue;
         }
@@ -1028,10 +1054,11 @@ fn carried_into(text: &str) -> BTreeMap<String, Vec<String>> {
 /// Whether Git holds `relative` at HEAD, whatever is on disk.
 fn held_by_git(root: &Path, relative: &str) -> bool {
     crate::records::run_owned(
-        std::process::Command::new("git")
-            .arg("-C")
-            .arg(root)
-            .args(["cat-file", "-e", &format!("HEAD:{relative}")]),
+        std::process::Command::new("git").arg("-C").arg(root).args([
+            "cat-file",
+            "-e",
+            &format!("HEAD:{relative}"),
+        ]),
         None,
     )
     .is_ok_and(|output| output.status.success())
@@ -1141,7 +1168,11 @@ fn already_migrated_files(root: &Path, legacy: &[String]) -> Result<BTreeMap<Str
         let way = if path == ".chough/session.json" {
             "it is the fixed path of whichever session was current, so start what you want of the session it holds as a new one with `chough session new <key>`".to_string()
         } else {
-            match first.carried.get(path).filter(|targets| !targets.is_empty()) {
+            match first
+                .carried
+                .get(path)
+                .filter(|targets| !targets.is_empty())
+            {
                 Some(targets) => format!(
                     "carry what you want from it into {} by hand",
                     targets
@@ -1277,12 +1308,17 @@ fn apply(
                 .removed
                 .keys()
                 .chain(plan.carried.sources.iter())
-                .filter(|removed| **removed != written.path && removed.eq_ignore_ascii_case(&written.path))
+                .filter(|removed| {
+                    **removed != written.path && removed.eq_ignore_ascii_case(&written.path)
+                })
             {
                 let local = local_path(root, removed)?;
                 if one_file_by_case(&local_path(root, &written.path)?, &local)
                     && let AtTarget::Bytes(bytes) = at_target(root, removed)?
-                    && plan.sources.get(removed).is_some_and(|sha| *sha == sha256(&bytes))
+                    && plan
+                        .sources
+                        .get(removed)
+                        .is_some_and(|sha| *sha == sha256(&bytes))
                 {
                     replaced_by_case.push((removed.clone(), bytes));
                 }
@@ -1492,7 +1528,8 @@ fn one_file_by_case(target: &Path, removal: &Path) -> bool {
 /// planned bytes, then read it back.
 fn write_planned(root: &Path, written: &Planned, written_now: &mut Vec<String>) -> Result<()> {
     let path = local_path(root, &written.path)?;
-    let done = matches!(at_target(root, &written.path)?, AtTarget::Bytes(bytes) if bytes == written.bytes);
+    let done =
+        matches!(at_target(root, &written.path)?, AtTarget::Bytes(bytes) if bytes == written.bytes);
     if !done {
         if let Some(parent) = path.parent() {
             std::fs::create_dir_all(parent)?;
@@ -1523,7 +1560,10 @@ fn change_open_why(open: &[String], refuses: &str) -> String {
     };
     format!(
         "{these} {are} not archived, and {refuses}:\n{}\nFinish each and archive it with `chough change ship <id>` (or archive it with SpecSync), then run `chough migrate` again.",
-        open.iter().map(|id| format!("- {id}")).collect::<Vec<_>>().join("\n")
+        open.iter()
+            .map(|id| format!("- {id}"))
+            .collect::<Vec<_>>()
+            .join("\n")
     )
 }
 
@@ -2693,7 +2733,10 @@ mod tests {
                     "{build}: {path} {sha}"
                 );
             }
-            assert!(!carried_into(text).is_empty(), "{build}: no removed file carried");
+            assert!(
+                !carried_into(text).is_empty(),
+                "{build}: no removed file carried"
+            );
         }
     }
 
