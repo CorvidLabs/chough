@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Draft #394 and send it to fable-lead; do not start"
+next: "Gate \"Scope approval of fix-394-a-code-fence-that-never-closes-hides-no-section (native approval)\" closed (approved); run `chough stage advance` to move on."
 ---
 # A code fence that never closes hides nothing after it, so saving a session never repeats its sections and the bug merge driver still finds the Log (#394)
 
@@ -33,6 +33,8 @@ A code fence that never closes hides nothing after it, so saving a session never
 
 ## Decisions and why
 
+- 0xLeif decided "Scope approval of fix-394-a-code-fence-that-never-closes-hides-no-section (native approval)": "Standing OK, tell me after" (Leif's standing OK for scope approvals (2026-11-20 dialog, relayed via t4c): his answer 'Standing OK, tell me after' in a Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 04:17Z. Confirmed by t4c for this change on fable-lead's summary (one criterion added to each changed requirement, nothing removed, no refusal). Recorded by t4c itself, at the draft d05ac518); recorded by t4c; a relayed claim, not authenticated; ran specsync change approve fix-394-a-code-fence-that-never-closes-hides-no-section as 0xLeif
+
 ## What was verified
 
 ## Open threads
@@ -42,3 +44,20 @@ A code fence that never closes hides nothing after it, so saving a session never
 - 2026-11-20T09:08:03Z · start · intent → intent · A code fence that never closes hides nothing after it, so saving a session never repeats its sections and the bug merge driver still finds the Log (#394) ^t-22dc32
   - revision: 056cbb8029f6535ff74f866a0523893916f682db
   - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T14:13:58Z · gate-opened · intent → intent · Scope approval of fix-394-a-code-fence-that-never-closes-hides-no-section (native approval) ^t-e6eaae
+  - native_change: fix-394-a-code-fence-that-never-closes-hides-no-section
+  - revision: d05ac5183c8ee78bac4a84fbcdf2ecfdf3132d4e
+  - holds: intent
+  - drives: approve
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T14:13:58Z · gate-closed · intent → intent · Scope approval of fix-394-a-code-fence-that-never-closes-hides-no-section (native approval) ^t-3fd825
+  - native_change: fix-394-a-code-fence-that-never-closes-hides-no-section
+  - revision: d05ac5183c8ee78bac4a84fbcdf2ecfdf3132d4e
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Standing OK, tell me after
+    - where: Leif's standing OK for scope approvals (2026-11-20 dialog, relayed via t4c): his answer 'Standing OK, tell me after' in a Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 04:17Z. Confirmed by t4c for this change on fable-lead's summary (one criterion added to each changed requirement, nothing removed, no refusal). Recorded by t4c itself, at the draft d05ac518
+    - recorded_by: t4c
+    - native: specsync change approve fix-394-a-code-fence-that-never-closes-hides-no-section
+    - actor: 0xLeif
+  - by: t4c (claude-opus-5-5, hc t4c)
