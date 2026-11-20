@@ -2222,7 +2222,29 @@ fn an_edited_committed_receipt_is_refused_until_committed_or_restored() {
         );
     }
     assert_eq!(files(fixture.root()), before);
-    fixture.git(&["checkout", "--", &receipt]);
+    // T4 (rule 3): the way out runs as printed. The refusal names the restore command
+    // with the receipt's path quoted as one shell word; run it as printed.
+    let refusal = refused_preview(&fixture);
+    let command = refusal
+        .split('`')
+        .find(|part| part.starts_with("git restore -- "))
+        .unwrap_or_else(|| panic!("no git restore command: {refusal}"))
+        .to_string();
+    assert!(
+        !command.contains('<'),
+        "a placeholder is left in: {command}"
+    );
+    let restored = std::process::Command::new("sh")
+        .args(["-c", &command])
+        .current_dir(fixture.root())
+        .status()
+        .unwrap();
+    assert!(restored.success(), "{command} failed");
+    assert_eq!(
+        fixture.read(&receipt),
+        committed,
+        "{command} did not restore the receipt"
+    );
     let plan = fixture.ok(&["migrate", "--json"]);
     assert!(
         plan["removed"][OPEN_ONE]

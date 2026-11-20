@@ -1167,8 +1167,13 @@ fn earlier_receipts(root: &Path) -> Result<Vec<EarlierReceipt>> {
     );
     ensure!(
         edited.is_empty(),
-        "refused:migration-receipt: {} is held by Git but differs on disk from its last commit, as a receipt edited, half merged or redacted and not committed is, so the returning 0.5.x files cannot be judged by it; nothing was written, and the apply would refuse too. Commit it, or restore it from the last commit with `git restore -- <path>`, then run `chough migrate` again.",
-        edited.join(", ")
+        "refused:migration-receipt: {} is held by Git but differs on disk from its last commit, as a receipt edited, half merged or redacted and not committed is, so the returning 0.5.x files cannot be judged by it; nothing was written, and the apply would refuse too. Commit it, or restore it from the last commit with `git restore -- {}`, then run `chough migrate` again.",
+        edited.join(", "),
+        edited
+            .iter()
+            .map(|path| crate::sessions::shell_quoted(path))
+            .collect::<Vec<_>>()
+            .join(" ")
     );
     Ok(judged)
 }
