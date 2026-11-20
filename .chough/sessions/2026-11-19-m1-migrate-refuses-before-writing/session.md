@@ -5,7 +5,7 @@ aliases: [m1-migrate-refuses-before-writing]
 objective: "Migration refuses before it writes and leaves a working tree: any entry at a target or receipt name counts as taken, parallel applies cannot both apply, a returning 0.5.x record already migrated is refused by name with the generated index rebuilt, and doctor --fix keeps a pointer that names an open session by alias (#376, #370, #337, #378; #375 and #338 await Leif's choice)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -60,13 +60,9 @@ observations:
   - 2026-11-20-tc-records-migrate-skips-macos-metadata
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-m1-migrate-refuses-before-writing
-    holds: accept
-    drives: review
-    opened: 2026-11-20T06:23:41Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: Migration refuses before it writes and leaves a working tree
 summary:
   - chough migrate reads every target and receipt entry without following a link or waiting and refuses anything in the way before it writes (#337); judges returning 0.5.x files by the committed receipt that lists them (#370); takes the writer lock before it plans, so one apply of a digest applies (#378); removes no 0.5.x file before every planned file is on disk and gives knowledge/index.md its name by moving the 0.5.x INDEX.md aside, on every file system including a Docker Desktop mount (#338); removes folders left holding only macOS metadata and names them (#375); and doctor --fix keeps a pointer that names an open session by alias (#376).
@@ -88,6 +84,7 @@ Migration refuses before it writes and leaves a working tree: any entry at a tar
 - 0xLeif decided "Re-approval of fix-m1-migrate-refuses-before-writing with the #263 case file added to its paths (native approval)": "Yes, record it" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval after his relayed 'A' (hc t4c through fable-lead, about 01:24Z on 2026-11-20): keep what he approved, the file gets replaced, the preview says so, #263's test is updated to match, one test file added through a send-back t4b runs, no wording change. The one path added is .chough/cases/records.migrate-case-colliding-target.cases.toml; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 (2026-11-20) and standing OK (d), as recorded before); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-m1-migrate-refuses-before-writing as 0xLeif
 - 0xLeif decided "One send-back of fix-m1-migrate-refuses-before-writing to add the macOS-metadata case file to its paths, run by t4b": "Yes, all of it" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, after his relayed 'Ok' (hc t4c through fable-lead, about 03:00Z on 2026-11-20, item 3 of t4c's six-item list): record that word, run one send-back adding .chough/cases/records.migrate-macos-metadata.cases.toml to M1's paths with no delta word changed, retitle that case to the approved REQ-records-015 criterion, and record his re-approval); recorded by fable-t4b; a relayed claim, not authenticated
 - 0xLeif decided "Re-approval of fix-m1-migrate-refuses-before-writing with the macOS-metadata case file added to its paths (native approval)": "Yes, all of it" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, after his relayed 'Ok' (hc t4c through fable-lead, about 03:00Z, item 3): the one path .chough/cases/records.migrate-macos-metadata.cases.toml added; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 and 'A' (2026-11-20) and standing OK (d), as recorded before); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-m1-migrate-refuses-before-writing as 0xLeif
+- 0xLeif decided "Implementation review of fix-m1-migrate-refuses-before-writing": "Go" (Standing OK 6(b): Leif's 'Go' to the six rules (Claude Code chat message of 2026-11-19, relayed by his planning session hc t4c), recording his implementation review of a batch with a tester PASS that changes no approved sentence. At 75264e00: the tester's PASS on macOS, tester2's PASS on Linux and a Docker Desktop mount, corvid-agent's approval, fable-lead's read of the whole diff against main; no approved sentence changed by the build. Recorded by t4c); recorded by t4c; a relayed claim, not authenticated; ran specsync change review fix-m1-migrate-refuses-before-writing as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -296,4 +293,20 @@ Migration refuses before it writes and leaves a working tree: any entry at a tar
   - revision: 75264e0039a3957affd98dca1708de2819c2af13
   - holds: accept
   - drives: review
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T06:25:05Z · gate-closed · accept → accept · Implementation review of fix-m1-migrate-refuses-before-writing ^t-03b554
+  - native_change: fix-m1-migrate-refuses-before-writing
+  - revision: 8072cd903c1e575727c5a3824d706cccfd949817
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Go
+    - where: Standing OK 6(b): Leif's 'Go' to the six rules (Claude Code chat message of 2026-11-19, relayed by his planning session hc t4c), recording his implementation review of a batch with a tester PASS that changes no approved sentence. At 75264e00: the tester's PASS on macOS, tester2's PASS on Linux and a Docker Desktop mount, corvid-agent's approval, fable-lead's read of the whole diff against main; no approved sentence changed by the build. Recorded by t4c
+    - recorded_by: t4c
+    - native: specsync change review fix-m1-migrate-refuses-before-writing
+    - actor: 0xLeif
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T06:25:06Z · advance · accept → done · native:archived ^t-0d4bfe
+  - native_change: fix-m1-migrate-refuses-before-writing
+  - gate: native:archived
+  - revision: 8072cd903c1e575727c5a3824d706cccfd949817
   - by: t4c (claude-opus-5-5, hc t4c)
