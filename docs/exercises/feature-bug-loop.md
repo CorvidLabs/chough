@@ -22,7 +22,7 @@ and a directory you pass is always kept.
 
 Observed on macOS arm64 with hi 0.8.0, specsync 6.1.1 and the branch build of chough.
 
-That run used specsync 6.1.1. The README now pins 6.3.0. The table's `BUG-0001` is the id that run recorded. `bug add` now names the bug `<YYYY-MM-DD>-<slug>`. The macOS table below was not rerun with 6.1.2, 6.2.0 or 6.3.0. With 6.1.2 the exercise was observed passing on Linux
+That run used specsync 6.1.1. The README now pins 6.4.0. The table's `BUG-0001` is the id that run recorded. `bug add` now names the bug `<YYYY-MM-DD>-<slug>`. The macOS table below was not rerun with 6.1.2, 6.2.0 or 6.3.0. With 6.1.2 the exercise was observed passing on Linux
 x86_64 (hi 0.8.0, fledge 1.8.0) through `fledge lanes run verify` for issue #40.
 
 | Stage | What happens | Observed |
