@@ -281,6 +281,7 @@ Acceptance Criteria
 - 0.5.x aliases work through case and bug links, checkpoint references, status, next, timing and validation resume, and an old-style ID supplied for a new write fails with an omit-ID remedy.
 - A test with a pinned clock runs the same bound case in two independent Git roots, each in its own session on its own branch, at the same second; after the branches merge, both entries keep the pinned time and both read current.
 - In a real Git fixture, two roots on separate branches independently add case-run evidence, `evidence add` entries and bugs; the merge has no conflict and every record from both sides is byte-identical to its branch version.
+- `chough bug add` and `chough journal add` stopped by a full disk or a file-size limit leave no bug or post at the new name, and `chough bug list`, `status`, `next` and `library index --check` work as before; on an exFAT volume, where a hard link is refused, they still write whole records.
 
 ### REQ-cli-029
 
