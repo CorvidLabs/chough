@@ -149,7 +149,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Send back doctor-fix-safety for the three inbox edits to REQ-history-012, run by the fixer\" closed; run `chough stage advance` to move on."
+next: "Gate \"Re-approval of doctor-fix-safety for the three inbox edits to REQ-history-012\" closed (approved); run `chough stage advance` to move on."
 ---
 # doctor --fix never destroys or hangs: the archive finish keeps evidence its story does not hold (#381) and removes OS metadata (#377), next names the archive finish (#371), doctor names front-matter conflicts and gives no restore advice for a redaction (#374), and the spec walk stays inside the project and is bounded (#402)
 
@@ -172,6 +172,7 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
 - 0xLeif decided "Send back doctor-fix-safety to drop the journal post from the #389 guard, run by the fixer": "B, fixer runs the send-back" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:46Z); recorded by chough-fixer-t4g; a relayed claim, not authenticated
 - 0xLeif decided "Re-approval of doctor-fix-safety with the journal post dropped from the #389 guard": "B, fixer runs the send-back" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:46Z, choosing option B (drop the journal post from the #389 guard, with the criterion that an untracked or ignored journal post does not hold the finish) on this text; the earlier approvals stand for the rest of the delta: 'Approve, with the 3 recommended choices', the three wording answers, 'Yes' for the two sentences and four paths, and standing OK (d) for the rebase onto main after #407); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
 - 0xLeif decided "Send back doctor-fix-safety for the three inbox edits to REQ-history-012, run by the fixer": "a, all yes.. im back" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 00:38Z, answering item 4 of t4c's eight-item round: #414's three edits to REQ-history-012 (any file under agent/inbox/ outside its folded/ folder is kept; the way out for a kept inbox file chough inbox add would not take; one new criterion), with the fixer running the send-back); recorded by chough-fixer-t4g; a relayed claim, not authenticated
+- 0xLeif decided "Re-approval of doctor-fix-safety for the three inbox edits to REQ-history-012": "a, all yes.. im back" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 00:38Z, answering item 4 of t4c's eight-item round, on this text: REQ-history-012 keeps any file under agent/inbox/ outside its folded/ folder, gives a kept inbox file that chough inbox add would not take a drop-only way out, and adds one criterion for both; nothing else in any delta changed, and main through #413 changed none of this change's requirements, so standing OK (d) was not used; the earlier approvals stand for the rest of the delta: 'Approve, with the 3 recommended choices', the three wording answers, 'Yes' for the two sentences and four paths, standing OK (d) for the rebase onto main after #407, and 'B, fixer runs the send-back' for the #389 guard); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
 
 ## What was verified
 
@@ -533,4 +534,32 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
     - words: a, all yes.. im back
     - where: Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 00:38Z, answering item 4 of t4c's eight-item round: #414's three edits to REQ-history-012 (any file under agent/inbox/ outside its folded/ folder is kept; the way out for a kept inbox file chough inbox add would not take; one new criterion), with the fixer running the send-back
     - recorded_by: chough-fixer-t4g
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T00:43:22Z · gate-opened · build → build · Re-approval of doctor-fix-safety for the three inbox edits to REQ-history-012 ^t-f4f812
+  - native_change: doctor-fix-safety
+  - revision: a35f3c394e636ac4d18802f1c4b4ce8d2e983d72
+  - holds: build
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T00:43:23Z · direct-native-write · build → build · doctor-fix-safety's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-30b543
+  - native_change: doctor-fix-safety
+  - revision: a35f3c394e636ac4d18802f1c4b4ce8d2e983d72
+  - direct_write:
+    - change: doctor-fix-safety
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T00:43:23Z · gate-closed · build → build · Re-approval of doctor-fix-safety for the three inbox edits to REQ-history-012 ^t-2ec03f
+  - native_change: doctor-fix-safety
+  - revision: a35f3c394e636ac4d18802f1c4b4ce8d2e983d72
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: a, all yes.. im back
+    - where: Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 00:38Z, answering item 4 of t4c's eight-item round, on this text: REQ-history-012 keeps any file under agent/inbox/ outside its folded/ folder, gives a kept inbox file that chough inbox add would not take a drop-only way out, and adds one criterion for both; nothing else in any delta changed, and main through #413 changed none of this change's requirements, so standing OK (d) was not used; the earlier approvals stand for the rest of the delta: 'Approve, with the 3 recommended choices', the three wording answers, 'Yes' for the two sentences and four paths, standing OK (d) for the rebase onto main after #407, and 'B, fixer runs the send-back' for the #389 guard
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve doctor-fix-safety
+    - actor: 0xLeif
   - by: chough-fixer (claude-opus-5-5, hc t4n)
