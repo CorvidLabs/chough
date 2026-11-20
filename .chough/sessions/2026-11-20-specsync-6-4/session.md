@@ -10,7 +10,7 @@ stage_status: active
 iteration: 1
 callers: []
 native_change: specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments
-pr: ""
+pr: "429"
 criteria: [DRIVE-29, DRIVE-12]
 requirements: []
 cases: []
