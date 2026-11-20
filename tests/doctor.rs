@@ -1769,12 +1769,19 @@ fn doctor_reads_uncommitted_records() {
     let fresh = fixture.id_of("fresh-probe");
     let session = format!(".chough/sessions/{fresh}/session.md");
     let text = fixture.read(&session);
-    let stage = text.lines().find(|line| line.starts_with("stage:")).unwrap().to_string();
+    let stage = text
+        .lines()
+        .find(|line| line.starts_with("stage:"))
+        .unwrap()
+        .to_string();
     fixture.write(&session, &text.replacen(&stage, "stage: nonsense", 1));
     let empty = format!(".chough/sessions/{committed}/evidence/2026-11-19-killed-run.md");
     fixture.write(&empty, "");
     let bug = ".chough/bugs/2026-11-19-cut-off-bug.md";
-    fixture.write(bug, "---\nkind: bug\nid: 2026-11-19-cut-off-bug\ntitle: cut");
+    fixture.write(
+        bug,
+        "---\nkind: bug\nid: 2026-11-19-cut-off-bug\ntitle: cut",
+    );
     let output = fixture.run(&["doctor"]);
     let said = format!(
         "{}{}",
@@ -1790,13 +1797,20 @@ fn doctor_reads_uncommitted_records() {
             .find(|finding| finding["target"] == target)
             .unwrap_or_else(|| panic!("no unreadable finding for {target}: {report:#}"));
         assert!(
-            finding["error"].as_str().is_some_and(|error| !error.is_empty()),
+            finding["error"]
+                .as_str()
+                .is_some_and(|error| !error.is_empty()),
             "{finding:#}"
         );
     }
-    let shelve = found.iter().find(|finding| finding["target"] == session.as_str()).unwrap();
+    let shelve = found
+        .iter()
+        .find(|finding| finding["target"] == session.as_str())
+        .unwrap();
     assert!(
-        shelve.to_string().contains(&format!("chough session shelve {fresh}")),
+        shelve
+            .to_string()
+            .contains(&format!("chough session shelve {fresh}")),
         "{shelve:#}"
     );
     let root = fixture.root().to_string_lossy().into_owned();
@@ -1814,7 +1828,9 @@ fn doctor_names_a_special_file_without_opening_it() {
     fixture.init();
     fixture.commit("fixture");
     let id = fixture.active_id();
-    let dir = fixture.root().join(format!(".chough/sessions/{id}/evidence"));
+    let dir = fixture
+        .root()
+        .join(format!(".chough/sessions/{id}/evidence"));
     std::fs::create_dir_all(&dir).unwrap();
     let fifo = dir.join("2026-11-19-a-fifo.md");
     assert!(
@@ -1832,13 +1848,23 @@ fn doctor_names_a_special_file_without_opening_it() {
     std::fs::create_dir_all(dir.join("2026-11-19-a-folder.md")).unwrap();
     let started = std::time::Instant::now();
     let (code, report) = doctor(&fixture, &[]);
-    assert!(started.elapsed() < std::time::Duration::from_secs(10), "doctor took {:?}", started.elapsed());
+    assert!(
+        started.elapsed() < std::time::Duration::from_secs(10),
+        "doctor took {:?}",
+        started.elapsed()
+    );
     assert_eq!(code, 1, "{report:#}");
     let found = of_kind(&report, "unreadable");
-    for name in ["2026-11-19-a-fifo.md", "2026-11-19-a-socket.md", "2026-11-19-a-folder.md"] {
+    for name in [
+        "2026-11-19-a-fifo.md",
+        "2026-11-19-a-socket.md",
+        "2026-11-19-a-folder.md",
+    ] {
         let target = format!(".chough/sessions/{id}/evidence/{name}");
         assert!(
-            found.iter().any(|finding| finding["target"] == target.as_str()),
+            found
+                .iter()
+                .any(|finding| finding["target"] == target.as_str()),
             "no unreadable finding for {target}: {report:#}"
         );
     }
@@ -1857,11 +1883,17 @@ fn doctor_skips_ignored_files_and_reports_a_committed_record_once() {
     fixture.write(&entry, "");
     fixture.commit("a committed entry its reader refuses");
     fixture.write(".chough/local/2026-11-19-scratch.md", "not a record");
-    fixture.write(&format!(".chough/sessions/{id}/evidence/._2026-11-19-broken.md"), "\u{0}\u{5}binary");
+    fixture.write(
+        &format!(".chough/sessions/{id}/evidence/._2026-11-19-broken.md"),
+        "\u{0}\u{5}binary",
+    );
     let (_, report) = doctor(&fixture, &[]);
     let found = of_kind(&report, "unreadable");
     assert_eq!(
-        found.iter().filter(|finding| finding["target"] == entry.as_str()).count(),
+        found
+            .iter()
+            .filter(|finding| finding["target"] == entry.as_str())
+            .count(),
         1,
         "{report:#}"
     );

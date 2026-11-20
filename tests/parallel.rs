@@ -30,12 +30,17 @@ fn at_once(fixture: &Fixture, args: &[&str], runs: usize) -> Vec<(Option<i32>, S
                 })
             })
             .collect();
-        handles.into_iter().map(|handle| handle.join().unwrap()).collect()
+        handles
+            .into_iter()
+            .map(|handle| handle.join().unwrap())
+            .collect()
     })
 }
 
 fn race_text(said: &str) -> bool {
-    said.contains("File exists") || said.contains("os error 17") || said.contains("Condition failed")
+    said.contains("File exists")
+        || said.contains("os error 17")
+        || said.contains("Condition failed")
 }
 
 /// REQ-cli-016 (#386), TC-cli-parallel-skill-updates-each-succeed: eight `chough skill

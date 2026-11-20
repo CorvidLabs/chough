@@ -507,7 +507,20 @@ fn init(
     // REQ-cli-043: with the librarian on, the knowledge directory exists from the start.
     let library = library::create_at_init(root);
     // REQ-cli-047: the merge attributes and drivers, so two branches merge clean.
-    let merge = library::merge_at_init(root);
+    let mut merge = library::merge_at_init(root);
+    // REQ-cli-001 (#386): several inits at once contend for Git's config lock. A driver
+    // another run set meanwhile is current; one still missing is set once more.
+    if merge["drivers"]["status"] == "refused" {
+        let missing = library::missing_merge_drivers(root);
+        merge["drivers"] = if missing.is_empty() {
+            json!({"status": "current"})
+        } else {
+            match library::set_merge_drivers(root, &missing) {
+                Ok(()) => json!({"status": "set", "set": missing}),
+                Err(error) => json!({"status": "refused", "reason": format!("{error:#}")}),
+            }
+        };
+    }
     let mut output = json!({
         "schema_version": 1,
         "created": created,

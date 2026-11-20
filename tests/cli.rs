@@ -3709,20 +3709,40 @@ fn a_crlf_skill_copy_reads_as_its_lf_state_and_is_refreshed_with_crlf() {
     let mut files = vec![];
     for entry in walk(&installed) {
         let bytes = fs::read(&entry).unwrap();
-        let text = String::from_utf8(bytes).unwrap().replace("\r\n", "\n").replace('\n', "\r\n");
+        let text = String::from_utf8(bytes)
+            .unwrap()
+            .replace("\r\n", "\n")
+            .replace('\n', "\r\n");
         fs::write(&entry, text).unwrap();
-        files.push(entry.strip_prefix(&installed).unwrap().to_string_lossy().into_owned());
+        files.push(
+            entry
+                .strip_prefix(&installed)
+                .unwrap()
+                .to_string_lossy()
+                .into_owned(),
+        );
     }
     let status = fixture.ok(&["skill", "status"]);
     for file in &files {
-        let want = if file == "references/accept.md" { "known-outdated" } else { "current" };
+        let want = if file == "references/accept.md" {
+            "known-outdated"
+        } else {
+            "current"
+        };
         assert_eq!(skill_state(&status, None, file), want, "{file}: {status:#}");
     }
     fixture.ok(&["skill", "update"]);
     let status = fixture.ok(&["skill", "status"]);
-    assert_eq!(skill_state(&status, None, "references/accept.md"), "current", "{status:#}");
+    assert_eq!(
+        skill_state(&status, None, "references/accept.md"),
+        "current",
+        "{status:#}"
+    );
     let refreshed = fs::read_to_string(installed.join("references/accept.md")).unwrap();
-    assert!(refreshed.contains("\r\n") && !refreshed.replace("\r\n", "").contains('\n'), "not CRLF");
+    assert!(
+        refreshed.contains("\r\n") && !refreshed.replace("\r\n", "").contains('\n'),
+        "not CRLF"
+    );
 }
 
 /// Every file under `dir`, recursively.
@@ -3763,8 +3783,14 @@ fn a_symlinked_host_is_skipped_and_the_rest_updated() {
             String::from_utf8_lossy(&output.stderr)
         );
         assert!(output.status.success(), "{args:?}: {said}");
-        assert!(said.contains("uninspected") && said.contains(".codex/skills"), "{args:?}: {said}");
-        assert!(!said.contains(&root), "{args:?} showed an absolute path: {said}");
+        assert!(
+            said.contains("uninspected") && said.contains(".codex/skills"),
+            "{args:?}: {said}"
+        );
+        assert!(
+            !said.contains(&root),
+            "{args:?} showed an absolute path: {said}"
+        );
     }
     let status = fixture.ok(&["skill", "status"]);
     assert_eq!(
@@ -3775,7 +3801,10 @@ fn a_symlinked_host_is_skipped_and_the_rest_updated() {
     let output = fixture.run(&["skill", "update", "--host", "codex"]);
     let said = String::from_utf8_lossy(&output.stderr).into_owned();
     assert!(!output.status.success(), "--host codex was not refused");
-    assert!(said.contains("codex") && said.contains(".codex/skills"), "{said}");
+    assert!(
+        said.contains("codex") && said.contains(".codex/skills"),
+        "{said}"
+    );
     assert!(!said.contains(&root), "an absolute path: {said}");
 }
 
@@ -3788,7 +3817,9 @@ fn a_skill_file_it_cannot_write_is_refused_plainly() {
     use std::os::unix::fs::PermissionsExt;
     let fixture = Fixture::new();
     fixture.init();
-    let references = fixture.root().join(".agents/skills/chough-workflow/references");
+    let references = fixture
+        .root()
+        .join(".agents/skills/chough-workflow/references");
     fs::remove_file(references.join("lifecycle.md")).unwrap();
     fs::set_permissions(&references, fs::Permissions::from_mode(0o555)).unwrap();
     let output = fixture.run(&["skill", "update"]);
@@ -3800,6 +3831,46 @@ fn a_skill_file_it_cannot_write_is_refused_plainly() {
     );
     assert!(!output.status.success(), "{said}");
     assert!(said.contains("references/lifecycle.md"), "{said}");
-    assert!(!said.contains("Condition failed") && !said.contains("write_new"), "{said}");
-    assert!(!said.contains(&fixture.root().to_string_lossy().into_owned()), "{said}");
+    assert!(
+        !said.contains("Condition failed") && !said.contains("write_new"),
+        "{said}"
+    );
+    assert!(
+        !said.contains(&fixture.root().to_string_lossy().into_owned()),
+        "{said}"
+    );
+}
+
+/// REQ-cli-016 (#373), TC-cli-an-unreadable-skill-file-is-skipped-as-uninspected: a skill
+/// file that cannot be read is skipped and reported `uninspected`, never as a person's
+/// edit, and `chough skill update` leaves it and updates the rest.
+#[cfg(unix)]
+#[test]
+fn an_unreadable_skill_file_is_skipped_as_uninspected() {
+    use std::os::unix::fs::PermissionsExt;
+    let fixture = Fixture::new();
+    fixture.init();
+    let installed = fixture.root().join(".agents/skills/chough-workflow");
+    fs::write(installed.join("references/accept.md"), ACCEPT_AT_2756DC2).unwrap();
+    let locked = installed.join("references/lifecycle.md");
+    fs::set_permissions(&locked, fs::Permissions::from_mode(0o000)).unwrap();
+    let status = fixture.ok(&["skill", "status"]);
+    let update = fixture.run(&["skill", "update"]);
+    let after = fixture.ok(&["skill", "status"]);
+    fs::set_permissions(&locked, fs::Permissions::from_mode(0o644)).unwrap();
+    assert_eq!(
+        skill_state(&status, None, "references/lifecycle.md"),
+        "uninspected",
+        "{status:#}"
+    );
+    assert!(
+        update.status.success(),
+        "{}",
+        String::from_utf8_lossy(&update.stderr)
+    );
+    assert_eq!(
+        skill_state(&after, None, "references/accept.md"),
+        "current",
+        "{after:#}"
+    );
 }
