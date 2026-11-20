@@ -226,6 +226,19 @@ const NAMED_LEGACY_PATHS: usize = 5;
 /// (migrate, doctor, skill), so the guard is not repeated under the writer lock.
 static GUARD_EXEMPT: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
+/// The 0.5.x files the plan being built removes as already migrated, because a committed
+/// receipt of an earlier migration lists them with these bytes (REQ-records-009, #370).
+/// The mappers leave them out, so none is carried a second time.
+static ALREADY_MIGRATED: std::sync::Mutex<BTreeSet<String>> = std::sync::Mutex::new(BTreeSet::new());
+
+/// Whether the plan being built removes `path` as already migrated, so no mapper reads it.
+pub(crate) fn already_migrated(path: &str) -> bool {
+    ALREADY_MIGRATED
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .contains(path)
+}
+
 /// Mark this process as running a command the unmigrated guard exempts.
 pub(crate) fn exempt_from_guard() {
     GUARD_EXEMPT.store(true, std::sync::atomic::Ordering::SeqCst);
@@ -373,6 +386,11 @@ struct Plan {
     files: Vec<Planned>,
     /// The receipt the apply writes, named when the plan is built (REQ-records-009).
     receipt: String,
+    /// The generated files (`knowledge/index.md`, `knowledge/journal/feed.xml`) that are
+    /// regular files with other bytes when the plan is built, which the apply replaces
+    /// with the rebuilt ones as `chough library index` does; in the digest, so a file
+    /// that appears after the preview changes the plan (REQ-records-009).
+    replaces: Vec<String>,
     redactions: Vec<Redaction>,
     follow_ups: Vec<String>,
 }
@@ -419,6 +437,7 @@ impl Plan {
             "becomes": self.becomes(),
             "writes": written,
             "receipt": self.receipt,
+            "replaces": self.replaces,
             "redactions": self.redactions,
             "removed": self.carried.removed,
             "kept": self.kept,
@@ -460,6 +479,13 @@ const NOTHING_TO_MIGRATE: &str =
     "no 0.5.x record is left, so there is nothing to migrate and no plan digest to apply";
 
 pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
+    // REQ-records-009 (#378): an apply holds the writer lock from before it reads the
+    // records it plans from until it has finished, so of two applies of one digest the
+    // second finds nothing left to migrate. The Git-ignored lock file is not a write of
+    // the migration.
+    if args.apply.is_some() {
+        crate::checkpoint::lock_checkpoint(root)?;
+    }
     let (plan, digest) = plan_with_a_free_receipt(root)?;
     match args.apply {
         // REQ-records-009: on a tree with no 0.5.x record the preview says there is
@@ -486,7 +512,18 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
             // change is open, naming each. It stays outside the digest, which names only
             // the conversion.
             let open = open_native_changes(root)?;
+            // #337: a target the apply would refuse is named up front, read without
+            // waiting.
             if open.is_empty()
+                && let Some(refusal) = target_refusal(root, &plan, &digest)?
+            {
+                view["apply_refused"] = json!({
+                    "refusal": "refused:target-exists",
+                    "why": refusal,
+                });
+            }
+            if open.is_empty()
+                && !view["apply_refused"].is_object()
                 && let Some(refusal) = conflict_refusal(root, &plan)
             {
                 view["apply_refused"] = json!({
@@ -571,8 +608,11 @@ fn plan_with_a_free_receipt(root: &Path) -> Result<(Plan, String)> {
         RECEIPT_ORDINAL.store(ordinal, Ordering::Relaxed);
         let plan = plan(root)?;
         let digest = plan.digest();
-        let taken = std::fs::read_to_string(local_path(root, &plan.receipt)?)
-            .is_ok_and(|existing| !existing.contains(&format!("plan_digest: {digest}")));
+        let taken = match at_target(root, &plan.receipt)? {
+            AtTarget::Absent => false,
+            AtTarget::Bytes(existing) => !is_own_receipt(&existing, &digest),
+            AtTarget::Other(_) => true,
+        };
         if !taken || plan.sources.is_empty() {
             return Ok((plan, digest));
         }
@@ -639,6 +679,14 @@ fn preview_text(view: &Value) -> String {
                     text(&write["sha256"])
                 )
             })
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Replaces, as `chough library index` does",
+        list("replaces")
+            .iter()
+            .map(|path| format!("`{}`: rebuilt from its sources", text(path)))
             .collect(),
     );
     section(
@@ -712,7 +760,7 @@ fn preview_text(view: &Value) -> String {
     out.push_str(&format!("\n{}\n", text(&view["git_history"])));
     if view["apply_refused"].is_object() {
         out.push_str(&format!(
-            "\nThe apply refuses now ({}): {}\n",
+            "\nThe apply would refuse now ({}): {}\n",
             text(&view["apply_refused"]["refusal"]),
             text(&view["apply_refused"]["why"])
         ));
@@ -730,6 +778,395 @@ fn preview_text(view: &Value) -> String {
         ));
     }
     out
+}
+
+/// What is at a path the migration would write, read without following a link and
+/// without waiting (REQ-records-009, #337).
+enum AtTarget {
+    Absent,
+    /// A regular file, with its bytes.
+    Bytes(Vec<u8>),
+    /// Anything else, which counts as existing with other bytes: what it is.
+    Other(&'static str),
+}
+
+/// Read what is at `relative`: a directory, link, FIFO or other special file is named,
+/// never opened, and a regular file is opened without waiting (#337).
+fn at_target(root: &Path, relative: &str) -> Result<AtTarget> {
+    let path = local_path(root, relative)?;
+    let kind = match std::fs::symlink_metadata(&path) {
+        Ok(meta) => meta.file_type(),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(AtTarget::Absent),
+        Err(_) => return Ok(AtTarget::Other("a path it cannot read")),
+    };
+    if kind.is_dir() {
+        return Ok(AtTarget::Other("a directory"));
+    }
+    if kind.is_symlink() {
+        return Ok(AtTarget::Other("a symbolic link"));
+    }
+    if !kind.is_file() {
+        return Ok(AtTarget::Other("a special file, such as a FIFO"));
+    }
+    let read = crate::records::open_regular(&path).and_then(|mut file| {
+        let mut bytes = vec![];
+        std::io::Read::read_to_end(&mut file, &mut bytes)?;
+        Ok(bytes)
+    });
+    Ok(match read {
+        Ok(bytes) => AtTarget::Bytes(bytes),
+        Err(_) => AtTarget::Other("a file it cannot read"),
+    })
+}
+
+/// Whether a receipt's bytes are this plan's own, left by an interrupted apply.
+fn is_own_receipt(bytes: &[u8], digest: &str) -> bool {
+    String::from_utf8_lossy(bytes).contains(&format!("plan_digest: {digest}"))
+}
+
+/// The refusal the apply gives, and the preview names up front, while anything at a
+/// path the apply would write, the receipt included, is not the planned bytes, a
+/// generated file the plan replaces, a planned removal under another letter case, or
+/// this plan's own receipt (REQ-records-009, #337, #264). Paths are project-relative.
+fn target_refusal(root: &Path, plan: &Plan, digest: &str) -> Result<Option<String>> {
+    let mut problems = vec![];
+    for written in &plan.files {
+        match at_target(root, &written.path)? {
+            AtTarget::Absent => {}
+            AtTarget::Bytes(bytes) if bytes == written.bytes => {}
+            AtTarget::Bytes(_) if plan.replaces.contains(&written.path) => {}
+            AtTarget::Bytes(_) if is_a_planned_removal_by_case(root, plan, &written.path)? => {}
+            AtTarget::Bytes(_) => {
+                problems.push(format!("{} already exists with other bytes", written.path));
+            }
+            AtTarget::Other(what) => problems.push(format!("{} is {what}", written.path)),
+        }
+    }
+    match at_target(root, &plan.receipt)? {
+        AtTarget::Absent => {}
+        AtTarget::Bytes(bytes) if is_own_receipt(&bytes, digest) => {}
+        AtTarget::Bytes(_) => {
+            problems.push(format!("{} already exists for another plan", plan.receipt));
+        }
+        AtTarget::Other(what) => problems.push(format!("{} is {what}", plan.receipt)),
+    }
+    if problems.is_empty() {
+        return Ok(None);
+    }
+    Ok(Some(format!(
+        "{}, and the migration writes only where nothing is, so nothing was written. Move or remove it, then run `chough migrate` again.",
+        problems.join("; ")
+    )))
+}
+
+/// Write one planned file under a temporary name in its folder and give it its name by
+/// rename, replacing what is there (#338): a file whose name differs only in case from
+/// a planned removal, or a generated file the plan replaces. Then read it back.
+fn write_by_rename(root: &Path, written: &Planned, written_now: &mut Vec<String>) -> Result<()> {
+    let path = local_path(root, &written.path)?;
+    let listed = path.parent().zip(path.file_name()).is_some_and(|(folder, name)| {
+        std::fs::read_dir(folder).is_ok_and(|entries| entries.flatten().any(|entry| entry.file_name() == name))
+    });
+    let done = listed && matches!(at_target(root, &written.path)?, AtTarget::Bytes(bytes) if bytes == written.bytes);
+    if !done {
+        let folder = path.parent().context("a planned file has no folder")?;
+        std::fs::create_dir_all(folder)?;
+        let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
+        let temporary = folder.join(format!(".{name}.{}.migrating", std::process::id()));
+        let _ = std::fs::remove_file(&temporary);
+        {
+            let mut file = std::fs::OpenOptions::new().write(true).create_new(true).open(&temporary)?;
+            std::io::Write::write_all(&mut file, &written.bytes)?;
+            file.sync_all()?;
+        }
+        if let Err(error) = std::fs::rename(&temporary, &path) {
+            let _ = std::fs::remove_file(&temporary);
+            bail!("{} could not take its name ({error}); no 0.5.x file was removed", written.path);
+        }
+        // On a file system that folds case the rename replaces the file's bytes but can
+        // keep its old spelling, as `knowledge/INDEX.md`; a case-only rename then gives it
+        // the planned one (#338).
+        if let Some(folder) = path.parent()
+            && let Some(name) = path.file_name()
+            && let Ok(entries) = std::fs::read_dir(folder)
+        {
+            let names: Vec<std::ffi::OsString> =
+                entries.flatten().map(|entry| entry.file_name()).collect();
+            if !names.iter().any(|listed| listed == name)
+                && let Some(listed) = names.iter().find(|listed| {
+                    listed.to_string_lossy().eq_ignore_ascii_case(&name.to_string_lossy())
+                })
+            {
+                std::fs::rename(folder.join(listed), &path)?;
+            }
+        }
+        written_now.push(written.path.clone());
+    }
+    match at_target(root, &written.path)? {
+        AtTarget::Bytes(back) if back == written.bytes => Ok(()),
+        _ => bail!("{} did not read back as planned; no 0.5.x file was removed", written.path),
+    }
+}
+
+/// How many files a folder holds, all of them, for a macOS metadata folder.
+fn files_under(path: &Path) -> u64 {
+    std::fs::read_dir(path).map_or(0, |entries| {
+        entries
+            .flatten()
+            .map(|entry| match entry.file_type() {
+                Ok(kind) if kind.is_dir() => files_under(&entry.path()),
+                _ => 1,
+            })
+            .sum()
+    })
+}
+
+/// The number of macOS metadata files a folder holds when it holds nothing else, in it
+/// or in any folder under it (REQ-records-015); `None` when it holds anything else.
+fn only_metadata(path: &Path) -> Option<u64> {
+    if !std::fs::symlink_metadata(path).ok()?.is_dir() {
+        return None;
+    }
+    let mut count = 0;
+    for entry in std::fs::read_dir(path).ok()?.flatten() {
+        let kind = entry.file_type().ok()?;
+        if crate::evidence::is_os_metadata(&entry.file_name().to_string_lossy()) {
+            count += if kind.is_dir() { files_under(&entry.path()) } else { 1 };
+        } else if kind.is_dir() {
+            count += only_metadata(&entry.path())?;
+        } else {
+            return None;
+        }
+    }
+    Some(count)
+}
+
+/// #375 (REQ-records-015): once the apply has succeeded, remove each folder it emptied of
+/// its 0.5.x records that holds nothing but macOS metadata, with that metadata, highest
+/// such folder first, and return each with the number of metadata files it held. A
+/// folder that holds anything else, and `.chough` itself, stays.
+fn remove_emptied_folders<'a>(
+    root: &Path,
+    removed: impl Iterator<Item = &'a str>,
+) -> Result<Vec<(String, u64)>> {
+    let mut folders = BTreeSet::new();
+    for path in removed {
+        let mut folder = Path::new(path).parent();
+        while let Some(relative) = folder.filter(|folder| !folder.as_os_str().is_empty()) {
+            folders.insert(relative.to_string_lossy().into_owned());
+            folder = relative.parent();
+        }
+    }
+    let mut ordered: Vec<String> = folders.into_iter().collect();
+    ordered.sort_by_key(|folder| folder.matches('/').count());
+    let mut emptied: Vec<(String, u64)> = vec![];
+    for folder in ordered {
+        if folder == ".chough"
+            || emptied.iter().any(|(gone, _)| folder.starts_with(&format!("{gone}/")))
+        {
+            continue;
+        }
+        let local = local_path(root, &folder)?;
+        if let Some(count) = only_metadata(&local).filter(|count| *count > 0) {
+            std::fs::remove_dir_all(&local)?;
+            emptied.push((folder, count));
+        }
+    }
+    Ok(emptied)
+}
+
+/// Where earlier migrations' receipts are, the only place a receipt is (REQ-records-009).
+const RECEIPTS: &str = ".chough/archive/migrations";
+
+/// A receipt of an earlier migration, one Git holds committed with the bytes on disk:
+/// the files it read with their SHA-256, and what each removed file was carried into.
+struct EarlierReceipt {
+    path: String,
+    read: BTreeMap<String, String>,
+    carried: BTreeMap<String, Vec<String>>,
+}
+
+/// The `- `path` <sha256>` lines of a receipt's `## Before` section: the files it read,
+/// or `None` when it has no such section.
+fn files_read(text: &str) -> Option<BTreeMap<String, String>> {
+    let start = text.find("\n## Before\n")? + "\n## Before\n".len();
+    let section = &text[start..];
+    let section = &section[..section.find("\n## ").unwrap_or(section.len())];
+    Some(
+        section
+            .lines()
+            .filter_map(|line| {
+                let rest = line.strip_prefix("- `")?;
+                let (path, sha) = rest.split_once("` ")?;
+                Some((path.to_string(), sha.trim().to_string()))
+            })
+            .collect(),
+    )
+}
+
+/// What each removed file of a receipt's `## Removed` section was carried into.
+fn carried_into(text: &str) -> BTreeMap<String, Vec<String>> {
+    let Some(start) = text.find("\n## Removed\n") else {
+        return BTreeMap::new();
+    };
+    let section = &text[start + "\n## Removed\n".len()..];
+    let section = &section[..section.find("\n## ").unwrap_or(section.len())];
+    section
+        .lines()
+        .filter_map(|line| {
+            let rest = line.strip_prefix("- `")?;
+            let (path, why) = rest.split_once("`: ")?;
+            let into = why.strip_prefix("carried into ")?;
+            let into = into.split("; held by commit").next().unwrap_or(into);
+            let targets = into
+                .split(", ")
+                .filter_map(|target| target.strip_prefix('`')?.strip_suffix('`'))
+                .map(str::to_string)
+                .collect();
+            Some((path.to_string(), targets))
+        })
+        .collect()
+}
+
+/// Whether Git holds `relative` at HEAD, whatever is on disk.
+fn held_by_git(root: &Path, relative: &str) -> bool {
+    crate::records::run_owned(
+        std::process::Command::new("git")
+            .arg("-C")
+            .arg(root)
+            .args(["cat-file", "-e", &format!("HEAD:{relative}")]),
+        None,
+    )
+    .is_ok_and(|output| output.status.success())
+}
+
+/// Every receipt of an earlier migration (REQ-records-009, #370, #337): each entry of
+/// the receipt folder whose name ends in `.md`, leaving out macOS metadata, read without
+/// waiting. An entry that is not a receipt Chough can read refuses, naming it; a receipt
+/// Git has never held is this migration's own and judges nothing; one Git holds whose
+/// bytes on disk differ from the last commit refuses, naming it.
+fn earlier_receipts(root: &Path) -> Result<Vec<EarlierReceipt>> {
+    let Ok(entries) = std::fs::read_dir(local_path(root, RECEIPTS)?) else {
+        return Ok(vec![]);
+    };
+    let mut names: Vec<String> = entries
+        .flatten()
+        .filter_map(|entry| entry.file_name().into_string().ok())
+        .filter(|name| name.ends_with(".md") && !crate::evidence::is_os_metadata(name))
+        .collect();
+    names.sort();
+    let (mut unreadable, mut edited, mut judged) = (vec![], vec![], vec![]);
+    for name in names {
+        let path = format!("{RECEIPTS}/{name}");
+        let bytes = match at_target(root, &path)? {
+            AtTarget::Absent => continue,
+            AtTarget::Other(what) => {
+                unreadable.push(format!("{path} is {what}"));
+                continue;
+            }
+            AtTarget::Bytes(bytes) => bytes,
+        };
+        if bytes.len() as u64 > crate::markdown::RECEIPT_BOUND {
+            unreadable.push(format!(
+                "{path} is over the {}-byte receipt bound",
+                crate::markdown::RECEIPT_BOUND
+            ));
+            continue;
+        }
+        let Ok(text) = String::from_utf8(bytes) else {
+            unreadable.push(format!("{path} is not UTF-8"));
+            continue;
+        };
+        let Some(read) = files_read(&text) else {
+            unreadable.push(format!("{path} has no list of files read"));
+            continue;
+        };
+        if !held_by_git(root, &path) {
+            continue;
+        }
+        if !crate::sessions::committed_at_head(root, &path) {
+            edited.push(path);
+            continue;
+        }
+        judged.push(EarlierReceipt {
+            path,
+            read,
+            carried: carried_into(&text),
+        });
+    }
+    ensure!(
+        unreadable.is_empty(),
+        "refused:migration-receipt: {}, so it is not a migration receipt Chough can read and the returning 0.5.x files cannot be judged by it; nothing was written, and the apply would refuse too. Every `.md` entry of {RECEIPTS}/ is read as a receipt, so move or remove it, then run `chough migrate` again.",
+        unreadable.join("; ")
+    );
+    ensure!(
+        edited.is_empty(),
+        "refused:migration-receipt: {} is held by Git but differs on disk from its last commit, as a receipt edited, half merged or redacted and not committed is, so the returning 0.5.x files cannot be judged by it; nothing was written, and the apply would refuse too. Commit it, or restore it from the last commit with `git restore -- <path>`, then run `chough migrate` again.",
+        edited.join(", ")
+    );
+    Ok(judged)
+}
+
+/// #370 (REQ-records-009): the 0.5.x files a committed receipt of an earlier migration
+/// lists with these bytes, each with why it is removed as already migrated. While any
+/// 0.5.x file present is listed with other bytes, refuse, naming each with its receipt
+/// and the way on, so an edited or different record never becomes a second one and is
+/// never dropped as if it had no place.
+fn already_migrated_files(root: &Path, legacy: &[String]) -> Result<BTreeMap<String, String>> {
+    let mut already = BTreeMap::new();
+    if legacy.is_empty() {
+        return Ok(already);
+    }
+    let receipts = earlier_receipts(root)?;
+    let mut different = vec![];
+    for path in legacy {
+        let listing: Vec<&EarlierReceipt> = receipts
+            .iter()
+            .filter(|receipt| receipt.read.contains_key(path))
+            .collect();
+        let Some(first) = listing.first() else {
+            continue;
+        };
+        let AtTarget::Bytes(bytes) = at_target(root, path)? else {
+            continue;
+        };
+        let sha = sha256(&bytes);
+        if let Some(receipt) = listing.iter().find(|receipt| receipt.read[path] == sha) {
+            already.insert(
+                path.clone(),
+                format!(
+                    "already migrated: {} lists it with these bytes, so it is not carried again, whether or not the record it was carried into is still there",
+                    receipt.path
+                ),
+            );
+            continue;
+        }
+        let way = if path == ".chough/session.json" {
+            "it is the fixed path of whichever session was current, so start what you want of the session it holds as a new one with `chough session new <key>`".to_string()
+        } else {
+            match first.carried.get(path).filter(|targets| !targets.is_empty()) {
+                Some(targets) => format!(
+                    "carry what you want from it into {} by hand",
+                    targets
+                        .iter()
+                        .map(|target| format!("`{target}`"))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                ),
+                None => "carry what you want from it into the 0.6.0 records by hand".to_string(),
+            }
+        };
+        different.push(format!(
+            "- `{path}`, which {} lists with other bytes: {way}",
+            first.path
+        ));
+    }
+    ensure!(
+        different.is_empty(),
+        "refused:already-migrated: a 0.5.x file an earlier migration read came back with other bytes, so nothing was written, and the apply would refuse too; it never becomes a second record and is never dropped as if it had no place:\n{}\nThen remove each such file, commit, and run `chough migrate` again.",
+        different.join("\n")
+    );
+    Ok(already)
 }
 
 /// At most this many archive validity reads run at once (REQ-records-009).
@@ -803,59 +1240,68 @@ fn apply(
     if let Some(refusal) = conflict_refusal(root, plan) {
         bail!("{refusal}");
     }
-    for written in &plan.files {
-        let path = local_path(root, &written.path)?;
-        if let Ok(existing) = std::fs::read(&path)
-            && existing != written.bytes
-            && !is_a_planned_removal_by_case(root, plan, &written.path)?
-        {
-            bail!(
-                "refused:target-exists: {} already exists with other bytes, and the migration writes by create-new only, so nothing more was written.",
-                written.path
-            );
-        }
+    // REQ-records-009 (#337, #264): every file the apply would write, the receipt
+    // included, is checked before any is written, read without following a link and
+    // without waiting; anything at such a path but the planned bytes, a generated file
+    // the plan replaces, or this plan's own receipt refuses here, writing nothing.
+    if let Some(refusal) = target_refusal(root, plan, digest)? {
+        bail!("refused:target-exists: {refusal}");
     }
     // The receipt is known before anything is written: one over its own bound refuses
     // here, writing nothing (REQ-records-001, REQ-records-009).
     let receipt = plan.receipt.clone();
-    // Every target is checked before any write (#264): a receipt of that name for
-    // another plan, which only another writer could have put there since the plan was
-    // built, refuses here and not after the 0.6.0 files are written.
-    if let Ok(existing) = std::fs::read_to_string(local_path(root, &receipt)?) {
-        ensure!(
-            existing.contains(&format!("plan_digest: {digest}")),
-            "refused:target-exists: {receipt} already exists for another plan, so nothing was written.\nRun `chough migrate` to preview the current plan, then apply its digest."
-        );
-    }
     let receipt_text = receipt_record(plan, digest, &consent, &removals, root).map_err(|error| {
         anyhow::anyhow!(
             "refused:receipt-bound: the migration receipt would exceed its {} byte bound, so nothing was written: {error:#}",
             crate::markdown::RECEIPT_BOUND
         )
     })?;
-    // Every refusal above wrote nothing, not even a lock file. From here the writer lock
-    // is held through the writes, the removals, the archive reads and any restore, so
-    // no other writer saves in between (REQ-cli-040).
-    crate::checkpoint::lock_checkpoint(root)?;
-    // Write: create-new, or count a file an interrupted apply wrote with the planned
-    // bytes as done. A path that differs only in case from a planned removal (on a
-    // case-insensitive file system, one file) waits until the removals, so an
-    // interruption or a restore never meets it half replaced.
+    // Every refusal above wrote nothing; the writer lock, taken before the plan was
+    // built, is held through the writes, the removals, the archive reads and any restore,
+    // so no other writer saves in between (REQ-cli-040).
+    //
+    // Write every planned file, the receipt included, before any 0.5.x file is removed
+    // (#338): create-new, or count a file an interrupted apply wrote with the planned
+    // bytes as done. A file whose name differs only in case from a planned removal, and
+    // a generated file the plan replaces, is written under a temporary name in its folder
+    // and takes its name by rename, so a file system that folds case cannot leave the
+    // sources removed and the planned file missing. The 0.5.x file such a rename replaces
+    // on a file system that folds case is kept in memory, to be listed as removed and
+    // restored with the others.
     let mut written_now = vec![];
-    for written in plan
-        .files
-        .iter()
-        .filter(|written| !collides_by_case(plan, &written.path))
-    {
-        write_planned(root, written, &mut written_now)?;
+    let mut replaced_by_case: Vec<(String, Vec<u8>)> = vec![];
+    for written in &plan.files {
+        if collides_by_case(plan, &written.path) || plan.replaces.contains(&written.path) {
+            for removed in plan
+                .carried
+                .removed
+                .keys()
+                .chain(plan.carried.sources.iter())
+                .filter(|removed| **removed != written.path && removed.eq_ignore_ascii_case(&written.path))
+            {
+                let local = local_path(root, removed)?;
+                if one_file_by_case(&local_path(root, &written.path)?, &local)
+                    && let AtTarget::Bytes(bytes) = at_target(root, removed)?
+                    && plan.sources.get(removed).is_some_and(|sha| *sha == sha256(&bytes))
+                {
+                    replaced_by_case.push((removed.clone(), bytes));
+                }
+            }
+            write_by_rename(root, written, &mut written_now)?;
+        } else {
+            write_planned(root, written, &mut written_now)?;
+        }
     }
     let receipt_local = local_path(root, &receipt)?;
-    match std::fs::read_to_string(&receipt_local) {
-        Ok(existing) => ensure!(
-            existing.contains(&format!("plan_digest: {digest}")),
-            "refused: {receipt} already exists for another plan, so nothing was removed"
+    match at_target(root, &receipt)? {
+        AtTarget::Bytes(existing) => ensure!(
+            is_own_receipt(&existing, digest),
+            "refused:target-exists: {receipt} appeared while migrating, for another plan, so nothing was removed"
         ),
-        Err(_) => {
+        AtTarget::Other(what) => bail!(
+            "refused:target-exists: {receipt} appeared while migrating as {what}, so nothing was removed"
+        ),
+        AtTarget::Absent => {
             if let Some(parent) = receipt_local.parent() {
                 std::fs::create_dir_all(parent)?;
             }
@@ -875,8 +1321,11 @@ fn apply(
     // everything if any that read valid no longer does.
     let affected = affected_archives(root, &removals)?;
     let before = validity(root, &affected)?;
-    let mut kept_bytes: Vec<(String, Vec<u8>)> = vec![];
+    let mut kept_bytes: Vec<(String, Vec<u8>)> = replaced_by_case;
     for path in &removals {
+        if kept_bytes.iter().any(|(kept, _)| kept == path) {
+            continue;
+        }
         let local = local_path(root, path)?;
         let Ok(bytes) = std::fs::read(&local) else {
             continue;
@@ -933,13 +1382,7 @@ fn apply(
             unstaged.push(path.clone());
         }
     }
-    for written in plan
-        .files
-        .iter()
-        .filter(|written| collides_by_case(plan, &written.path))
-    {
-        write_planned(root, written, &mut written_now)?;
-    }
+    let emptied = remove_emptied_folders(root, kept_bytes.iter().map(|(path, _)| path.as_str()))?;
     prune_empty_folders(root)?;
     prune_emptied(root, kept_bytes.iter().map(|(path, _)| path.as_str()));
     print_json(&json!({
@@ -951,6 +1394,10 @@ fn apply(
         "removed": kept_bytes.iter().map(|(path, _)| path).collect::<Vec<_>>(),
         "archives_checked": affected,
         "unstaged": unstaged,
+        "emptied_folders": emptied
+            .iter()
+            .map(|(folder, count)| json!({"folder": folder, "metadata_files": count}))
+            .collect::<Vec<_>>(),
         "git_history": "Git history still holds what earlier commits recorded; this migration does not rewrite it.",
     }))
 }
@@ -974,6 +1421,24 @@ fn unstage(root: &Path, path: &str) -> Result<()> {
         String::from_utf8_lossy(&output.stderr).trim()
     );
     Ok(())
+}
+
+/// Whether the file at the planned `path` is one file with a 0.5.x source of another
+/// letter case, as `knowledge/index.md` is `knowledge/INDEX.md` on a file system that
+/// folds case: its other bytes are the source's, not a file to replace.
+fn one_file_by_case_with_a_source(root: &Path, carried: &Carried, path: &str) -> Result<bool> {
+    let target = local_path(root, path)?;
+    for source in carried
+        .removed
+        .keys()
+        .chain(carried.sources.iter())
+        .filter(|source| *source != path && source.eq_ignore_ascii_case(path))
+    {
+        if one_file_by_case(&target, &local_path(root, source)?) {
+            return Ok(true);
+        }
+    }
+    Ok(false)
 }
 
 /// Whether `path` differs only in case from a planned removal, such as
@@ -1027,7 +1492,7 @@ fn one_file_by_case(target: &Path, removal: &Path) -> bool {
 /// planned bytes, then read it back.
 fn write_planned(root: &Path, written: &Planned, written_now: &mut Vec<String>) -> Result<()> {
     let path = local_path(root, &written.path)?;
-    let done = std::fs::read(&path).is_ok_and(|bytes| bytes == written.bytes);
+    let done = matches!(at_target(root, &written.path)?, AtTarget::Bytes(bytes) if bytes == written.bytes);
     if !done {
         if let Some(parent) = path.parent() {
             std::fs::create_dir_all(parent)?;
@@ -1347,6 +1812,12 @@ fn receipt_record(
 /// Build the plan: run every mapper in order, redact what they write and list every
 /// 0.5.x file read.
 fn plan(root: &Path) -> Result<Plan> {
+    // #370: while any 0.5.x file is present, every receipt of an earlier migration is
+    // read first, and a file one lists with these bytes is left out of every mapper.
+    let already = already_migrated_files(root, &accountable_paths(root)?)?;
+    *ALREADY_MIGRATED
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner) = already.keys().cloned().collect();
     let mut carried = Carried::default();
     let (sessions, homes) = sessions_0_5(root)?;
     carried.absorb(sessions)?;
@@ -1354,9 +1825,13 @@ fn plan(root: &Path) -> Result<Plan> {
     // REQ-records-002: the reading guide, written only when there is none; one an
     // interrupted apply already wrote with these bytes stays planned, so the plan the
     // resumed apply builds has the same digest. A migrated guide names `artifacts/`.
-    let guide = local_path(root, ".chough/README.md")?;
     let readme = crate::sessions::migrated_readme();
-    if !guide.exists() || std::fs::read(&guide).is_ok_and(|bytes| bytes == readme.as_bytes()) {
+    let planned_guide = match at_target(root, ".chough/README.md")? {
+        AtTarget::Absent => true,
+        AtTarget::Bytes(bytes) => bytes == readme.as_bytes(),
+        AtTarget::Other(_) => true,
+    };
+    if planned_guide {
         carried.written.push(Written {
             path: ".chough/README.md".into(),
             bytes: readme,
@@ -1395,6 +1870,12 @@ fn plan(root: &Path) -> Result<Plan> {
     // An open bug's fixture is kept byte for byte, whatever a mapper listed.
     let kept = crate::bugs::open_fixture_owners_0_5(root)?;
     carried.removed.retain(|path, _| !kept.contains_key(path));
+    // #370: a file removed as already migrated is never carried, whatever a mapper read.
+    for (path, why) in &already {
+        carried.sources.remove(path);
+        carried.becomes.remove(path);
+        carried.removed.insert(path.clone(), why.clone());
+    }
     carried
         .written
         .sort_by(|left, right| left.path.cmp(&right.path));
@@ -1461,6 +1942,41 @@ fn plan(root: &Path) -> Result<Plan> {
         root,
         &planned_sessions(&carried)?,
     )?);
+    // REQ-records-009: a generated file that is a regular file with other bytes is
+    // replaced by the rebuilt one, as `chough library index` replaces it, and the plan
+    // says so; anything else there is refused before any write.
+    let mut replaces = vec![];
+    for written in &files {
+        if crate::library::is_generated(root, &written.path)?
+            && let AtTarget::Bytes(bytes) = at_target(root, &written.path)?
+            && bytes != written.bytes
+            && !one_file_by_case_with_a_source(root, &carried, &written.path)?
+        {
+            replaces.push(written.path.clone());
+        }
+    }
+    // REQ-records-003: a 0.5.x record whose ID a 0.6.0 record already holds as an alias
+    // is refused, naming that record, so no second record takes the alias.
+    let planned: BTreeSet<&str> = files.iter().map(|file| file.path.as_str()).collect();
+    let holders = crate::doctor::alias_holders(root);
+    let mut held = vec![];
+    for (id, home) in &carried.aliases {
+        if home == "removed" {
+            continue;
+        }
+        // A record this plan writes holds it only when an interrupted apply wrote it,
+        // which Git has never held.
+        for holder in holders.get(id).into_iter().flatten() {
+            if !planned.contains(holder.as_str()) || held_by_git(root, holder) {
+                held.push(format!("- `{id}` is already an alias of `{holder}`"));
+            }
+        }
+    }
+    ensure!(
+        held.is_empty(),
+        "refused:alias-held: a 0.5.x record holds an ID a 0.6.0 record already holds as an alias, so nothing was written, and the apply would refuse too; a second record never takes an alias:\n{}\nCarry what you want from the 0.5.x record into that record by hand, remove the 0.5.x file, commit, and run `chough migrate` again.",
+        held.join("\n")
+    );
     Ok(Plan {
         sources,
         legacy,
@@ -1468,6 +1984,7 @@ fn plan(root: &Path) -> Result<Plan> {
         kept,
         files,
         receipt: receipt_path()?,
+        replaces,
         redactions,
         follow_ups,
     })
@@ -1704,6 +2221,8 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
             found.push((key, format!("{folder}/{name}"), archived));
         }
     }
+    // #370: a session file removed as already migrated is not carried again.
+    found.retain(|(_, path, _)| !already_migrated(path));
     let mut taken: BTreeSet<String> = BTreeSet::new();
     let mut lineage_files: BTreeSet<String> = BTreeSet::new();
     for (key, path, archived) in found {

@@ -396,26 +396,32 @@ fn a_case_only_rename_reaches_git_under_the_new_name() {
     );
 }
 
-/// REQ-records-009 (#263), TC-records-migrate-refuses-a-separate-case-colliding-target:
+/// REQ-records-009 (#263, #338), TC-records-migrate-refuses-a-separate-case-colliding-target:
 /// on a case-sensitive file system `knowledge/index.md` beside the 0.5.x
-/// `knowledge/INDEX.md` is a file of its own. When it holds other bytes, the apply
-/// refuses it as `refused:target-exists` before writing: no file is written, removed or
-/// changed, so no receipt claims bytes that were never written. On a case-insensitive
-/// file system the two names are one file, so the state cannot exist and the test says
-/// so and stops.
+/// `knowledge/INDEX.md` is a file of its own. The plan names a regular one there under
+/// `replaces`, and its digest covers that, so (Leif's "A", 2026-11-20, replacing #263's
+/// refusal):
+/// - one that appears after the preview makes the apply refuse as `refused:plan-digest`,
+///   with no file written, removed or changed;
+/// - one present at the preview is listed under `replaces`, and the apply of that digest
+///   writes the rebuilt index in its place and removes `knowledge/INDEX.md`.
+/// On a case-insensitive file system the two names are one file, so the state cannot
+/// exist and the test says so and stops.
 #[test]
-fn a_separate_file_at_a_case_colliding_target_refuses_before_any_write() {
+fn a_separate_case_colliding_target_is_replaced_only_as_previewed() {
     let fixture = Fixture::new();
     vault_0_5(&fixture);
     fixture.commit("the 0.5.x vault");
     let plan = fixture.ok(&["migrate", "--json"]);
     assert!(writes(&plan).contains_key("knowledge/index.md"), "{plan:#}");
+    assert_eq!(plan["replaces"], serde_json::json!([]), "{plan:#}");
     let digest = plan["plan_digest"].as_str().unwrap().to_string();
     let target = fixture.root().join("knowledge/index.md");
     if target.exists() {
         eprintln!("skipped: this file system folds case, so knowledge/index.md is INDEX.md");
         return;
     }
+    // It appears after the preview: the plan the human consented to never said so.
     fs::write(&target, "SYNTHETIC junk\n").unwrap();
     let before = tree(fixture.root());
     let refused = fixture.fails(&[
@@ -425,13 +431,33 @@ fn a_separate_file_at_a_case_colliding_target_refuses_before_any_write() {
         "--consent",
         "SYNTHETIC-human said migrate the vault (fixture)",
     ]);
-    assert!(
-        refused.contains("refused:target-exists") && refused.contains("knowledge/index.md"),
-        "{refused}"
-    );
+    assert!(refused.contains("refused:plan-digest"), "{refused}");
     assert_eq!(
         tree(fixture.root()),
         before,
         "the refused apply wrote, removed or changed a file"
     );
+    // Present at the preview: the plan says it replaces it, and the apply does.
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(
+        plan["replaces"],
+        serde_json::json!(["knowledge/index.md"]),
+        "{plan:#}"
+    );
+    let text = fixture.ok_text(&["migrate"]);
+    assert!(text.contains("Replaces") && text.contains("`knowledge/index.md`"), "{text}");
+    let applied = fixture.ok(&[
+        "migrate",
+        "--apply",
+        plan["plan_digest"].as_str().unwrap(),
+        "--consent",
+        "SYNTHETIC-human said migrate the vault (fixture)",
+    ]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+    assert_eq!(
+        Some(&sha256(&fs::read(&target).unwrap())),
+        writes(&plan).get("knowledge/index.md"),
+        "knowledge/index.md does not hold the rebuilt index"
+    );
+    assert!(!fixture.root().join("knowledge/INDEX.md").exists());
 }
