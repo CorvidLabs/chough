@@ -576,21 +576,210 @@ pub(super) fn write_new_bounded(
     write_new_bytes(root, relative, content.as_bytes())
 }
 
-/// Create a file of any bounded size only when it does not exist.
+/// Create a file of any bounded size only when it does not exist, whole or not at all
+/// (REQ-cli-023, REQ-records-001, #260). The bytes are written to a temporary file in
+/// `.chough/local/` and synced, then given their name without replacing anything, so a
+/// full disk or a file-size limit leaves no file at the name, and no temporary file
+/// either. Where that rename is not supported, the file is created at its name, synced,
+/// and removed again on any error. `Ok(false)` when a file of that name already exists.
 pub(super) fn write_new_bytes(root: &Path, relative: &str, content: &[u8]) -> Result<bool> {
     let path = local_path(root, relative)?;
     if path.exists() {
-        ensure!(path.is_file(), "expected a file: {}", path.display());
+        ensure!(path.is_file(), "expected a file: {relative}");
         return Ok(false);
     }
-    fs::create_dir_all(path.parent().context("file has no parent")?)?;
+    fs::create_dir_all(path.parent().context("file has no parent")?)
+        .with_context(|| format!("cannot create the folder of {relative}"))?;
     local_path(root, relative)?;
-    let mut file = OpenOptions::new()
+    // A file-size limit is an error the write returns, not a signal that kills the
+    // process mid-write, while this record is written; restored right after, so no
+    // process Chough starts inherits it.
+    let _limit = SizeLimitAsError::new();
+    match write_aside_then_place(root, &path, content) {
+        Placed::Done => Ok(true),
+        Placed::Taken => Ok(false),
+        Placed::Failed(error) => bail!("cannot write {relative}: {error}"),
+        Placed::Unsupported => write_in_place(&path, relative, content),
+    }
+}
+
+/// What became of a record written aside and moved to its name.
+enum Placed {
+    Done,
+    /// Another writer took the name first.
+    Taken,
+    Failed(io::Error),
+    /// The file system cannot rename without replacing, or `.chough/local/` cannot hold
+    /// the temporary file: create the record at its name instead.
+    Unsupported,
+}
+
+/// Write `content` to a temporary file in `.chough/local/`, sync it, and move it to `path`
+/// without replacing anything. The temporary file is removed on every path but success.
+fn write_aside_then_place(root: &Path, path: &Path, content: &[u8]) -> Placed {
+    static COUNTER: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+    // Only inside a Chough project: never make `.chough/` where there is none.
+    if !root.join(".chough").is_dir() {
+        return Placed::Unsupported;
+    }
+    // Through the symlink guard, as every other write: a `.chough/local/` that is a
+    // symlink never holds the record's bytes, even for a moment.
+    let Ok(local) = local_path(root, ".chough/local") else {
+        return Placed::Unsupported;
+    };
+    if fs::create_dir_all(&local).is_err() {
+        return Placed::Unsupported;
+    }
+    let name = path
+        .file_name()
+        .map(|name| name.to_string_lossy().into_owned())
+        .unwrap_or_default();
+    let temporary = local.join(format!(
+        ".{name}.{}.{}.new",
+        std::process::id(),
+        COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+    ));
+    let written = OpenOptions::new()
         .write(true)
         .create_new(true)
-        .open(&path)?;
-    file.write_all(content)?;
+        .open(&temporary)
+        .and_then(|mut file| {
+            file.write_all(content)?;
+            file.sync_all()
+        });
+    if let Err(error) = written {
+        let _ = fs::remove_file(&temporary);
+        return Placed::Failed(error);
+    }
+    match rename_no_replace(&temporary, path) {
+        Ok(()) => Placed::Done,
+        Err(error) => {
+            let _ = fs::remove_file(&temporary);
+            if error.kind() == io::ErrorKind::AlreadyExists {
+                Placed::Taken
+            } else if rename_unsupported(&error) {
+                Placed::Unsupported
+            } else {
+                Placed::Failed(error)
+            }
+        }
+    }
+}
+
+/// Whether `error` says the file system cannot rename without replacing, or the two
+/// paths are on different file systems.
+fn rename_unsupported(error: &io::Error) -> bool {
+    if error.kind() == io::ErrorKind::Unsupported {
+        return true;
+    }
+    #[cfg(unix)]
+    {
+        matches!(
+            error.raw_os_error(),
+            Some(libc::EINVAL | libc::ENOTSUP | libc::ENOSYS | libc::EXDEV)
+        )
+    }
+    #[cfg(not(unix))]
+    {
+        false
+    }
+}
+
+/// Create the record at its name, write it, sync it, and remove it again on any error.
+fn write_in_place(path: &Path, relative: &str, content: &[u8]) -> Result<bool> {
+    // #386: another run may create the file between the check and this open; then it
+    // exists, as the check would have found.
+    let mut file = match OpenOptions::new().write(true).create_new(true).open(path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == io::ErrorKind::AlreadyExists => return Ok(false),
+        Err(error) => bail!("cannot write {relative}: {error}"),
+    };
+    if let Err(error) = file.write_all(content).and_then(|()| file.sync_all()) {
+        drop(file);
+        let _ = fs::remove_file(path);
+        bail!("cannot write {relative}: {error}");
+    }
     Ok(true)
+}
+
+/// Rename `from` to `to` only when nothing is at `to`.
+#[cfg(target_os = "macos")]
+fn rename_no_replace(from: &Path, to: &Path) -> io::Result<()> {
+    use std::os::unix::ffi::OsStrExt as _;
+    let from = std::ffi::CString::new(from.as_os_str().as_bytes())?;
+    let to = std::ffi::CString::new(to.as_os_str().as_bytes())?;
+    // SAFETY: both are NUL-terminated paths that live through the call.
+    let status = unsafe { libc::renamex_np(from.as_ptr(), to.as_ptr(), libc::RENAME_EXCL) };
+    if status == 0 {
+        Ok(())
+    } else {
+        Err(io::Error::last_os_error())
+    }
+}
+
+/// Rename `from` to `to` only when nothing is at `to`.
+#[cfg(target_os = "linux")]
+fn rename_no_replace(from: &Path, to: &Path) -> io::Result<()> {
+    use std::os::unix::ffi::OsStrExt as _;
+    let from = std::ffi::CString::new(from.as_os_str().as_bytes())?;
+    let to = std::ffi::CString::new(to.as_os_str().as_bytes())?;
+    // SAFETY: both are NUL-terminated paths that live through the call.
+    let status = unsafe {
+        libc::renameat2(
+            libc::AT_FDCWD,
+            from.as_ptr(),
+            libc::AT_FDCWD,
+            to.as_ptr(),
+            libc::RENAME_NOREPLACE,
+        )
+    };
+    if status == 0 {
+        Ok(())
+    } else {
+        Err(io::Error::last_os_error())
+    }
+}
+
+/// Elsewhere the record is created at its name instead.
+#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+fn rename_no_replace(_from: &Path, _to: &Path) -> io::Result<()> {
+    Err(io::Error::from(io::ErrorKind::Unsupported))
+}
+
+/// SIGXFSZ ignored while it lives, and set back to what it was when it is dropped.
+///
+/// The disposition is the whole process's, so this holds only while no other thread
+/// writes a record or starts a process: Chough's other threads only read (the evidence
+/// fingerprint, `migrate`'s validity reads), each joined before any write. A writer on
+/// another thread would need a lock, since an ignored signal stays ignored across exec.
+struct SizeLimitAsError {
+    #[cfg(unix)]
+    before: libc::sighandler_t,
+}
+
+impl SizeLimitAsError {
+    fn new() -> Self {
+        #[cfg(unix)]
+        {
+            // SAFETY: setting a signal to be ignored has no handler code to run.
+            let before = unsafe { libc::signal(libc::SIGXFSZ, libc::SIG_IGN) };
+            Self { before }
+        }
+        #[cfg(not(unix))]
+        {
+            Self {}
+        }
+    }
+}
+
+impl Drop for SizeLimitAsError {
+    fn drop(&mut self) {
+        #[cfg(unix)]
+        // SAFETY: restores the disposition `new` read, which was valid then.
+        unsafe {
+            libc::signal(libc::SIGXFSZ, self.before);
+        }
+    }
 }
 
 /// Replace a managed record atomically: write a sibling temporary file, then rename.
@@ -1955,6 +2144,27 @@ pub(super) fn toolchain_limitation(root: &Path) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
+    /// #260, corvid-agent's note on #426: a `.chough/local/` that is a symlink holds no
+    /// temporary file, even for a moment; the record is created at its own name instead.
+    #[cfg(unix)]
+    #[test]
+    fn a_symlinked_local_folder_holds_no_temporary_file() {
+        let directory = tempfile::tempdir().unwrap();
+        let outside = tempfile::tempdir().unwrap();
+        let root = directory.path();
+        std::fs::create_dir(root.join(".chough")).unwrap();
+        std::os::unix::fs::symlink(outside.path(), root.join(".chough/local")).unwrap();
+        let target = root.join("record.md");
+        assert!(matches!(
+            super::write_aside_then_place(root, &target, b"whole\n"),
+            super::Placed::Unsupported
+        ));
+        assert!(!target.exists());
+        assert!(super::write_new_bytes(root, "record.md", b"whole\n").unwrap());
+        assert_eq!(std::fs::read(&target).unwrap(), b"whole\n");
+        assert_eq!(std::fs::read_dir(outside.path()).unwrap().count(), 0);
+    }
+
     /// BUG-0022: the verdict the toolchain task records becomes an evidence limitation
     /// only when it says the toolchain differs.
     #[test]

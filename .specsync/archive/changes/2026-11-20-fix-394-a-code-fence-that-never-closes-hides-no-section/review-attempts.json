@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-394-a-code-fence-that-never-closes-hides-no-section",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "00667016496539c7959f1481aab0b3af616cd13b",
+      "contract_digest": "49285069f9dded887a8335f5188870a07fd32cd3972d5fb3a1bdf31e73a9b463",
+      "execution_digest": "ae68a651ce001a60eb40c43290c95141a2ae7c8293beda15e6e5695aeba075b3",
+      "workspace_digest": "2cf33cf302ba8c88f8843db66ea466fdc670047f9f54b703226ce13f25ebe3ce",
+      "timestamp": 1795203246,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Go",
+        "where": "Standing OK 6(b): Leif's 'Go' to the six rules (Claude Code chat message of 2026-11-19, relayed by his planning session hc t4c), recording his implementation review of a batch with a tester PASS that changes no approved sentence. corvid-agent requested changes at 14c8ea20 (the fence search was quadratic past 16 characters); fixed at 71e05c1b with a linear stack, its own scenario 36.5 s down to 0.56 s; corvid-agent approved at 71e05c1b and again at 1999ea5d. The tester's PASS holds at 1999ea5d (the same src patch as 71e05c1b). No approved sentence changed. Main de49485f merged in at 44db4eb9 and main 50345a3b (#426) at a70869e1, each conflict keeping both sides' tests and criteria; t4b's script shows its own changed lines the same per file before and after, the specs only renumbered (records 25, cli 131), and the full lane green at 00667016. Recorded by t4c",
+        "recorded_by": "t4c"
+      }
+    }
+  ]
+}

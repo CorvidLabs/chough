@@ -23,6 +23,7 @@ Acceptance Criteria
 - A 0.5.x inbox entry whose text holds a conflict makes the migration preview say the apply refuses, without offering the apply command, and the apply refuse, each naming that 0.5.x file first.
 - A conflict whose marker lines name a branch or a commit subject holding a token is refused and reported naming only `<<<<<<<`, `=======` or `>>>>>>>` and the line, never the branch or the subject (#365).
 - A committed record whose front matter holds a conflict, as two branches that each set `--objective` leave after a merge, gives a `conflict_markers` finding for each of its marker lines (#374).
+- A new record whose write fails or is cut off, as by a full disk or a file-size limit, leaves no file at its name and no temporary file beside it, the command exits non-zero naming the record, and every reader works as it did before; an empty record file is named as empty, with the way out, rather than as a record missing its `---` line.
 
 ### REQ-records-002
 
@@ -54,6 +55,7 @@ Acceptance Criteria
 - Resolving an open question keeps its line and appends the answer, and `chough next` no longer lists it as open.
 - A person's rewrite of the Goal paragraph is kept after a decision and a stage move.
 - A session started without an objective, given one with `chough checkpoint --objective`, has that objective as its title and Goal; a later objective change rewrites neither, its journal post and archived story carry the objective and not the placeholder, and a Goal a person wrote over the placeholder is kept byte for byte.
+- A session whose body holds a code fence that never closes, as a Goal that is three backticks, saves any number of times with each of its sections once, and `chough next` reads its decisions and open questions: such a fence hides nothing after it, as it hides no conflict (REQ-records-001), while a closed fence still hides the headings it quotes.
 
 ### REQ-records-005
 
