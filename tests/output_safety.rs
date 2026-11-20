@@ -181,7 +181,7 @@ fn a_control_character_is_refused_at_write_in_every_field() {
                 "no_native_change",
             ),
             (vec!["checkpoint", "--pr", &value], "pr"),
-            (evidence_add(&value, "local", "none"), "claim"),
+            (evidence_add(&value, "local", "none"), "--summary"),
             (evidence_add("probe", &value, "none"), "environment"),
             (evidence_add("probe", "local", &value), "limitation"),
             (bug_add(&value), "title"),
@@ -738,4 +738,60 @@ fn no_command_echoes_a_value_given_on_the_command_line() {
     }
     assert!(runs > 150, "only {runs} runs");
     assert!(problems.is_empty(), "{}", problems.join("\n"));
+}
+
+/// REQ-records-016 (#366, the tester's L2-366-generated-story): an inbox entry an earlier
+/// release wrote with a control character is text Chough already stores, so `inbox fold`
+/// folds it, as it is printed, and the story `session close` writes holds none raw.
+#[test]
+fn a_stored_inbox_entry_with_a_control_character_folds_and_the_story_holds_none_raw() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.init();
+    fixture.commit("fixture");
+    let session = fixture.active_id();
+    fixture.ok(&[
+        "inbox",
+        "add",
+        "--session",
+        &session,
+        "--from",
+        "SYNTHETIC-agent",
+        "--kind",
+        "decision",
+        "--text",
+        "PLANT decision",
+    ]);
+    let inbox = format!(".chough/sessions/{session}/agent/inbox");
+    for (name, bytes) in tree(fixture.root()) {
+        if name.starts_with(&inbox) {
+            let text = String::from_utf8_lossy(&bytes).replace("PLANT", "X \u{1b}[31m Y");
+            fixture.write(&name, &text);
+        }
+    }
+    fixture.commit("an inbox entry an earlier release wrote");
+    fixture.ok(&["inbox", "fold"]);
+    let decisions = fixture.checkpoint()["decisions"].to_string();
+    assert!(decisions.contains("\\\\u001b"), "{decisions}");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+    let story = fixture.read(&format!(".chough/archive/sessions/{session}.md"));
+    assert!(raw(&story).is_empty(), "the story holds {:?}", raw(&story));
+    assert!(story.contains("\\u001b"), "{story}");
+}
+
+/// REQ-records-006 (#367, the tester's L2-bug-merge-path): `bug merge` given a file whose
+/// path holds a token, which is not a bug record, prints the token nowhere, its cause
+/// included.
+#[test]
+fn bug_merge_never_shows_a_path_holding_a_token() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let name = format!("notes-{TOKEN}.md");
+    fixture.write(&name, "not a record\n");
+    let path = fixture.root().join(&name).to_string_lossy().into_owned();
+    let output = fixture.run(&["bug", "merge", &path, &path, &path]);
+    let said = said(&output);
+    assert!(!output.status.success(), "{said}");
+    assert!(!said.contains(TOKEN), "bug merge showed the token: {said}");
+    assert!(said.contains("holding"), "{said}");
 }

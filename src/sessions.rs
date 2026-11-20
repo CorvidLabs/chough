@@ -2017,8 +2017,12 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
                     Kind::Completed => &mut session.completed,
                     Kind::Question => &mut session.open_questions,
                 };
-                if !list.contains(&entry.text) {
-                    list.push(entry.text.clone());
+                // REQ-records-016 (#366): the entry is text Chough already stores, so it
+                // folds as it is printed, a control character an earlier release wrote
+                // escaped, and is never refused as a new value would be.
+                let text = crate::leaks::printable(&entry.text, false).into_owned();
+                if !list.contains(&text) {
+                    list.push(text);
                 }
                 targets.push((file, target));
             }

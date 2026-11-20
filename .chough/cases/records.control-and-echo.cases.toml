@@ -146,3 +146,39 @@ expected = ["tests/leaks.rs::a_file_url_is_checked_like_its_path_and_username_co
 adapter = "cargo-test"
 test_target = "leaks"
 test = "a_file_url_is_checked_like_its_path_and_username_counts"
+
+[[case]]
+id = "TC-records-a-stored-inbox-entry-folds-printable"
+title = "An inbox entry an earlier release wrote with a control character folds as it is printed, and the story session close writes holds none raw"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-016"]
+paths = ["src/sessions.rs", "src/leaks.rs", "tests/output_safety.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/output_safety.rs::a_stored_inbox_entry_with_a_control_character_folds_and_the_story_holds_none_raw passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "output_safety"
+test = "a_stored_inbox_entry_with_a_control_character_folds_and_the_story_holds_none_raw"
+
+[[case]]
+id = "TC-records-bug-merge-never-shows-a-leaking-path"
+title = "bug merge given a file whose path holds a token, which is not a bug record, prints the token nowhere, its cause included"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-3"]
+requirements = ["REQ-records-006"]
+paths = ["src/bugs.rs", "tests/output_safety.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/output_safety.rs::bug_merge_never_shows_a_path_holding_a_token passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "output_safety"
+test = "bug_merge_never_shows_a_path_holding_a_token"

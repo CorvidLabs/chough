@@ -1332,6 +1332,9 @@ fn create(root: &Path, draft: Draft, redact: bool) -> Result<(Stored, usize)> {
     // The name comes from the checked title, so a redacted title never names the file.
     let local = Local::current();
     let redacted = if redact {
+        // Captured output nobody gave is stored as Chough prints it, so a control
+        // character in it is escaped, never refused (REQ-records-016).
+        record.make_printable();
         record.redact_leaks(local)
     } else {
         guard(&mut record, local, None)?
@@ -2763,14 +2766,20 @@ mod merge {
     /// `ours` unchanged, naming each field or paragraph both sides changed differently.
     pub(super) fn files(base: &Path, ours: &Path, theirs: &Path) -> Result<()> {
         let read = |path: &Path| -> Result<(String, Record)> {
-            let text = crate::records::read_bounded_record(path, Kind::Bug.bound())?;
-            let record =
-                markdown::parse(&path.display().to_string(), &text).with_context(|| {
-                    format!(
-                        "{} is not a bug record",
-                        crate::leaks::shown("file", &path.display().to_string())
-                    )
+            // REQ-records-006 (#367): the file is named only as an error may show it, in
+            // the cause as well, so a path holding a leak is named by what it holds.
+            let full = path.display().to_string();
+            let name = crate::leaks::shown("file", &full);
+            let text =
+                crate::records::read_bounded_record(path, Kind::Bug.bound()).map_err(|error| {
+                    if name == full {
+                        error
+                    } else {
+                        anyhow::anyhow!("{name} could not be read as a bug record")
+                    }
                 })?;
+            let record = markdown::parse(&name, &text)
+                .with_context(|| format!("{name} is not a bug record"))?;
             Ok((text, record))
         };
         let (_, base) = read(base)?;
