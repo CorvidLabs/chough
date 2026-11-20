@@ -29,10 +29,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      # Archive gate inputs shipped in v6.1.2 (#832); this step pins v6.3.0.
-      - uses: CorvidLabs/spec-sync@b87bbd88efea06ffd9474af02018240f24300419 # v6.3.0
+      # Archive gate inputs shipped in v6.1.2 (#832); this step pins v6.4.0.
+      - uses: CorvidLabs/spec-sync@3d57fa13f298a46e52416ab0407cb57d9dc67828 # v6.4.0-rc.1
         with:
-          version: '6.3.0'
+          version: '6.4.0'
           archive-gate-only: 'true'
 
   product:
@@ -92,11 +92,11 @@ jobs:
       - uses: CorvidLabs/fledge@b648ea2a622221d4f2ffbc7ba7aa829e6cf13a51
         with:
           version: v1.8.0
-      # Lifecycle writers and CI use SpecSync 6.3.0. The v6.3.0 Action tag keeps a
-      # 6.2.0 omitted-input default, so the binary version is passed explicitly.
-      - uses: CorvidLabs/spec-sync@b87bbd88efea06ffd9474af02018240f24300419 # v6.3.0
+      # Lifecycle writers and CI use SpecSync 6.4.0. The Action's omitted-input default
+      # trails it, so the binary version is passed explicitly.
+      - uses: CorvidLabs/spec-sync@3d57fa13f298a46e52416ab0407cb57d9dc67828 # v6.4.0-rc.1
         with:
-          version: '6.3.0'
+          version: '6.4.0'
           strict: 'true'
           require-coverage: '100'
       - run: cargo install human-intent --version 0.8.0 --locked
@@ -120,9 +120,9 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - uses: CorvidLabs/spec-sync@b87bbd88efea06ffd9474af02018240f24300419 # v6.3.0
+      - uses: CorvidLabs/spec-sync@3d57fa13f298a46e52416ab0407cb57d9dc67828 # v6.4.0-rc.1
         with:
-          version: '6.3.0'
+          version: '6.4.0'
           strict: 'true'
           require-coverage: '100'
       # Independent of product checks and draft/path/stage classification.
@@ -153,9 +153,9 @@ jobs:
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
       - uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
-      - uses: CorvidLabs/spec-sync@b87bbd88efea06ffd9474af02018240f24300419 # v6.3.0
+      - uses: CorvidLabs/spec-sync@3d57fa13f298a46e52416ab0407cb57d9dc67828 # v6.4.0-rc.1
         with:
-          version: '6.3.0'
+          version: '6.4.0'
           strict: 'true'
           require-coverage: '100'
       - run: cargo install human-intent --version 0.8.0 --locked
@@ -172,9 +172,9 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: CorvidLabs/spec-sync@b87bbd88efea06ffd9474af02018240f24300419 # v6.3.0
+      - uses: CorvidLabs/spec-sync@3d57fa13f298a46e52416ab0407cb57d9dc67828 # v6.4.0-rc.1
         with:
-          version: '6.3.0'
+          version: '6.4.0'
           strict: 'true'
           require-coverage: '100'
       - run: python3 .github/scripts/test-specsync-archive.py

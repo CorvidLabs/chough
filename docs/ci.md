@@ -24,9 +24,9 @@ fault, each of which must fail on the check that names it. The real agent hosts 
 before each release, not in hosted CI ([tools/host-matrix/README.md](../tools/host-matrix/README.md)).
 
 The `SpecSync Archive`, `Fledge / HI / SpecSync`, `Host matrix self-test` and `CI gate fixtures` jobs use
-published SpecSync **6.3.0**, its pinned action commit, and the upstream action's
+published SpecSync **6.4.0**, its pinned action commit, and the upstream action's
 release archive/checksum verification. The action version input is explicit: the
-v6.3.0 wrapper's default binary is 6.2.0. The `Archive` job pins the same v6.3.0
+wrapper's default binary trails 6.4.0. The `Archive` job pins the same
 commit with `archive-gate-only: 'true'`; 6.1.2 was the first release with that input
 (#832). Fledge is 1.8.0, installed by the Fledge Action at its reviewed commit with
 `version: v1.8.0` (the GitHub release of the version published to crates.io), and HI
@@ -90,7 +90,7 @@ merging; CI never performs those decisions.
 
 ## Local verification
 
-Use Python 3.11 or later and the published SpecSync 6.3.0 executable:
+Use Python 3.11 or later and the published SpecSync 6.4.0 executable:
 
 ```sh
 fledge run ci-archive-fixtures

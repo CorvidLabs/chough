@@ -605,13 +605,13 @@ whose SpecSync actor comes from the identity file (REQ-records-008, see
   `specsync_actor` as the reviewer and the verdict given as `--verdict pass` or
   `--verdict block`, which is required there and is never read from the words.
 
-Each step also passes the relay to SpecSync 6.3.0's own fields, `--words`, `--where`
+Each step also passes the relay to SpecSync's own fields, `--words`, `--where`
 and `--recorded-by`, so SpecSync's approval or review records the relayed decision
 (#249). Chough bounds the whole decision at 4,096 bytes, so no field exceeds
 SpecSync's 4,096-byte bound for each.
-SpecSync 6.3.0 records a change approved or reviewed this way at workflow version 3,
-which SpecSync 6.2.x refuses, so every checkout and CI job of the project needs
-SpecSync 6.3.0.
+SpecSync 6.3.0 and later record a change approved or reviewed this way at workflow
+version 3, which SpecSync 6.2.x refuses, so every checkout and CI job of the project
+needs the same SpecSync; this repository uses 6.4.0.
 
 Every check the save makes runs before the native step. When SpecSync refuses, Chough
 passes its output and exit code through, the gate stays open and nothing is written.
@@ -775,14 +775,15 @@ CHANGELOG.md merge=union
 .chough/bugs/*.md merge=chough-bug
 knowledge/index.md merge=chough-generated
 knowledge/journal/feed.xml merge=chough-generated
-specs/**/*.spec.md merge=specsync
 specs/**/requirements.md merge=specsync
 ```
 
-`chough init` declares Chough's three lines for you. The two `specs/` lines route module
-contracts to SpecSync's own ancestor-aware driver, so two branches that each bump one
-module's `version:` and Change Log merge without a hand-resolved conflict; run
-`specsync merge --install` once per clone to declare and register it (#291). GitHub's
+`chough init` declares Chough's three lines for you. The `specs/` line routes
+`requirements.md` to SpecSync's own ancestor-aware driver; run `specsync merge --install`
+once per clone to declare and register it (#291). A module's spec file needs no driver:
+SpecSync 6.4.0 records each change in its own history fragment,
+`specs/<module>/history/<id>.md`, in place of a Change Log row and a `version:` bump, so
+two branches that change one module merge with plain Git (#404). GitHub's
 merge button runs no custom driver, so these drivers help local merges and branch
 updates. It appends each one that no line
 declares after the last line, creates the file when it is absent, and changes no line
@@ -804,8 +805,8 @@ git config --local merge.chough-bug.driver "chough bug merge %O %A %B"
 git config --local merge.chough-generated.driver "chough library merge %O %A %B"
 ```
 
-Without them, Git falls back to its normal text merge for those files. Spec change logs
-and `requirements.md` belong to SpecSync (CorvidLabs/spec-sync#862).
+Without them, Git falls back to its normal text merge for those files. `requirements.md`
+belongs to SpecSync (CorvidLabs/spec-sync#862).
 
 ## Sessions
 
@@ -1270,7 +1271,7 @@ nothing and writes nothing under `.chough/`.
   waits until you stop Chough. Stopping Chough with SIGINT, SIGTERM or SIGHUP stops
   SpecSync and its descendants (FLOW-14).
 - When `specsync` cannot be started, the step refuses with exit 1 and runs nothing,
-  naming `cargo install --locked specsync@6.3.0` and the step to run again.
+  naming `cargo install --locked specsync@6.4.0` and the step to run again.
 - An id, kind, spec, path or question that holds a credential, a personal value or a
   control character is refused before SpecSync runs, as
   `refused:unshowable-argument`, naming the argument and what it holds but not the value,
@@ -1281,18 +1282,22 @@ nothing and writes nothing under `.chough/`.
 `chough change ready <id>` is not one of those steps (REQ-cli-067, DRIVE-29). It
 reads the change and prints one report. It exits 0 when nothing is missing and 1
 when a finding remains. An unknown change exits 1 and names `chough change status`.
-It writes nothing: every tracked file and SpecSync's gitignored hash cache stay as
-they were. Each finding names one exact command that fixes it.
+It writes nothing: every tracked file stays as it was, and it does not touch
+`.specsync/hashes.json`. Each finding names one exact command that fixes it.
 
-- A missing delta for an affected spec: `write .specsync/changes/<id>/deltas/<module>.md`.
-  An extra delta file: `remove .specsync/changes/<id>/deltas/<module>.md`. On a change
-  declared `--no-spec-change`, every delta file is removed the same way.
+- Whatever the definition approval would refuse, asked of SpecSync itself: each check
+  that SpecSync 6.4.0's read-only dry run of the approval (its `--dry-run` with
+  `--json`) refuses, in SpecSync's own message, a missing or extra delta among them (#406, #307). The fix is
+  the `fix` SpecSync gives with it, shown and never run, any placeholder left for you
+  to fill; without one, `chough change ready <id>` once the message's problem is fixed.
+  A SpecSync that gives no dry run names the approval as unchecked, with
+  `cargo install --locked specsync@6.4.0`.
 - A delta approved against canonical text that has since changed, when the approved
   body does not already carry that change: `rewrite .specsync/changes/<id>/deltas/<module>.md`
   and then `chough change ready <id>`.
 - An undocumented export in a declared file, the same export `specsync check --spec <module>`
   reports: `document <symbol> in specs/<module>/<module>.spec.md`. When `specsync` cannot
-  be started: `cargo install --locked specsync@6.3.0`.
+  be started: `cargo install --locked specsync@6.4.0`, named once.
 - A case that links another module's requirement: `move <case> to .chough/cases/<owner>.<topic>.cases.toml`.
 - A changed file outside the declared paths. On a draft, including `Draft`:
   `chough change answer <id> affected_paths "<the full list>"`. After approval:
@@ -1301,7 +1306,10 @@ they were. Each finding names one exact command that fixes it.
   since the base changed, or one changed and not committed yet. A file only a merge from
   another branch brought in does not count, nor does a committed file whose content at
   HEAD is the default branch's, at its tip or at HEAD's merge base with it, as after a
-  rebase onto it or a squash merge of it (#406). The default branch is the one
+  rebase onto it or a squash merge of it (#406). Nor does SpecSync's own untracked
+  `.specsync/change.lock` or `.specsync/workflow-v2-baseline.json`, nor another active
+  change's work: its own `.specsync/changes/<other>/` folder and the files its affected
+  paths cover (#406). The default branch is the one
   `origin/HEAD` names, unless that names no branch or HEAD's own; then `origin/main`; a
   local `main` only with no remote. On the default branch itself every changed file
   counts. A base commit the repository no longer has is said on standard error, and the
@@ -1395,9 +1403,9 @@ Acceptance Criteria
 ```
 
 The deltas must name exactly the specs the change affects, and a spec is affected when
-it owns a file the change touches. SpecSync 6.3.0 can call a draft ready for approval
-before it has any delta, so check `deltas/` before asking the human to approve the
-scope.
+it owns a file the change touches. `chough change ready <id>` names a missing or extra
+delta through SpecSync's approval dry run, so run it before asking the human to
+approve the scope.
 
 The change's own `.specsync/changes/<id>/testing.md` must name every requirement its
 deltas add or modify before `specsync change check` (and so `chough change check`)

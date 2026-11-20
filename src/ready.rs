@@ -1,8 +1,8 @@
 //! Readiness before approval (REQ-cli-067, DRIVE-29).
 //!
 //! `chough change ready <id>` reads one change and prints every piece still missing.
-//! It does not approve, check, or rewrite a tracked file. SpecSync's gitignored hash
-//! cache is restored when an export check writes it.
+//! It does not approve, check, or rewrite a tracked file. What the approval would
+//! refuse comes from SpecSync's own dry run of it (#406), not a copy of its rules.
 
 use anyhow::{Context, Result};
 use serde::Deserialize;
@@ -16,7 +16,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
 const SPECSYNC: &str = "specsync";
-const INSTALL: &str = "cargo install --locked specsync@6.3.0";
+const INSTALL: &str = "cargo install --locked specsync@6.4.0";
 const DELTA_DOMAIN: &[u8] = b"specsync.approved-delta.v1";
 const BASE_DOMAIN: &[u8] = b"specsync.approved-delta-base.v1";
 const HISTORY_LIMIT: usize = 200;
@@ -179,61 +179,11 @@ fn load(root: &Path, id: &str) -> Result<Change> {
 
 fn collect(root: &Path, change: &Change) -> Vec<Finding> {
     let mut findings = Vec::new();
-    findings.extend(delta_findings(root, change));
     findings.extend(stale_findings(root, change));
     findings.extend(specsync_findings(root, change));
     findings.extend(case_findings(root, change));
     findings.extend(path_findings(root, change));
     findings.extend(artifact_findings(root, change));
-    findings
-}
-
-fn delta_findings(root: &Path, change: &Change) -> Vec<Finding> {
-    let dir = change_dir(root, &change.id).join("deltas");
-    let mut files = BTreeSet::new();
-    if let Ok(entries) = fs::read_dir(&dir) {
-        for entry in entries.flatten() {
-            let name = entry.file_name().to_string_lossy().to_string();
-            if name.starts_with('.') {
-                continue;
-            }
-            files.insert(name);
-        }
-    }
-    let mut findings = Vec::new();
-    if change.no_spec_change {
-        for name in files {
-            let path = format!(".specsync/changes/{}/deltas/{name}", change.id);
-            findings.push(Finding {
-                text: format!("delta {name} is present on a change that declares no spec change"),
-                fix: format!("remove {path}"),
-            });
-        }
-        return findings;
-    }
-    let expected: BTreeSet<String> = change
-        .affected_specs
-        .iter()
-        .map(|module| format!("{module}.md"))
-        .collect();
-    for module in &change.affected_specs {
-        if !files.contains(&format!("{module}.md")) {
-            let path = format!(".specsync/changes/{}/deltas/{module}.md", change.id);
-            findings.push(Finding {
-                text: format!("missing delta for {module}"),
-                fix: format!("write {path}"),
-            });
-        }
-    }
-    for name in files {
-        if !expected.contains(&name) {
-            let path = format!(".specsync/changes/{}/deltas/{name}", change.id);
-            findings.push(Finding {
-                text: format!("extra delta {name}"),
-                fix: format!("remove {path}"),
-            });
-        }
-    }
     findings
 }
 
@@ -399,7 +349,7 @@ fn specsync_findings(root: &Path, change: &Change) -> Vec<Finding> {
     let mut findings = match specsync(root, &["change", "show", &change.id, "--json"]) {
         Err(error) if error.kind() == io::ErrorKind::NotFound => {
             return vec![Finding {
-                text: "specsync cannot be started, so interview questions and undocumented exports were not read".into(),
+                text: "specsync cannot be started, so the approval, interview questions and undocumented exports were not checked".into(),
                 fix: INSTALL.into(),
             }];
         }
@@ -409,8 +359,55 @@ fn specsync_findings(root: &Path, change: &Change) -> Vec<Finding> {
         }],
         Ok(output) => questions_from(&change.id, &output),
     };
+    findings.extend(approval_findings(root, change));
     findings.extend(export_findings(root, change));
     findings
+}
+
+/// What the definition approval would refuse, from SpecSync's own read-only dry run of
+/// it (REQ-cli-067, #406, #307): one finding per refused check, in SpecSync's words.
+/// A skipped check waits on a refused one, which is named, so it is not a finding.
+fn approval_findings(root: &Path, change: &Change) -> Vec<Finding> {
+    let unchecked = || Finding {
+        text: "the approval could not be checked: this specsync gives no approval dry run".into(),
+        fix: INSTALL.into(),
+    };
+    let Ok(output) = specsync(
+        root,
+        &["--json", "change", "approve", &change.id, "--dry-run"],
+    ) else {
+        return vec![unchecked()];
+    };
+    let Ok(report) = serde_json::from_slice::<Value>(&output.stdout) else {
+        return vec![unchecked()];
+    };
+    let Some(checks) = report
+        .get("checks")
+        .and_then(Value::as_array)
+        .filter(|_| report.get("dry_run").and_then(Value::as_bool) == Some(true))
+    else {
+        return vec![unchecked()];
+    };
+    checks
+        .iter()
+        .filter(|check| check.get("result").and_then(Value::as_str) == Some("refused"))
+        .map(|check| {
+            let name = check.get("check").and_then(Value::as_str).unwrap_or("an");
+            let message = check.get("message").and_then(Value::as_str).unwrap_or("");
+            Finding {
+                text: format!(
+                    "the approval's {} check refuses: {}",
+                    crate::leaks::printable(name, true),
+                    crate::leaks::printable(message, true)
+                ),
+                // SpecSync's own fix is shown, never run: it may hold a placeholder.
+                fix: match check.get("fix").and_then(Value::as_str) {
+                    Some(fix) => crate::leaks::printable(fix, true).into_owned(),
+                    None => format!("chough change ready {}", change.id),
+                },
+            }
+        })
+        .collect()
 }
 
 fn questions_from(id: &str, output: &Output) -> Vec<Finding> {
@@ -440,17 +437,6 @@ fn questions_from(id: &str, output: &Output) -> Vec<Finding> {
 }
 
 fn export_findings(root: &Path, change: &Change) -> Vec<Finding> {
-    let cache = root.join(".specsync/hashes.json");
-    let mut before = Cache::observe(&cache);
-    // With no cache yet, make the empty file SpecSync will fill, so the one removed
-    // afterwards is provably this report's own: seeing a file after SpecSync ran does
-    // not show who made it. If something appears first, it is not ours; look again.
-    if before == Cache::Absent {
-        before = match make_cache(&cache) {
-            Some((device, inode)) => Cache::Made(device, inode),
-            None => Cache::observe(&cache),
-        };
-    }
     let mut findings = Vec::new();
     for module in &change.affected_specs {
         let output = match specsync(root, &["check", "--spec", module, "--format", "json"]) {
@@ -507,17 +493,11 @@ fn export_findings(root: &Path, change: &Change) -> Vec<Finding> {
             });
         }
     }
-    // Not a finding: REQ-cli-067 lists what the report names, and nothing else.
-    if !restore_cache(&cache, &before) {
-        eprintln!(
-            ".specsync/hashes.json was replaced while this report ran, so it was left as it is now"
-        );
-    }
     findings
 }
 
 fn export_warning(warning: &str) -> Option<(&str, &str)> {
-    // SpecSync 6.3.0 puts the spec's path first: `specs/<m>/<m>.spec.md: Undocumented
+    // SpecSync 6.3.0 and 6.4.0 put the spec's path first: `specs/<m>/<m>.spec.md: Undocumented
     // export '<symbol>' from <file>`. The bare form is read too.
     let (spec, rest) = warning.split_once("Undocumented export '")?;
     if !(spec.is_empty() || spec.ends_with(": ")) {
@@ -526,124 +506,6 @@ fn export_warning(warning: &str) -> Option<(&str, &str)> {
     let (symbol, rest) = rest.split_once("' from ")?;
     let file = rest.trim();
     (!symbol.is_empty() && !file.is_empty()).then_some((symbol, file))
-}
-
-/// SpecSync's hash cache as one look found it, without following a symlink.
-#[derive(PartialEq)]
-enum Cache {
-    Absent,
-    /// A regular file: its device and inode, and its bytes.
-    Regular(u64, u64, Vec<u8>),
-    /// A symlink or anything else that is not a regular file. Never read or written.
-    Other,
-    /// No cache was there, so this report made an empty one: its device and inode.
-    Made(u64, u64),
-}
-
-impl Cache {
-    fn observe(path: &Path) -> Self {
-        match fs::symlink_metadata(path) {
-            Err(error) if error.kind() == io::ErrorKind::NotFound => return Self::Absent,
-            Ok(found) if found.file_type().is_file() => {}
-            _ => return Self::Other,
-        }
-        let Ok((file, device, inode)) = open_cache(path, false) else {
-            return Self::Other;
-        };
-        let mut bytes = Vec::new();
-        let mut file = file;
-        match io::Read::read_to_end(&mut file, &mut bytes) {
-            Ok(_) => Self::Regular(device, inode, bytes),
-            Err(_) => Self::Other,
-        }
-    }
-}
-
-/// Open the cache itself, never what a symlink at its path points to, and say which
-/// file was opened.
-fn open_cache(path: &Path, write: bool) -> io::Result<(fs::File, u64, u64)> {
-    let mut options = fs::OpenOptions::new();
-    options.read(!write).write(write);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt as _;
-        options.custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK);
-    }
-    let file = options.open(path)?;
-    let found = file.metadata()?;
-    if !found.is_file() {
-        return Err(io::Error::other("not a regular file"));
-    }
-    #[cfg(unix)]
-    let identity = {
-        use std::os::unix::fs::MetadataExt as _;
-        (found.dev(), found.ino())
-    };
-    #[cfg(not(unix))]
-    let identity = (0, 0);
-    Ok((file, identity.0, identity.1))
-}
-
-/// Make the empty cache file, only if nothing is at its path, and say which file it is.
-/// The identity comes from the handle that made it, never from a second look at the
-/// path, which another writer could have swapped in between.
-fn make_cache(path: &Path) -> Option<(u64, u64)> {
-    let file = fs::OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(path)
-        .ok()?;
-    let made = file.metadata().ok()?;
-    #[cfg(unix)]
-    let identity = {
-        use std::os::unix::fs::MetadataExt as _;
-        (made.dev(), made.ino())
-    };
-    #[cfg(not(unix))]
-    let identity = {
-        let _ = made;
-        (0, 0)
-    };
-    Some(identity)
-}
-
-/// Put the cache back as the report found it (REQ-cli-067), but only while it is still
-/// the file this report can show is its own. A cache another process made or replaced
-/// meanwhile, by a regular file or a symlink, is theirs: it is left alone and the
-/// caller says so. False when it was left changed.
-///
-/// What is ours: with a cache before, the same file (device and inode), which SpecSync
-/// rewrites in place; with none before, the empty file this report made. Another
-/// writer that rewrites that same file in place cannot be told from SpecSync and is
-/// not detected.
-fn restore_cache(path: &Path, before: &Cache) -> bool {
-    let now = Cache::observe(path);
-    match (before, &now) {
-        // Never ours to touch: it was not a regular file when the report started.
-        (Cache::Other, _) => true,
-        // Something appeared after the look and before this report could make its own.
-        (Cache::Absent, _) => matches!(now, Cache::Absent),
-        (Cache::Made(..), Cache::Absent) => true,
-        (Cache::Made(device, inode), Cache::Regular(now_device, now_inode, _)) => {
-            (device, inode) == (now_device, now_inode) && fs::remove_file(path).is_ok()
-        }
-        (Cache::Made(..), _) => false,
-        (Cache::Regular(device, inode, bytes), Cache::Regular(now_device, now_inode, held)) => {
-            if (device, inode) != (now_device, now_inode) {
-                return false;
-            }
-            if held == bytes {
-                return true;
-            }
-            let Ok((mut file, opened_device, opened_inode)) = open_cache(path, true) else {
-                return false;
-            };
-            (opened_device, opened_inode) == (*device, *inode)
-                && file.set_len(0).is_ok()
-                && io::Write::write_all(&mut file, bytes).is_ok()
-        }
-        (Cache::Regular(..), _) => false,
-    }
 }
 
 fn case_findings(root: &Path, change: &Change) -> Vec<Finding> {
@@ -764,6 +626,7 @@ fn path_findings(root: &Path, change: &Change) -> Vec<Finding> {
     };
     let ignored = ignored_prefixes(root);
     let workspace = format!(".specsync/changes/{}", change.id);
+    let others = other_changes_scopes(root, &change.id);
     let outside: Vec<String> = changed
         .into_iter()
         .filter(|path| {
@@ -774,6 +637,8 @@ fn path_findings(root: &Path, change: &Change) -> Vec<Finding> {
         })
         .filter(|path| !ignored.iter().any(|prefix| covers(path, prefix)))
         .filter(|path| !covers(path, &workspace))
+        .filter(|path| !others.iter().any(|scope| covers(path, scope)))
+        .filter(|path| !specsync_own_untracked(root, path))
         .collect();
     if outside.is_empty() {
         return Vec::new();
@@ -804,6 +669,39 @@ fn path_findings(root: &Path, change: &Change) -> Vec<Finding> {
             fix: fix.clone(),
         })
         .collect()
+}
+
+/// SpecSync's own files that it leaves untracked in a project that never ran its
+/// adoption (#406): not the change's work while Git does not track them.
+const SPECSYNC_OWN: [&str; 2] = [
+    ".specsync/change.lock",
+    ".specsync/workflow-v2-baseline.json",
+];
+
+fn specsync_own_untracked(root: &Path, path: &str) -> bool {
+    SPECSYNC_OWN.contains(&path)
+        && git_out(root, &["ls-files", "--", path]).is_some_and(|listed| listed.is_empty())
+}
+
+/// What the other active changes hold (#406): each one's own folder under
+/// `.specsync/changes/` and each of its affected paths. Their work is theirs.
+fn other_changes_scopes(root: &Path, id: &str) -> Vec<String> {
+    let Ok(entries) = fs::read_dir(root.join(".specsync/changes")) else {
+        return Vec::new();
+    };
+    let mut scopes = Vec::new();
+    for entry in entries.flatten() {
+        let name = entry.file_name().to_string_lossy().into_owned();
+        if name == id || !valid_id(&name) || !entry.path().join("state.json").is_file() {
+            continue;
+        }
+        let Ok(other) = load(root, &name) else {
+            continue;
+        };
+        scopes.push(format!(".specsync/changes/{name}"));
+        scopes.extend(other.affected_paths);
+    }
+    scopes
 }
 
 fn ignored_prefixes(root: &Path) -> Vec<String> {
@@ -1638,7 +1536,7 @@ mod tests {
         );
     }
 
-    /// The tester's finding on #311: the warning as SpecSync 6.3.0 prints it, with the
+    /// The tester's finding on #311: the warning as SpecSync 6.3.0 and 6.4.0 print it, with the
     /// spec's path first, and its count line, which is not an export.
     #[test]
     fn an_export_warning_is_read_as_specsync_prints_it() {
