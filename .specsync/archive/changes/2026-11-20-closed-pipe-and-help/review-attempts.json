@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "closed-pipe-and-help",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "de0f1dc7ec89772141d8f938e73cb490dce2ffef",
+      "contract_digest": "b269056ead41810d2892a485060af2107e86e3c3bc5e68f30298ddb53f48898f",
+      "execution_digest": "7202a05d1fc7e08e0f6effd3432e554df273856eb60fab31f43e6b3d6de92a35",
+      "workspace_digest": "8af9ab0778cf65e2e890792c7339fcc5e9c194c56275f6eca05ea801647ec407",
+      "timestamp": 1795196015,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Go",
+        "where": "Standing OK 6(b): Leif's 'Go' to t4c's six rules (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19), under which the builder records his implementation review of a batch with a tester PASS whose build changes no approved sentence (t4c's ruling of 2026-11-19: the review only; every merge still needs his yes after CI). For #425 at de0f1dc7: the tester's harness, run by the fixer at de0f1dc7, 26 of 26 (the four E1 rows fixed against main, among them a 22-command closed-pipe sweep with no exit 101 or panic, and the 22 real repositories unchanged); corvid-agent APPROVED de0f1dc7 (2026-11-20, after its nit was fixed in e60f1978). A no-spec change, so no approved sentence exists to change; its scope carries Leif's standing OK for scope approvals, relayed via t4c. fable-lead is paused until about 2026-11-23, so t4c is told after.",
+        "recorded_by": "chough-fixer-t4n"
+      }
+    }
+  ]
+}

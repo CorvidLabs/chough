@@ -5,7 +5,7 @@ aliases: [closed-pipe-and-help]
 objective: "A closed standard output ends a command quietly with its own exit code, and help works after global options, with -V documented as the top-level version flag (#383's closed pipe, #399)"
 intent_scope: ""
 modules: [cli]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -27,9 +27,13 @@ observations:
   - 2026-11-20-tc-cli-help-after-the-global-options-7ca4da
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of closed-pipe-and-help
+    holds: accept
+    drives: review
+    opened: 2026-11-20T17:33:32Z
 run_consents: []
-next: Continue build
+next: Continue accept
 ---
 # A closed standard output ends a command quietly with its own exit code, and help works after global options, with -V documented as the top-level version flag (#383's closed pipe, #399)
 
@@ -88,4 +92,20 @@ A closed standard output ends a command quietly with its own exit code, and help
   - native_change: closed-pipe-and-help
   - gate: native:approved
   - revision: 49217bbc1569c1c0e0f080ab7995cd42fd96492b
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T17:33:15Z · advance · build → test · native:verifying ^t-4da8d8
+  - native_change: closed-pipe-and-help
+  - gate: native:verifying
+  - revision: de0f1dc7ec89772141d8f938e73cb490dce2ffef
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T17:33:16Z · advance · test → accept · native:verifying ^t-b23f7a
+  - native_change: closed-pipe-and-help
+  - gate: native:verifying
+  - revision: de0f1dc7ec89772141d8f938e73cb490dce2ffef
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T17:33:32Z · gate-opened · accept → accept · Implementation review of closed-pipe-and-help ^t-f506b6
+  - native_change: closed-pipe-and-help
+  - revision: de0f1dc7ec89772141d8f938e73cb490dce2ffef
+  - holds: accept
+  - drives: review
   - by: chough-fixer (claude-opus-5-5, hc t4n)

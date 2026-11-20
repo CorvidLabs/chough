@@ -46,6 +46,13 @@
         "where": "Leif's standing OK for scope approvals, from his Claude Code question dialog in his planning session (hc t4c), 2026-11-20 ('Standing OK, tell me after'), relayed via t4c, which confirmed on 2026-11-20 that E1 closed-pipe-and-help at 8e562c06 has only the recommended choice, changes no requirement wording and adds no refusal; recorded after one interview correction SpecSync required for a no-spec change (public_contract yes to no), which changes none of those three",
         "recorded_by": "chough-fixer-t4n"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795196024,
+      "digest": "9adee77fd5542dd6f749a730693e450c47e75880fc9bf5b8e1eb4eb1d9df38aa",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
