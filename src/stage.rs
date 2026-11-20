@@ -65,6 +65,11 @@ pub(super) enum StageCommand {
         /// checked before any transition is recorded (REQ-cli-052).
         #[arg(long)]
         to: Option<String>,
+        /// Why the move goes on with no human decision recorded for a plan or accept that
+        /// no native lifecycle gates; `--to` across one needs it, and it lands in the
+        /// Timeline (REQ-cli-031, #390).
+        #[arg(long)]
+        reason: Option<String>,
     },
     /// Record another iteration within the current stage.
     Iterate {
@@ -1983,6 +1988,17 @@ fn move_summary(session: &Checkpoint, applied: &Value) -> String {
             status("librarian_index")
         ));
     }
+    if let Some(stages) = applied["unattended"]
+        .as_array()
+        .filter(|stages| !stages.is_empty())
+    {
+        let said: Vec<String> = stages
+            .iter()
+            .filter_map(Value::as_str)
+            .map(|stage| format!("no human decision is recorded for {stage}"))
+            .collect();
+        lines.push(format!("Note: {}", said.join("; ")));
+    }
     if let Some(unknown) = applied["direct_writes"]["unknown"].as_str() {
         lines.push(format!("Direct writes: unknown, {}", one_line(unknown)));
     }
@@ -2489,6 +2505,7 @@ fn advance_to(
     session: &mut Checkpoint,
     target: &str,
     note: Option<&str>,
+    reasoned: bool,
 ) -> Result<(Value, Option<NativeState>)> {
     ensure_active(session)?;
     ensure_main(session, "advance")?;
@@ -2519,6 +2536,19 @@ fn advance_to(
             .map_err(|error| anyhow::anyhow!("{error:#}; nothing was recorded"))?;
         steps.push((route, label));
     }
+    // REQ-cli-031 (#390, Leif's decision B): a plan or accept that no native lifecycle
+    // gates and that holds no human decision is passed only with a reason.
+    let unattended: Vec<&str> = steps
+        .iter()
+        .filter(|((step_from, _), label)| unattended_step(session, step_from, label.as_deref()))
+        .map(|((step_from, _), _)| *step_from)
+        .collect();
+    ensure!(
+        unattended.is_empty() || reasoned,
+        "refused:no-human-decision: no human decision is recorded for {}, and no native lifecycle gates it, so nothing was recorded. Give the reason this move goes on without one: `chough stage advance --to {target} --reason \"<why>\"`; it lands in the Timeline",
+        unattended.join(" or ")
+    );
+    let unattended: Vec<String> = unattended.into_iter().map(String::from).collect();
     let mut applied_steps = Vec::new();
     for ((step_from, step_to), label) in &steps {
         if let Err(error) = log_transition(
@@ -2540,10 +2570,48 @@ fn advance_to(
     session.stage.current = target.to_string();
     session.stage.iteration = 1;
     let gate = steps.last().and_then(|(_, label)| label.clone());
-    Ok((
-        json!({"kind": "advance", "from": from, "to": target, "gate": gate, "steps": applied_steps}),
-        read,
-    ))
+    let mut applied = json!({"kind": "advance", "from": from, "to": target, "gate": gate, "steps": applied_steps});
+    if !unattended.is_empty() {
+        applied["unattended"] = json!(unattended);
+    }
+    Ok((applied, read))
+}
+
+/// Whether leaving `stage` under `label` passes a plan or accept that no native
+/// lifecycle gates and that holds no human decision (REQ-cli-031, #390).
+fn unattended_step(session: &Checkpoint, stage: &str, label: Option<&str>) -> bool {
+    matches!(stage, "plan" | "accept")
+        && matches!(
+            label,
+            Some("ungated:not-configured" | "ungated:sdd-disabled")
+        )
+        && !human_decided_at(session, stage)
+}
+
+/// Whether a human's decision closed a gate held at `stage`: a gate-closed entry at that
+/// stage whose gate a recorded decision names.
+fn human_decided_at(session: &Checkpoint, stage: &str) -> bool {
+    let entries = session
+        .source
+        .as_ref()
+        .map(crate::session_md::timeline)
+        .and_then(Result::ok)
+        .unwrap_or_default();
+    entries.iter().any(|entry| {
+        let transition = &entry.transition;
+        transition.kind == GATE_CLOSED
+            && transition.from == stage
+            && transition
+                .reason
+                .as_deref()
+                .or(transition.gate.as_deref())
+                .is_some_and(|gate| {
+                    session
+                        .decisions
+                        .iter()
+                        .any(|decision| decision.contains(&format!(" decided \"{gate}\":")))
+                })
+    })
 }
 
 fn move_forward(
@@ -2707,13 +2775,28 @@ pub(super) fn run(root: &Path, command: StageCommand, as_json: bool) -> Result<(
     let mut session = read_checkpoint(root)?;
     let mut applied = match command {
         StageCommand::Show => None,
-        StageCommand::Advance { note, to } => {
+        StageCommand::Advance { note, to, reason } => {
             if let Some(note) = &note {
                 ensure_text("note", note)?;
             }
+            if let Some(reason) = &reason {
+                ensure_text("reason", reason)?;
+            }
+            // The reason, when given, is what the Timeline entry records.
+            let recorded = reason.as_deref().or(note.as_deref());
             let (applied, _) = match to {
-                Some(target) => advance_to(root, &mut session, &target, note.as_deref())?,
-                None => move_forward(root, &mut session, "advance", note.as_deref(), None)?,
+                Some(target) => {
+                    advance_to(root, &mut session, &target, recorded, reason.is_some())?
+                }
+                None => {
+                    let from = session.stage.current.clone();
+                    let (mut applied, read) =
+                        move_forward(root, &mut session, "advance", recorded, None)?;
+                    if unattended_step(&session, &from, applied["gate"].as_str()) {
+                        applied["unattended"] = json!([from]);
+                    }
+                    (applied, read)
+                }
             };
             Some(applied)
         }

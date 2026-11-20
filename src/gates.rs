@@ -283,12 +283,19 @@ fn tests(root: &Path, session: &Value) -> (usize, usize, usize, Vec<String>) {
     let Ok(views) = crate::evidence::every_observation(root) else {
         return (0, 0, 0, vec![]);
     };
+    // #389: an observation the session names that links no case, as `evidence add`
+    // with criteria records, counts by its own entry.
+    let mut uncased: Vec<(String, String)> = vec![];
     for view in &views {
         let named_here = std::iter::once(&view.id)
             .chain(&view.aliases)
             .any(|id| named.contains(id));
-        if named_here && let Some(case) = &view.case {
-            wanted.insert(case.clone());
+        match &view.case {
+            Some(case) if named_here => {
+                wanted.insert(case.clone());
+            }
+            None if named_here => uncased.push((view.id.clone(), view.result.clone())),
+            _ => {}
         }
     }
     for view in views {
@@ -304,7 +311,11 @@ fn tests(root: &Path, session: &Value) -> (usize, usize, usize, Vec<String>) {
         }
     }
     let mut counts = (0, 0, 0, vec![]);
-    for (case, (_, outcome)) in latest {
+    for (case, (_, outcome)) in latest.into_iter().chain(
+        uncased
+            .into_iter()
+            .map(|(entry, outcome)| (entry, (0, outcome))),
+    ) {
         match outcome.as_str() {
             "passed" => counts.0 += 1,
             "failed" => {
@@ -315,6 +326,22 @@ fn tests(root: &Path, session: &Value) -> (usize, usize, usize, Vec<String>) {
         }
     }
     counts
+}
+
+/// Whether the working tree holds a change since HEAD, tracked or untracked, outside what
+/// the summary leaves out (Chough's own records), so the diff link must show it (#389).
+fn uncommitted_work(root: &Path, left_out: &[String]) -> bool {
+    let tracked = git(root, &["diff", "--name-only", "HEAD"]).unwrap_or_default();
+    tracked
+        .lines()
+        .map(String::from)
+        .chain(untracked(root).into_iter().map(|(_, _, path)| path))
+        .any(|path| {
+            !path.is_empty()
+                && !left_out
+                    .iter()
+                    .any(|prefix| path.starts_with(prefix.as_str()))
+        })
 }
 
 /// The diff link: a GitHub compare URL when `origin` is on GitHub, else the command.
@@ -664,6 +691,15 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
         (Some(own), _) => Some(own),
         (None, merge_base) => merge_base,
     };
+    // #389: a session with no native change records no base, as one started before the
+    // repository's first commit; count from that first commit when there is exactly
+    // one, and say so. A native change with no usable base keeps the base unknown.
+    let from_first_commit = base.is_none() && change.is_none();
+    let base = base.or_else(|| {
+        git(root, &["rev-list", "--max-parents=0", "HEAD"])
+            .filter(|roots| from_first_commit && !roots.is_empty() && roots.lines().count() == 1)
+    });
+    let from_first_commit = from_first_commit && base.is_some();
     let left_out = left_out_of_summary(root);
     // REQ-cli-061 (t38j): at a gate that drives approval, the change's own definition is
     // what the human approves, so its Markdown files count and come first, its deltas
@@ -716,6 +752,12 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
                 files.len(),
                 &base[..base.len().min(8)]
             ));
+            if from_first_commit {
+                lines.push(
+                    "  no base commit was recorded: the session started before the first commit, so this counts from it"
+                        .into(),
+                );
+            }
             files.sort_by(|left, right| {
                 is_delta(&right.2)
                     .cmp(&is_delta(&left.2))
@@ -755,6 +797,11 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
     // at intent with no native change approves the intent, so it has no diff line.
     match base.as_deref() {
         _ if at_intent => {}
+        // #389: work not committed yet is in no range to HEAD, so the link is the working
+        // tree against the base, and says so.
+        Some(base) if uncommitted_work(root, &left_out) => {
+            lines.push(format!("Diff: git diff {base} (work not committed yet)"))
+        }
         Some(base) => lines.push(format!("Diff: {}", diff_link(root, base, &head))),
         None => lines.push("Diff: unknown, with no merge base and no recorded base commit".into()),
     }
