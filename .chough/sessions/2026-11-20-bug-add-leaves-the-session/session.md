@@ -5,7 +5,7 @@ aliases: [bug-add-leaves-the-session]
 objective: "bug add records the session on the new bug and never writes the session, so parallel filing merges and filing costs the same at any size (#382, #395)"
 intent_scope: ""
 modules: [cli, history]
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -33,13 +33,9 @@ observations:
   - 2026-11-20-tc-cli-bug-add-joins-the-active-session-0df608
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of bug-add-leaves-the-session
-    holds: accept
-    drives: review
-    opened: 2026-11-20T17:03:34Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # bug add records the session on the new bug and never writes the session, so parallel filing merges and filing costs the same at any size (#382, #395)
 
@@ -52,6 +48,7 @@ bug add records the session on the new bug and never writes the session, so para
 ## Decisions and why
 
 - 0xLeif decided "Approve the scope of bug-add-leaves-the-session": "A: on the bug (Recommended)" (Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 14:13Z, relayed by hc t4c through fable-lead (hc t53); the question as shown: 'Chough R2a (#382, #395, two regressions from #343). Where should a bug's "filed in this session" link live?'; on R2a bug-add-leaves-the-session at 51a848c6 with choice A); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve bug-add-leaves-the-session as 0xLeif
+- 0xLeif decided "Implementation review of bug-add-leaves-the-session": "Go" (Standing OK 6(b): Leif's 'Go' to t4c's six rules (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19), under which the builder records his implementation review of a batch with a tester PASS whose build changes no approved sentence (t4c's ruling of 2026-11-19: the review only; every merge still needs his yes after CI). For #422 at 97c4c1ed: the tester's harness, run by the fixer at 9ea50230, with R2A-395 fixed (0.03 s per bug add at 3 and at 203 observations) and the 22 real repositories unchanged against main; R2A-382 shows a clean merge with no doctor finding, and fails only its one pre-approval check, which reads session.md's text, while the approved criterion (the merged checkpoint lists both bugs) passes in tests/bugs.rs and on a copy of jackdaw; copies of jackdaw, pico-8 and spec-sync pass the run on the real repositories; corvid-agent APPROVED 97c4c1ed (2026-11-20 about 16:42Z). No approved sentence was changed by the build; the scope carries Leif's 'A: on the bug (Recommended)'. fable-lead is paused until about 2026-11-23, so t4c is told after, and can hold the merge until a tester aligns R2A-382.); recorded by chough-fixer-t4n; a relayed claim, not authenticated; ran specsync change review bug-add-leaves-the-session as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -120,4 +117,20 @@ bug add records the session on the new bug and never writes the session, so para
   - revision: 97c4c1ed4f6d16c11f45b84b24b17fd5e16daf5f
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T17:04:25Z · gate-closed · accept → accept · Implementation review of bug-add-leaves-the-session ^t-c51674
+  - native_change: bug-add-leaves-the-session
+  - revision: af24022963564c3661872b9f8ec1c03e4cb40de3
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Go
+    - where: Standing OK 6(b): Leif's 'Go' to t4c's six rules (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19), under which the builder records his implementation review of a batch with a tester PASS whose build changes no approved sentence (t4c's ruling of 2026-11-19: the review only; every merge still needs his yes after CI). For #422 at 97c4c1ed: the tester's harness, run by the fixer at 9ea50230, with R2A-395 fixed (0.03 s per bug add at 3 and at 203 observations) and the 22 real repositories unchanged against main; R2A-382 shows a clean merge with no doctor finding, and fails only its one pre-approval check, which reads session.md's text, while the approved criterion (the merged checkpoint lists both bugs) passes in tests/bugs.rs and on a copy of jackdaw; copies of jackdaw, pico-8 and spec-sync pass the run on the real repositories; corvid-agent APPROVED 97c4c1ed (2026-11-20 about 16:42Z). No approved sentence was changed by the build; the scope carries Leif's 'A: on the bug (Recommended)'. fable-lead is paused until about 2026-11-23, so t4c is told after, and can hold the merge until a tester aligns R2A-382.
+    - recorded_by: chough-fixer-t4n
+    - native: specsync change review bug-add-leaves-the-session
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T17:04:26Z · advance · accept → done · native:archived ^t-e49a14
+  - native_change: bug-add-leaves-the-session
+  - gate: native:archived
+  - revision: af24022963564c3661872b9f8ec1c03e4cb40de3
   - by: chough-fixer (claude-opus-5-5, hc t4n)
