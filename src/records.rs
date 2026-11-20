@@ -622,7 +622,11 @@ fn write_aside_then_place(root: &Path, path: &Path, content: &[u8]) -> Placed {
     if !root.join(".chough").is_dir() {
         return Placed::Unsupported;
     }
-    let local = root.join(".chough").join("local");
+    // Through the symlink guard, as every other write: a `.chough/local/` that is a
+    // symlink never holds the record's bytes, even for a moment.
+    let Ok(local) = local_path(root, ".chough/local") else {
+        return Placed::Unsupported;
+    };
     if fs::create_dir_all(&local).is_err() {
         return Placed::Unsupported;
     }
@@ -743,6 +747,11 @@ fn rename_no_replace(_from: &Path, _to: &Path) -> io::Result<()> {
 }
 
 /// SIGXFSZ ignored while it lives, and set back to what it was when it is dropped.
+///
+/// The disposition is the whole process's, so this holds only while no other thread
+/// writes a record or starts a process: Chough's other threads only read (the evidence
+/// fingerprint, `migrate`'s validity reads), each joined before any write. A writer on
+/// another thread would need a lock, since an ignored signal stays ignored across exec.
 struct SizeLimitAsError {
     #[cfg(unix)]
     before: libc::sighandler_t,
@@ -2135,6 +2144,27 @@ pub(super) fn toolchain_limitation(root: &Path) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
+    /// #260, corvid-agent's note on #426: a `.chough/local/` that is a symlink holds no
+    /// temporary file, even for a moment; the record is created at its own name instead.
+    #[cfg(unix)]
+    #[test]
+    fn a_symlinked_local_folder_holds_no_temporary_file() {
+        let directory = tempfile::tempdir().unwrap();
+        let outside = tempfile::tempdir().unwrap();
+        let root = directory.path();
+        std::fs::create_dir(root.join(".chough")).unwrap();
+        std::os::unix::fs::symlink(outside.path(), root.join(".chough/local")).unwrap();
+        let target = root.join("record.md");
+        assert!(matches!(
+            super::write_aside_then_place(root, &target, b"whole\n"),
+            super::Placed::Unsupported
+        ));
+        assert!(!target.exists());
+        assert!(super::write_new_bytes(root, "record.md", b"whole\n").unwrap());
+        assert_eq!(std::fs::read(&target).unwrap(), b"whole\n");
+        assert_eq!(std::fs::read_dir(outside.path()).unwrap().count(), 0);
+    }
+
     /// BUG-0022: the verdict the toolchain task records becomes an evidence limitation
     /// only when it says the toolchain differs.
     #[test]
