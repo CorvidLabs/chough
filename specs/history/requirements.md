@@ -80,6 +80,7 @@ Acceptance Criteria
 - While another process holds the lock and archives the session, `inbox add` waits, then refuses with "no open session" and writes no entry.
 - An `inbox add` killed while writing leaves no partial entry, and the next save removes its temporary file.
 - `inbox add --kind observation` with an unrecorded ID adds the entry, warns naming the ID, and `inbox list` marks it `recorded: false`.
+- With the pointer on one session and `--session` or `CHOUGH_SESSION` naming another, `chough inbox list` lists the named session's entries and names that session.
 
 ### REQ-history-010
 

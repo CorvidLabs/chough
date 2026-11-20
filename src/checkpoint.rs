@@ -299,6 +299,23 @@ fn validate_as(session: &Checkpoint, story: bool) -> Result<()> {
             crate::leaks::shown("native change ID", change)
         );
     }
+    // REQ-cli-007 (#401): the same rules as `checkpoint --no-native-change`, on every
+    // read and every save, so a hand edit of the file cannot allow the ungated move.
+    if let Some(reason) = &session.no_native_change {
+        let reason = reason.trim();
+        ensure!(
+            !reason.is_empty(),
+            "no_native_change holds no reason: write the real reason in its place, or remove the no_native_change line"
+        );
+        ensure!(
+            !(reason.starts_with('<') && reason.ends_with('>')),
+            "no_native_change holds a placeholder: write the real reason in its place, or remove the no_native_change line"
+        );
+        ensure!(
+            session.native_change.is_none(),
+            "no_native_change and native_change are both recorded: remove one of the two lines"
+        );
+    }
     ensure_ids("criterion", &session.references.criteria, MAX_ITEMS)?;
     ensure_ids("requirement", &session.references.requirements, MAX_ITEMS)?;
     ensure_ids("case", &session.references.cases, MAX_ITEMS)?;

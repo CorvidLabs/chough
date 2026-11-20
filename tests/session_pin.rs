@@ -278,6 +278,81 @@ fn a_pinned_session_before_any_session_names_session_new() {
     assert_eq!(tree(fixture.root()), before);
 }
 
+/// REQ-history-009 (#393): `inbox list` honors the pin as `inbox fold` does. With the
+/// pointer on one session and `--session` or `CHOUGH_SESSION` naming another, it lists
+/// the named session's entries and names that session.
+#[test]
+fn inbox_list_lists_the_pinned_session() {
+    let (fixture, first, other) = two_sessions();
+    for (session, text) in [
+        (&first, "SYNTHETIC for first"),
+        (&other, "SYNTHETIC for other"),
+    ] {
+        fixture.ok(&[
+            "inbox",
+            "add",
+            "--session",
+            session,
+            "--kind",
+            "decision",
+            "--text",
+            text,
+            "--from",
+            "SYNTHETIC-agent",
+        ]);
+    }
+    let by_option = fixture.ok(&["--session", &other, "inbox", "list"]);
+    let output = fixture.run_with_env(&["inbox", "list"], &[("CHOUGH_SESSION", &other)]);
+    assert!(output.status.success(), "{}", said(&output));
+    let by_variable: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    for listed in [&by_option, &by_variable] {
+        assert_eq!(listed["session"], other.as_str(), "{listed}");
+        let texts: Vec<&str> = listed["entries"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(|entry| entry["text"].as_str())
+            .collect();
+        assert_eq!(texts, ["SYNTHETIC for other"], "{listed}");
+    }
+}
+
+/// REQ-cli-037 (#372): `session use` and `session new` still ignore the pin, but say
+/// on standard error when `--session` or `CHOUGH_SESSION` still names another open
+/// session; with neither set, or when it names the session made active, they say
+/// nothing.
+#[test]
+fn session_use_and_new_say_when_a_pin_still_names_another_session() {
+    let (fixture, first, other) = two_sessions();
+    let stderr =
+        |output: &std::process::Output| String::from_utf8_lossy(&output.stderr).into_owned();
+    let used = fixture.run_with_env(&["session", "use", &other], &[("CHOUGH_SESSION", &first)]);
+    assert!(used.status.success(), "{}", said(&used));
+    assert_eq!(fixture.active_id(), other);
+    let note = stderr(&used);
+    assert!(
+        note.contains("CHOUGH_SESSION") && note.contains(&first),
+        "{note}"
+    );
+    let by_option = fixture.run(&["--session", &first, "session", "use", &other]);
+    let note = stderr(&by_option);
+    assert!(
+        note.contains("--session") && note.contains(&first),
+        "{note}"
+    );
+    let made = fixture.run_with_env(
+        &["session", "new", "SYNTHETIC-third", "--objective", "Third"],
+        &[("CHOUGH_SESSION", &first)],
+    );
+    assert!(made.status.success(), "{}", said(&made));
+    assert!(stderr(&made).contains(&first), "{}", stderr(&made));
+    // Unset, or naming the session made active: nothing said.
+    let quiet = fixture.run(&["session", "use", &first]);
+    assert_eq!(stderr(&quiet), "");
+    let same = fixture.run_with_env(&["session", "use", &other], &[("CHOUGH_SESSION", &other)]);
+    assert_eq!(stderr(&same), "");
+}
+
 /// REQ-records-006, REQ-history-006 (#367), TC-records-errors-show-a-value-only-when-clean:
 /// a session name from `CHOUGH_SESSION`, `--session` or `session use` that holds a token
 /// or a control character is refused naming the variable or option and what it holds,
