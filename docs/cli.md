@@ -251,7 +251,14 @@ replaces the front matter, appends list items to the end of a named section, or 
 a missing named section at the end of the body, and does nothing else to an existing
 body, so a person's edit to a Goal, a bug's Steps or an entry's body survives. Files
 are written with LF line endings by an atomic replace under the writer lock, or by
-create-new for a new record.
+create-new for a new record. A new record is written whole or not at all: to a
+temporary file in `.chough/local/`, synced, then given its name without replacing
+anything, so a full disk or a file-size limit leaves no file at the name; where the file
+system cannot rename that way, it is created at its name and removed again on any error.
+No hard link is used, so a volume without them, such as exFAT, works (#260, #424). The
+folder that holds the new name is not synced after the move, so a power loss just after a
+write can still lose the name; the record is then missing, never partial. An empty
+record file is named as empty, with the way out.
 
 | Record | Bound |
 |---|---|
