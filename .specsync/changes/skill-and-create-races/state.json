@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "skill-and-create-races",
   "slug": "skill-and-create-races",
   "title": "Skill and create races",
   "description": "skill and create races",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
   "created_at": 1795074277,
-  "updated_at": 1795074359,
+  "updated_at": 1795165756,
   "affected_specs": [
     "cli",
     "history"

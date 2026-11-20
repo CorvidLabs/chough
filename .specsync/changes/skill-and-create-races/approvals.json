@@ -1,4 +1,62 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795165756,
+      "digest": "7b19de64caba0cb41fb524133068a4327ea8eef8ec9076cad00079911a7e523f",
+      "note": "Approved by 0xLeif at the Chough gate \"Approve the scope of skill-and-create-races\": \"Approve\" (Claude Code chat answer, relayed by his planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-19 about 14:12Z, on D2 skill-and-create-races at 2bf6318 with the four recommended choices; recorded at the batch start on that text, the draft carried onto main 056cbb80 by a merge with no delta word changed). Relayed and recorded by chough-fixer-t4g at 2026-11-20T09:09:15Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "skill-and-create-races",
+        "title": "Skill and create races",
+        "description": "skill and create races",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.skill-and-create-races.cases.toml",
+          ".chough/cases/history.skill-and-create-races.cases.toml",
+          "changelog.d/2026-11-19-skill-and-create-races.md",
+          "docs/cli.md",
+          "src/doctor.rs",
+          "src/main.rs",
+          "src/records.rs",
+          "src/skill.rs",
+          "tests/cli.rs",
+          "tests/doctor.rs",
+          "tests/parallel.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A CRLF skill copy counts as the bundle file it equals and is refreshed with CRLF line breaks, and a file skill update cannot write is refused naming it, never assertion text (#373). Parallel skill update and init runs each succeed, or refuse only as a run on its own would (#386). Plain skill status and update skip a host folder that cannot be inspected, report it relative to the project and update the rest, exiting 0, while --host for it refuses (#403). chough doctor reports an untracked record under .chough/ that its reader refuses as unreadable, with the file and the reason (#408)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The issues set the scope: #373 (lead-F5, F6), #386 (s3-F2, F7) as \"the same create-new race\", #403 and #408, with fable-lead adding uncommitted unreadable records beside #408. CRLF matching changes REQ-cli-016's criterion that newline changes stay edited, so it is a choice for Leif. Based on main; it modifies no requirement #407, D1, L2 or #311 modifies, and #408 is a new requirement so it does not wait on D1. No new dependency. Failing tests first.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "8bc54e8f8c095bd68c1267cfa9c3ad28c890717793bf2b41c5ef4e558509bcf6",
+        "history": "c0e1e7d2d23f35bb160f007813e29aa75e64ae81180f4f13972caf6e1d3f2347"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-001": "387ccb0f2125cac81304910fc3495e0734fbdbef049a268eb14a0a577f0649e5",
+        "cli: REQUIREMENT REQ-cli-016": "7ca3af94603db019ce0133fe8a424be7b021f07a8d522bf5a3be1c6a60ef89c2"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve",
+        "where": "Claude Code chat answer, relayed by his planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-19 about 14:12Z, on D2 skill-and-create-races at 2bf6318 with the four recommended choices; recorded at the batch start on that text, the draft carried onto main 056cbb80 by a merge with no delta word changed",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    }
+  ],
   "reopenings": []
 }

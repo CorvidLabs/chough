@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Read scoped intent and native status, then choose the next action within the authorized scope.
+next: "Gate \"Approve the scope of skill-and-create-races\" closed (approved); run `chough stage advance` to move on."
 ---
 # Skill and create-new batch: skill update writes CRLF copies and names a file it cannot write (#373), parallel skill update and init runs all succeed (#386), a host folder that cannot be inspected is skipped and reported while the rest update (#403), and doctor reads an uncommitted session that fails validation (#408)
 
@@ -32,6 +32,8 @@ Skill and create-new batch: skill update writes CRLF copies and names a file it 
 ## Where it stands
 
 ## Decisions and why
+
+- 0xLeif decided "Approve the scope of skill-and-create-races": "Approve" (Claude Code chat answer, relayed by his planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-19 about 14:12Z, on D2 skill-and-create-races at 2bf6318 with the four recommended choices; recorded at the batch start on that text, the draft carried onto main 056cbb80 by a merge with no delta word changed); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve skill-and-create-races as 0xLeif
 
 ## What was verified
 
@@ -47,4 +49,21 @@ Skill and create-new batch: skill update writes CRLF copies and names a file it 
   - by: chough-fixer (claude-opus-5-5, hc t4n)
 - 2026-11-19T07:43:53Z · advance · design → plan ·  ^t-d15454
   - revision: 9d260310bca8553a0203e5ef90bc8372b4e15aae
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T09:09:15Z · gate-opened · plan → plan · Approve the scope of skill-and-create-races ^t-7d30e5
+  - native_change: skill-and-create-races
+  - revision: ff3c80cae8022b05bb8ac41b13e53d4feab91a2c
+  - holds: plan
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T09:09:15Z · gate-closed · plan → plan · Approve the scope of skill-and-create-races ^t-afa4bb
+  - native_change: skill-and-create-races
+  - revision: ff3c80cae8022b05bb8ac41b13e53d4feab91a2c
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve
+    - where: Claude Code chat answer, relayed by his planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-19 about 14:12Z, on D2 skill-and-create-races at 2bf6318 with the four recommended choices; recorded at the batch start on that text, the draft carried onto main 056cbb80 by a merge with no delta word changed
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve skill-and-create-races
+    - actor: 0xLeif
   - by: chough-fixer (claude-opus-5-5, hc t4n)
