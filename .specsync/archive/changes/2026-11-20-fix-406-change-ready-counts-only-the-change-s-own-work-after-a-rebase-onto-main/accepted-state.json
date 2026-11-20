@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main",
+  "slug": "fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main",
+  "title": "Fix 406: change ready counts only the change's own work after a rebase onto main",
+  "description": "Fix 406: change ready counts only the change's own work after a rebase onto main",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "1fb67c29295cc2472285bbd03b6a10cf8c5f6c40",
+  "created_at": 1795147565,
+  "updated_at": 1795184204,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/ready.rs",
+    "tests/ready.rs",
+    "docs/cli.md",
+    "specs/cli/requirements.md",
+    "specs/cli/cli.spec.md",
+    "changelog.d/",
+    ".chough/cases/cli.change-ready-rebase.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "After a rebase onto the default branch or a squash merge of it, chough change ready names no file only the default branch changed and still names a file outside the declared paths that the change changed; with HEAD on the default branch, its tip at HEAD, or origin/HEAD naming HEAD's own branch, such a file is still named; with a base commit the repository lacks, it says so, prints no fatal: line and counts from the merge base, and with no default branch either it names one finding that the changed files could not be listed, never reporting that nothing is missing."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "cli lessons apply: the delta is frozen at approval, so each sentence is tried against Git first; the report stays read-only and adds no refusal; prefer a filter on the existing list over a new rule (rule 5)",
+    "public_contract": "yes"
+  }
+}

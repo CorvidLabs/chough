@@ -1863,9 +1863,14 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
     if args.json {
         print_json(&report)?;
     } else {
+        // REQ-reporting-001 (#366): text from a record, such as a gate's name, is
+        // printed as REQ-records-016 says, with each control character escaped.
         print!(
             "{}",
-            render(&report, &derived, &shown, before_first, stage_filter)
+            crate::leaks::printable(
+                &render(&report, &derived, &shown, before_first, stage_filter),
+                false
+            )
         );
     }
     trace_phase("render", phase);

@@ -2635,3 +2635,50 @@ fn timing_says_elapsed_wall_clock_once_on_gate_run_and_fix_lines() {
         "{detail}"
     );
 }
+
+/// Every string `value` holds, at any depth.
+fn strings(value: &Value, out: &mut Vec<String>) {
+    match value {
+        Value::String(text) => out.push(text.clone()),
+        Value::Array(items) => items.iter().for_each(|item| strings(item, out)),
+        Value::Object(map) => map.values().for_each(|item| strings(item, out)),
+        _ => {}
+    }
+}
+
+/// REQ-reporting-001 (#366), TC-reporting-timing-prints-stored-text-escaped: with a stage
+/// move's reason and a gate's name holding ESC and U+202E, as a hand edit or an earlier
+/// release left them, `chough timing` prints neither raw, in text or JSON, and its JSON
+/// parses back to the stored gate name. (The report shows no stage move's reason; it is
+/// planted too, so it is shown never raw if it ever is.)
+#[test]
+fn timing_prints_a_stored_control_character_escaped() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No PLANT visuals"]);
+    fixture.ok(&["checkpoint", "--awaiting-human", "PLANT gate"]);
+    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
+    let file = fixture.session_file();
+    let dirty = "X \u{1b}[2J\u{202e} Y";
+    let text = fixture.read(&file).replace("PLANT", dirty);
+    fixture.write(&file, &text);
+    let raw = |text: &str| text.contains('\u{1b}') || text.contains('\u{202e}');
+    let shown = fixture.ok_text(&["timing"]);
+    assert!(!raw(&shown), "timing printed it raw: {shown:?}");
+    let output = fixture.run(&["timing", "--json"]);
+    let stdout = String::from_utf8_lossy(&output.stdout).into_owned();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!raw(&stdout), "timing --json printed it raw");
+    let parsed: Value = serde_json::from_str(&stdout).unwrap();
+    let mut all = vec![];
+    strings(&parsed, &mut all);
+    assert!(
+        all.iter()
+            .any(|text| text.contains(&format!("{dirty} gate"))),
+        "the JSON does not parse back to the stored gate name: {all:?}"
+    );
+}

@@ -594,3 +594,180 @@ fn a_cache_the_report_made_is_removed() {
     assert!(!stdout.contains("was replaced"), "{stdout}");
     assert!(!cache.exists());
 }
+
+/// A remote `origin` whose `main` and `HEAD` name `rev`, with no fetch: the default
+/// branch the report compares with (REQ-cli-067, #406).
+fn origin_main(fixture: &Fixture, rev: &str) {
+    fixture.git(&[
+        "remote",
+        "add",
+        "origin",
+        "https://example.invalid/SYNTHETIC.git",
+    ]);
+    fixture.git(&["update-ref", "refs/remotes/origin/main", rev]);
+    fixture.git(&[
+        "symbolic-ref",
+        "refs/remotes/origin/HEAD",
+        "refs/remotes/origin/main",
+    ]);
+}
+
+/// The fix for the one file outside `src/` these tests name.
+const OWN_FIX: &str = "chough change answer demo affected_paths \"src/,own-outside.txt\"";
+
+/// The change's own work on a branch `work` from the base: one file inside its paths and
+/// one outside them.
+fn own_work(fixture: &Fixture) {
+    fixture.git(&["checkout", "-q", "-b", "work"]);
+    fixture.write("src/owned.rs", "fn owned() {}\n");
+    fixture.write("own-outside.txt", "own\n");
+    fixture.git(&["add", "src/owned.rs", "own-outside.txt"]);
+    fixture.git(&["commit", "-q", "-m", "the change's own work"]);
+}
+
+/// The default branch moves on: a file it changes and one it adds.
+fn main_moves_on(fixture: &Fixture) -> String {
+    fixture.git(&["checkout", "-q", "main"]);
+    fixture.write("specs/cli/requirements.md", NEW_REQ);
+    fixture.write("docs/from-main.md", "from main\n");
+    fixture.git(&["add", "specs/cli/requirements.md", "docs/from-main.md"]);
+    fixture.git(&["commit", "-q", "-m", "main moved on"]);
+    let tip = head(fixture);
+    fixture.git(&["checkout", "-q", "work"]);
+    tip
+}
+
+/// #406 (REQ-cli-067): on a branch rebased onto the default branch after the change
+/// recorded its base, a file only the default branch's commits changed is not named, and
+/// a file outside the declared paths that the change's own commits changed is.
+#[test]
+fn after_a_rebase_onto_main_only_the_change_s_own_files_are_named() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    let base = head(&fixture);
+    own_work(&fixture);
+    let tip = main_moves_on(&fixture);
+    origin_main(&fixture, &tip);
+    fixture.git(&["rebase", "-q", "main"]);
+    write_change(&fixture, &base, "draft", &["src/"], false);
+    assert_report(
+        &fixture,
+        &[(
+            "changed file own-outside.txt is outside the declared paths",
+            OWN_FIX,
+        )],
+    );
+}
+
+/// #406: on a branch that squash-merged the default branch, a file whose content at HEAD
+/// is the default branch's is not named, and the change's own file outside its paths is.
+#[test]
+fn after_a_squash_merge_of_main_only_the_change_s_own_files_are_named() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    let base = head(&fixture);
+    own_work(&fixture);
+    let tip = main_moves_on(&fixture);
+    origin_main(&fixture, &tip);
+    fixture.git(&["merge", "-q", "--squash", "main"]);
+    fixture.git(&["commit", "-q", "-m", "main, squashed"]);
+    write_change(&fixture, &base, "draft", &["src/"], false);
+    assert_report(
+        &fixture,
+        &[(
+            "changed file own-outside.txt is outside the declared paths",
+            OWN_FIX,
+        )],
+    );
+}
+
+/// #406: the comparison never switches the check off. With HEAD on the default branch,
+/// or `origin/HEAD` naming HEAD's own branch, a file outside the declared paths that the
+/// change changed is still named.
+#[test]
+fn on_the_default_branch_itself_the_change_s_files_are_still_named() {
+    // Work done on main, with origin/main at HEAD.
+    let fixture = project(OLD_REQ, &["src/"]);
+    let base = head(&fixture);
+    fixture.write("own-outside.txt", "own\n");
+    fixture.git(&["add", "own-outside.txt"]);
+    fixture.git(&["commit", "-q", "-m", "work on main"]);
+    origin_main(&fixture, &head(&fixture));
+    write_change(&fixture, &base, "draft", &["src/"], false);
+    assert_report(
+        &fixture,
+        &[(
+            "changed file own-outside.txt is outside the declared paths",
+            OWN_FIX,
+        )],
+    );
+
+    // origin/HEAD naming the branch HEAD is on, whose remote copy already holds the
+    // file: origin/main is compared instead, so the file is still named.
+    let fixture = project(OLD_REQ, &["src/"]);
+    let base = head(&fixture);
+    origin_main(&fixture, &base);
+    own_work(&fixture);
+    fixture.git(&["update-ref", "refs/remotes/origin/work", "HEAD"]);
+    fixture.git(&[
+        "symbolic-ref",
+        "refs/remotes/origin/HEAD",
+        "refs/remotes/origin/work",
+    ]);
+    fixture.write("src/later.rs", "fn later() {}\n");
+    fixture.git(&["add", "src/later.rs"]);
+    fixture.git(&["commit", "-q", "-m", "more own work"]);
+    write_change(&fixture, &base, "draft", &["src/"], false);
+    assert_report(
+        &fixture,
+        &[(
+            "changed file own-outside.txt is outside the declared paths",
+            OWN_FIX,
+        )],
+    );
+}
+
+/// #406: with a `base_commit` the repository does not have, the report says so, naming
+/// it, prints no `fatal:` line, and counts from HEAD's merge base with the default
+/// branch; with no default branch either, it names one finding that the changed files
+/// could not be listed, never that nothing is missing.
+#[test]
+fn a_base_commit_the_repository_lacks_is_named_plainly() {
+    let gone = "0123456789abcdef0123456789abcdef01234567";
+    let fixture = project(OLD_REQ, &["src/"]);
+    let base = head(&fixture);
+    origin_main(&fixture, &base);
+    own_work(&fixture);
+    write_change(&fixture, gone, "draft", &["src/"], false);
+    let output = fixture.run(&["change", "ready", ID]);
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    assert!(
+        !stdout.contains("fatal") && !stderr.contains("fatal"),
+        "{stdout}{stderr}"
+    );
+    assert!(
+        stderr.contains(gone) && stderr.contains("not in this repository"),
+        "{stderr}"
+    );
+    assert_eq!(
+        stdout,
+        report(&[(
+            "changed file own-outside.txt is outside the declared paths",
+            OWN_FIX
+        )])
+    );
+
+    // No default branch: no remote and no local main.
+    let fixture = project(OLD_REQ, &["src/"]);
+    own_work(&fixture);
+    fixture.git(&["branch", "-q", "-m", "main", "trunk"]);
+    write_change(&fixture, gone, "draft", &["src/"], false);
+    let output = fixture.run(&["change", "ready", ID]);
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(!stdout.contains("Nothing is missing"), "{stdout}");
+    assert!(!stdout.contains("fatal"), "{stdout}");
+    assert!(
+        stdout.contains(gone) && stdout.contains("could not be listed"),
+        "{stdout}"
+    );
+    assert_eq!(output.status.code(), Some(1));
+}

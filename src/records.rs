@@ -103,8 +103,40 @@ fn native_trace_line(source: &str, state: &str, elapsed_ms: u128) -> String {
 }
 
 pub(super) fn print_json(value: &Value) -> Result<()> {
-    println!("{}", serde_json::to_string_pretty(value)?);
+    println!("{}", json_text(value, true)?);
     Ok(())
+}
+
+/// `value` as JSON text (REQ-records-016, #366): serde_json escapes the C0 controls, and
+/// DEL, the C1 controls and the bidirectional characters it leaves raw are escaped as `\u`
+/// too, so no JSON view prints a control character raw and it parses back the same.
+pub(super) fn json_text(value: &Value, pretty: bool) -> Result<String> {
+    let text = if pretty {
+        serde_json::to_string_pretty(value)?
+    } else {
+        serde_json::to_string(value)?
+    };
+    Ok(escape_json_controls(text))
+}
+
+/// `text`, serialized JSON, with each control character serde_json left raw escaped. A
+/// raw C0 control never stands in serde_json's strings, so a line feed here is layout.
+pub(super) fn escape_json_controls(text: String) -> String {
+    if !text
+        .chars()
+        .any(|character| character != '\n' && crate::leaks::control(character))
+    {
+        return text;
+    }
+    let mut out = String::with_capacity(text.len() + 8);
+    for character in text.chars() {
+        if character != '\n' && crate::leaks::control(character) {
+            out.push_str(&format!("\\u{:04x}", character as u32));
+        } else {
+            out.push(character);
+        }
+    }
+    out
 }
 
 pub(super) fn now() -> Result<u64> {
@@ -548,16 +580,22 @@ pub(super) fn write_new_bounded(
 pub(super) fn write_new_bytes(root: &Path, relative: &str, content: &[u8]) -> Result<bool> {
     let path = local_path(root, relative)?;
     if path.exists() {
-        ensure!(path.is_file(), "expected a file: {}", path.display());
+        ensure!(path.is_file(), "expected a file: {relative}");
         return Ok(false);
     }
-    fs::create_dir_all(path.parent().context("file has no parent")?)?;
+    fs::create_dir_all(path.parent().context("file has no parent")?)
+        .with_context(|| format!("cannot create the folder of {relative}"))?;
     local_path(root, relative)?;
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&path)?;
-    file.write_all(content)?;
+    // #386: another run may create the file between the check above and this open; then
+    // it exists, as the check would have found. Every other error names the file,
+    // relative to the project.
+    let mut file = match OpenOptions::new().write(true).create_new(true).open(&path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => return Ok(false),
+        Err(error) => bail!("cannot write {relative}: {error}"),
+    };
+    file.write_all(content)
+        .with_context(|| format!("cannot write {relative}"))?;
     Ok(true)
 }
 

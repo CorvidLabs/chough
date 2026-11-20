@@ -323,7 +323,10 @@ pub(super) fn resolve_any(root: &Path, name: &str) -> Result<String> {
     }
     match found.as_slice() {
         [id] => Ok(archive_file(id)),
-        [] => bail!("refused: no open session or archived story {name}; nothing was written"),
+        [] => bail!(
+            "refused: no open session or archived story {}; nothing was written",
+            crate::leaks::shown("session name", name)
+        ),
         several => bail!(
             "refused: {name} names several archived stories ({}); name one by its ID; nothing was written",
             several.join(", ")
@@ -983,6 +986,18 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     for key in empty {
         record.remove(&key);
     }
+    // REQ-records-016 (#366): the story holds the session's text as it is printed, so a
+    // control character a session holds by hand is escaped, never carried raw.
+    record.make_printable();
+    // REQ-cli-007 (#353): the story writes the pull request as the session does,
+    // double-quoted; an empty one went with the other empty values above.
+    if let Some(pr) = record
+        .scalar("pr")
+        .map(str::to_string)
+        .filter(|pr| !pr.is_empty())
+    {
+        record.set_quoted("pr", &pr)?;
+    }
     let mut text = record.render_within(RecordKind::Story)?;
     if !text.ends_with('\n') {
         text.push('\n');
@@ -1266,13 +1281,18 @@ pub(super) fn unheld_files(root: &Path, id: &str) -> Result<Vec<String>> {
         // Held when a story receipt has the entry's ID and agrees with the receipt the
         // entry gives now in every field it holds, so a story an earlier release wrote,
         // whose receipts hold fewer fields, still holds its entries (REQ-history-012).
+        // A story writes its receipts as printed (REQ-records-016), so a field agrees as
+        // written or in that form.
         let holds = |story: &Vec<(String, String)>| {
             story
                 .iter()
                 .any(|(key, value)| key == "id" && *value == entry)
-                && story
-                    .iter()
-                    .all(|field| receipt.iter().any(|given| given == field))
+                && story.iter().all(|(key, value)| {
+                    receipt.iter().any(|(name, given)| {
+                        name == key
+                            && (given == value || crate::leaks::printable(given, false) == *value)
+                    })
+                })
         };
         // Kept by the file that was read, which may be named other than its ID (renamed,
         // or its `id` edited), and by the ID, which names the files beside it (#381).
@@ -1847,7 +1867,7 @@ pub(super) fn render_entry(
     record.set_scalar("from", from)?;
     record.set_scalar("value", text)?;
     if let Some(recorded) = recorded {
-        record.set_scalar("recorded", if recorded { "true" } else { "false" })?;
+        record.set_bool("recorded", recorded)?;
     }
     record.set_scalar("added", added)?;
     record.render_within(RecordKind::Inbox)
@@ -2002,8 +2022,12 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
                     Kind::Completed => &mut session.completed,
                     Kind::Question => &mut session.open_questions,
                 };
-                if !list.contains(&entry.text) {
-                    list.push(entry.text.clone());
+                // REQ-records-016 (#366): the entry is text Chough already stores, so it
+                // folds as it is printed, a control character an earlier release wrote
+                // escaped, and is never refused as a new value would be.
+                let text = crate::leaks::printable(&entry.text, false).into_owned();
+                if !list.contains(&text) {
+                    list.push(text);
                 }
                 targets.push((file, target));
             }

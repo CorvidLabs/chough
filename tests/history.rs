@@ -400,3 +400,36 @@ fn direct_write_entries_are_known_to_timing() {
     assert!(!found.is_empty(), "no unrecognised_kinds count: {report:#}");
     assert!(found.iter().all(|count| **count == json!(0)), "{found:?}");
 }
+
+/// REQ-history-015 (#367), TC-history-correct-names-what-a-given-entry-holds: an
+/// `<entry>` holding a token or an escape sequence is refused with nothing written,
+/// naming what it holds, and the output holds neither.
+#[test]
+fn correct_names_what_a_given_entry_holds_and_never_echoes_it() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("fixture");
+    let file = fixture.session_file();
+    let before = fixture.read(&file);
+    let token = concat!("ghp_", "abcdefghijklmnopqrstuvwxyz0123456789");
+    for entry in [
+        format!("x {token} y"),
+        "x \u{1b}[31my".to_string(),
+        format!("^t-{token}"),
+        format!("{token}#^t-abcdef"),
+    ] {
+        let output = fixture.run(&["correct", &entry, "--reason", "SYNTHETIC fix"]);
+        let said = format!(
+            "{}{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(!output.status.success(), "{entry:?} was corrected");
+        assert!(
+            !said.contains(token) && !said.contains('\u{1b}'),
+            "{entry:?} was echoed: {said:?}"
+        );
+        assert!(said.contains("holding"), "{entry:?}: {said:?}");
+        assert_eq!(fixture.read(&file), before, "{entry:?} changed the session");
+    }
+}

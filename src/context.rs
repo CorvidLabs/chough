@@ -40,7 +40,7 @@ pub(super) fn session_markdown(session: &Session) -> String {
         .map(|consent| format!("{}: {}", consent.key, one_line(&consent.source)))
         .collect();
     let references = &checkpoint.references;
-    let fields = [
+    let mut fields = vec![
         ("Objective", one_line(&checkpoint.objective)),
         (
             "Stage",
@@ -76,6 +76,10 @@ pub(super) fn session_markdown(session: &Session) -> String {
         ("Bugs", listed(&checkpoint.bugs)),
         ("Run consents", listed(&consents)),
     ];
+    // REQ-cli-007 (#353): the session's pull request, after its native change.
+    if !checkpoint.meta.pr.is_empty() {
+        fields.insert(4, ("PR", one_line(&checkpoint.meta.pr)));
+    }
     let mut out: String = fields
         .iter()
         .map(|(label, value)| format!("- {label}: {value}\n"))
@@ -222,7 +226,7 @@ pub(super) fn context(root: &Path, session: &Session, as_json: bool) -> Result<V
         let (transitions, partial) = stage::recent_transitions(root, 20)?;
         // Markdown: the same recent entries, as `session.md` writes them.
         let content = if as_json {
-            serde_json::to_string_pretty(&transitions)?
+            crate::records::json_text(&serde_json::to_value(&transitions)?, true)?
         } else {
             let entries = match checkpoint.source.as_ref() {
                 Some(record) => crate::session_md::timeline(record)?,

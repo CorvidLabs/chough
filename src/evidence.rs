@@ -511,8 +511,16 @@ pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Res
     if let Some((extension, _)) = &files.screenshot {
         entry.screenshot = Some(format!("{name}.{extension}"));
     }
+    // A control character in a value given for the entry is refused under `--redact`
+    // too, named by the option that gave it (REQ-records-016, #366).
+    crate::leaks::check_controls("--summary", &entry.summary, true)?;
+    crate::leaks::check_controls("--environment", &entry.environment, true)?;
+    for limitation in &entry.limitations {
+        crate::leaks::check_controls("--limitation", limitation, true)?;
+    }
     let mut record = entry.to_record(&name);
     let mut redacted = 0;
+    record.check_controls(None)?;
     if leaks::redacting() {
         redacted = record.redact_leaks(leaks::Local::current());
     } else {

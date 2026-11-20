@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-406-change-ready-counts-only-the-change-s-own-work-after-a-rebase-onto-main",
+  "implementation_commit": "0b50b7aaf73452f835f072d8419ee85b08173ae5",
+  "implementation_tree": "b562d48d15808ad8305e60aeb5823e983c560272",
+  "contract_digest": "c6a440b872461172d18465ad020073438a770b57888690919dd32f0c630fe908",
+  "workspace_digest": "0cf48e65ff1365b299e60730a520ad5860b41dcd97c4f2a24ba163c83f5c5ed7",
+  "closing_digest": "c1a4b52f449fe46688cf1533e23e9912b85412f08eeb598ab1eea695cac3f879",
+  "review_digest": "faa14a22aec65f2a82ad05bceed9220625c1132536cd9cc05cc4f2f83060970d",
+  "finalization_digest": "be5a017dc1c9e32393ccd9088ed31ff10abed327e5e0891d68ce03a9078a25be",
+  "timestamp": 1795184204
+}
