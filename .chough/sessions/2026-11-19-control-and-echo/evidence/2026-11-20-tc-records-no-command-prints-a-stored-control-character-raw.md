@@ -1,0 +1,40 @@
+---
+kind: evidence
+id: 2026-11-20-tc-records-no-command-prints-a-stored-control-character-raw
+aliases: []
+claim: "Ran cargo test --locked --test output_safety -- --exact no_command_prints_a_stored_control_character_raw for TC-records-no-command-prints-a-stored-control-character-raw: passed (exit 0, tests run 1)."
+result: passed
+evidence_kind: product-test
+method: automated
+track: functional
+case: [TC-records-no-command-prints-a-stored-control-character-raw]
+case_digest: [c5dfef7da7946fd01503a23be76a57c5d0071ae7bd7254b48a46511090800a10]
+command:
+  - cargo
+  - test
+  - "--locked"
+  - "--test"
+  - output_safety
+  - "--"
+  - "--exact"
+  - no_command_prints_a_stored_control_character_raw
+exit_code: 0
+tests_run: 1
+duration_seconds: 7
+revision: d8aa8a63acd5bca47a65e589bb069f2251730b53
+content: f6cfee0c808bba0d07d4bc2685239aab35a594977879eebe450153e3399173d7
+environment: local-macos-arm64
+fingerprint: sha256:be7f5eda96b8911e7cc9d21a799ed5023eab156ba311d8937afa6df6cba8c577
+criteria: [LIFE-26, LIFE-3]
+requirements: [REQ-records-016]
+contracts: [specs/records/records.spec.md]
+limitations: [inherited environment variables were not recorded]
+observed: 2026-11-20T03:21:25Z
+actor:
+  - agent: chough-fixer
+    model: claude-opus-5-5
+    terminal: t4n
+---
+**Ran cargo test --locked --test output_safety -- --exact no_command_prints_a_stored_control_character_raw for TC-records-no-command-prints-a-stored-control-character-raw: passed (exit 0, tests run 1).**
+
+Recorded as passed in local-macos-arm64 at revision d8aa8a63acd5, observed 2026-11-20T03:21:25Z. The raw log stays in the machine-local store.

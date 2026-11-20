@@ -16,7 +16,21 @@ requirements: [REQ-records-006, REQ-cli-007, REQ-history-015]
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-20-tc-cli-the-pull-request-shows-in-every-view
+  - 2026-11-20-tc-cli-every-session-writer-keeps-the-pull-request-form
+  - 2026-11-20-tc-cli-the-post-links-only-a-pull-request-form
+  - 2026-11-20-tc-history-correct-names-what-a-given-entry-holds
+  - 2026-11-20-tc-records-a-control-character-is-refused-at-write
+  - 2026-11-20-tc-records-a-line-feed-is-kept-where-a-field-takes-one
+  - 2026-11-20-tc-records-no-command-prints-a-stored-control-character-raw
+  - 2026-11-20-tc-records-generated-files-hold-text-as-printed
+  - 2026-11-20-tc-records-reserved-words-are-written-quoted
+  - 2026-11-20-tc-records-flags-stay-booleans
+  - 2026-11-20-tc-records-no-command-echoes-a-given-value
+  - 2026-11-20-tc-records-a-file-url-is-checked-like-its-path
+  - 2026-11-20-tc-reporting-timing-prints-stored-text-escaped
+  - 2026-11-20-tc-records-tabs-in-values-read-back
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -39,6 +53,21 @@ Control and echo batch: control characters refused at write and escaped on print
 - 0xLeif decided "Re-approval of control-and-echo with four more paths and REQ-reporting-001's example": "Ok" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-20 about 03:00Z, item 2 of t4c's six-item list, on this text: src/evidence.rs, src/gates.rs, tests/front_matter_writes.rs and .chough/cases/records.test-stage.cases.toml join the declared paths, with no sentence change; and REQ-reporting-001's example and criterion name a gate's name in place of a stage move's reason, under standing OK 6(a), a wording fix that only makes an approved sentence match tested code, relayed via t4c and checked by fable-lead's script; the earlier approvals stand for the rest: 'Approve the recommended set' (2026-11-19 about 14:12Z) and standing OK (d) for REQ-cli-007's rebase after #413); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve control-and-echo as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test checkpoint -- --exact the_pull_request_shows_in_next_status_context_and_the_checkpoint_view for TC-cli-the-pull-request-shows-in-every-view: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-the-pull-request-shows-in-every-view.md)
+- [Ran cargo test --locked --test checkpoint -- --exact every_session_writer_keeps_the_pull_request_quoted_and_a_cleared_one_out for TC-cli-every-session-writer-keeps-the-pull-request-form: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-every-session-writer-keeps-the-pull-request-form.md)
+- [Ran cargo test --locked --test journal -- --exact a_stored_pr_that_is_neither_form_is_left_out_of_the_post for TC-cli-the-post-links-only-a-pull-request-form: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-the-post-links-only-a-pull-request-form.md)
+- [Ran cargo test --locked --test history -- --exact correct_names_what_a_given_entry_holds_and_never_echoes_it for TC-history-correct-names-what-a-given-entry-holds: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-history-correct-names-what-a-given-entry-holds.md)
+- [Ran cargo test --locked --test output_safety -- --exact a_control_character_is_refused_at_write_in_every_field for TC-records-a-control-character-is-refused-at-write: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-a-control-character-is-refused-at-write.md)
+- [Ran cargo test --locked --test output_safety -- --exact a_line_feed_is_kept_where_a_field_takes_one_and_a_tab_is_refused for TC-records-a-line-feed-is-kept-where-a-field-takes-one: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-a-line-feed-is-kept-where-a-field-takes-one.md)
+- [Ran cargo test --locked --test output_safety -- --exact no_command_prints_a_stored_control_character_raw for TC-records-no-command-prints-a-stored-control-character-raw: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-no-command-prints-a-stored-control-character-raw.md)
+- [Ran cargo test --locked --test journal -- --exact generated_files_hold_stored_control_characters_as_printed for TC-records-generated-files-hold-text-as-printed: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-generated-files-hold-text-as-printed.md)
+- [Ran cargo test --locked --test checkpoint -- --exact yaml_reserved_words_are_written_quoted_and_read_back_as_text for TC-records-reserved-words-are-written-quoted: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-reserved-words-are-written-quoted.md)
+- [Ran cargo test --locked --test checkpoint -- --exact flags_stay_booleans_and_either_form_still_reads for TC-records-flags-stay-booleans: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-flags-stay-booleans.md)
+- [Ran cargo test --locked --test output_safety -- --exact no_command_echoes_a_value_given_on_the_command_line for TC-records-no-command-echoes-a-given-value: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-no-command-echoes-a-given-value.md)
+- [Ran cargo test --locked --test leaks -- --exact a_file_url_is_checked_like_its_path_and_username_counts for TC-records-a-file-url-is-checked-like-its-path: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-a-file-url-is-checked-like-its-path.md)
+- [Ran cargo test --locked --test timing -- --exact timing_prints_a_stored_control_character_escaped for TC-reporting-timing-prints-stored-text-escaped: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-reporting-timing-prints-stored-text-escaped.md)
+- [Ran cargo test --locked --test front_matter_writes -- --exact a_tab_in_a_given_value_is_refused_and_the_records_stay_readable for TC-records-tabs-in-values-read-back: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-tabs-in-values-read-back.md)
 
 ## Open threads
 
