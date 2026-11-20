@@ -16,7 +16,21 @@ requirements: [REQ-records-009, REQ-cli-055, REQ-records-015]
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-20-tc-records-migrate-judges-returning-files-by-the-receipt
+  - 2026-11-20-tc-records-migrate-names-every-returning-file-in-one-refusal
+  - 2026-11-20-tc-records-migrate-removes-a-returning-file-as-already
+  - 2026-11-20-tc-records-migrate-refuses-an-edited-committed-receipt
+  - 2026-11-20-tc-records-migrate-an-uncommitted-receipt-judges-nothing
+  - 2026-11-20-tc-records-migrate-refuses-an-entry-that-is-no-receipt
+  - 2026-11-20-tc-records-migrate-a-special-target-refuses-before-writing
+  - 2026-11-20-tc-records-migrate-one-of-several-applies
+  - 2026-11-20-tc-records-migrate-a-new-bug-rebuilds-the-index-in-place
+  - 2026-11-20-tc-records-migrate-refuses-a-record-whose-id-is-held
+  - 2026-11-20-tc-records-migrate-refuses-a-returning-legacy-checkpoint
+  - 2026-11-20-tc-records-migrate-a-failed-write-removes-nothing
+  - 2026-11-20-tc-cli-doctor-keeps-a-migrated-alias-pointer
+  - 2026-11-20-tc-records-migrate-refuses-a-separate-case-colliding-target
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -39,6 +53,21 @@ Migration refuses before it writes and leaves a working tree: any entry at a tar
 - 0xLeif decided "Re-approval of fix-m1-migrate-refuses-before-writing with the #263 case file added to its paths (native approval)": "Yes, record it" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval after his relayed 'A' (hc t4c through fable-lead, about 01:24Z on 2026-11-20): keep what he approved, the file gets replaced, the preview says so, #263's test is updated to match, one test file added through a send-back t4b runs, no wording change. The one path added is .chough/cases/records.migrate-case-colliding-target.cases.toml; deltas unchanged (cli 15ebb4b32eec2b93, records 37c36f2822fdb97c). The scope stands on his 'Approve with the 3 choices' (2026-11-19), item 8 (2026-11-20) and standing OK (d), as recorded before); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-m1-migrate-refuses-before-writing as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test migrate -- --exact a_returning_edited_session_is_refused_naming_it_and_its_receipt for TC-records-migrate-judges-returning-files-by-the-receipt: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-migrate-judges-returning-files-by-the-receipt.md)
+- [Ran cargo test --locked --test migrate -- --exact returning_files_with_other_bytes_are_all_named_in_one_refusal for TC-records-migrate-names-every-returning-file-in-one-refusal: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-migrate-names-every-returning-file-in-one-refusal.md)
+- [Ran cargo test --locked --test migrate -- --exact a_returning_file_with_its_receipt_bytes_is_removed_as_already_migrated for TC-records-migrate-removes-a-returning-file-as-already-migrated: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-migrate-removes-a-returning-file-as-already.md)
+- [Ran cargo test --locked --test migrate -- --exact an_edited_committed_receipt_is_refused_until_committed_or_restored for TC-records-migrate-refuses-an-edited-committed-receipt: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-migrate-refuses-an-edited-committed-receipt.md)
+- [Ran cargo test --locked --test migrate -- --exact an_uncommitted_receipt_judges_nothing_and_a_committed_one_does for TC-records-migrate-an-uncommitted-receipt-judges-nothing: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-migrate-an-uncommitted-receipt-judges-nothing.md)
+- [Ran cargo test --locked --test migrate -- --exact an_entry_in_the_receipt_folder_that_is_no_receipt_is_refused_without_waiting for TC-records-migrate-refuses-an-entry-that-is-no-receipt: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-migrate-refuses-an-entry-that-is-no-receipt.md)
+- [Ran cargo test --locked --test migrate -- --exact a_directory_unreadable_file_or_fifo_at_a_target_is_refused_without_waiting for TC-records-migrate-a-special-target-refuses-before-writing: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-migrate-a-special-target-refuses-before-writing.md)
+- [Ran cargo test --locked --test migrate -- --exact of_three_applies_of_one_digest_only_one_applies for TC-records-migrate-one-of-several-applies: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-migrate-one-of-several-applies.md)
+- [Ran cargo test --locked --test migrate -- --exact a_new_0_5_x_bug_on_a_migrated_tree_migrates_with_the_index_rebuilt_in_place for TC-records-migrate-a-new-bug-rebuilds-the-index-in-place: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-migrate-a-new-bug-rebuilds-the-index-in-place.md)
+- [Ran cargo test --locked --test migrate -- --exact a_0_5_x_record_whose_id_a_record_holds_as_an_alias_is_refused for TC-records-migrate-refuses-a-record-whose-id-is-held: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-migrate-refuses-a-record-whose-id-is-held.md)
+- [Ran cargo test --locked --test migrate -- --exact a_returning_legacy_checkpoint_holding_another_session_is_refused for TC-records-migrate-refuses-a-returning-legacy-checkpoint: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-migrate-refuses-a-returning-legacy-checkpoint.md)
+- [Ran cargo test --locked --test migrate -- --exact an_apply_whose_planned_write_fails_leaves_every_0_5_x_file for TC-records-migrate-a-failed-write-removes-nothing: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-migrate-a-failed-write-removes-nothing.md)
+- [Ran cargo test --locked --test doctor -- --exact doctor_fix_keeps_a_pointer_that_names_an_open_session_by_alias for TC-cli-doctor-keeps-a-migrated-alias-pointer: not-run (exit 101, tests run 0).](evidence/2026-11-20-tc-cli-doctor-keeps-a-migrated-alias-pointer.md)
+- [Ran cargo test --locked --test migrate_knowledge -- --exact a_separate_case_colliding_target_is_replaced_only_as_previewed for TC-records-migrate-refuses-a-separate-case-colliding-target: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-migrate-refuses-a-separate-case-colliding-target.md)
 
 ## Open threads
 
