@@ -989,13 +989,23 @@ fn uncommitted_findings(root: &Path, tracked: &[String]) -> Result<Vec<Finding>>
             let Ok(meta) = std::fs::symlink_metadata(root.join(&path)) else {
                 continue;
             };
-            use std::os::unix::fs::FileTypeExt;
             let kind = meta.file_type();
-            let what = if kind.is_fifo() {
-                "a FIFO"
-            } else if kind.is_socket() {
-                "a socket"
-            } else if kind.is_dir() {
+            // A FIFO and a socket are Unix types; elsewhere only a folder is reported.
+            #[cfg(unix)]
+            let what = {
+                use std::os::unix::fs::FileTypeExt;
+                if kind.is_fifo() {
+                    "a FIFO"
+                } else if kind.is_socket() {
+                    "a socket"
+                } else if kind.is_dir() {
+                    "a folder"
+                } else {
+                    continue;
+                }
+            };
+            #[cfg(not(unix))]
+            let what = if kind.is_dir() {
                 "a folder"
             } else {
                 continue;
