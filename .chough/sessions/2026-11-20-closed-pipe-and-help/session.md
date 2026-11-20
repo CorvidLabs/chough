@@ -21,6 +21,10 @@ observations:
   - 2026-11-20-tc-cli-a-write-into-a-closed-pipe-saves-and-exits-0
   - 2026-11-20-tc-cli-a-refusal-with-both-streams-closed-exits-1
   - 2026-11-20-tc-cli-help-after-the-global-options
+  - 2026-11-20-tc-cli-a-closed-pipe-ends-a-command-with-its-own-code-ea01b6
+  - 2026-11-20-tc-cli-a-write-into-a-closed-pipe-saves-and-exits-0-0e91de
+  - 2026-11-20-tc-cli-a-refusal-with-both-streams-closed-exits-1-b38e60
+  - 2026-11-20-tc-cli-help-after-the-global-options-7ca4da
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -45,6 +49,10 @@ A closed standard output ends a command quietly with its own exit code, and help
 - [Ran cargo test --locked --test cli -- --exact a_write_into_a_closed_pipe_saves_and_exits_0 for TC-cli-a-write-into-a-closed-pipe-saves-and-exits-0: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-write-into-a-closed-pipe-saves-and-exits-0.md)
 - [Ran cargo test --locked --test cli -- --exact a_refusal_with_both_streams_closed_exits_as_it_would for TC-cli-a-refusal-with-both-streams-closed-exits-1: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-refusal-with-both-streams-closed-exits-1.md)
 - [Ran cargo test --locked --test cli -- --exact help_after_the_global_options_prints_the_top_level_help for TC-cli-help-after-the-global-options: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-help-after-the-global-options.md)
+- [Ran cargo test --locked --test cli -- --exact a_command_whose_reader_has_gone_exits_with_its_own_code for TC-cli-a-closed-pipe-ends-a-command-with-its-own-code: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-closed-pipe-ends-a-command-with-its-own-code-ea01b6.md)
+- [Ran cargo test --locked --test cli -- --exact a_write_into_a_closed_pipe_saves_and_exits_0 for TC-cli-a-write-into-a-closed-pipe-saves-and-exits-0: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-write-into-a-closed-pipe-saves-and-exits-0-0e91de.md)
+- [Ran cargo test --locked --test cli -- --exact a_refusal_with_both_streams_closed_exits_as_it_would for TC-cli-a-refusal-with-both-streams-closed-exits-1: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-refusal-with-both-streams-closed-exits-1-b38e60.md)
+- [Ran cargo test --locked --test cli -- --exact help_after_the_global_options_prints_the_top_level_help for TC-cli-help-after-the-global-options: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-help-after-the-global-options-7ca4da.md)
 
 ## Open threads
 
