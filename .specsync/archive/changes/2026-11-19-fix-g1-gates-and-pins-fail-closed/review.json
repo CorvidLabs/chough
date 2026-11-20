@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-g1-gates-and-pins-fail-closed",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "41d486ebb63ffd6909f439780d13fb5940d4af28",
+  "contract_digest": "a15e34e272d322d03c0769ea565f6c20080b2c332c291fd4e99ccd86521e0c62",
+  "execution_digest": "87f20299358ca934f6dba016ad951f512b45fca24951af73a20d813352537ecb",
+  "workspace_digest": "95c382ca2ebe07814576401fd9f89303c99b42b0f77a525fa241b8111d733dac",
+  "timestamp": 1795117413,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Yes, record and ship",
+    "where": "Leif's answer in this Claude Code session (hc t4b), 2026-11-19, to recording his implementation review of #413 at 41d486eb and shipping it. Under standing OK 6(b) (his 'Go' to the six rules, relayed by hc t4c): tester PASS at 41d486eb, corvid-agent approved 41d486eb, deltas unchanged since 3438bbca, checked by fable-lead",
+    "recorded_by": "fable-t4b"
+  }
+}

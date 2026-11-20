@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "readiness-report-before-change-approval",
+  "slug": "readiness-report-before-change-approval",
+  "title": "Readiness report before change approval",
+  "description": "Readiness report before change approval",
+  "kind": "feature",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "cf2ff72c9f6f67cfa050cd92562dcc1b1b4f52c8",
+  "created_at": 1794689756,
+  "updated_at": 1795102703,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "hi/drive.md",
+    "INTENT.md",
+    "src/main.rs",
+    "src/change.rs",
+    "src/ready.rs",
+    "tests/ready.rs",
+    "tests/package.rs",
+    "tests/skill_releases.rs",
+    "tests/fixtures/skill-releases/manifest.json",
+    ".chough/cases/cli.change-ready.cases.toml",
+    "CHANGELOG.md",
+    "docs/cli.md",
+    "README.md",
+    "specs/cli/requirements.md",
+    "specs/cli/cli.spec.md",
+    "skills/chough-workflow/references/stages.md",
+    "skills/chough-workflow/references/plan.md",
+    ".agents/skills/chough-workflow/references/stages.md",
+    ".agents/skills/chough-workflow/references/plan.md",
+    "src/skill.rs",
+    "changelog.d/2026-11-14-readiness-report-before-change-approval.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "chough change ready exits 0 when nothing is missing and 1 when a finding remains, and each finding names the command that fixes it."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "cli lessons: change check refuses while tasks.md has unchecked boxes, so human gates stay plain text; an approved delta is frozen; pub(crate) is reported as an undocumented export, so new items stay pub(super); do not list .chough/sessions in affected paths.",
+    "public_contract": "yes"
+  }
+}

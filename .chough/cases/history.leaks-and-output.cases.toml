@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-session-use-names-a-session-only-when-clean"
+title = "session use, --session and CHOUGH_SESSION with a name holding a token or a control character refuse naming what it holds, never the name"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-history-006"]
+paths = ["src/main.rs", "src/sessions.rs", "tests/session_pin.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/session_pin.rs::a_session_name_is_shown_only_when_clean passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "session_pin"
+test = "a_session_name_is_shown_only_when_clean"
