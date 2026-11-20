@@ -679,7 +679,7 @@ fn records_in(
 
 /// Each ID that is the `id` or an alias of a bug, story or open session record, with the
 /// records that hold it, for `chough migrate` (REQ-records-003, REQ-records-009).
-pub(crate) fn alias_holders(root: &Path) -> BTreeMap<String, Vec<String>> {
+pub(super) fn alias_holders(root: &Path) -> BTreeMap<String, Vec<String>> {
     let mut holders: BTreeMap<String, Vec<String>> = BTreeMap::new();
     for (path, record) in records_in(root, crate::bugs::BUGS_DIR, false)
         .into_iter()

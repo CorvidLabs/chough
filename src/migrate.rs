@@ -535,10 +535,7 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
                 view["apply_refused"] = json!({
                     "refusal": "refused:change-open",
                     "changes": open,
-                    "why": format!(
-                        "native change {} is not archived, and `--apply` refuses while a change is open; archive it (or finish it) first, then run `chough migrate` again",
-                        open.join(", ")
-                    ),
+                    "why": change_open_why(&open, "`--apply` refuses while a change is open"),
                 });
             }
             // #339: a plan the apply would refuse is not offered to apply, in JSON either.
@@ -1200,8 +1197,11 @@ fn apply(
     let open = open_native_changes(root)?;
     ensure!(
         open.is_empty(),
-        "refused:change-open: native change {} is not archived, and the migration never runs while a change is open, so nothing was written.\nArchive it (or finish it) first, then run `chough migrate` again.",
-        open.join(", ")
+        "refused:change-open: {}",
+        change_open_why(
+            &open,
+            "the migration never runs while a change is open, so nothing was written"
+        )
     );
     let consent = match consent {
         Some(consent) if !consent.trim().is_empty() => {
@@ -1511,6 +1511,20 @@ fn write_planned(root: &Path, written: &Planned, written_now: &mut Vec<String>) 
         written.path
     );
     Ok(())
+}
+
+/// Why the apply refuses while native changes are open: each by name, one per line, and
+/// the command that finishes and archives one.
+fn change_open_why(open: &[String], refuses: &str) -> String {
+    let (these, are) = if open.len() == 1 {
+        ("this native change", "is")
+    } else {
+        ("these native changes", "are")
+    };
+    format!(
+        "{these} {are} not archived, and {refuses}:\n{}\nFinish each and archive it with `chough change ship <id>` (or archive it with SpecSync), then run `chough migrate` again.",
+        open.iter().map(|id| format!("- {id}")).collect::<Vec<_>>().join("\n")
+    )
 }
 
 /// Every native change with a workspace under `.specsync/changes/`: not archived.
@@ -2651,6 +2665,37 @@ fn knowledge_0_5(root: &Path, earlier: &Carried) -> Result<Carried> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// REQ-records-009 (#370): the receipts released builds wrote read by the rule:
+    /// Chough's own, from 0.6.0 (#239), and one the v0.6.1 build wrote on a synthetic
+    /// project. Each lists the files read with their SHA-256 under `## Before`.
+    #[test]
+    fn receipts_from_released_builds_list_the_files_read() {
+        for (build, text) in [
+            (
+                "0.6.0",
+                include_str!("../.chough/archive/migrations/2026-11-12-from-0-5.md"),
+            ),
+            (
+                "0.6.1",
+                include_str!("../tests/fixtures/migrate/receipts/from-0-6-1.md"),
+            ),
+        ] {
+            let read = files_read(text).unwrap_or_else(|| panic!("{build}: no files read"));
+            assert!(!read.is_empty(), "{build}: lists no file read");
+            for (path, sha) in &read {
+                assert!(
+                    path.starts_with(".chough/") || path.starts_with("knowledge/"),
+                    "{build}: {path}"
+                );
+                assert!(
+                    sha.len() == 64 && sha.bytes().all(|byte| byte.is_ascii_hexdigit()),
+                    "{build}: {path} {sha}"
+                );
+            }
+            assert!(!carried_into(text).is_empty(), "{build}: no removed file carried");
+        }
+    }
 
     #[test]
     fn a_written_record_is_redacted_field_by_field_and_counted() {

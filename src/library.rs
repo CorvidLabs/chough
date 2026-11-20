@@ -279,7 +279,7 @@ fn files_0_5(root: &Path, relative: &str, found: &mut Vec<(String, bool)>) -> Re
 
 /// Whether `relative` is one of the files Chough generates in the knowledge directory,
 /// `index.md` and `journal/feed.xml` (REQ-cli-043), by its exact name.
-pub(crate) fn is_generated(root: &Path, relative: &str) -> Result<bool> {
+pub(super) fn is_generated(root: &Path, relative: &str) -> Result<bool> {
     let dir = prefs::effective(root, "library-dir")?.0;
     let dir = dir.trim_end_matches('/');
     Ok(relative == format!("{dir}/index.md")
