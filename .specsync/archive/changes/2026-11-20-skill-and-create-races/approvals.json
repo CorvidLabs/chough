@@ -1,0 +1,170 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795165756,
+      "digest": "7b19de64caba0cb41fb524133068a4327ea8eef8ec9076cad00079911a7e523f",
+      "note": "Approved by 0xLeif at the Chough gate \"Approve the scope of skill-and-create-races\": \"Approve\" (Claude Code chat answer, relayed by his planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-19 about 14:12Z, on D2 skill-and-create-races at 2bf6318 with the four recommended choices; recorded at the batch start on that text, the draft carried onto main 056cbb80 by a merge with no delta word changed). Relayed and recorded by chough-fixer-t4g at 2026-11-20T09:09:15Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "skill-and-create-races",
+        "title": "Skill and create races",
+        "description": "skill and create races",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.skill-and-create-races.cases.toml",
+          ".chough/cases/history.skill-and-create-races.cases.toml",
+          "changelog.d/2026-11-19-skill-and-create-races.md",
+          "docs/cli.md",
+          "src/doctor.rs",
+          "src/main.rs",
+          "src/records.rs",
+          "src/skill.rs",
+          "tests/cli.rs",
+          "tests/doctor.rs",
+          "tests/parallel.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A CRLF skill copy counts as the bundle file it equals and is refreshed with CRLF line breaks, and a file skill update cannot write is refused naming it, never assertion text (#373). Parallel skill update and init runs each succeed, or refuse only as a run on its own would (#386). Plain skill status and update skip a host folder that cannot be inspected, report it relative to the project and update the rest, exiting 0, while --host for it refuses (#403). chough doctor reports an untracked record under .chough/ that its reader refuses as unreadable, with the file and the reason (#408)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The issues set the scope: #373 (lead-F5, F6), #386 (s3-F2, F7) as \"the same create-new race\", #403 and #408, with fable-lead adding uncommitted unreadable records beside #408. CRLF matching changes REQ-cli-016's criterion that newline changes stay edited, so it is a choice for Leif. Based on main; it modifies no requirement #407, D1, L2 or #311 modifies, and #408 is a new requirement so it does not wait on D1. No new dependency. Failing tests first.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "8bc54e8f8c095bd68c1267cfa9c3ad28c890717793bf2b41c5ef4e558509bcf6",
+        "history": "c0e1e7d2d23f35bb160f007813e29aa75e64ae81180f4f13972caf6e1d3f2347"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-001": "387ccb0f2125cac81304910fc3495e0734fbdbef049a268eb14a0a577f0649e5",
+        "cli: REQUIREMENT REQ-cli-016": "7ca3af94603db019ce0133fe8a424be7b021f07a8d522bf5a3be1c6a60ef89c2"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve",
+        "where": "Claude Code chat answer, relayed by his planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-19 about 14:12Z, on D2 skill-and-create-races at 2bf6318 with the four recommended choices; recorded at the batch start on that text, the draft carried onto main 056cbb80 by a merge with no delta word changed",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795184587,
+      "digest": "39bd5415dd0a175da7b7f8e001f31331188a1bb98c8c638fd03f398cdc378f35",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of skill-and-create-races with tests/skill_releases.rs added\": \"Yes (Recommended)\" (Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 14:13Z, relayed by hc t4c through fable-lead (hc t53); the question as shown: 'Chough D2: ... May D2's scope add tests/skill_releases.rs so the test can follow your rule? No wording changes.'; on this text: tests/skill_releases.rs joins the declared paths (11 to 12) with no sentence change, the deltas byte-identical to those approved at f37fc73). Relayed and recorded by chough-fixer-t4g at 2026-11-20T14:23:06Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "skill-and-create-races",
+        "title": "Skill and create races",
+        "description": "skill and create races",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.skill-and-create-races.cases.toml",
+          ".chough/cases/history.skill-and-create-races.cases.toml",
+          "changelog.d/2026-11-19-skill-and-create-races.md",
+          "docs/cli.md",
+          "src/doctor.rs",
+          "src/main.rs",
+          "src/records.rs",
+          "src/skill.rs",
+          "tests/cli.rs",
+          "tests/doctor.rs",
+          "tests/parallel.rs",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A CRLF skill copy counts as the bundle file it equals and is refreshed with CRLF line breaks, and a file skill update cannot write is refused naming it, never assertion text (#373). Parallel skill update and init runs each succeed, or refuse only as a run on its own would (#386). Plain skill status and update skip a host folder that cannot be inspected, report it relative to the project and update the rest, exiting 0, while --host for it refuses (#403). chough doctor reports an untracked record under .chough/ that its reader refuses as unreadable, with the file and the reason (#408)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The issues set the scope: #373 (lead-F5, F6), #386 (s3-F2, F7) as \"the same create-new race\", #403 and #408, with fable-lead adding uncommitted unreadable records beside #408. CRLF matching changes REQ-cli-016's criterion that newline changes stay edited, so it is a choice for Leif. Based on main; it modifies no requirement #407, D1, L2 or #311 modifies, and #408 is a new requirement so it does not wait on D1. No new dependency. Failing tests first.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "8bc54e8f8c095bd68c1267cfa9c3ad28c890717793bf2b41c5ef4e558509bcf6",
+        "history": "c0e1e7d2d23f35bb160f007813e29aa75e64ae81180f4f13972caf6e1d3f2347"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-001": "387ccb0f2125cac81304910fc3495e0734fbdbef049a268eb14a0a577f0649e5",
+        "cli: REQUIREMENT REQ-cli-016": "7ca3af94603db019ce0133fe8a424be7b021f07a8d522bf5a3be1c6a60ef89c2"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes (Recommended)",
+        "where": "Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 14:13Z, relayed by hc t4c through fable-lead (hc t53); the question as shown: 'Chough D2: ... May D2's scope add tests/skill_releases.rs so the test can follow your rule? No wording changes.'; on this text: tests/skill_releases.rs joins the declared paths (11 to 12) with no sentence change, the deltas byte-identical to those approved at f37fc73",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795188717,
+      "digest": "059257f952e24027400301d26668c017d34bf3dfa54830b6543b7cda5c04b7ec",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "skill-and-create-races",
+      "actor": "chough-fixer",
+      "reason": "add tests/skill_releases.rs, whose CRLF test follows REQ-cli-016 (run by the fixer on Leif's relayed word, via t4c, 2026-11-20)",
+      "timestamp": 1795184565,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true,
+      "applied_items": [
+        {
+          "module": "cli",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-cli-016",
+          "content": "Host skill installation. The helper SHALL install the complete skill bundle once for each distinct supported host directory requested, defaulting to `.agents/skills`, with the claude host sharing `.agents/skills`; SHALL report each installed file as current, edited, known-outdated or missing; SHALL update only missing files and files byte-identical to a known earlier bundle, where a copy whose bytes equal a bundle file's once each CRLF line break is read as LF counts as that bundle file, current or known-outdated, and `chough skill update` SHALL write its replacement with CRLF line breaks, so a checkout that converts line endings is still recognised and updated (#373); SHALL report an installed legacy `.claude/skills/chough-workflow/` copy as legacy without writing or deleting it during init, status or update; and SHALL remove legacy files only through an explicit remove-legacy command that requires the shared copy, removes only files byte-identical to the current or a known earlier bundle and keeps every other file. While an installed skill file is byte-identical to a known earlier bundle, `chough doctor` SHALL report it as `skill_outdated`, naming the file and `chough skill update`, with no fix of its own, since doctor never writes the skill, and `chough next` SHALL show one line, ``Skill files are outdated: run `chough skill update` ``, and give the count as `skill_outdated`; neither SHALL report a current file, a missing file or a file a person edited. A host's skill directory or a skill file that cannot be inspected, such as one reached through a symbolic link, SHALL be skipped; doctor SHALL report such a directory as the advisory finding `skill_uninspected`, and it SHALL NOT hide an outdated file elsewhere. `chough skill status` and `chough skill update` without `--host` SHALL skip such a directory too, report it as `uninspected` with its directory relative to the project and why, and report and update every other host, exiting 0; given `--host` for that host they SHALL refuse, naming the host and that directory, never an absolute path (#403). Several `chough skill update` runs at once SHALL each succeed: a missing bundle file that another run writes first counts as added when its bytes are the bundle's, and is preserved and reported as edited otherwise (#386); a file it cannot write SHALL be refused naming the file, relative to the project, and the reason, never internal assertion text (#373). Trace: FLOW-1, LIFE-4, LIFE-12, LIFE-13, LIFE-14.\n\nAcceptance Criteria\n- Installing for the claude host, alone or together with openai, creates only `.agents/skills/chough-workflow/` with the complete bundle and no `.claude/` directory, and repeating the install preserves edits.\n- A bundle file byte-identical to one from a known earlier build is updated, while an edited file is reported and left unchanged.\n- An installed `.claude/skills/chough-workflow/` copy is reported as legacy by status and update and stays byte-identical; remove-legacy refuses with nothing removed while the shared copy is missing, and otherwise removes current and known-outdated legacy files and keeps edited or unknown ones.\n\n- For the exact source bundle bytes pinned to v0.1.0 c03d41956ef1d9f8380f02034f03d42bf52bc174, v0.2.0 edbc3c1adecebf6a1378a731965c3bfe8c8217df, v0.3.0 4d65542ff583ee2478f7d98c1dd4434a960e9dc1, v0.4.0 69950c7a9253230aeeee3bac0d0d6b580e291aad and v0.5.0 455cb643cd91a9c804afdf5566e3889abf1bde49, each of the24 manifest-named files reads current or known-outdated and skill update refreshes its pristine copy. This criterion covers those pinned bundles only, not unlisted future release contents.\n- Recognition matches both the manifest file name and exact byte SHA256; user-edited bytes, including a one-byte change and a line break added or removed, stay edited and retain exact bytes and modes after update, while a copy whose only difference is CRLF line breaks reads as the bundle file it equals. Host sharing/routing, missing/current behavior and explicit legacy handling above remain unchanged.\n- A copy of each bundle file with CRLF line breaks reads current or known-outdated as its LF bytes do, and `chough skill update` refreshes a known-outdated one with CRLF line breaks (#373).\n- With `.codex/skills` a symbolic link to `../.agents/skills`, plain `chough skill status` and `chough skill update` exit 0, report the codex directory `uninspected`, naming `.codex/skills` and why, and update an outdated `.agents/skills` copy; `chough skill update --host codex` refuses naming the host and `.codex/skills`; no output holds an absolute path (#403).\n- Eight `chough skill update` runs at once over missing bundle files all exit 0, every file ends current, and no output holds `Condition failed` or `File exists`; a missing file in a folder that cannot be written is refused naming the file (#386, #373).",
+          "previous_content": "Host skill installation. The helper SHALL install the complete skill bundle once for each distinct supported host directory requested, defaulting to `.agents/skills`, with the claude host sharing `.agents/skills`; SHALL report each installed file as current, edited, known-outdated or missing; SHALL update only missing files and files byte-identical to a known earlier bundle; SHALL report an installed legacy `.claude/skills/chough-workflow/` copy as legacy without writing or deleting it during init, status or update; and SHALL remove legacy files only through an explicit remove-legacy command that requires the shared copy, removes only files byte-identical to the current or a known earlier bundle and keeps every other file. While an installed skill file is byte-identical to a known earlier bundle, `chough doctor` SHALL report it as `skill_outdated`, naming the file and `chough skill update`, with no fix of its own, since doctor never writes the skill, and `chough next` SHALL show one line, ``Skill files are outdated: run `chough skill update` ``, and give the count as `skill_outdated`; neither SHALL report a current file, a missing file or a file a person edited. A host's skill directory or a skill file that cannot be inspected, such as one reached through a symbolic link, SHALL be skipped; doctor SHALL report such a directory as the advisory finding `skill_uninspected`, and it SHALL NOT hide an outdated file elsewhere. Trace: FLOW-1, LIFE-4, LIFE-12, LIFE-13, LIFE-14.\n\nAcceptance Criteria\n- Installing for the claude host, alone or together with openai, creates only `.agents/skills/chough-workflow/` with the complete bundle and no `.claude/` directory, and repeating the install preserves edits.\n- A bundle file byte-identical to one from a known earlier build is updated, while an edited file is reported and left unchanged.\n- An installed `.claude/skills/chough-workflow/` copy is reported as legacy by status and update and stays byte-identical; remove-legacy refuses with nothing removed while the shared copy is missing, and otherwise removes current and known-outdated legacy files and keeps edited or unknown ones.\n\n- For the exact source bundle bytes pinned to v0.1.0 c03d41956ef1d9f8380f02034f03d42bf52bc174, v0.2.0 edbc3c1adecebf6a1378a731965c3bfe8c8217df, v0.3.0 4d65542ff583ee2478f7d98c1dd4434a960e9dc1, v0.4.0 69950c7a9253230aeeee3bac0d0d6b580e291aad and v0.5.0 455cb643cd91a9c804afdf5566e3889abf1bde49, each of the24 manifest-named files reads current or known-outdated and skill update refreshes its pristine copy. This criterion covers those pinned bundles only, not unlisted future release contents.\n- Recognition matches both the manifest file name and exact byte SHA256; user-edited bytes, including one-byte/newline changes, stay edited and retain exact bytes and modes after update. Host sharing/routing, missing/current behavior and explicit legacy handling above remain unchanged."
+        },
+        {
+          "module": "cli",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-cli-001",
+          "content": "The helper SHALL initialize a resumable session and discoverable workflow skill\nwithout replacing existing files. It SHALL write neither of SpecSync's files, `.specsync/config.toml` and `.specsync/sdd.json`, and SHALL print the advice of REQ-records-014 while they leave Chough's records in SpecSync's verification, the advice to narrow a whole-repository `source_dirs` included. Several `chough init` runs at once in one project SHALL each succeed or refuse only as a run on its own would: a file another run wrote first is kept and reported preserved, as one a person made is, and an error SHALL name the file it concerns, relative to the project (#386). Trace: LIFE-4, LIFE-6.\n\nAcceptance: repeated init preserves edited session and skill bytes; missing bundle\nfiles can be added without overwriting neighbors. A session whose files were\nedited since init is left byte-identical on a later init, and init never removes\nor rewrites a file the user or a previous run created.\n\nAcceptance Criteria\n- repeated init preserves edited session and skill bytes\n- missing bundle files can be added without overwriting neighbors\n- a session whose files were edited since init stays byte-identical on later init\n- init in a project whose SpecSync `source_dirs` is `[\".\"]` leaves `.specsync/config.toml` byte-identical and prints the narrowing advice of REQ-records-014\n- Six `chough init --objective` runs at once in a fresh repository each exit 0, or refuse only because a session is already open, naming `chough session new`; none fails on a file another run wrote, and no output holds `File exists` (#386).",
+          "previous_content": "The helper SHALL initialize a resumable session and discoverable workflow skill\nwithout replacing existing files. It SHALL write neither of SpecSync's files, `.specsync/config.toml` and `.specsync/sdd.json`, and SHALL print the advice of REQ-records-014 while they leave Chough's records in SpecSync's verification, the advice to narrow a whole-repository `source_dirs` included. Trace: LIFE-4, LIFE-6.\n\nAcceptance: repeated init preserves edited session and skill bytes; missing bundle\nfiles can be added without overwriting neighbors. A session whose files were\nedited since init is left byte-identical on a later init, and init never removes\nor rewrites a file the user or a previous run created.\n\nAcceptance Criteria\n- repeated init preserves edited session and skill bytes\n- missing bundle files can be added without overwriting neighbors\n- a session whose files were edited since init stays byte-identical on later init\n- init in a project whose SpecSync `source_dirs` is `[\".\"]` leaves `.specsync/config.toml` byte-identical and prints the narrowing advice of REQ-records-014"
+        },
+        {
+          "module": "history",
+          "operation": "added",
+          "target": "requirement",
+          "key": "REQ-history-016",
+          "content": "Uncommitted records read. Besides the committed records REQ-history-012 reads, `chough doctor` SHALL read every entry that Git does not track and does not ignore in the folders under `.chough/` that Chough reads records from, such as a session's folder, its `evidence/` and inbox, `bugs/` and the archived stories, for example a new session, an evidence entry a killed run left empty or a bug cut off mid-write, and SHALL report one its reader refuses as `unreadable`, the finding REQ-history-012 defines for a committed record, naming the file, relative to the project, and the reader's reason, with the recovery `chough session list` gives for a session, `chough session shelve <id>`, so a record that stops `chough next` and `chough status` is never one doctor is silent about (#408). It SHALL read such an entry only when it is a regular file, opened so that nothing can make the read wait, and SHALL report a FIFO, a socket or a folder there as an unreadable record by its project-relative path, without opening it. Trace: DRIVE-17.\n\nAcceptance Criteria\n- An uncommitted session whose stage is unknown, an uncommitted 0-byte evidence entry and an uncommitted bug cut off inside its front matter each give an `unreadable` finding naming the file and the reader's reason, the session's naming `chough session shelve <id>`; no output holds an absolute path.\n- A FIFO, a socket and a folder at an evidence entry's name, none tracked, each give an `unreadable` finding naming it relative to the project, and `chough doctor` finishes within 10 seconds without opening the FIFO.\n- A file under `.chough/local/`, which Git ignores, gives no finding, and a committed unreadable record is still reported once."
+        }
+      ],
+      "applied_modules": [
+        "cli",
+        "history"
+      ]
+    }
+  ]
+}

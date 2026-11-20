@@ -1,0 +1,58 @@
+profile = "chough-testing/1"
+module = "history"
+
+# GitHub #408: doctor reads the records Git neither tracks nor ignores (D2, skill-and-create-races).
+
+[[case]]
+id = "TC-history-doctor-reads-uncommitted-records"
+title = "An uncommitted session with an unknown stage, an uncommitted 0-byte evidence entry and an uncommitted cut-off bug each give unreadable naming the file and the reason, the session naming chough session shelve; no absolute path"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-016"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_reads_uncommitted_records passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_reads_uncommitted_records"
+
+[[case]]
+id = "TC-history-doctor-names-a-special-file-without-opening-it"
+title = "A FIFO, a socket and a folder at an evidence entry name, none tracked, each give unreadable naming it relative to the project, and doctor finishes within 10 seconds without opening the FIFO"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-016"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_names_a_special_file_without_opening_it passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_names_a_special_file_without_opening_it"
+
+[[case]]
+id = "TC-history-doctor-skips-ignored-and-reports-once"
+title = "A file under .chough/local/ and an untracked macOS metadata file give no finding, and a committed unreadable record is still reported once"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-016"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_skips_ignored_files_and_reports_a_committed_record_once passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_skips_ignored_files_and_reports_a_committed_record_once"

@@ -930,6 +930,107 @@ fn oversize_findings(root: &Path, files: &[String]) -> Result<Vec<Finding>> {
     Ok(found)
 }
 
+/// Each record Git neither tracks nor ignores under `.chough/` that its reader refuses
+/// (REQ-history-016, #408): a regular file is read as a committed one is, and a FIFO, a
+/// socket or a folder at a record's name, which Git never lists, is found by a walk that
+/// follows no link and reported by its type without being opened. A macOS metadata file
+/// is no record (REQ-records-015).
+fn uncommitted_findings(root: &Path, tracked: &[String]) -> Result<Vec<Finding>> {
+    let knowledge = crate::prefs::effective(root, "library-dir")?.0;
+    let tracked: std::collections::BTreeSet<&str> = tracked.iter().map(String::as_str).collect();
+    let others = paths_of(git(
+        root,
+        &[
+            "ls-files",
+            "-z",
+            "--others",
+            "--exclude-standard",
+            "--",
+            ".chough",
+        ],
+    ));
+    let metadata = |path: &str| {
+        path.rsplit('/')
+            .next()
+            .is_some_and(crate::evidence::is_os_metadata)
+    };
+    let regular: Vec<String> = others
+        .into_iter()
+        .filter(|path| !tracked.contains(path.as_str()) && !metadata(path))
+        .collect();
+    let mut found = unreadable_findings(root, &regular)?;
+    // The entries Git never lists, by a walk of the folders the readers read.
+    let mut folders = vec![
+        ".chough/bugs".to_string(),
+        ".chough/archive/sessions".to_string(),
+    ];
+    if let Ok(entries) = std::fs::read_dir(root.join(".chough/sessions")) {
+        for entry in entries.flatten() {
+            if entry.file_type().is_ok_and(|kind| kind.is_dir()) {
+                let id = entry.file_name().to_string_lossy().into_owned();
+                folders.push(format!(".chough/sessions/{id}"));
+                folders.push(format!(".chough/sessions/{id}/evidence"));
+                folders.push(format!(".chough/sessions/{id}/agent/inbox"));
+            }
+        }
+    }
+    for folder in folders {
+        let Ok(entries) = std::fs::read_dir(root.join(&folder)) else {
+            continue;
+        };
+        for entry in entries.flatten() {
+            let path = format!("{folder}/{}", entry.file_name().to_string_lossy());
+            if tracked.contains(path.as_str()) || metadata(&path) {
+                continue;
+            }
+            let Some((_, false)) = bound_of(&path, &knowledge) else {
+                continue;
+            };
+            let Ok(meta) = std::fs::symlink_metadata(root.join(&path)) else {
+                continue;
+            };
+            let kind = meta.file_type();
+            // A FIFO and a socket are Unix types; elsewhere only a folder is reported.
+            #[cfg(unix)]
+            let what = {
+                use std::os::unix::fs::FileTypeExt;
+                if kind.is_fifo() {
+                    "a FIFO"
+                } else if kind.is_socket() {
+                    "a socket"
+                } else if kind.is_dir() {
+                    "a folder"
+                } else {
+                    continue;
+                }
+            };
+            #[cfg(not(unix))]
+            let what = if kind.is_dir() {
+                "a folder"
+            } else {
+                continue;
+            };
+            if git(root, &["check-ignore", "-q", "--", &path]).is_some() {
+                continue;
+            }
+            let mut finding = Finding::new(
+                Kind::Unreadable,
+                &path,
+                "none: remove it or move it aside, since a record is a regular file".into(),
+                false,
+            );
+            finding.blocked = Some(format!(
+                "{path} cannot be read; doctor never rewrites a record"
+            ));
+            finding.detail = Some(json!({
+                "error": format!("{path} is {what}, not a regular file; doctor did not open it")
+            }));
+            found.push(finding);
+        }
+    }
+    Ok(found)
+}
+
 /// Each committed Chough record under `.chough/` that its reader refuses, such as front
 /// matter outside the subset, with the file and the reader's reason (REQ-history-012).
 /// It has no fix: a person fixes the line in a reviewed change, or sets a session aside
@@ -1549,6 +1650,7 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     found.extend(oversize_findings(root, &files)?);
     if migrated {
         found.extend(unreadable_findings(root, &files)?);
+        found.extend(uncommitted_findings(root, &files)?);
     }
     found.extend(records_in_verification(root));
     found.extend(merge_drivers(root)?);
