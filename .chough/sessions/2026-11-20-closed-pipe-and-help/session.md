@@ -16,7 +16,11 @@ requirements: [REQ-cli-021, REQ-cli-019]
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-20-tc-cli-a-closed-pipe-ends-a-command-with-its-own-code
+  - 2026-11-20-tc-cli-a-write-into-a-closed-pipe-saves-and-exits-0
+  - 2026-11-20-tc-cli-a-refusal-with-both-streams-closed-exits-1
+  - 2026-11-20-tc-cli-help-after-the-global-options
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -36,6 +40,11 @@ A closed standard output ends a command quietly with its own exit code, and help
 - 0xLeif decided "Approve the scope of closed-pipe-and-help": "Standing OK, tell me after" (Leif's standing OK for scope approvals, from his Claude Code question dialog in his planning session (hc t4c), 2026-11-20 ('Standing OK, tell me after'), relayed via t4c, which confirmed on 2026-11-20 that E1 closed-pipe-and-help at 8e562c06 has only the recommended choice, changes no requirement wording and adds no refusal; recorded after one interview correction SpecSync required for a no-spec change (public_contract yes to no), which changes none of those three); recorded by chough-fixer-t4n; a relayed claim, not authenticated; ran specsync change approve closed-pipe-and-help as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test cli -- --exact a_command_whose_reader_has_gone_exits_with_its_own_code for TC-cli-a-closed-pipe-ends-a-command-with-its-own-code: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-closed-pipe-ends-a-command-with-its-own-code.md)
+- [Ran cargo test --locked --test cli -- --exact a_write_into_a_closed_pipe_saves_and_exits_0 for TC-cli-a-write-into-a-closed-pipe-saves-and-exits-0: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-write-into-a-closed-pipe-saves-and-exits-0.md)
+- [Ran cargo test --locked --test cli -- --exact a_refusal_with_both_streams_closed_exits_as_it_would for TC-cli-a-refusal-with-both-streams-closed-exits-1: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-a-refusal-with-both-streams-closed-exits-1.md)
+- [Ran cargo test --locked --test cli -- --exact help_after_the_global_options_prints_the_top_level_help for TC-cli-help-after-the-global-options: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-help-after-the-global-options.md)
 
 ## Open threads
 
