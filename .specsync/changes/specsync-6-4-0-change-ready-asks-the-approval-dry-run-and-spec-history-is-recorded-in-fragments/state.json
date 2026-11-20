@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments",
+  "slug": "specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments",
+  "title": "SpecSync 6.4.0: change ready asks the approval dry run, and spec history is recorded in fragments",
+  "description": "SpecSync 6.4.0: change ready asks the approval dry run, and spec history is recorded in fragments",
+  "kind": "migration",
+  "state": "draft",
+  "base_commit": "de49485fc5fb93f05bb15db7cd471023beebd8a8",
+  "created_at": 1795199292,
+  "updated_at": 1795199453,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    ".github/workflows/ci.yml",
+    ".github/scripts/check-specsync-archive.py",
+    ".github/scripts/test-specsync-archive.py",
+    ".specsync/config.toml",
+    ".specsync/sdd.json",
+    ".gitattributes",
+    "AGENTS.md",
+    "README.md",
+    "docs/ci.md",
+    "docs/cli.md",
+    "docs/integrations.md",
+    "docs/walkthrough.md",
+    "src/change.rs",
+    "src/ready.rs",
+    "tests/ready.rs",
+    "tests/package.rs",
+    "tests/change.rs",
+    "specs/cli/requirements.md",
+    "specs/cli/history/",
+    "changelog.d/",
+    ".chough/cases/cli.specsync-6-4.cases.toml",
+    ".chough/cases/cli.specsync-merge-driver.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "The criteria in deltas/cli.md (REQ-cli-067): ready names whatever SpecSync's approval dry run refuses, drops its delta-set rule, leaves SpecSync's own untracked files and another active change's paths out, and touches no .specsync/hashes.json; the pins name 6.4.0 and the spec merge line is gone."
+  ],
+  "selected_artifacts": [
+    "context",
+    "research",
+    "design",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "requirements"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "Leif's rule 5 (prefer removing rules), his 'Ask SpecSync itself' for #406, and rule 3 (the tester's real-repository run for a changed refusal); every machine and merge driver moves to 6.4.0 when this lands; the public text says only what Chough's code does.",
+    "public_contract": "yes"
+  }
+}

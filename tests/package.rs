@@ -4351,27 +4351,66 @@ fn ci_runs_once_a_day_on_main_with_a_real_archive_base() {
     }
 }
 
-/// #291 (DRIVE-12): this repository routes its module contracts to SpecSync's
-/// ancestor-aware merge driver, and AGENTS.md names the one-time setup, so two branches
-/// that each bump one module's `version:` and Change Log merge locally without a
-/// hand-resolved conflict.
+/// #291, #404 (DRIVE-12): this repository routes `requirements.md` to SpecSync's
+/// ancestor-aware merge driver, and AGENTS.md names the one-time setup. SpecSync 6.4.0
+/// records each change in its own history fragment, so a module's `*.spec.md` needs no
+/// driver and no line routes it, and AGENTS.md no longer says to renumber Change Log
+/// rows by hand.
 #[test]
-fn spec_files_merge_through_specsync_s_driver_in_this_repository() {
+fn requirements_merge_through_specsync_s_driver_and_spec_files_need_none() {
     let attributes = fs::read_to_string(manifest_dir().join(".gitattributes")).unwrap();
-    for pattern in ["specs/**/*.spec.md", "specs/**/requirements.md"] {
-        assert!(
-            attributes.lines().any(|line| {
-                let mut fields = line.split_whitespace();
-                fields.next() == Some(pattern) && fields.any(|field| field == "merge=specsync")
-            }),
-            ".gitattributes routes {pattern} to merge=specsync"
-        );
-    }
+    let routed = |pattern: &str| {
+        attributes.lines().any(|line| {
+            let mut fields = line.split_whitespace();
+            fields.next() == Some(pattern) && fields.any(|field| field == "merge=specsync")
+        })
+    };
+    assert!(
+        routed("specs/**/requirements.md"),
+        ".gitattributes routes specs/**/requirements.md to merge=specsync"
+    );
+    assert!(
+        !routed("specs/**/*.spec.md"),
+        ".gitattributes still routes specs/**/*.spec.md to merge=specsync"
+    );
     let agents = fs::read_to_string(manifest_dir().join("AGENTS.md")).unwrap();
     assert!(
         agents.contains("specsync merge --install"),
         "AGENTS.md names the one-time driver setup"
     );
+    assert!(
+        !agents.contains("renumber yours"),
+        "AGENTS.md still says to renumber Change Log rows by hand"
+    );
+}
+
+/// #404 (REQ-cli-067), TC-cli-every-specsync-pin-names-6-4-0: every place Chough names
+/// its SpecSync names 6.4.0: the README's install line, AGENTS.md, each SpecSync step in
+/// CI, the archive check, the config header, and the install hint `chough change` and
+/// `chough change ready` give.
+#[test]
+fn every_specsync_pin_names_6_4_0() {
+    let read = |path: &str| fs::read_to_string(manifest_dir().join(path)).unwrap();
+    for (path, pin) in [
+        ("README.md", "specsync@6.4.0"),
+        ("AGENTS.md", "specsync 6.4.0"),
+        (".specsync/config.toml", "SpecSync 6.4.0"),
+        (
+            ".github/scripts/check-specsync-archive.py",
+            "\"specsync 6.4.0\"",
+        ),
+        ("src/change.rs", "\"cargo install --locked specsync@6.4.0\""),
+        ("src/ready.rs", "\"cargo install --locked specsync@6.4.0\""),
+    ] {
+        let text = read(path);
+        assert!(text.contains(pin), "{path} does not name {pin}");
+        assert!(!text.contains("6.3.0"), "{path} still names 6.3.0");
+    }
+    let ci = read(".github/workflows/ci.yml");
+    let steps = ci.matches("uses: CorvidLabs/spec-sync@").count();
+    assert!(steps > 0, "no SpecSync step in CI");
+    assert_eq!(ci.matches("version: '6.4.0'").count(), steps, "{ci}");
+    assert!(!ci.contains("6.3.0"), "CI still names 6.3.0");
 }
 
 /// REQ-cli-016 (#361), TC-cli-doctor-and-next-name-skill-update-for-outdated-files:
