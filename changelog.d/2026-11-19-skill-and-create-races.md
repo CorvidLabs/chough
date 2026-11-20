@@ -1,0 +1,6 @@
+- Skill and create races (REQ-cli-016, REQ-cli-001, REQ-history-016):
+  - Several `chough skill update` runs, or several `chough init` runs, at once each succeed, or refuse only as one on its own would. A file another run wrote first is kept, and no run fails with `File exists` (#386).
+  - `chough skill update` refuses a skill file it cannot write, naming the file relative to the project, never with internal assertion text. A file it cannot read is reported as `uninspected` (#373).
+  - A skill copy whose only difference is CRLF line breaks reads as the bundle file it equals, and is refreshed with CRLF (#373).
+  - With a host's skill directory reached through a symbolic link, such as `.codex/skills` linked to the shared copy, plain `chough skill status` and `chough skill update` skip that host and report it as `uninspected`, with its directory and why, and update the rest. `--host` for that host refuses naming it, and no absolute path is shown (#403).
+  - `chough doctor` also reads the records Git neither tracks nor ignores, such as a new session or an evidence entry a killed run left empty. It reports one its reader refuses as `unreadable`, and names a FIFO, socket or folder at a record's name without opening it (#408).

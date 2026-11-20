@@ -1,0 +1,112 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #373, #386 and #403: skill update and init safe at once, CRLF copies, uninspected hosts (D2, skill-and-create-races).
+
+[[case]]
+id = "TC-cli-a-crlf-skill-copy-reads-as-its-lf-state"
+title = "A copy of each bundle file with CRLF line breaks reads current or known-outdated as its LF bytes do, and skill update refreshes a known-outdated one with CRLF"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::a_crlf_skill_copy_reads_as_its_lf_state_and_is_refreshed_with_crlf passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "a_crlf_skill_copy_reads_as_its_lf_state_and_is_refreshed_with_crlf"
+
+[[case]]
+id = "TC-cli-a-symlinked-host-is-skipped-and-the-rest-updated"
+title = "With .codex/skills a symbolic link to ../.agents/skills, plain skill status and update exit 0, report codex uninspected with its relative directory and update .agents, while --host codex refuses naming it; no absolute path"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::a_symlinked_host_is_skipped_and_the_rest_updated passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "a_symlinked_host_is_skipped_and_the_rest_updated"
+
+[[case]]
+id = "TC-cli-a-skill-file-it-cannot-write-is-refused-plainly"
+title = "A missing bundle file in a folder skill update cannot write is refused naming the file relative to the project, never with internal assertion text"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/records.rs", "src/skill.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::a_skill_file_it_cannot_write_is_refused_plainly passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "a_skill_file_it_cannot_write_is_refused_plainly"
+
+[[case]]
+id = "TC-cli-an-unreadable-skill-file-is-skipped-as-uninspected"
+title = "A skill file that cannot be read is reported uninspected, never as an edit, and skill update leaves it and updates the rest"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::an_unreadable_skill_file_is_skipped_as_uninspected passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "an_unreadable_skill_file_is_skipped_as_uninspected"
+
+[[case]]
+id = "TC-cli-parallel-skill-updates-each-succeed"
+title = "Eight skill update runs at once over missing bundle files, repeated, each exit 0 with no File exists or Condition failed, and every file is current afterwards"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/records.rs", "src/skill.rs", "tests/parallel.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/parallel.rs::parallel_skill_updates_each_succeed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "parallel"
+test = "parallel_skill_updates_each_succeed"
+
+[[case]]
+id = "TC-cli-parallel-inits-each-succeed-or-refuse-plainly"
+title = "Six init --objective runs at once in a fresh repository, repeated, each exit 0 or refuse only because a session is open, naming chough session new; no output holds File exists"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-4", "LIFE-6"]
+requirements = ["REQ-cli-001"]
+paths = ["src/records.rs", "src/main.rs", "tests/parallel.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/parallel.rs::parallel_inits_each_succeed_or_refuse_plainly passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "parallel"
+test = "parallel_inits_each_succeed_or_refuse_plainly"

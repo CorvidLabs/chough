@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "skill-and-create-races",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "3b5890ae3edd848815a9271832beaaa2d846512a",
+  "contract_digest": "39bd5415dd0a175da7b7f8e001f31331188a1bb98c8c638fd03f398cdc378f35",
+  "execution_digest": "2bab02da6064da839cca2fe5294b57612d1c514c432460792e67eb3e8ae4e6dc",
+  "workspace_digest": "eb933f8e6565860ed56030e09af72c853a4a40d18ac655f096ffe0afe68bbab2",
+  "timestamp": 1795188671,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Go",
+    "where": "Standing OK 6(b): Leif's 'Go' to t4c's six rules (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19), under which the builder records his implementation review of a batch with a tester PASS whose build changes no approved sentence (t4c's ruling of 2026-11-19: the review only; every merge still needs his yes after CI). For #420 at 3b5890ae: the testers' PASS (the tester on macOS at 802537b6 with the 22 real repositories identical to main, and at 0dde9150, 90 of 90 rounds; tester2 on Linux at 0dde9150, 0 of 200 runs failing) and the tester's harness rerun by the fixer at 3b5890ae (38 of 38: 11 D2 rows fixed against main 7bf110dc, the 22 real repositories unchanged); corvid-agent APPROVED 3b5890ae (2026-11-20 about 15:10Z); fable-lead's read of the source at 802537b6, its finding D2-1 fixed. Every sentence change in this batch carries Leif's own words: the scope approval, and his 'Yes (Recommended)' for tests/skill_releases.rs, which changed no sentence. fable-lead is paused until about 2026-11-23, so t4c is told after.",
+    "recorded_by": "chough-fixer-t4n"
+  }
+}
