@@ -20,6 +20,26 @@
       "commands": [],
       "requirement_ids": [],
       "refusal": "tasks.md contains incomplete tasks: finish the 9 open tasks in `.specsync/changes/fix-m1-migrate-refuses-before-writing/tasks.md` (line 8: \"Failing tests first, one per issue, each red on main.\"; line 9: \"#376: the after-fix pointer check in doctor resolves aliases and bare slugs.\"; line 10: \"#337: one no-follow check of every target and receipt name before any write.\"; line 11: \"#370: refuse a returning record whose ID is already held; rebuild the index\"; line 13: \"The change-open refusal, when built: plural wording, one change id per line,\"; and 4 more) and mark each one `[x]`, then re-run `specsync change check fix-m1-migrate-refuses-before-writing --commit`"
+    },
+    {
+      "timestamp": 1795141702,
+      "commit": "73e41eddd74bafc5239d54926f2bc520bd7782ea",
+      "contract_digest": "4d4c94a15d5bc426e89019a4a938807ecc9025863f66436a6d3ad418219a8151",
+      "execution_digest": "79892b3b82ccc86f6ef858bf86b759c9f1a254d63be58bcb848bb4f8d7511ee3",
+      "workspace_digest": "e4f339f58993a840519ac9ee193e5f507c58e73519e6758929b6363cf054adae",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-055",
+        "REQ-records-009",
+        "REQ-records-015"
+      ]
     }
   ]
 }

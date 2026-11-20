@@ -7,10 +7,11 @@
   "title": "Fix m1 migrate refuses before writing",
   "description": "fix m1 migrate refuses before writing",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
   "created_at": 1795068669,
-  "updated_at": 1795138416,
+  "updated_at": 1795141703,
   "affected_specs": [
     "records",
     "cli"

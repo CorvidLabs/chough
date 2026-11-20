@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 123
+version: 124
 status: active
 files:
   - src/main.rs
@@ -405,3 +405,4 @@ provider, runtime or hosted service.
 | 97 | 2026-11-14 | fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag: Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag |
 | 98 | 2026-11-15 | chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with: Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278) |
 | 99 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
+| 124 | 2026-11-20 | fix-m1-migrate-refuses-before-writing: Fix m1 migrate refuses before writing |

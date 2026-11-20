@@ -1,6 +1,6 @@
 ---
 module: records
-version: 21
+version: 22
 status: active
 files:
   - src/markdown.rs
@@ -230,3 +230,4 @@ use this one for every record they write.
 | 19 | 2026-11-18 | fix-339: Fix 339 |
 | 20 | 2026-11-19 | leaks-and-output: Leaks and output |
 | 21 | 2026-11-19 | doctor-fix-safety: Doctor fix safety |
+| 22 | 2026-11-20 | fix-m1-migrate-refuses-before-writing: Fix m1 migrate refuses before writing |
