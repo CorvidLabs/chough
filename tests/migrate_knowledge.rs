@@ -405,6 +405,7 @@ fn a_case_only_rename_reaches_git_under_the_new_name() {
 ///   with no file written, removed or changed;
 /// - one present at the preview is listed under `replaces`, and the apply of that digest
 ///   writes the rebuilt index in its place and removes `knowledge/INDEX.md`.
+///
 /// On a case-insensitive file system the two names are one file, so the state cannot
 /// exist and the test says so and stops.
 #[test]
