@@ -1,0 +1,58 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #412 and the rest of #367: doctor scans the open changes, and the last echo sites name what a value holds (change-leaks).
+
+[[case]]
+id = "TC-records-doctor-scans-the-open-changes"
+title = "A token committed in an open change's context.md is a leak finding and doctor exits 1; --fix --redact skips it naming chough change answer and leaves it byte-identical; a delta and the archive give no finding"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/doctor.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::doctor_scans_the_open_changes_but_not_their_deltas_or_the_archive passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "doctor_scans_the_open_changes_but_not_their_deltas_or_the_archive"
+
+[[case]]
+id = "TC-records-an-explicit-evidence-id-is-named-by-what-it-holds"
+title = "An explicit evidence ID holding a token is refused naming the field and what it holds, never the value"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/evidence.rs", "tests/output_safety.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/output_safety.rs::an_explicit_evidence_id_is_named_by_what_it_holds passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "output_safety"
+test = "an_explicit_evidence_id_is_named_by_what_it_holds"
+
+[[case]]
+id = "TC-records-a-close-gate-value-is-named-by-what-it-holds"
+title = "change ship --close-gate given a value holding a token and an escape sequence, with and without the rest of the relay, refuses naming what the gate holds, and no output repeats either"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::change_ship_names_a_close_gate_value_by_what_it_holds passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "change_ship_names_a_close_gate_value_by_what_it_holds"

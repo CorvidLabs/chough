@@ -118,6 +118,35 @@ fn refuse_unshowable(arguments: &[(&str, &str)]) -> Result<()> {
     Ok(())
 }
 
+/// [`crate::leaks::guard`] for a free-text value SpecSync writes into a change's records
+/// (REQ-cli-057, #412). A refusal for a control character also names the leaks the value
+/// holds, so one retry fixes both.
+fn guard_text(field: &str, value: &mut String) -> Result<usize> {
+    let local = crate::leaks::Local::current();
+    let mut kinds: Vec<&str> = crate::leaks::find(local, value)
+        .iter()
+        .map(|found| found.kind.name())
+        .collect();
+    kinds.sort_unstable();
+    kinds.dedup();
+    crate::leaks::guard(local, field, value).map_err(|error| {
+        let text = format!("{error:#}");
+        if text.starts_with("refused:control-character") && !kinds.is_empty() {
+            anyhow::anyhow!("{text}\nThe {field} also holds {}.", kinds.join(", "))
+        } else {
+            error
+        }
+    })
+}
+
+/// Under `--redact`, how many values Chough replaced before SpecSync ran, as one line on
+/// standard error ahead of SpecSync's own output (REQ-cli-057, #412).
+fn say_redacted(count: usize) {
+    if count > 0 {
+        eprintln!("chough: redacted {count} value(s) before SpecSync ran (--redact)");
+    }
+}
+
 pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
     match &command {
         ChangeCommand::New {
@@ -140,13 +169,20 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
     }
     let (step, arguments, read) = match command {
         ChangeCommand::New {
-            description,
+            mut description,
             kind,
             specs,
             paths,
             no_spec_change,
-            rationale,
+            mut rationale,
         } => {
+            // REQ-cli-057 (#412): SpecSync writes these into the change's committed
+            // records, so they are checked as any written value is, before it runs.
+            let mut redacted = guard_text("description", &mut description)?;
+            if let Some(rationale) = rationale.as_mut() {
+                redacted += guard_text("rationale", rationale)?;
+            }
+            say_redacted(redacted);
             let mut arguments = vec!["change".to_string(), "new".into(), description];
             if let Some(kind) = kind {
                 arguments.extend(["--kind".into(), kind]);
@@ -169,7 +205,7 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
         ChangeCommand::Answer {
             id,
             question,
-            answer,
+            mut answer,
         } => (
             "answer",
             vec![
@@ -177,7 +213,11 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
                 "answer".into(),
                 id,
                 question,
-                answer,
+                {
+                    // REQ-cli-057 (#412): checked as the description is.
+                    say_redacted(guard_text("answer", &mut answer)?);
+                    answer
+                },
                 "--json".into(),
             ],
             false,
@@ -367,20 +407,30 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
                 "refused:relay-without-gate: {} describe a human's decision at a gate, and no gate is open, so nothing ran.\nRun `chough change ship {id_shown}` without them.",
                 given.join(", ")
             ),
-            RelayProblem::Incomplete(gate, missing) => anyhow::anyhow!(
-                "refused:relay-incomplete: closing gate \"{gate}\" after the ship needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing ran.\nRun `{}`.",
-                missing.join(", "),
-                if missing.len() == 1 { "is" } else { "are" },
-                relay_command(&gate)
-            ),
-            RelayProblem::NotOpen(gate, _) => anyhow::anyhow!(
-                "refused:gate-not-open: no gate is open, so there is no gate \"{gate}\" to close, and nothing ran.\nRun `chough change ship {id_shown}` without --close-gate and the relay."
-            ),
-            RelayProblem::TooLong(gate, length) => anyhow::anyhow!(
-                "refused:relay-too-long: the decision for gate \"{gate}\" would be {length} bytes, over the {}-byte checkpoint text bound, so nothing ran.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `{}`.",
-                crate::stage::RELAY_TEXT_LIMIT,
-                relay_command(&gate)
-            ),
+            // The `--close-gate` text is named by what it holds (REQ-records-006, #412).
+            RelayProblem::Incomplete(gate, missing) => {
+                let gate = crate::leaks::shown("gate", &gate);
+                anyhow::anyhow!(
+                    "refused:relay-incomplete: closing gate \"{gate}\" after the ship needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing ran.\nRun `{}`.",
+                    missing.join(", "),
+                    if missing.len() == 1 { "is" } else { "are" },
+                    relay_command(&gate)
+                )
+            }
+            RelayProblem::NotOpen(gate, _) => {
+                let gate = crate::leaks::shown("gate", &gate);
+                anyhow::anyhow!(
+                    "refused:gate-not-open: no gate is open, so there is no gate \"{gate}\" to close, and nothing ran.\nRun `chough change ship {id_shown}` without --close-gate and the relay."
+                )
+            }
+            RelayProblem::TooLong(gate, length) => {
+                let gate = crate::leaks::shown("gate", &gate);
+                anyhow::anyhow!(
+                    "refused:relay-too-long: the decision for gate \"{gate}\" would be {length} bytes, over the {}-byte checkpoint text bound, so nothing ran.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `{}`.",
+                    crate::stage::RELAY_TEXT_LIMIT,
+                    relay_command(&gate)
+                )
+            }
         }
     })?;
 

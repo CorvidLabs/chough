@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "change-leaks",
+  "implementation_commit": "7ab2ca20f460d5c9187e3dd8ffab3d64e0809901",
+  "implementation_tree": "2fa3e262fed8b6035147976ffc6de1d215b24337",
+  "contract_digest": "bbe438562e4a5f0bbccdfb7c7a8936a7a8af7c0a78365b35e638302f8b08617e",
+  "workspace_digest": "06211bd498042ce8942373e44255ce9bb95ba5db0680a973a4eb2a2a7dc53c3a",
+  "closing_digest": "a6554ad32fd5467c8bc6a1e7ebfba90f17beafe31253e13fe5ae6e6d4b5408bd",
+  "review_digest": "58a74372230ea7ba88066ccfeac72b9c58c45bce645153429c188a7a971e3a9d",
+  "finalization_digest": "6d8f8ff8611ea50cb6f04f1c79b14b9cf0da23f35d475d89d62106dc67c58205",
+  "timestamp": 1795214660
+}

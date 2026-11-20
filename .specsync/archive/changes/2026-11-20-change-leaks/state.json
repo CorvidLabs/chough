@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "change-leaks",
+  "slug": "change-leaks",
+  "title": "Change leaks",
+  "description": "change leaks",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "7bf110dcca70bdd3565007086aee40a286f40eff",
+  "created_at": 1795186495,
+  "updated_at": 1795214662,
+  "affected_specs": [
+    "cli",
+    "records"
+  ],
+  "affected_paths": [
+    "src/change.rs",
+    "src/doctor.rs",
+    "src/evidence.rs",
+    "src/leaks.rs",
+    "tests/change.rs",
+    "tests/leaks.rs",
+    "tests/output_safety.rs",
+    "docs/cli.md",
+    "changelog.d/2026-11-20-change-leaks.md",
+    ".chough/cases/cli.change-leaks.cases.toml",
+    ".chough/cases/records.change-leaks.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A description, a --rationale and an answer holding a leak are refused by chough change new and chough change answer before SpecSync runs, naming the argument and the kind, with nothing under .specsync/ changed; with --redact the change's records hold <redacted:<kind>> and one line says how many were replaced; a control character is refused under --redact too (#412). chough doctor --leaks also scans the open changes under .specsync/changes/ and reports a leak there with the file, line and kind, which --fix --redact skips naming the way out; .specsync/archive/ is not scanned. change ship --close-gate, change new's description, change answer's answer and an explicit evidence ID are named by what they hold in any error or output (rest of #367)."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs",
+    "research",
+    "plan"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "The issues set the scope: #412 and the sites of #367 that L2 (#418, merged) left to it: change.rs's --close-gate echoes, change new's description and change answer's answer, and evidence.rs's explicit evidence ID. Choices (A) and (1) are the lead's recommended ones and wait for Leif's word; (A) adds a refusal, so the run on the real repositories (rule 3) is in testing.md. LIFE-26: committed records never leak. #413's ID refusals stay as approved, with or without --redact. SpecSync's archive is its authenticated history and is not scanned. Based on main 7bf110dc; REQ-records-006 is built on L2's merged text. No new dependency. Failing tests first.",
+    "public_contract": "yes"
+  }
+}
