@@ -16,7 +16,7 @@ requirements: [REQ-cli-040]
 cases: []
 design: []
 files: []
-observations: []
+observations: [2026-11-20-tc-cli-the-docs-say-not-to-rewrite-the-worktree-while-another]
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -38,6 +38,8 @@ The docs and the workflow skill tell agents not to run git merge, rebase, checko
 - 0xLeif decided "Scope approval of docs-387-no-git-while-agents-write with its corrected acceptance-criteria answer (native approval)": "Yes, record it" (His direct answer in t4b's Claude Code session (AskUserQuestion), 2026-11-20, to recording this re-approval. Scope: his 'Yes I approve' of the delta at 0892b125 (relayed by hc t4c through fable-lead, 2026-11-19), delta unchanged. Send-back: his 'a, all yes.. im back' (relayed the same way, about 00:38Z on 2026-11-20, item 7), one send-back by t4b correcting only the acceptance-criteria answer); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve docs-387-no-git-while-agents-write as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test docs -- --exact the_docs_say_not_to_rewrite_the_worktree_while_another_agent_works for TC-cli-the-docs-say-not-to-rewrite-the-worktree-while-another-agent-works: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-cli-the-docs-say-not-to-rewrite-the-worktree-while-another.md)
 
 ## Open threads
 
