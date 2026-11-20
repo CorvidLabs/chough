@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 124
+version: 125
 status: active
 files:
   - src/main.rs
@@ -310,6 +310,7 @@ provider, runtime or hosted service.
 | 122 | 2026-11-19 | doctor-fix-safety: Doctor fix safety |
 | 123 | 2026-11-19 | fix-g1-gates-and-pins-fail-closed: Fix g1 gates and pins fail closed |
 | 124 | 2026-11-20 | docs-387-no-git-while-agents-write: Docs 387 no git while agents write |
+| 125 | 2026-11-20 | fix-m1-migrate-refuses-before-writing: Fix m1 migrate refuses before writing |
 | 13 | 2026-11-02 | use-slug-identities-for-all-new-chough-records: Use slug identities for all new Chough records |
 | 14 | 2026-11-02 | make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound: Make chough timing read each native change at most once, skip archived history the requested report does not show, bound total native wait per report with explicit unknown states, and add an opt-in phase trace |
 | 15 | 2026-11-02 | fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer: Fresh-agent handoff from existing records: chough next shows recent decisions, the last failure and a lessons pointer, names a new cycle after the native change is archived, and the skill labels lesson certainty and closes out inside the open change |

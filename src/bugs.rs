@@ -2325,6 +2325,8 @@ fn legacy_bugs(root: &Path) -> Result<Vec<(String, Legacy)>> {
         .filter(|name| name.ends_with(".json"))
         // macOS metadata beside a 0.5.x bug is not one (REQ-records-015).
         .filter(|name| !crate::evidence::is_os_metadata(name))
+        // #370: a bug removed as already migrated is not carried again.
+        .filter(|name| !crate::migrate::already_migrated(&format!("{BUGS_DIR}/{name}")))
         .collect();
     names.sort();
     let mut bugs = vec![];
