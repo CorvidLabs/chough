@@ -368,8 +368,13 @@ XML, and a `cases run` entry keeps its command and key failing lines that way to
 front matter value a YAML reader takes as other than text, `null`, `~`, `true`, `false`,
 `yes`, `no`, `on` or `off` in any letter case, is written double-quoted.
 
-`chough doctor` scans every file Git tracks under `.chough/` and the knowledge
-directory the same way, except that a path under `/tmp/` or `/private/tmp/` in a case
+`chough doctor` scans every file Git tracks under `.chough/`, the knowledge
+directory and `.specsync/changes/` the same way (#412). Each change's `deltas/` folder
+is left out, since it holds requirement text as `specs/` does, and SpecSync's
+authenticated history, `.specsync/archive/`, is not scanned. A leak in an open change's
+record is never redacted: `chough doctor --fix --redact` skips it, naming the way out,
+`chough change answer` or a send-back, since rewriting SpecSync's record would leave the
+change's approval invalid. Every scanned file is checked alike, except that a path under `/tmp/` or `/private/tmp/` in a case
 definition (`.chough/cases/*.cases.toml`) is a deliberate test setting, such as a
 case's own `XDG_DATA_HOME`, and is not reported; a home path, the local user or host
 name, an email or a credential there still is (REQ-records-006).
@@ -1253,6 +1258,14 @@ Each runs in the `--root` directory with the `specsync` on `PATH`, the one Choug
 native reads use. SpecSync's standard output, standard error and exit code pass through
 byte for byte, including its refusals and the recovery commands they name. Chough adds
 nothing and writes nothing under `.chough/`.
+
+SpecSync writes a change's description, its `--rationale` and each answer into the
+change's committed records, so Chough checks them before SpecSync runs, as it checks any
+written value (#412). One holding a leak is refused as `refused:leak`, naming the
+argument and the kind and never the value. Under `--redact` it reaches SpecSync with
+each match replaced by `<redacted:<kind>>`, and one line on standard error, before
+SpecSync's output, says how many were replaced; that line is the one thing Chough adds.
+A control character is refused as `refused:control-character`, under `--redact` too.
 
 - `status` is a read and keeps the native read bound (120 s;
   `CHOUGH_NATIVE_TIMEOUT_SECONDS` sets 1 to 3600). Past the bound, SpecSync is stopped,
