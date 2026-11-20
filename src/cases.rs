@@ -1294,7 +1294,11 @@ pub(super) fn run_case(
     let summary = printed(&summary);
     let limitations: Vec<String> = limitations.iter().map(|line| printed(line)).collect();
     let key_lines = (
-        key_lines.0.iter().map(|line| printed(line)).collect::<Vec<_>>(),
+        key_lines
+            .0
+            .iter()
+            .map(|line| printed(line))
+            .collect::<Vec<_>>(),
         key_lines.1,
     );
     let argv: Vec<String> = argv.iter().map(|word| printed(word)).collect();

@@ -559,7 +559,9 @@ impl Record {
             };
             let changed = match value {
                 Value::Scalar(text) => printable(text),
-                Value::List(items) => items.iter_mut().fold(false, |any, text| printable(text) | any),
+                Value::List(items) => items
+                    .iter_mut()
+                    .fold(false, |any, text| printable(text) | any),
                 Value::Maps(maps) => maps
                     .iter_mut()
                     .flatten()
@@ -580,8 +582,11 @@ impl Record {
         if let Some(field) = &self.folded_tab {
             crate::leaks::check_controls(field, "\t", false)?;
         }
-        let kept: std::collections::BTreeMap<String, String> =
-            stored.map(Record::fields).unwrap_or_default().into_iter().collect();
+        let kept: std::collections::BTreeMap<String, String> = stored
+            .map(Record::fields)
+            .unwrap_or_default()
+            .into_iter()
+            .collect();
         for (field, value) in self.fields() {
             if kept.get(&field) == Some(&value) {
                 continue;

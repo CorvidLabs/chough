@@ -587,7 +587,10 @@ pub(super) fn read_checkpoint_unlocked(root: &Path) -> Result<Checkpoint> {
 /// `<`, `>`, a quote, a backtick or a backslash; `None` for anything else.
 pub(super) fn pull_request(value: &str) -> Option<String> {
     let number = value.strip_prefix('#').unwrap_or(value);
-    if !number.is_empty() && number.bytes().all(|byte| byte.is_ascii_digit()) && !number.starts_with('0') {
+    if !number.is_empty()
+        && number.bytes().all(|byte| byte.is_ascii_digit())
+        && !number.starts_with('0')
+    {
         return Some(number.to_string());
     }
     let rest = value
@@ -783,7 +786,13 @@ pub(super) fn render_counted(session: &Checkpoint) -> Result<(crate::markdown::R
     let kept: Vec<String> = guarded
         .source
         .as_ref()
-        .map(|source| source.fields().into_iter().map(|(_, value)| value).collect())
+        .map(|source| {
+            source
+                .fields()
+                .into_iter()
+                .map(|(_, value)| value)
+                .collect()
+        })
         .unwrap_or_default();
     let mut redacted = guard_leaks(&mut guarded, &stored, Kept::From(&kept))?;
     // REQ-records-006: under `--redact`, a leak already stored in the record's body, such

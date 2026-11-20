@@ -110,7 +110,10 @@ fn the_pull_request_shows_in_next_status_context_and_the_checkpoint_view() {
     fixture.set_front("pr", "\"\"");
     for view in views {
         let shown = fixture.ok_text(view);
-        assert!(!shown.contains("PR:"), "{view:?} shows an empty PR: {shown}");
+        assert!(
+            !shown.contains("PR:"),
+            "{view:?} shows an empty PR: {shown}"
+        );
         assert!(
             !shown.contains("\"pr\": \"\"") && !shown.contains("\"pr\":\"\""),
             "{view:?} shows an empty pr: {shown}"
@@ -120,10 +123,16 @@ fn the_pull_request_shows_in_next_status_context_and_the_checkpoint_view() {
     fixture.ok(&["checkpoint", "--pr", url]);
     for view in views {
         let shown = fixture.ok_text(view);
-        assert!(shown.contains(url), "{view:?} does not show the PR: {shown}");
+        assert!(
+            shown.contains(url),
+            "{view:?} does not show the PR: {shown}"
+        );
     }
     let next = fixture.ok_text(&["next"]);
-    assert!(next.lines().any(|line| line == format!("PR: {url}")), "{next}");
+    assert!(
+        next.lines().any(|line| line == format!("PR: {url}")),
+        "{next}"
+    );
 }
 
 /// The active session's `pr` front matter line, as written.
@@ -161,10 +170,25 @@ fn every_session_writer_keeps_the_pull_request_quoted_and_a_cleared_one_out() {
         vec!["checkpoint", "--awaiting-human", "SYNTHETIC gate"],
         vec!["checkpoint", "--clear-awaiting-human"],
         vec!["stage", "advance", "--json"],
-        vec!["stage", "back", "--to", "intent", "--reason", "SYNTHETIC back"],
         vec![
-            "inbox", "add", "--session", &first, "--from", "SYNTHETIC-agent", "--kind",
-            "question", "--text", "SYNTHETIC question",
+            "stage",
+            "back",
+            "--to",
+            "intent",
+            "--reason",
+            "SYNTHETIC back",
+        ],
+        vec![
+            "inbox",
+            "add",
+            "--session",
+            &first,
+            "--from",
+            "SYNTHETIC-agent",
+            "--kind",
+            "question",
+            "--text",
+            "SYNTHETIC question",
         ],
         vec!["inbox", "fold"],
         vec!["session", "new", "other", "--objective", "SYNTHETIC other"],
@@ -190,11 +214,19 @@ fn every_session_writer_keeps_the_pull_request_quoted_and_a_cleared_one_out() {
     fixture.ok(&["checkpoint", "--pr", ""]);
     for writer in &writers[..4] {
         run(writer);
-        assert_eq!(pr_line_of(&fixture, &file), None, "{writer:?} wrote the cleared pr back");
+        assert_eq!(
+            pr_line_of(&fixture, &file),
+            None,
+            "{writer:?} wrote the cleared pr back"
+        );
     }
 
     // Shelving moves the file as it is; the story a close writes keeps the form.
-    fixture.ok(&["checkpoint", "--pr", "https://github.com/CorvidLabs/jackdaw/pull/42"]);
+    fixture.ok(&[
+        "checkpoint",
+        "--pr",
+        "https://github.com/CorvidLabs/jackdaw/pull/42",
+    ]);
     let other = fixture.id_of("other");
     fixture.ok(&["session", "use", &other]);
     fixture.ok(&["checkpoint", "--pr", "7"]);
@@ -244,7 +276,11 @@ fn yaml_reserved_words_are_written_quoted_and_read_back_as_text() {
     assert_eq!(front_line("no_native_change"), "no_native_change: \"null\"");
     assert_eq!(fixture.checkpoint()["no_native_change"], "null");
     fixture.ok(&["checkpoint", "--blocker", "Off"]);
-    assert!(front_line("blockers").contains("\"Off\""), "{}", front_line("blockers"));
+    assert!(
+        front_line("blockers").contains("\"Off\""),
+        "{}",
+        front_line("blockers")
+    );
     assert!(
         fixture.checkpoint()["blockers"]
             .as_array()
@@ -257,7 +293,11 @@ fn yaml_reserved_words_are_written_quoted_and_read_back_as_text() {
     let decisions = fixture.checkpoint()["decisions"].clone();
     for word in ["true", "yes"] {
         assert!(
-            decisions.as_array().unwrap().iter().any(|decision| decision == word),
+            decisions
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|decision| decision == word),
             "{decisions}"
         );
     }
@@ -273,7 +313,10 @@ fn flags_stay_booleans_and_either_form_still_reads() {
     fixture.configure_human();
     fixture.init();
     let session = fixture.active_id();
-    for (name, recorded) in [("2026-11-19-plain-flag", "true"), ("2026-11-19-quoted-flag", "\"true\"")] {
+    for (name, recorded) in [
+        ("2026-11-19-plain-flag", "true"),
+        ("2026-11-19-quoted-flag", "\"true\""),
+    ] {
         fixture.write(
             &format!(".chough/sessions/{session}/agent/inbox/{name}.md"),
             &format!(
@@ -288,6 +331,9 @@ fn flags_stay_booleans_and_either_form_still_reads() {
     fixture.ok(&["inbox", "fold"]);
     let questions = fixture.checkpoint()["open_questions"].to_string();
     for name in ["2026-11-19-plain-flag", "2026-11-19-quoted-flag"] {
-        assert!(questions.contains(name), "{name} was not folded: {questions}");
+        assert!(
+            questions.contains(name),
+            "{name} was not folded: {questions}"
+        );
     }
 }

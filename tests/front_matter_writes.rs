@@ -144,6 +144,13 @@ fn a_tab_in_a_given_value_is_refused_and_the_records_stay_readable() {
             reads_back(&fixture, "a refused write holding a tab");
         }
     }
-    assert_eq!(fixture.read(&file), before, "a refused write changed the session");
-    assert!(!fixture.exists(".chough/bugs"), "a refused bug add wrote a bug");
+    assert_eq!(
+        fixture.read(&file),
+        before,
+        "a refused write changed the session"
+    );
+    assert!(
+        !fixture.exists(".chough/bugs"),
+        "a refused bug add wrote a bug"
+    );
 }

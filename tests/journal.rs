@@ -1776,12 +1776,28 @@ fn generated_files_hold_stored_control_characters_as_printed() {
     );
     fixture.commit("records an earlier release wrote");
     let (post_path, post, story) = advance_to_done(&fixture);
-    assert!(raw_controls(&post).is_empty(), "{post_path}: {:?}", raw_controls(&post));
-    assert!(raw_controls(&story).is_empty(), "story: {:?}", raw_controls(&story));
+    assert!(
+        raw_controls(&post).is_empty(),
+        "{post_path}: {:?}",
+        raw_controls(&post)
+    );
+    assert!(
+        raw_controls(&story).is_empty(),
+        "story: {:?}",
+        raw_controls(&story)
+    );
     fixture.ok(&["library", "index"]);
     let feed = fixture.read("knowledge/journal/feed.xml");
     well_formed(&feed).unwrap_or_else(|problem| panic!("{problem}: {feed}"));
-    assert!(raw_controls(&feed).is_empty(), "feed: {:?}", raw_controls(&feed));
+    assert!(
+        raw_controls(&feed).is_empty(),
+        "feed: {:?}",
+        raw_controls(&feed)
+    );
     let index = fixture.read("knowledge/index.md");
-    assert!(raw_controls(&index).is_empty(), "index: {:?}", raw_controls(&index));
+    assert!(
+        raw_controls(&index).is_empty(),
+        "index: {:?}",
+        raw_controls(&index)
+    );
 }

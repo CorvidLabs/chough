@@ -1451,7 +1451,9 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
     });
     let phase = std::time::Instant::now();
     let output = if as_json {
-        fit(view, |view| format!("{}\n", records::escape_json_controls(view.to_string())))
+        fit(view, |view| {
+            format!("{}\n", records::escape_json_controls(view.to_string()))
+        })
     } else {
         fit(view, next_text)
     };

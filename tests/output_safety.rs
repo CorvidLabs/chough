@@ -394,7 +394,11 @@ fn leaves() -> Vec<Leaf> {
             }
         }
     }
-    assert!(out.len() > 40, "the help tree lists only {} commands", out.len());
+    assert!(
+        out.len() > 40,
+        "the help tree lists only {} commands",
+        out.len()
+    );
     out
 }
 
@@ -519,8 +523,7 @@ fn invocations(leaf: &Leaf, ids: &BTreeMap<&str, String>) -> Vec<Vec<String>> {
 const DIRTY: &str = "X\u{1b}[31m\u{7}\u{7f}\u{9b}31m\u{202e}\u{2066}\u{1b}]8;;https://example.com\u{7}link\u{1b}]8;;\u{7}Y";
 
 /// The same characters as TOML escapes, which a case definition holds them as.
-const DIRTY_TOML: &str =
-    "X\\u001b[31m\\u0007\\u007f\\u009b31m\\u202e\\u2066Y";
+const DIRTY_TOML: &str = "X\\u001b[31m\\u0007\\u007f\\u009b31m\\u202e\\u2066Y";
 
 const CASES: &str = "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-0001\"\ntitle = \"Probe PLANTTOML\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-cli-001\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"Probe prints ok PLANTTOML\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"sh\", \"-c\", \"echo ok\"]\nexpect_output = [\"ok\"]\n";
 
@@ -536,10 +539,20 @@ fn dirty_project() -> (Fixture, BTreeMap<&'static str, String>) {
     fixture.commit("fixture");
     let first = fixture.active_id();
     // An archived story and journal post first.
-    fixture.ok(&["session", "new", "beta", "--objective", "Beta PLANT objective"]);
+    fixture.ok(&[
+        "session",
+        "new",
+        "beta",
+        "--objective",
+        "Beta PLANT objective",
+    ]);
     fixture.ok(&["checkpoint", "--decision", "Beta PLANT decision"]);
     for _ in 0..10 {
-        if fixture.run(&["stage", "advance", "--json"]).status.success() {
+        if fixture
+            .run(&["stage", "advance", "--json"])
+            .status
+            .success()
+        {
             continue;
         }
         break;
@@ -593,7 +606,10 @@ fn dirty_project() -> (Fixture, BTreeMap<&'static str, String>) {
             .to_string(),
     );
     ids.insert("case", "TC-cli-0001".to_string());
-    ids.insert("file", format!(".chough/sessions/{}/session.md", ids["session"]));
+    ids.insert(
+        "file",
+        format!(".chough/sessions/{}/session.md", ids["session"]),
+    );
     (fixture, ids)
 }
 
@@ -621,9 +637,9 @@ fn no_command_prints_a_stored_control_character_raw() {
             let trimmed = stdout.trim_start();
             if ok && (trimmed.starts_with('{') || trimmed.starts_with('[')) {
                 let parses = serde_json::from_str::<Value>(trimmed).is_ok()
-                    || trimmed
-                        .lines()
-                        .all(|line| line.trim().is_empty() || serde_json::from_str::<Value>(line).is_ok());
+                    || trimmed.lines().all(|line| {
+                        line.trim().is_empty() || serde_json::from_str::<Value>(line).is_ok()
+                    });
                 if !parses {
                     problems.push(format!("{args:?} printed JSON that does not parse"));
                 }
@@ -651,7 +667,10 @@ fn no_command_echoes_a_value_given_on_the_command_line() {
     let fixture = Fixture::new();
     fixture.configure_human();
     fixture.hi_stand_in();
-    fixture.write(".chough/cases/cli.cases.toml", &CASES.replace(" PLANTTOML", ""));
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        &CASES.replace(" PLANTTOML", ""),
+    );
     fixture.init();
     let bug = fixture.ok(&bug_add("SYNTHETIC bug"));
     fixture.commit("fixture");
@@ -666,7 +685,10 @@ fn no_command_echoes_a_value_given_on_the_command_line() {
             .to_string(),
     );
     ids.insert("case", "TC-cli-0001".to_string());
-    ids.insert("file", format!(".chough/sessions/{}/session.md", ids["session"]));
+    ids.insert(
+        "file",
+        format!(".chough/sessions/{}/session.md", ids["session"]),
+    );
     let value = format!("x {TOKEN} \u{1b}[31my");
     let scratch = tempfile::tempdir().unwrap();
     let mut problems = vec![];

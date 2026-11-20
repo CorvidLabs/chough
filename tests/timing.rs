@@ -2667,13 +2667,18 @@ fn timing_prints_a_stored_control_character_escaped() {
     assert!(!raw(&shown), "timing printed it raw: {shown:?}");
     let output = fixture.run(&["timing", "--json"]);
     let stdout = String::from_utf8_lossy(&output.stdout).into_owned();
-    assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
     assert!(!raw(&stdout), "timing --json printed it raw");
     let parsed: Value = serde_json::from_str(&stdout).unwrap();
     let mut all = vec![];
     strings(&parsed, &mut all);
     assert!(
-        all.iter().any(|text| text.contains(&format!("{dirty} gate"))),
+        all.iter()
+            .any(|text| text.contains(&format!("{dirty} gate"))),
         "the JSON does not parse back to the stored gate name: {all:?}"
     );
 }

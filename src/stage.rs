@@ -2564,7 +2564,9 @@ fn move_forward(
     let to = if from == "release" {
         "done".to_string()
     } else {
-        let index = position(&from).ok_or_else(|| anyhow::anyhow!("unknown stage {}", crate::leaks::shown("stage", &from)))?;
+        let index = position(&from).ok_or_else(|| {
+            anyhow::anyhow!("unknown stage {}", crate::leaks::shown("stage", &from))
+        })?;
         match ORDER.get(index + 1) {
             Some(next) => (*next).to_string(),
             None => bail!(
@@ -2611,7 +2613,11 @@ fn move_back(
     reason: &str,
 ) -> Result<Value> {
     ensure_text("reason", reason)?;
-    ensure!(is_main(target), "{} is not a main stage", crate::leaks::shown("--to", target));
+    ensure!(
+        is_main(target),
+        "{} is not a main stage",
+        crate::leaks::shown("--to", target)
+    );
     let from = session.stage.current.clone();
     let origin = session
         .stage
@@ -2820,7 +2826,11 @@ pub(super) fn run(root: &Path, command: StageCommand, as_json: bool) -> Result<(
                     json!({"kind": "enter", "from": from, "to": "release", "authority": authority}),
                 )
             } else {
-                ensure!(is_side(&stage), "{} is not a side stage", crate::leaks::shown("stage", &stage));
+                ensure!(
+                    is_side(&stage),
+                    "{} is not a side stage",
+                    crate::leaks::shown("stage", &stage)
+                );
                 ensure!(from != stage, "already in {stage}");
                 ensure!(
                     session.stage.callers.len() < 4,

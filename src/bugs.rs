@@ -2764,8 +2764,13 @@ mod merge {
     pub(super) fn files(base: &Path, ours: &Path, theirs: &Path) -> Result<()> {
         let read = |path: &Path| -> Result<(String, Record)> {
             let text = crate::records::read_bounded_record(path, Kind::Bug.bound())?;
-            let record = markdown::parse(&path.display().to_string(), &text)
-                .with_context(|| format!("{} is not a bug record", crate::leaks::shown("file", &path.display().to_string())))?;
+            let record =
+                markdown::parse(&path.display().to_string(), &text).with_context(|| {
+                    format!(
+                        "{} is not a bug record",
+                        crate::leaks::shown("file", &path.display().to_string())
+                    )
+                })?;
             Ok((text, record))
         };
         let (_, base) = read(base)?;

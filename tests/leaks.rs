@@ -1411,15 +1411,16 @@ fn a_file_url_is_checked_like_its_path_and_username_counts() {
     let fixture = Fixture::new();
     fixture.init();
     let dev = [("USER", "dev"), ("LOGNAME", "dev")];
-    let output = fixture.run_with_env(
-        &["checkpoint", "--decision", "see file:///opt/dev/x"],
-        &dev,
-    );
+    let output = fixture.run_with_env(&["checkpoint", "--decision", "see file:///opt/dev/x"], &dev);
     let said = String::from_utf8_lossy(&output.stderr).into_owned();
     assert!(!output.status.success(), "file:///opt/dev/x was written");
     assert!(said.contains("decision holds user-name"), "{said}");
     let output = fixture.run_with_env(
-        &["checkpoint", "--decision", "see https://example.com/dev/guide"],
+        &[
+            "checkpoint",
+            "--decision",
+            "see https://example.com/dev/guide",
+        ],
         &dev,
     );
     assert!(
