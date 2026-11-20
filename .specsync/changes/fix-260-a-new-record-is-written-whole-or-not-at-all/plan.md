@@ -34,8 +34,9 @@ returns. Name an empty record file as empty in the reader's message.
 
 - `renamex_np` or `renameat2` unsupported on some file systems (exFAT, network
   mounts): the fallback under the writer lock covers them; tested on exFAT.
-- A writer that does not hold the lock would race the fallback: every caller of
-  `write_new_bytes` was checked to hold it (REQ-cli-040 lists them).
+- A writer that does not hold the lock would race the fallback: each of the 19
+  callers of `write_new_bytes` is to be checked for it in step 2, before the fallback is
+  relied on (REQ-cli-040 lists the writers; not yet checked).
 - Ignoring SIGXFSZ changes a kill into an error for every write in the process, which
   is what each write's error handling already expects.
 
