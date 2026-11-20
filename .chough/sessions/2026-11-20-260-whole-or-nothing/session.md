@@ -5,7 +5,7 @@ aliases: [260-whole-or-nothing]
 objective: "A new record is written whole or not at all, so a full disk or a file-size limit never leaves a 0-byte or cut-off record at its name, and an empty record is named as such (#260, #352)"
 intent_scope: ""
 modules: []
-stage: intent
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Scope approval of fix-260-a-new-record-is-written-whole-or-not-at-all (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # A new record is written whole or not at all, so a full disk or a file-size limit never leaves a 0-byte or cut-off record at its name, and an empty record is named as such (#260, #352)
 
@@ -61,3 +61,16 @@ A new record is written whole or not at all, so a full disk or a file-size limit
     - native: specsync change approve fix-260-a-new-record-is-written-whole-or-not-at-all
     - actor: 0xLeif
   - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T16:22:24Z · advance · intent → design ·  ^t-bd7097
+  - native_change: fix-260-a-new-record-is-written-whole-or-not-at-all
+  - revision: ca3b03608717301c055316009a047504fb271bc4
+  - by: fable (claude-opus-5-5, hc t85)
+- 2026-11-20T16:22:24Z · advance · design → plan ·  ^t-0664ef
+  - native_change: fix-260-a-new-record-is-written-whole-or-not-at-all
+  - revision: ca3b03608717301c055316009a047504fb271bc4
+  - by: fable (claude-opus-5-5, hc t85)
+- 2026-11-20T16:22:25Z · advance · plan → build · native:approved ^t-3b6ab7
+  - native_change: fix-260-a-new-record-is-written-whole-or-not-at-all
+  - gate: native:approved
+  - revision: ca3b03608717301c055316009a047504fb271bc4
+  - by: fable (claude-opus-5-5, hc t85)
