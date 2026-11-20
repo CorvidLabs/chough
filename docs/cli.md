@@ -1289,6 +1289,17 @@ they were. Each finding names one exact command that fixes it.
 - A changed file outside the declared paths. On a draft, including `Draft`:
   `chough change answer <id> affected_paths "<the full list>"`. After approval:
   `specsync change send-back <id> --actor <name> --reason "<the paths>"`.
+  Only the change's own work counts: a file a commit on the branch's first-parent line
+  since the base changed, or one changed and not committed yet. A file only a merge from
+  another branch brought in does not count, nor does a committed file whose content at
+  HEAD is the default branch's, at its tip or at HEAD's merge base with it, as after a
+  rebase onto it or a squash merge of it (#406). The default branch is the one
+  `origin/HEAD` names, unless that names no branch or HEAD's own; then `origin/main`; a
+  local `main` only with no remote. On the default branch itself every changed file
+  counts. A base commit the repository no longer has is said on standard error, and the
+  work is counted from HEAD's merge base with the default branch; with neither, the
+  report names one finding that the changed files could not be listed
+  (`git fetch --unshallow` in a shallow clone).
 - An unanswered interview question: `chough change answer <id> <question> "<answer>"`.
   An artifact that is still a TODO, or a plan missing approach, out of scope, steps,
   risks, or constraints consulted: `complete <path>`.
