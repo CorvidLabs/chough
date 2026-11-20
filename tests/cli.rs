@@ -4037,4 +4037,17 @@ fn help_after_the_global_options_prints_the_top_level_help() {
         );
         assert_eq!(output.stdout, top.stdout, "{args:?}");
     }
+    // A `--session=` value that is not UTF-8 is skipped too (corvid-agent's nit on #425).
+    #[cfg(unix)]
+    {
+        use std::os::unix::ffi::OsStrExt;
+        let output = Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg(std::ffi::OsStr::from_bytes(b"--session=\xff"))
+            .args(["help", "--help"])
+            .current_dir(fixture.root())
+            .output()
+            .unwrap();
+        assert!(output.status.success());
+        assert_eq!(output.stdout, top.stdout);
+    }
 }

@@ -278,10 +278,11 @@ fn run() -> Result<()> {
     // `--redact`, `--session <id>`, `--session=<id>`).
     let mut args = args.as_slice();
     loop {
-        match args.first().and_then(|arg| arg.to_str()) {
-            Some("--redact") => args = &args[1..],
-            Some("--root" | "--session") if args.len() > 1 => args = &args[2..],
-            Some(arg) if arg.starts_with("--root=") || arg.starts_with("--session=") => {
+        // Raw bytes, so a `--root=` or `--session=` value that is not UTF-8 is skipped too.
+        match args.first().map(|arg| arg.as_encoded_bytes()) {
+            Some(b"--redact") => args = &args[1..],
+            Some(b"--root" | b"--session") if args.len() > 1 => args = &args[2..],
+            Some(arg) if arg.starts_with(b"--root=") || arg.starts_with(b"--session=") => {
                 args = &args[1..]
             }
             _ => break,
