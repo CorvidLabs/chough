@@ -249,7 +249,10 @@ Chough rewrites the front matter; a missing optional key takes its default; CRLF
 as LF. Chough owns only the front matter and the sections it appends to. A write
 replaces the front matter, appends list items to the end of a named section, or creates
 a missing named section at the end of the body, and does nothing else to an existing
-body, so a person's edit to a Goal, a bug's Steps or an entry's body survives. Files
+body, so a person's edit to a Goal, a bug's Steps or an entry's body survives. A
+heading inside a closed code fence is quoted, not a section, but a fence that never
+closes hides nothing after it, so a Goal of three backticks never makes a save repeat a
+section, and the bug merge driver still finds the Log (#394). Files
 are written with LF line endings by an atomic replace under the writer lock, or by
 create-new for a new record. A new record is written whole or not at all: to a
 temporary file in `.chough/local/`, synced, then given its name without replacing
