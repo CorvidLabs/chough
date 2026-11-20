@@ -5,7 +5,7 @@ aliases: [docs-387-no-git-while-agents-write]
 objective: The docs and the workflow skill tell agents not to run git merge, rebase, checkout or stash in a worktree while Chough writers run there, since Git can drop writes that already exited 0 (#387)
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -21,9 +21,13 @@ observations:
   - 2026-11-20-tc-cli-the-docs-say-not-to-rewrite-the-worktree-while-another-6bd32f
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of docs-387-no-git-while-agents-write
+    holds: accept
+    drives: review
+    opened: 2026-11-20T02:04:21Z
 run_consents: []
-next: Continue build
+next: Continue accept
 ---
 # The docs and the workflow skill tell agents not to run git merge, rebase, checkout or stash in a worktree while Chough writers run there, since Git can drop writes that already exited 0 (#387)
 
@@ -123,4 +127,20 @@ The docs and the workflow skill tell agents not to run git merge, rebase, checko
   - native_change: docs-387-no-git-while-agents-write
   - gate: native:approved
   - revision: 347d9344a245aa3df6366cf2a63ff3903c900f56
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T02:04:21Z · advance · build → test · native:verifying ^t-764b3a
+  - native_change: docs-387-no-git-while-agents-write
+  - gate: native:verifying
+  - revision: 560a87805735b57704f82db8a2fdad9d8ca73673
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T02:04:21Z · advance · test → accept · native:verifying ^t-a59f5a
+  - native_change: docs-387-no-git-while-agents-write
+  - gate: native:verifying
+  - revision: 560a87805735b57704f82db8a2fdad9d8ca73673
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-20T02:04:21Z · gate-opened · accept → accept · Implementation review of docs-387-no-git-while-agents-write ^t-494d6a
+  - native_change: docs-387-no-git-while-agents-write
+  - revision: 560a87805735b57704f82db8a2fdad9d8ca73673
+  - holds: accept
+  - drives: review
   - by: fable (claude-opus-5-5, hc t4b)
