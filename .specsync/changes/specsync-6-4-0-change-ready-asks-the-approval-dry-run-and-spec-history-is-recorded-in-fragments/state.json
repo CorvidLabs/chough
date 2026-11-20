@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments",
   "slug": "specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments",
   "title": "SpecSync 6.4.0: change ready asks the approval dry run, and spec history is recorded in fragments",
   "description": "SpecSync 6.4.0: change ready asks the approval dry run, and spec history is recorded in fragments",
   "kind": "migration",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "de49485fc5fb93f05bb15db7cd471023beebd8a8",
   "created_at": 1795199292,
-  "updated_at": 1795199453,
+  "updated_at": 1795200732,
   "affected_specs": [
     "cli"
   ],
