@@ -5,7 +5,7 @@ aliases: [g2-gate-summary]
 objective: "The gate summary counts evidence without a case, shows uncommitted work in its diff and a base for a session started before the first commit; doctor names the journal post to commit; without SpecSync, --to done across plan or accept says no human decided and needs --reason (#389, #390)"
 intent_scope: ""
 modules: []
-stage: intent
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Scope approval of fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # The gate summary counts evidence without a case, shows uncommitted work in its diff and a base for a session started before the first commit; doctor names the journal post to commit; without SpecSync, --to done across plan or accept says no human decided and needs --reason (#389, #390)
 
@@ -61,3 +61,16 @@ The gate summary counts evidence without a case, shows uncommitted work in its d
     - native: specsync change approve fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason
     - actor: 0xLeif
   - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-20T16:04:51Z · advance · intent → design ·  ^t-855b35
+  - native_change: fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason
+  - revision: b614bf138f4021e1d61342f9b7734649e8740a1e
+  - by: fable (claude-opus-5-5, hc t85)
+- 2026-11-20T16:04:52Z · advance · design → plan ·  ^t-5ddef1
+  - native_change: fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason
+  - revision: b614bf138f4021e1d61342f9b7734649e8740a1e
+  - by: fable (claude-opus-5-5, hc t85)
+- 2026-11-20T16:04:52Z · advance · plan → build · native:approved ^t-4c59ad
+  - native_change: fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason
+  - gate: native:approved
+  - revision: b614bf138f4021e1d61342f9b7734649e8740a1e
+  - by: fable (claude-opus-5-5, hc t85)

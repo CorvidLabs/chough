@@ -1072,3 +1072,81 @@ fn a_scope_gate_summary_counts_uncommitted_and_untracked_change_files() {
         .to_string();
     assert_eq!(changed(&committed), uncommitted, "{committed}");
 }
+
+/// G2, #389 (REQ-cli-061): evidence recorded by `chough evidence add` with criteria and no
+/// case is counted in the summary's Tests line by its own entry, beside the cases.
+#[test]
+fn evidence_with_no_case_counts_in_the_tests_line() {
+    let fixture = project(&["Implementation review"]);
+    fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--kind",
+        "product-test",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "SYNTHETIC run with no case",
+    ]);
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap();
+    assert!(
+        summary.contains("Tests: 2 passed, 1 failed, 0 not run"),
+        "{summary}"
+    );
+}
+
+/// G2, #389 (REQ-cli-061): with the change's work not committed yet, the diff line is
+/// `git diff <base>`, which shows it, and says so, never an empty `<base>..<base>`.
+#[test]
+fn uncommitted_work_is_shown_by_the_diff_line() {
+    let fixture = project(&["Implementation review"]);
+    let state: Value = serde_json::from_str(&fixture.read(&format!("{DIR}/state.json"))).unwrap();
+    let base = state["base_commit"].as_str().unwrap().to_string();
+    fixture.git(&["reset", "-q", "--soft", &base]);
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap();
+    assert!(!summary.contains(&format!("{base}..{base}")), "{summary}");
+    assert!(
+        summary.contains(&format!("Diff: git diff {base}")),
+        "{summary}"
+    );
+    assert!(summary.contains("not committed yet"), "{summary}");
+}
+
+/// G2, #389 (REQ-cli-061): a session started before the repository's first commit records
+/// no base; what changed and the diff count from that first commit and say why.
+#[test]
+fn a_session_started_before_the_first_commit_counts_from_it() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.git(&["init", "-q"]);
+    fixture.ok(&[
+        "session",
+        "new",
+        "early",
+        "--objective",
+        "Started before any commit",
+    ]);
+    fixture.write("src/first.txt", "one\n");
+    fixture.commit("the first commit");
+    let root = git_head(&fixture);
+    fixture.write("src/second.txt", "two\n");
+    fixture.commit("more work");
+    for _ in 0..3 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    fixture.ok(&["checkpoint", "--awaiting-human", "Implementation review"]);
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap();
+    assert!(
+        !summary.contains("unknown (no base commit recorded)"),
+        "{summary}"
+    );
+    assert!(summary.contains(&root[..8]), "{summary}");
+    assert!(summary.contains("before the first commit"), "{summary}");
+}

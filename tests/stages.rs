@@ -3728,3 +3728,100 @@ fn a_hand_edited_no_native_change_cannot_unlock_the_ungated_move() {
         assert_eq!(fixture.read(&file), before, "{case}");
     }
 }
+
+/// G2, #390 (REQ-cli-031, Leif's decision B): without SpecSync, `stage advance --to done`
+/// across plan and accept refuses as `refused:no-human-decision` naming `--reason`, with
+/// nothing written; with `--reason` it moves, says no human decision is recorded for
+/// plan and accept, and the Timeline holds the reason. A leaking reason is refused.
+#[test]
+fn without_specsync_a_done_across_plan_and_accept_needs_a_reason() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "solo", "--objective", "A solo spike"]);
+    let file = fixture.session_file();
+    let before = fixture.read(&file);
+    let refused = fixture.fails(&["stage", "advance", "--to", "done"]);
+    assert!(
+        refused.contains("refused:no-human-decision") && refused.contains("--reason"),
+        "{refused}"
+    );
+    assert_eq!(fixture.read(&file), before);
+    let leak = fixture.fails(&[
+        "stage",
+        "advance",
+        "--to",
+        "done",
+        "--reason",
+        "Built in /Users/someone/app",
+    ]);
+    assert!(leak.contains("refused:leak"), "{leak}");
+    assert!(!leak.contains("/Users/someone"), "{leak}");
+    assert_eq!(fixture.read(&file), before);
+    let output = fixture.ok_text(&[
+        "stage",
+        "advance",
+        "--to",
+        "done",
+        "--reason",
+        "SYNTHETIC solo spike, no review wanted",
+    ]);
+    assert!(
+        output.contains("no human decision is recorded for plan")
+            && output.contains("no human decision is recorded for accept"),
+        "{output}"
+    );
+    let story = std::fs::read_dir(fixture.root().join(".chough/archive/sessions"))
+        .unwrap()
+        .flatten()
+        .map(|entry| std::fs::read_to_string(entry.path()).unwrap())
+        .find(|text| text.contains("A solo spike"))
+        .expect("an archived story");
+    assert!(
+        story.contains("SYNTHETIC solo spike, no review wanted"),
+        "{story}"
+    );
+}
+
+/// G2, #390: without SpecSync, a single `stage advance` from plan says no human decision
+/// is recorded for plan and moves; with a closed human gate held at plan it says nothing
+/// of the kind.
+#[test]
+fn without_specsync_a_move_past_plan_says_whether_a_human_decided() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.ok(&["session", "new", "solo", "--objective", "A solo spike"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    let said = fixture.ok_text(&["stage", "advance"]);
+    assert!(
+        said.contains("no human decision is recorded for plan"),
+        "{said}"
+    );
+
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.ok(&["session", "new", "solo", "--objective", "A solo spike"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Plan approval",
+        "--drives",
+        "none",
+    ]);
+    fixture.ok(&[
+        "checkpoint",
+        "--close-gate",
+        "Plan approval",
+        "--decided-by",
+        "SYNTHETIC Human",
+        "--words",
+        "go",
+        "--where",
+        "SYNTHETIC chat",
+        "--recorded-by",
+        "SYNTHETIC agent",
+    ]);
+    let said = fixture.ok_text(&["stage", "advance"]);
+    assert!(!said.contains("no human decision is recorded"), "{said}");
+}
