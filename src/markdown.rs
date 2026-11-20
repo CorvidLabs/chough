@@ -29,6 +29,9 @@ pub(crate) const RECEIPTS: &str = "Receipts";
 pub(crate) fn receipts_section(receipts: Vec<Vec<(String, String)>>) -> Result<String> {
     let mut holder = Record::new("");
     holder.set("receipts", Value::Maps(receipts))?;
+    // REQ-records-016 (#366): a story's receipts hold the entries' text as it is printed,
+    // so a claim an earlier release wrote with a control character is escaped.
+    holder.make_printable();
     let rendered = holder.render();
     let yaml = rendered
         .strip_prefix("---\n")

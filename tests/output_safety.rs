@@ -740,13 +740,15 @@ fn no_command_echoes_a_value_given_on_the_command_line() {
     assert!(problems.is_empty(), "{}", problems.join("\n"));
 }
 
-/// REQ-records-016 (#366, the tester's L2-366-generated-story): an inbox entry an earlier
-/// release wrote with a control character is text Chough already stores, so `inbox fold`
-/// folds it, as it is printed, and the story `session close` writes holds none raw.
+/// REQ-records-016 (#366, the tester's L2-366-generated-story): an inbox entry and an
+/// evidence entry an earlier release wrote with control characters are text Chough
+/// already stores, so `inbox fold` folds the entry as it is printed, and the story
+/// `session close` writes holds none raw anywhere in its bytes, its receipts included.
 #[test]
 fn a_stored_inbox_entry_with_a_control_character_folds_and_the_story_holds_none_raw() {
     let fixture = Fixture::new();
     fixture.configure_human();
+    fixture.hi_stand_in();
     fixture.init();
     fixture.commit("fixture");
     let session = fixture.active_id();
@@ -762,19 +764,28 @@ fn a_stored_inbox_entry_with_a_control_character_folds_and_the_story_holds_none_
         "--text",
         "PLANT decision",
     ]);
-    let inbox = format!(".chough/sessions/{session}/agent/inbox");
+    fixture.ok(&evidence_add("PLANT evidence", "local", "none"));
+    let folder = format!(".chough/sessions/{session}/");
     for (name, bytes) in tree(fixture.root()) {
-        if name.starts_with(&inbox) {
-            let text = String::from_utf8_lossy(&bytes).replace("PLANT", "X \u{1b}[31m Y");
-            fixture.write(&name, &text);
+        let text = String::from_utf8_lossy(&bytes);
+        if name.starts_with(&folder) && name.ends_with(".md") && text.contains("PLANT") {
+            fixture.write(&name, &text.replace("PLANT", "X \u{1b}[31m \u{202e} Y"));
         }
     }
-    fixture.commit("an inbox entry an earlier release wrote");
+    fixture.commit("an inbox and an evidence entry an earlier release wrote");
     fixture.ok(&["inbox", "fold"]);
     let decisions = fixture.checkpoint()["decisions"].to_string();
     assert!(decisions.contains("\\\\u001b"), "{decisions}");
     fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
-    let story = fixture.read(&format!(".chough/archive/sessions/{session}.md"));
+    let story = String::from_utf8_lossy(
+        &fs::read(
+            fixture
+                .root()
+                .join(format!(".chough/archive/sessions/{session}.md")),
+        )
+        .unwrap(),
+    )
+    .into_owned();
     assert!(raw(&story).is_empty(), "the story holds {:?}", raw(&story));
     assert!(story.contains("\\u001b"), "{story}");
 }

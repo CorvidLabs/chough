@@ -1281,13 +1281,18 @@ pub(super) fn unheld_files(root: &Path, id: &str) -> Result<Vec<String>> {
         // Held when a story receipt has the entry's ID and agrees with the receipt the
         // entry gives now in every field it holds, so a story an earlier release wrote,
         // whose receipts hold fewer fields, still holds its entries (REQ-history-012).
+        // A story writes its receipts as printed (REQ-records-016), so a field agrees as
+        // written or in that form.
         let holds = |story: &Vec<(String, String)>| {
             story
                 .iter()
                 .any(|(key, value)| key == "id" && *value == entry)
-                && story
-                    .iter()
-                    .all(|field| receipt.iter().any(|given| given == field))
+                && story.iter().all(|(key, value)| {
+                    receipt.iter().any(|(name, given)| {
+                        name == key
+                            && (given == value || crate::leaks::printable(given, false) == *value)
+                    })
+                })
         };
         // Kept by the file that was read, which may be named other than its ID (renamed,
         // or its `id` edited), and by the ID, which names the files beside it (#381).
