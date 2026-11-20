@@ -7,11 +7,10 @@
   "title": "Skill and create races",
   "description": "skill and create races",
   "kind": "feature",
-  "state": "verifying",
-  "canonical_applied": true,
+  "state": "approved",
   "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
   "created_at": 1795074277,
-  "updated_at": 1795184395,
+  "updated_at": 1795184587,
   "affected_specs": [
     "cli",
     "history"
@@ -27,7 +26,8 @@
     "docs/cli.md",
     "changelog.d/2026-11-19-skill-and-create-races.md",
     ".chough/cases/cli.skill-and-create-races.cases.toml",
-    ".chough/cases/history.skill-and-create-races.cases.toml"
+    ".chough/cases/history.skill-and-create-races.cases.toml",
+    "tests/skill_releases.rs"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,

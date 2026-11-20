@@ -39,7 +39,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: "Gate \"Re-approval of skill-and-create-races with tests/skill_releases.rs added\" closed (approved); run `chough stage advance` to move on."
 ---
 # Skill and create-new batch: skill update writes CRLF copies and names a file it cannot write (#373), parallel skill update and init runs all succeed (#386), a host folder that cannot be inspected is skipped and reported while the rest update (#403), and doctor reads an uncommitted session that fails validation (#408)
 
@@ -52,6 +52,8 @@ Skill and create-new batch: skill update writes CRLF copies and names a file it 
 ## Decisions and why
 
 - 0xLeif decided "Approve the scope of skill-and-create-races": "Approve" (Claude Code chat answer, relayed by his planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-19 about 14:12Z, on D2 skill-and-create-races at 2bf6318 with the four recommended choices; recorded at the batch start on that text, the draft carried onto main 056cbb80 by a merge with no delta word changed); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve skill-and-create-races as 0xLeif
+- 0xLeif decided "Add tests/skill_releases.rs to skill-and-create-races's scope by one send-back, run by the fixer": "Yes (Recommended)" (Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 14:13Z, relayed by hc t4c through fable-lead (hc t53); the question as shown: 'Chough D2: ... May D2's scope add tests/skill_releases.rs so the test can follow your rule? No wording changes.'; add tests/skill_releases.rs to D2's scope by one send-back the fixer runs, no sentence change); recorded by chough-fixer-t4g; a relayed claim, not authenticated
+- 0xLeif decided "Re-approval of skill-and-create-races with tests/skill_releases.rs added": "Yes (Recommended)" (Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 14:13Z, relayed by hc t4c through fable-lead (hc t53); the question as shown: 'Chough D2: ... May D2's scope add tests/skill_releases.rs so the test can follow your rule? No wording changes.'; on this text: tests/skill_releases.rs joins the declared paths (11 to 12) with no sentence change, the deltas byte-identical to those approved at f37fc73); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve skill-and-create-races as 0xLeif
 
 ## What was verified
 
@@ -108,4 +110,47 @@ Skill and create-new batch: skill update writes CRLF copies and names a file it 
   - native_change: skill-and-create-races
   - gate: native:approved
   - revision: f37fc73fb8f76e7c872a50ce6cdda4f69b3a1aa8
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T14:22:37Z · gate-opened · build → build · Add tests/skill_releases.rs to skill-and-create-races's scope by one send-back, run by the fixer ^t-9f01db
+  - native_change: skill-and-create-races
+  - revision: 02b0b254c7ad5eb80758d42067091208dace8c36
+  - holds: build
+  - drives: none
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T14:22:37Z · gate-closed · build → build · Add tests/skill_releases.rs to skill-and-create-races's scope by one send-back, run by the fixer ^t-7a3c1c
+  - native_change: skill-and-create-races
+  - revision: 02b0b254c7ad5eb80758d42067091208dace8c36
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes (Recommended)
+    - where: Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 14:13Z, relayed by hc t4c through fable-lead (hc t53); the question as shown: 'Chough D2: ... May D2's scope add tests/skill_releases.rs so the test can follow your rule? No wording changes.'; add tests/skill_releases.rs to D2's scope by one send-back the fixer runs, no sentence change
+    - recorded_by: chough-fixer-t4g
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T14:23:06Z · gate-opened · build → build · Re-approval of skill-and-create-races with tests/skill_releases.rs added ^t-2c9e96
+  - native_change: skill-and-create-races
+  - revision: 02b0b254c7ad5eb80758d42067091208dace8c36
+  - holds: build
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T14:23:06Z · direct-native-write · build → build · skill-and-create-races's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-d1c273
+  - native_change: skill-and-create-races
+  - revision: 02b0b254c7ad5eb80758d42067091208dace8c36
+  - direct_write:
+    - change: skill-and-create-races
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T14:23:06Z · gate-closed · build → build · Re-approval of skill-and-create-races with tests/skill_releases.rs added ^t-f1eb3a
+  - native_change: skill-and-create-races
+  - revision: 02b0b254c7ad5eb80758d42067091208dace8c36
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes (Recommended)
+    - where: Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 14:13Z, relayed by hc t4c through fable-lead (hc t53); the question as shown: 'Chough D2: ... May D2's scope add tests/skill_releases.rs so the test can follow your rule? No wording changes.'; on this text: tests/skill_releases.rs joins the declared paths (11 to 12) with no sentence change, the deltas byte-identical to those approved at f37fc73
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve skill-and-create-races
+    - actor: 0xLeif
   - by: chough-fixer (claude-opus-5-5, hc t4n)
