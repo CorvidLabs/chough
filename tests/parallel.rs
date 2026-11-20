@@ -101,5 +101,13 @@ fn parallel_inits_each_succeed_or_refuse_plainly() {
             results.iter().any(|(code, _)| *code == Some(0)),
             "round {round}: no init succeeded"
         );
+        // Exactly one session, never a second under a suffixed key.
+        let sessions: Vec<String> = std::fs::read_dir(fixture.root().join(".chough/sessions"))
+            .unwrap()
+            .flatten()
+            .filter(|entry| entry.path().is_dir())
+            .map(|entry| entry.file_name().to_string_lossy().into_owned())
+            .collect();
+        assert_eq!(sessions.len(), 1, "round {round}: {sessions:?}");
     }
 }

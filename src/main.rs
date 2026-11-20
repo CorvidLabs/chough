@@ -453,6 +453,10 @@ fn main() -> Result<()> {
     Ok(())
 }
 
+/// `chough init --objective` while a session is open (REQ-cli-001).
+const OPEN_SESSION_REFUSAL: &str =
+    "the project already has an open session; run `chough session new <key>` for new work";
+
 fn init(
     root: &Path,
     objective: Option<String>,
@@ -482,23 +486,29 @@ fn init(
         ensure!(!objective.trim().is_empty(), "objective must not be blank");
         ensure!(
             sessions::open_ids(root)?.is_empty(),
-            "the project already has an open session; run `chough session new <key>` for new work"
+            "{OPEN_SESSION_REFUSAL}"
         );
         let key = session_key.unwrap_or_else(|| identity::slug(&objective, "session", 64));
-        // REQ-cli-001 (#386): another init at once may make the session between the check
-        // above and this one; this run then refuses as it would have after it.
-        let id = match sessions::create(root, &key, objective, intent_scope, modules) {
-            Ok(id) => id,
-            Err(error)
-                if !sessions::open_ids(root)?.is_empty()
-                    || format!("{error:#}").contains("is already used by session") =>
-            {
-                bail!(
-                    "the project already has an open session; run `chough session new <key>` for new work"
-                )
-            }
-            Err(error) => return Err(error),
-        };
+        // REQ-cli-001 (#386): the open-session check and the create are one step under the
+        // project's writer lock, held to the end of the command, so of several inits at
+        // once one creates the session and each other refuses as one after it would; none
+        // draws a second session under a suffixed key. Taking the lock writes
+        // `.chough/local/`, so the session's own refusals come first, in the order
+        // `sessions::create` makes them, and a refused init still writes nothing.
+        sessions::ensure_key(&key)?;
+        leaks::check_name(leaks::Local::current(), "key", &key)?;
+        let mut draft =
+            checkpoint::new_checkpoint(objective.clone(), intent_scope.clone(), modules.clone());
+        draft.meta.id = identity::dated_name(&identity::utc_date(records::now()?), &key, "session");
+        draft.meta.aliases = vec![key.clone()];
+        stage::log_start(root, &mut draft, &objective)?;
+        checkpoint::render_counted(&draft)?;
+        checkpoint::lock_checkpoint(root)?;
+        ensure!(
+            sessions::open_ids(root)?.is_empty(),
+            "{OPEN_SESSION_REFUSAL}"
+        );
+        let id = sessions::create(root, &key, objective, intent_scope, modules)?;
         created.push(sessions::session_file(&id));
     }
     // REQ-records-002: the records tree's reading guide, create-only; the cases folder
