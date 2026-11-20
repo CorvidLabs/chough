@@ -118,6 +118,14 @@ fn refuse_unshowable(arguments: &[(&str, &str)]) -> Result<()> {
     Ok(())
 }
 
+/// Under `--redact`, how many values Chough replaced before SpecSync ran, as one line on
+/// standard error ahead of SpecSync's own output (REQ-cli-057, #412).
+fn say_redacted(count: usize) {
+    if count > 0 {
+        eprintln!("chough: redacted {count} value(s) before SpecSync ran (--redact)");
+    }
+}
+
 pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
     match &command {
         ChangeCommand::New {
@@ -140,13 +148,21 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
     }
     let (step, arguments, read) = match command {
         ChangeCommand::New {
-            description,
+            mut description,
             kind,
             specs,
             paths,
             no_spec_change,
-            rationale,
+            mut rationale,
         } => {
+            // REQ-cli-057 (#412): SpecSync writes these into the change's committed
+            // records, so they are checked as any written value is, before it runs.
+            let local = crate::leaks::Local::current();
+            let mut redacted = crate::leaks::guard(local, "description", &mut description)?;
+            if let Some(rationale) = rationale.as_mut() {
+                redacted += crate::leaks::guard(local, "rationale", rationale)?;
+            }
+            say_redacted(redacted);
             let mut arguments = vec!["change".to_string(), "new".into(), description];
             if let Some(kind) = kind {
                 arguments.extend(["--kind".into(), kind]);
@@ -169,7 +185,7 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
         ChangeCommand::Answer {
             id,
             question,
-            answer,
+            mut answer,
         } => (
             "answer",
             vec![
@@ -177,7 +193,12 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
                 "answer".into(),
                 id,
                 question,
-                answer,
+                {
+                    // REQ-cli-057 (#412): checked as the description is.
+                    let local = crate::leaks::Local::current();
+                    say_redacted(crate::leaks::guard(local, "answer", &mut answer)?);
+                    answer
+                },
                 "--json".into(),
             ],
             false,
@@ -368,7 +389,8 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
                 given.join(", ")
             ),
             RelayProblem::Incomplete(gate, missing) => anyhow::anyhow!(
-                "refused:relay-incomplete: closing gate \"{gate}\" after the ship needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing ran.\nRun `{}`.",
+                "refused:relay-incomplete: closing gate \"{}\" after the ship needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing ran.\nRun `{}`.",
+                crate::leaks::shown("gate", &gate),
                 missing.join(", "),
                 if missing.len() == 1 { "is" } else { "are" },
                 relay_command(&gate)
