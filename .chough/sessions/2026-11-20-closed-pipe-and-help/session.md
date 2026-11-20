@@ -9,7 +9,7 @@ stage: plan
 stage_status: active
 iteration: 1
 callers: []
-native_change: ""
+native_change: closed-pipe-and-help
 pr: ""
 criteria: [LIFE-4]
 requirements: [REQ-cli-021, REQ-cli-019]
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Read scoped intent and native status, then choose the next action within the authorized scope.
+next: "Gate \"Approve the scope of closed-pipe-and-help\" closed (approved); run `chough stage advance` to move on."
 ---
 # A closed standard output ends a command quietly with its own exit code, and help works after global options, with -V documented as the top-level version flag (#383's closed pipe, #399)
 
@@ -32,6 +32,8 @@ A closed standard output ends a command quietly with its own exit code, and help
 ## Where it stands
 
 ## Decisions and why
+
+- 0xLeif decided "Approve the scope of closed-pipe-and-help": "Standing OK, tell me after" (Leif's standing OK for scope approvals, from his Claude Code question dialog in his planning session (hc t4c), 2026-11-20 ('Standing OK, tell me after'), relayed via t4c, which confirmed on 2026-11-20 that E1 closed-pipe-and-help at 8e562c06 has only the recommended choice, changes no requirement wording and adds no refusal; recorded after one interview correction SpecSync required for a no-spec change (public_contract yes to no), which changes none of those three); recorded by chough-fixer-t4n; a relayed claim, not authenticated; ran specsync change approve closed-pipe-and-help as 0xLeif
 
 ## What was verified
 
@@ -47,4 +49,21 @@ A closed standard output ends a command quietly with its own exit code, and help
   - by: chough-fixer (claude-opus-5-5, hc t4n)
 - 2026-11-20T15:10:25Z · skip · design → plan · Nothing visual changes: quiet exits on a closed pipe, help parsing and a docs sentence. ^t-386d1c
   - revision: 7bf110dcca70bdd3565007086aee40a286f40eff
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T15:11:41Z · gate-opened · plan → plan · Approve the scope of closed-pipe-and-help ^t-1b9ce3
+  - native_change: closed-pipe-and-help
+  - revision: 8e562c06eb6a5acfb2d3759e47991f67973b7ab4
+  - holds: plan
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T15:12:13Z · gate-closed · plan → plan · Approve the scope of closed-pipe-and-help ^t-763f84
+  - native_change: closed-pipe-and-help
+  - revision: 8e562c06eb6a5acfb2d3759e47991f67973b7ab4
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Standing OK, tell me after
+    - where: Leif's standing OK for scope approvals, from his Claude Code question dialog in his planning session (hc t4c), 2026-11-20 ('Standing OK, tell me after'), relayed via t4c, which confirmed on 2026-11-20 that E1 closed-pipe-and-help at 8e562c06 has only the recommended choice, changes no requirement wording and adds no refusal; recorded after one interview correction SpecSync required for a no-spec change (public_contract yes to no), which changes none of those three
+    - recorded_by: chough-fixer-t4n
+    - native: specsync change approve closed-pipe-and-help
+    - actor: 0xLeif
   - by: chough-fixer (claude-opus-5-5, hc t4n)

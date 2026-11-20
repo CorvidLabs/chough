@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "closed-pipe-and-help",
   "slug": "closed-pipe-and-help",
   "title": "Closed pipe and help",
   "description": "closed pipe and help",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "7bf110dcca70bdd3565007086aee40a286f40eff",
   "created_at": 1795187425,
-  "updated_at": 1795187436,
+  "updated_at": 1795187534,
   "affected_specs": [
     "cli"
   ],
@@ -41,6 +41,6 @@
   "answers": {
     "architecture_risk": "no",
     "constraints": "The issues set the scope: #383's closed-pipe half (s7-F5; the Unicode half moved to #410 in 0.6.3) and #399 (review of #309, Leif: fix in 0.6.2). Leif asked to check which commands still panic before fixing: measured on main 7bf110dc, every command that prints panics with 101 into a closed pipe, except clap's own help; change ready and the ship summary exit 1 with Error: Broken pipe. Recommended choices only. No new refusal and no requirement wording changes (no-spec, as #309 was). No new dependency. Failing tests first.",
-    "public_contract": "yes"
+    "public_contract": "no"
   }
 }
