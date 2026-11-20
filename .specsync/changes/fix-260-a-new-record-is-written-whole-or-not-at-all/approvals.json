@@ -56,7 +56,79 @@
         "where": "Leif's standing OK for scope approvals (2026-11-20 dialog, relayed via t4c): his answer 'Standing OK, tell me after' in a Claude Code question dialog in his planning session (hc t4c), 2026-11-20 about 04:17Z. Confirmed by t4c for this change on fable-lead's summary (one criterion added to each changed requirement, nothing removed, no refusal). Recorded by t4c itself, at the draft b7550830",
         "recorded_by": "t4c"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795192779,
+      "digest": "a5d7dcff9d3d764f8f80be1a0e73adb45174db350c182b4052d75635442b04e5",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of fix-260-a-new-record-is-written-whole-or-not-at-all with src/checkpoint.rs added to its paths (native approval)\": \"Standing OK, tell me after\" (Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this path-only addition: src/checkpoint.rs joins #260's paths so its approved exFAT criterion holds, and #260 also closes #424; no delta word changes, no new refusal. Recorded by t4c). Relayed and recorded by t4c at 2026-11-20T16:39:38Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-260-a-new-record-is-written-whole-or-not-at-all",
+        "title": "Fix 260: a new record is written whole or not at all",
+        "description": "Fix 260: a new record is written whole or not at all",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.whole-or-nothing.cases.toml",
+          "changelog.d/",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/records/records.spec.md",
+          "specs/records/requirements.md",
+          "src/checkpoint.rs",
+          "src/main.rs",
+          "src/markdown.rs",
+          "src/records.rs",
+          "tests/records.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A new record whose write fails or is cut off, by a full disk or a file-size limit, leaves no file at its name and no temporary file, the command exits non-zero naming the record, and bug list, status, next and library index --check work as before; an empty record file is named as empty; on exFAT, bug add and journal add still write whole records."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "records and cli lessons apply: no hard link (exFAT, #313); no new refusal and no approved sentence changed; every record writer holds the writer lock, which the fallback rename relies on",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "6ec8dc5524d16a37d82a57f520c3285628781ef29d54aef96bfa8ef431c64ea0",
+        "records": "3e9b4c0114e15b8157236adfab83c79acbc1166543a16c6597d70ab556e172a5"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-023": "d09117fb95ae63884d19a105c53b93ea150e44dfd363a246902c84c874b5052d",
+        "records: REQUIREMENT REQ-records-001": "61dabcfbdb9ac4814dccf7eea76b0733159e388488380cb9428859d03002b1c3"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Standing OK, tell me after",
+        "where": "Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this path-only addition: src/checkpoint.rs joins #260's paths so its approved exFAT criterion holds, and #260 also closes #424; no delta word changes, no new refusal. Recorded by t4c",
+        "recorded_by": "t4c"
+      }
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "fix-260-a-new-record-is-written-whole-or-not-at-all",
+      "actor": "0xLeif",
+      "reason": "Add src/checkpoint.rs to the paths so the approved exFAT criterion holds: chough init fails on exFAT because .chough/local/.gitignore is created by hard link (#424); no delta word changes (run by t4c on Leif's standing OK for scope approvals)",
+      "timestamp": 1795192777,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
+    }
+  ]
 }
