@@ -21,6 +21,8 @@ observations:
   - 2026-11-20-tc-records-an-empty-record-is-named-as-empty
   - 2026-11-20-tc-records-a-cut-off-write-leaves-no-record-bf0e58
   - 2026-11-20-tc-records-an-empty-record-is-named-as-empty-97908b
+  - 2026-11-20-tc-records-a-cut-off-write-leaves-no-record-ffa649
+  - 2026-11-20-tc-records-an-empty-record-is-named-as-empty-113250
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -47,6 +49,8 @@ A new record is written whole or not at all, so a full disk or a file-size limit
 - [Ran cargo test --locked --test records -- --exact an_empty_record_is_named_as_empty for TC-records-an-empty-record-is-named-as-empty: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-an-empty-record-is-named-as-empty.md)
 - [Ran cargo test --locked --test records -- --exact a_write_cut_off_by_a_size_limit_leaves_no_record for TC-records-a-cut-off-write-leaves-no-record: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-a-cut-off-write-leaves-no-record-bf0e58.md)
 - [Ran cargo test --locked --test records -- --exact an_empty_record_is_named_as_empty for TC-records-an-empty-record-is-named-as-empty: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-an-empty-record-is-named-as-empty-97908b.md)
+- [Ran cargo test --locked --test records -- --exact a_write_cut_off_by_a_size_limit_leaves_no_record for TC-records-a-cut-off-write-leaves-no-record: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-a-cut-off-write-leaves-no-record-ffa649.md)
+- [Ran cargo test --locked --test records -- --exact an_empty_record_is_named_as_empty for TC-records-an-empty-record-is-named-as-empty: passed (exit 0, tests run 1).](evidence/2026-11-20-tc-records-an-empty-record-is-named-as-empty-113250.md)
 
 ## Open threads
 
