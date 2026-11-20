@@ -4,7 +4,7 @@
 //! It does not approve, check, or rewrite a tracked file. SpecSync's gitignored hash
 //! cache is restored when an export check writes it.
 
-use anyhow::{Context, Result, anyhow};
+use anyhow::{Context, Result};
 use serde::Deserialize;
 use serde_json::Value;
 use sha2::{Digest, Sha256};
