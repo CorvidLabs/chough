@@ -1,5 +1,0 @@
-- `chough bug add` records the active session on the new bug, as its `session`, and no longer writes the session's record (REQ-cli-012, REQ-cli-054, REQ-history-006):
-  - Two branches that each file a bug in the same session now merge without a conflict in `session.md` (#382).
-  - Filing a bug costs the same however many observations the session holds. At 400 observations it takes well under a second again, not several seconds (#395).
-  - A checkpoint holding its 200 bug links no longer refuses a new bug.
-  - A session's bugs are the bugs its checkpoint holds followed by the bugs filed in it. `chough checkpoint`, `chough context`, the archived story and the blocking check all read them.

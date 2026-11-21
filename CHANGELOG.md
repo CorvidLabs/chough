@@ -6,6 +6,292 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-11-21
+
+- `chough change ready` counts only the change's own work after a rebase onto the
+  default branch or a squash merge of it, so the default branch's files are no longer
+  named as outside the declared paths; on the default branch itself every changed file
+  still counts, and a base commit the repository no longer has is said plainly instead
+  of Git's error (#406).
+- A code fence that never closes, such as a session Goal of three backticks, hides
+  nothing after it: saving the session no longer repeats its sections, `chough next`
+  reads its decisions and open questions, and `chough bug merge` still finds a bug's Log
+  (#394).
+- The workflow skill's checkpoint reference and `docs/cli.md` say not to run `git pull`,
+  `git merge`, `git rebase`, `git checkout`, `git stash` or another Git command that
+  rewrites the worktree while another agent works there, since it can replace a record
+  another agent's Chough command has just saved; a lone agent may run one between its
+  own commands (#387).
+- A new record is written whole or not at all: a full disk or a file-size limit no
+  longer leaves a 0-byte or cut-off bug, post or entry that stops or misleads every
+  reader, and an empty record file is named as empty (#260). `chough init` works on an
+  exFAT volume again: `.chough/local/.gitignore` is no longer created by hard link
+  (#424).
+- Chough moves to SpecSync 6.4.0: install it on every machine that runs change commands,
+  and in CI, at once. A machine still on 6.3.0 can be left with a Git-ignored
+  `.specsync/hashes.json` after `chough change ready`, which Chough no longer removes. `chough change ready` now names whatever SpecSync's approval dry
+  run refuses, in SpecSync's words, in place of its own delta-set rule (#406, #307); it
+  no longer names SpecSync's own untracked `.specsync/change.lock` and
+  `.specsync/workflow-v2-baseline.json`, or another active change's work, as outside the
+  declared paths (#406); and it no longer makes or restores `.specsync/hashes.json`,
+  which SpecSync 6.4.0 keeps outside the work tree (GHSA-7q5v-8jcc-rx54). A module's
+  spec file needs no merge driver any more, since 6.4.0 records each change in its own
+  history fragment (#404).
+- The gate summary counts evidence recorded with no case, shows work not committed yet
+  as `git diff <base>`, and counts a session started before the first commit from that
+  commit (#389). `doctor`'s unfinished-archive fix names the session's journal post
+  among the files to commit (#389). Without SpecSync, a move past plan or accept says
+  no human decision is recorded, and `stage advance --to` across them needs
+  `--reason`, which lands in the Timeline (#390).
+- `chough migrate` reads every target, and every entry of the receipt folder, without
+  following a link or waiting, and refuses anything in the way before it writes,
+  naming the path relative to the project (#337).
+- A 0.5.x file that comes back after a migration is judged by the committed receipt
+  that lists it: with those bytes it is removed as already migrated; with others the
+  preview and the apply refuse, naming it, the receipt and the way on (#370).
+- An apply takes the writer lock before it plans, so of several applies of one digest
+  only one applies (#378).
+- No 0.5.x file is removed before every planned file is on disk; `knowledge/index.md`
+  beside `knowledge/INDEX.md` is written by rename, and a regular generated index or
+  feed is replaced as the plan says under `replaces` (#338).
+- A folder the migration empties, left holding only macOS metadata, goes with it and is
+  named (#375).
+- `chough doctor --fix` keeps a pointer that names an open session by alias or bare
+  slug (#376).
+- A closed pipe no longer crashes Chough (#383). A command whose standard output or standard error is closed, as in `chough next | head -1`, stops printing and exits with the code it would have had. It no longer exits 101 with a panic, or 1 with `Error: Broken pipe`. A write command still saves.
+- `chough help --help` and `chough help -h` work after the global options `--root`, `--redact` and `--session` (#399). The CLI reference names `--help` and `-h` as the help flags, and `chough -V` and `--version` as the top-level version flags.
+- A change's description, `--rationale` and answers pass the leak check (#412, REQ-cli-057, REQ-records-006):
+  - `chough change new` and `chough change answer` refuse a description, rationale or answer holding a local path, user or host name, email or credential before SpecSync writes it into the change's committed records. The refusal names the argument and the kind, never the value. `--redact` is the way out: SpecSync then gets `<redacted:<kind>>`, and one line says how many values were replaced.
+  - `chough doctor` also scans the open changes under `.specsync/changes/`, but not their `deltas/` or SpecSync's archive. `--fix --redact` skips a finding there, naming `chough change answer` or a send-back.
+  - The last places that repeated a value you gave now name what it holds (the rest of #367): `change ship --close-gate`, and an explicit evidence ID.
+- `chough bug add` records the active session on the new bug, as its `session`, and no longer writes the session's record (REQ-cli-012, REQ-cli-054, REQ-history-006):
+  - Two branches that each file a bug in the same session now merge without a conflict in `session.md` (#382).
+  - Filing a bug costs the same however many observations the session holds. At 400 observations it takes well under a second again, not several seconds (#395).
+  - A checkpoint holding its 200 bug links no longer refuses a new bug.
+  - A session's bugs are the bugs its checkpoint holds followed by the bugs filed in it. `chough checkpoint`, `chough context`, the archived story and the blocking check all read them.
+- A session file edited by hand to hold a blank, placeholder or doubled
+  `no_native_change` is refused by every reader and save, naming the field and the
+  edit, so it can no longer allow the ungated move (#401).
+- `chough change ship` checks its whole history, however many commits; in a shallow
+  clone without the base commit it refuses, naming `git fetch --unshallow`, and where a
+  squash merge removed the base it says so and goes on (#400); its gate close and move
+  into done act on the session `--session` or `CHOUGH_SESSION` names (#369).
+- `chough inbox list` lists the pinned session (#393).
+- `chough session use` and `session new` say on standard error when a pin still names
+  another session, and `chough session shelve` takes an alias or bare slug (#372).
+- `chough change new`, `answer`, `check` and `status` refuse an argument that holds a
+  credential or a control character before SpecSync runs, so SpecSync's own error
+  cannot show it (#367).
+- Skill and create races (REQ-cli-016, REQ-cli-001, REQ-history-016):
+  - Several `chough skill update` runs, or several `chough init` runs, at once each succeed, or refuse only as one on its own would. A file another run wrote first is kept, and no run fails with `File exists` (#386).
+  - `chough skill update` refuses a skill file it cannot write, naming the file relative to the project, never with internal assertion text. A file it cannot read is reported as `uninspected` (#373).
+  - A skill copy whose only difference is CRLF line breaks reads as the bundle file it equals, and is refreshed with CRLF (#373).
+  - With a host's skill directory reached through a symbolic link, such as `.codex/skills` linked to the shared copy, plain `chough skill status` and `chough skill update` skip that host and report it as `uninspected`, with its directory and why, and update the rest. `--host` for that host refuses naming it, and no absolute path is shown (#403).
+  - `chough doctor` also reads the records Git neither tracks nor ignores, such as a new session or an evidence entry a killed run left empty. It reports one its reader refuses as `unreadable`, and names a FIFO, socket or folder at a record's name without opening it (#408).
+- Leaks and output (REQ-records-006, REQ-records-001, REQ-cli-055, REQ-history-006):
+  - `chough checkpoint --resolve-question … --answer` is checked for leaks, redacted under `--redact` and bounded at 4,096 bytes, like every other checkpoint text (#364).
+  - A Git conflict marker is named by its seven characters only, in refusals and in doctor's `conflict_markers` and `possible_fenced_conflict` findings, never with the branch name or commit subject on its line (#365).
+  - An error shows a value you gave only when it holds no leak and no control character; otherwise it says what the option or variable holds, as in `CHOUGH_SESSION holds token`. This covers the session pin, `chough session use`, bug and evidence references, `--decided-by`, unknown questions, cases and stages, invalid IDs, a gate's text and `doctor --close`, and the argument parser's own usage errors (#367, in part: preferences, skills, stages, validation runs, `correct`, `library merge` and SpecSync's relayed errors follow).
+  - The leak guard adds `{"password": …}` keys, `SECRET_KEY` and `AWS_SECRET_ACCESS_KEY` assignments, `xapp-` and `hf_` tokens, `~<user>/` paths, the macOS LocalHostName and each host's `<name>.local` name, and dotted host names inside hyphenated build names. It refuses a leaking `session new --module`, and `chough evidence add --redact` now says how many values it redacted (#368).
+  - The user name comes from the account as well as `USER` and `LOGNAME`, so it is checked when they are unset. It counts only inside an absolute path, after `~` or as `user@host`, never in a relative path, a URL or a system root such as `/dev/`, and never as `root` (#379).
+  - A save with `--redact` replaces a leak already stored in the session, as a decision an older Chough wrote, instead of adding a redacted copy beside it, and `gate record --redact` passes `--redact` to the closes it runs.
+  - `chough gate record` says `Error:` once when a close it runs is refused (#380).
+- `chough doctor --fix` no longer destroys work when it finishes an archive: an
+  evidence entry the story's receipts don't hold, with its screenshot, and an unfolded
+  inbox entry are kept, and the finding names how to move or drop each (#381). macOS
+  metadata such as `.DS_Store` and `._*` files no longer blocks the finish (#377).
+- `chough next` names finishing an archive while the session folder still holds files:
+  commit the folder, story and journal post, then `chough doctor --fix` (#371).
+- `chough doctor` finds Git conflict markers in a record's front matter and says to
+  resolve the conflict, not to shelve the session. A Timeline entry that
+  `doctor --fix --redact` redacted is no longer reported as rewritten (#374).
+- The spec walk behind the whole-repository advice follows no link and stops at 4,096
+  entries or 32 folders deep, saying so, so a link loop in `specs/` no longer hangs
+  `chough doctor` or `chough init` (#402).
+- `chough doctor --fix` no longer removes an archived session's folder while its story is
+  not committed; it names it to commit first, `git add -f` for an ignored story (#389). A story an earlier
+  release wrote still holds its entries, and an unreadable entry is kept and named.
+- Control characters and echoes (REQ-records-016, REQ-records-006, REQ-cli-007, REQ-history-015, REQ-reporting-001):
+  - **Control characters refused at write (#366).** A value you give holding one is refused as `refused:control-character`, naming the field and the character's code point, never the value, with every file unchanged. This holds under `--redact` too. It covers C0 controls, DEL, C1 controls, and the bidirectional overrides and isolates (U+202A–U+202E, U+2066–U+2069).
+    - A line feed is still accepted wherever a field takes a line break, which is every field but `--title` and `--pr`.
+    - A Windows line break is stored as a line feed.
+    - A tab is refused like any other control character, where it used to be stored as a space.
+    - A value a record already holds, written by hand or by an earlier release, never blocks a save.
+  - **Control characters printed escaped (#366).** Text Chough prints from a record or from what you gave, in text and JSON alike, shows each control character as `\u` and four hex digits, so no terminal acts on it, and JSON still parses back to the stored value. Errors are included.
+    - A line feed on a one-line slot, such as `chough next`'s `Native change: none needed:` line, shows as `\n`.
+    - These hold the stored text as printed: the archived story, a journal post written from a story, `knowledge/journal/feed.xml` (which stays well-formed XML) and `knowledge/index.md`.
+    - A `cases run` entry stores its command, summary and key failing lines as printed.
+  - **YAML values quoted (#366).** A front matter value YAML reads as other than text (`null`, `~`, `true`, `false`, `yes`, `no`, `on`, `off`, in any letter case) is written double-quoted, so it reads back as text.
+  - **`chough checkpoint --pr` (#353).**
+    - It takes a pull request number, a positive whole number after an optional `#`, which is dropped, or an `http(s)` URL. Any other value is refused naming the two forms. `--pr ""` removes it.
+    - It is written as a double-quoted string, and a stored `pr: ""` reads as no pull request.
+    - `next` (a `PR:` line), `status`, `context` and the checkpoint view show it.
+    - The journal post links only those forms.
+  - **No more echoes (#367, in part).** The remaining errors and outputs that repeated a value you gave name the field and what it holds instead. These are the preference and consent keys, `--host`, stage names, validation runs, `correct`'s entry, `library merge` and `bug merge`'s files, `journal add`'s `--kind`, `--link` and `--record`, `stage backfill --at`, and the environment `next` and `status` show and the criteria, requirements and paths `cases select` lists.
+  - **`file:` URLs and `USERNAME`.** A local `file:` URL is checked like the path it carries, and `USERNAME` counts as a user name like `USER` and `LOGNAME`.
+- After a chough upgrade, `chough doctor` and `chough next` now say when installed
+  skill files are an earlier release's: doctor reports each as `skill_outdated`, and
+  `next` shows one line, both naming `chough skill update`. A file you edited is not
+  reported. `chough status` also carries `no_native_change` (#361, REQ-cli-016).
+- When a stage move is refused because the session records no native change, the
+  refusal and `chough next` now name both ways on: record a change, or record with
+  `chough checkpoint --no-native-change "<reason>"` that the work needs none. The
+  workflow skill explains the flag, and a project installed by 0.6.1 gets the new text
+  on `chough skill update`. Once the flag is set, `chough next` says the session needs
+  no native change, with the reason, and the literal placeholder `<reason>` is refused
+  (#351, REQ-cli-021).
+- An archived story's What was verified line now shows an entry's limitations beside
+  its claim, as `; limits: <limitations>`, so its stated limits are visible without
+  reading the receipts. The line is always one line: a claim or a limitation that
+  holds line breaks is folded, where a multi-line claim used to add extra lines to the
+  story (#349, REQ-history-006).
+- An evidence entry takes at most 8 limitations of at most 512 bytes each from
+  `--limitation`; `chough evidence add` and `chough cases record` refuse more with
+  nothing written. Unbounded limitations could push an archived story past its size
+  bound and leave the session stuck at done (#349, REQ-cli-017).
+- A new bug's Log now names its evidence as a link relative to the bug's file, as a
+  migrated bug's Log does: to the open session's entry, or to the archived story that
+  holds it as a receipt. When a session is archived its entries leave with its folder;
+  `chough doctor` reports a bug whose link went stale as `stale_bug_links`, and
+  `--fix` appends one Log entry linking the story, changing no earlier line (#347,
+  REQ-cli-012, REQ-history-012).
+- Follow-ups to the conflict-marker check (#339):
+  - A conflict quoted inside a closed fenced code block, as an example or tool output, no longer counts as a marker. A fence that never closes hides nothing, and no fence hides a conflict in the `## Timeline` or `## Receipts` sections Chough writes.
+  - A lone `=======`, which a half-resolved conflict may leave but a heading underline also is, is never refused. `chough doctor` warns of it instead, as an advisory `possible_conflict_separator` finding that does not change its exit status.
+  - A conflict marker inside a code fence, which may be a quoted example or a real conflict Git left there, is never refused either; `chough doctor` warns of each such line as an advisory `possible_fenced_conflict` finding.
+  - `chough doctor` reports markers in committed case definitions that Git left unparsable, and `chough cases check` names the file, the line and the marker. A valid definition may still quote a marker in a string.
+  - `chough migrate` says in its preview that the apply refuses, without offering the apply command, and its refusal names the 0.5.x file to resolve.
+  - The code-fence scan visits each line a bounded number of times, so a record holding many fence openers that never close no longer makes every write and `chough doctor` slow.
+
+  (REQ-records-001, REQ-cli-055, REQ-cli-009)
+- With `CHOUGH_SESSION` or `--session` set in a project where no session is open yet, a
+  command's refusal now names the variable or option and gives `chough session new
+  <key>`, instead of `chough session list`, which listed nothing. It still says when the
+  named session is archived, and tells you to drop `--session` or unset `CHOUGH_SESSION`
+  (#334, REQ-cli-037).
+- `chough bug add` while a session is active now adds the new bug to that session, so a
+  blocking bug filed in a session stops it leaving test even when it names nothing else.
+  Since 0.6.1 such a bug was related to no session and stopped none. A bug filed with no
+  session active stays unlinked, and `chough next` names it as not blocking. When the
+  session cannot take another bug, as with its 200 bug links held, `bug add` refuses before
+  writing anything (#329, REQ-cli-012, REQ-cli-054).
+- `chough evidence add`, `cases run` and `cases record` now take the writer lock
+  before they write their entry, so one refused as `refused:checkpoint-busy` after its
+  30-second wait leaves nothing behind and a rerun records one entry, not two. Before,
+  the entry was already written when the refusal said nothing was saved (#325,
+  REQ-cli-040).
+- A save refused because the session already holds a leaking ID reference now names
+  the way out: `chough session shelve <id>`, then `chough session new <key>`. `chough
+  doctor --fix --redact` never rewrites an ID any more, since a redacted ID no longer
+  reads: it leaves that line as it is, reports its finding skipped with the same
+  recovery, and still redacts the record's other leaks. Before, it rewrote the ID and
+  left the session unreadable (#320, REQ-history-012, REQ-cli-055).
+- `chough migrate` no longer enters or removes a folder whose name starts with `._`
+  beside 0.5.x records, even when it holds only empty folders, so the apply changes
+  nothing that its preview leaves out (#321 review, REQ-records-015).
+- Chough's readers in `.chough/` now skip the metadata macOS writes beside files: a
+  Finder `.DS_Store`, and the AppleDouble `._*` file macOS writes beside every file on
+  exFAT and other non-Apple volumes. Before, one beside a bug, an evidence entry or an
+  archived story stopped `chough next` and `chough status`, one in `.chough/cases/`
+  stopped `chough cases check`, one beside 0.5.x records or knowledge notes stopped
+  `chough migrate` or was removed by it, and `chough doctor` reported a committed one
+  as unreadable. `chough doctor --leaks` now also reads a tracked binary AppleDouble
+  file for leaks, and `--fix --redact` reports such a leak and leaves the file
+  unchanged, for a person to remove (#314, REQ-cli-068, REQ-records-015).
+- `chough change ship` now refuses before it runs SpecSync's review or ship when a
+  commit in the change's history holds a change both open and archived, as a merge of
+  main can leave. SpecSync reads that history as corrupt and said so only after
+  archiving, so the ship reported an error after it had shipped. The refusal names the
+  commit, the change and the recovery. The check is interim until SpecSync's own
+  preflight (CorvidLabs/spec-sync#1082) (#298, REQ-cli-059).
+- An archived story's receipts now keep each evidence entry's `criteria`,
+  `requirements` and `limitations`, so the story says what was verified against what
+  and its stated limits stay with it. They used to be dropped at archiving and survived
+  only in Git history. A migrated receipt keeps them too (#286, REQ-history-006).
+- `chough cases check` no longer refuses a retired case whose `fledge-task` binding names
+  a task since removed from `fledge.toml`. A retired case is history, and its binding
+  stays as written; an active case naming a missing task is still refused (#283).
+- `chough checkpoint --pr <number or URL>` sets a session's pull request, which before
+  only a hand edit of `session.md` could. It is one line, passes the same leak guard the
+  field always has, and an empty value clears it; like `--objective` and `--title` it
+  adds no Timeline entry (#282, REQ-cli-007).
+- A session whose work needs no native change can now finish honestly. `chough
+  checkpoint --no-native-change "<reason>"` records that and why; its stage moves are
+  then allowed as `ungated:no-native-change-required` where they used to refuse as
+  `refused:no-native-change`, so it advances to done and is archived with outcome
+  `done`. An open human gate still has to be closed by a person, and the reason is
+  checked for leaks like any other checkpoint value. Before, such a session
+  could only be closed as abandoned (#281, REQ-cli-007).
+- A bug that `chough migrate` writes now links each carried observation in its Log to
+  the file that holds it: the open session's evidence entry, or the archived story
+  that holds its receipt. It used to name them by bare 0.5.x ID, which a reader of the
+  Markdown file could not follow (#277, REQ-records-009).
+- Each shell can now pin its own session: every command takes `--session <id>`, and
+  without it reads `CHOUGH_SESSION`, so several agents in one worktree each write to
+  their own session whatever the shared pointer says, and the pointer never moves. A
+  name that is not an open session refuses with nothing written. `init --session` and
+  `inbox add --session` keep their meanings, and the example hc templates tell each
+  agent to export `CHOUGH_SESSION`. Before, a `session use` in one agent's shell
+  silently sent another agent's writes into the wrong session (#271, REQ-cli-037).
+- A derived journal post's body now opens with the session's current objective, as its
+  title is derived from it, so the two agree after a later `checkpoint --objective`.
+  When the objective changed after the Goal was filled, the archived story keeps its
+  Goal and gains one line, `Objective at closeout: <objective>`; nothing is rewritten
+  (#344 review of #269, REQ-records-011, REQ-history-006).
+- A session started without an objective no longer keeps the placeholder "Describe
+  the current objective before beginning work." in its story. The first `chough
+  checkpoint --objective` fills the untouched title and Goal with the objective, so the
+  archived story and its journal post carry it. A title or Goal a person wrote is never
+  rewritten (#269, REQ-records-004).
+- During a git merge or rebase, `chough next`, `chough status` and `chough doctor` now
+  say so and say to finish or abort it first. While a path under `.chough/` is
+  unmerged, every command that writes a Chough record refuses as `refused:unmerged`,
+  naming the paths, and `next` and `status` give only the merge and its next step.
+  Before, Chough read and wrote its records mid-conflict with no warning (#266,
+  REQ-cli-069).
+- A record's body may no longer hold Git conflict markers. A write whose record would
+  hold one (a line starting `<<<<<<<` or `>>>>>>>`, or a `=======` line between them)
+  is refused as `refused:conflict-markers`, naming the file, the line and the marker,
+  with every file unchanged. `chough migrate --apply` checks every file it would write
+  before writing any. `chough doctor` reports each marker in a committed record as a
+  `conflict_markers` finding, which is resolved by hand. A heading underline outside a
+  conflict is not a marker (#265, REQ-records-001, REQ-cli-055).
+- A second `chough migrate` on the same day, for a 0.5.x record written into an already
+  migrated tree, now names its own receipt, `<date>-from-0-5-2.md`, and applies. It used
+  to write the new session folder and then refuse on the first receipt's name, with no
+  way forward. The plan names its receipt (`receipt` in the JSON, `Receipt:` in the
+  text), the name is part of the plan's digest, and `--apply` checks every target, the
+  receipt included, before it writes anything. Every migrate plan's digest changes with
+  this release, because the plan now includes its receipt: a preview made with an
+  earlier Chough needs a fresh `chough migrate` before `--apply` (#264,
+  REQ-records-009).
+- On a case-sensitive file system, `chough migrate --apply` now refuses before writing
+  when `knowledge/index.md` already exists with other bytes. It used to write the other
+  files and the receipt, remove every 0.5.x file, and then fail, leaving a receipt that
+  claimed bytes it never wrote (#263, REQ-records-009).
+- While SpecSync covers the whole repository, for example with `source_dirs = ["."]`,
+  `chough init` and `chough doctor` no longer advise a `verification_ignored_paths` list
+  SpecSync refuses as overlapping. They advise narrowing `source_dirs` to the code
+  folders, for example `["src"]`, and keeping `.` out of `meaningful_paths`, then
+  listing Chough's record folders. They say why: the overlap refusal, and that a
+  whole-repository `source_dirs` counts the installed skill bundle as uncovered source
+  When the specified code sits at the repository root, with no folder to narrow to, they
+  advise adding `.chough` and the skill folder to `exclude_dirs` instead, and say the
+  ignored list needs the code in a folder or CorvidLabs/spec-sync#1083 (#251, #279,
+  REQ-records-014, REQ-cli-001).
+- `chough doctor --fix --reason` now records the reason when it withdraws stale gates:
+  each withdrawn gate's `gate-closed` Timeline entry holds it as `withdrawn: <reason>`,
+  so the archived story says why, and doctor's JSON echoes it as `decision_reason` on
+  each decision it applied. The reason is checked for leaks like any written value:
+  refused, or redacted under `--redact`. It used to be written nowhere (#250,
+  REQ-history-012).
+- The README no longer says that 0.6.0 is not released yet, and the roadmap's
+  delivered table has the 0.6.1 release row.
+- `chough change ready <id>` lists everything still missing before a change is
+  approved and exits 1 when anything is missing. Each finding names the command
+  that fixes it, and the command changes no tracked file and no SpecSync hash
+  cache (REQ-cli-067, DRIVE-29).
+
 ## [0.6.1] - 2026-11-18
 
 - A test now checks the gate summary's change line, `Change: <id> - <title> (<state>)`,
@@ -1187,6 +1473,7 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.6.2]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.2
 [0.6.1]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.1
 [0.6.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.0
 [0.5.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.5.0
