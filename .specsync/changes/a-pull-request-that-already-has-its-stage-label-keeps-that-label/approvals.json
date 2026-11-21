@@ -1,0 +1,43 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "grok-build-t10j",
+      "timestamp": 1795283728,
+      "digest": "b1bbaa3829084f2619c29d21b4af32e8b8ec82281d720571b1a6ac8af0077263",
+      "note": "Approved under \"corvid-agent requesting changing\" (Grok chat on 2026-11-21, relayed by grok-build); covered scope: do not remove or re-add a chough-stage label the pull request already has, still remove every other chough-stage label, and refresh the pull request body; limits: do not reopen the archived changes, do not merge, and change nothing outside this review item. Recorded by grok-build (Grok 4.7, hc t10j).",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "a-pull-request-that-already-has-its-stage-label-keeps-that-label",
+        "title": "A pull request that already has its stage label keeps that label",
+        "description": "A pull request that already has its stage label keeps that label",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.keep-applied-stage-label.cases.toml",
+          "changelog.d/2026-11-21-keep-applied-stage-label.md",
+          "integrations/github/chough-label-prs.sh",
+          "tests/github_labels.rs",
+          "tools/chough-label-prs.sh"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-cli-070 already says the script applies the one main stage and removes every other chough-stage label. The script removes the matching label and adds it again. This change makes the script match that sentence. The requirement text stays as it is.",
+        "acceptance_criteria": [
+          "A pull request that already has chough-stage:build, and whose introduced session is build, is not edited: the script does not remove that label and does not add it. A different chough-stage label on that pull request is still removed. The two script copies stay byte-identical."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "tasks.md has no unchecked boxes. The two script copies stay byte-identical. REQ-cli-070 already requires removing every other stage label.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
+  "reopenings": []
+}

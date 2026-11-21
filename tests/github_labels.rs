@@ -325,6 +325,26 @@ fn the_script_labels_one_main_stage_and_refuses_anything_else() {
     assert!(!log.contains("--add-label"), "{log}");
 }
 
+#[test]
+fn the_script_keeps_a_label_it_already_applied() {
+    let (stdout, log) = label("build", &[], "chough-stage:build\n");
+    assert!(stdout.contains("stage=build"), "{stdout}");
+    assert!(
+        !log.contains("--remove-label"),
+        "the applied label must stay: {log}"
+    );
+    assert!(
+        !log.contains("--add-label"),
+        "an existing label must not be added again: {log}"
+    );
+
+    let (stdout, log) = label("build", &[], "chough-stage:build\nchough-stage:intent\n");
+    assert!(stdout.contains("stage=build"), "{stdout}");
+    assert!(log.contains("--remove-label chough-stage:intent"), "{log}");
+    assert!(!log.contains("--remove-label chough-stage:build"), "{log}");
+    assert!(!log.contains("--add-label"), "{log}");
+}
+
 /// `stage` is written on the pull request's introduced session. Each name in
 /// `others` becomes another introduced session. `existing` is the labels `gh`
 /// already reports.

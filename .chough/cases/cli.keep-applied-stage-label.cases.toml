@@ -1,0 +1,26 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# LIFE-31: keep a stage label that is already on the pull request (REQ-cli-070).
+
+[[case]]
+id = "TC-cli-keep-applied-stage-label"
+title = "A pull request that already has its stage label keeps that label"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-31"]
+requirements = ["REQ-cli-070"]
+paths = [
+  "integrations/github/chough-label-prs.sh",
+  "tools/chough-label-prs.sh",
+  "tests/github_labels.rs",
+]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/github_labels.rs::the_script_keeps_a_label_it_already_applied passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "github_labels"
+test = "the_script_keeps_a_label_it_already_applied"

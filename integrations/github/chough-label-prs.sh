@@ -84,9 +84,17 @@ fi
 
 current_labels="$(gh pr view "$PR" --json labels -q '.labels[].name' 2>/dev/null || true)"
 to_remove=()
+has_stage=""
 while IFS= read -r lbl; do
   case "$lbl" in
-    chough-stage:*) to_remove+=("$lbl") ;;
+    chough-stage:*)
+      # Leave the label this run would apply. Remove every other stage label.
+      if [[ -n "$stage" && "$lbl" == "chough-stage:$stage" ]]; then
+        has_stage=1
+      else
+        to_remove+=("$lbl")
+      fi
+      ;;
   esac
 done <<< "$current_labels"
 
@@ -97,7 +105,9 @@ if [[ ${#to_remove[@]} -gt 0 ]]; then
 fi
 
 if [[ -n "$stage" ]]; then
-  gh pr edit "$PR" --add-label "chough-stage:$stage" >/dev/null
+  if [[ -z "$has_stage" ]]; then
+    gh pr edit "$PR" --add-label "chough-stage:$stage" >/dev/null
+  fi
   echo "labeled PR #$PR: stage=$stage"
 elif [[ -n "$reason" ]]; then
   echo "labeled PR #$PR: stage=none ($reason)"
