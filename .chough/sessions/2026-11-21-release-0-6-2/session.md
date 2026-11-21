@@ -5,7 +5,7 @@ aliases: [release-0-6-2]
 objective: "Prepare the Chough 0.6.2 release: the version, the change log assembled from the merged fragments, and the rebuilt knowledge index, per docs/releasing.md"
 intent_scope: ""
 modules: []
-stage: design
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Scope approval of release-0-6-2 (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # Prepare the Chough 0.6.2 release: the version, the change log assembled from the merged fragments, and the rebuilt knowledge index, per docs/releasing.md
 
@@ -64,3 +64,12 @@ Prepare the Chough 0.6.2 release: the version, the change log assembled from the
     - native: specsync change approve release-0-6-2
     - actor: 0xLeif
   - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-21T00:04:42Z · advance · design → plan ·  ^t-730c78
+  - native_change: release-0-6-2
+  - revision: 5e5eb1b443b5e90efacb656ed7d271ef85efa917
+  - by: fable (claude-opus-5-5, hc t85)
+- 2026-11-21T00:04:42Z · advance · plan → build · native:approved ^t-85f2c2
+  - native_change: release-0-6-2
+  - gate: native:approved
+  - revision: 5e5eb1b443b5e90efacb656ed7d271ef85efa917
+  - by: fable (claude-opus-5-5, hc t85)
