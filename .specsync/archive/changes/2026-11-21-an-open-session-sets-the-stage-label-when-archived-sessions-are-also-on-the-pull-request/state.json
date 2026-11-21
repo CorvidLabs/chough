@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request",
   "slug": "an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request",
   "title": "An open session sets the stage label when archived sessions are also on the pull request",
   "description": "An open session sets the stage label when archived sessions are also on the pull request",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "6bc60913b028761b20832a6906dc8e31d17e70df",
   "created_at": 1795284636,
-  "updated_at": 1795286254,
+  "updated_at": 1795286294,
   "affected_specs": [
     "cli"
   ],

@@ -1,6 +1,6 @@
 ---
 id: an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request
-state: implementing
+state: archived
 type: feature
 base_commit: 6bc60913b028761b20832a6906dc8e31d17e70df
 ---

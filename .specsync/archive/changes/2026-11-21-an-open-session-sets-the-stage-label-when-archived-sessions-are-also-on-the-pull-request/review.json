@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "95605d888bdc48c4e3255ef8e23b3913a12c93ff",
+  "contract_digest": "eb9b396ca21e1d607dc37c080cc439d5dfccf429896c01f3211231e1a7e04d0e",
+  "execution_digest": "693da87afef2ccfb6e4aa773167ad406767483b76dc7724f63ac2cfad7e56313",
+  "workspace_digest": "ca2cc8f8d07112501cc7749b01699aac9277d37044ed97e50d0b554c9722671f",
+  "timestamp": 1795286277,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Yes, record the review and archive both.",
+    "where": "Grok chat on 2026-11-21, relayed by grok-build",
+    "recorded_by": "grok-build-t10j"
+  }
+}

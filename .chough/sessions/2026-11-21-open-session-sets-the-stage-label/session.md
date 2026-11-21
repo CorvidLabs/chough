@@ -28,6 +28,11 @@ waiting_on_human:
     opened: 2026-11-21T18:15:19Z
 run_consents: []
 next: Open the implementation review and push. Do not merge.
+title: An open session sets the stage label
+summary:
+  - When a pull request archives a session and starts a new one, the stage label shows the new open session. An archived story sets the label only when no open session remains.
+  - "Verified on this machine: the new test failed first on archived done plus open intent, then TC-cli-open-session-sets-the-stage-label passed. cargo test --test github_labels passed 7, and the verify lane completed 11 steps."
+  - "Next: push both archives on pull request 443 and watch Archive. Merging was not requested."
 ---
 # An open session sets the stage label when archived sessions are also on the pull request.
 
