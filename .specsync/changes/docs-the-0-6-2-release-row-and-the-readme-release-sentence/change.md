@@ -1,6 +1,6 @@
 ---
 id: docs-the-0-6-2-release-row-and-the-readme-release-sentence
-state: approved
+state: implementing
 type: documentation
 base_commit: 1bac91a4136691074c731f6fc24fd06f57af45d6
 ---

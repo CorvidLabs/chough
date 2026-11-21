@@ -7,10 +7,11 @@
   "title": "Docs: the 0.6.2 release row and the README release sentence",
   "description": "Docs: the 0.6.2 release row and the README release sentence",
   "kind": "documentation",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "1bac91a4136691074c731f6fc24fd06f57af45d6",
   "created_at": 1795221154,
-  "updated_at": 1795222734,
+  "updated_at": 1795222750,
   "affected_specs": [
     "cli"
   ],
