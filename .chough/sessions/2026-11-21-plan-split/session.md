@@ -5,7 +5,7 @@ aliases: [plan-split]
 objective: Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Scope approval of plan-split including src/skill.rs
-    holds: plan
-    drives: approve
-    opened: 2026-11-21T23:24:03Z
+waiting_on_human: []
 run_consents: []
-next: Waiting for the widened scope approval of plan-split
+next: Continue build
 ---
 # Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 
@@ -40,6 +36,7 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of plan-split": "yes I approve" (Grok chat on 2026-11-21, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve plan-split as 0xLeif
+- 0xLeif decided "Scope approval of plan-split including src/skill.rs": "Uh, yeah, you can send back. Yes, I approve." (Grok chat on 2026-11-21, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve plan-split as 0xLeif
 
 ## What was verified
 
@@ -111,4 +108,22 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
   - revision: c423aa9766eb72c1b8a05e33aeea9eb27793e6bc
   - holds: plan
   - drives: approve
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:24:27Z · gate-closed · plan → plan · Scope approval of plan-split including src/skill.rs ^t-7f470d
+  - native_change: plan-split
+  - revision: 336fd0a5b9a439dffb111bce0cb7d1851e83af96
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Uh, yeah, you can send back. Yes, I approve.
+    - where: Grok chat on 2026-11-21, relayed by grok-t11b
+    - recorded_by: grok-t11b
+    - summary_digest: 0d6069646d57394f8aa29ce297480da031ea7dd41143d4bfc6ee9e135c049b89
+    - list: 4add0e1958e5
+    - native: specsync change approve plan-split
+    - actor: 0xLeif
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:24:41Z · advance · plan → build · native:approved ^t-d7c7db
+  - native_change: plan-split
+  - gate: native:approved
+  - revision: 336fd0a5b9a439dffb111bce0cb7d1851e83af96
   - by: unknown agent (hc t11b)

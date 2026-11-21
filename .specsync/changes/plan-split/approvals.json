@@ -39,6 +39,50 @@
         "where": "Grok chat on 2026-11-21, relayed by grok-t11b",
         "recorded_by": "grok-t11b"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795303468,
+      "digest": "cc9faad1ed57352c76127382fec4b1ecce21f3497de8f62c55744ec5b9757488",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of plan-split including src/skill.rs\": \"Uh, yeah, you can send back. Yes, I approve.\" (Grok chat on 2026-11-21, relayed by grok-t11b). Relayed and recorded by grok-t11b at 2026-11-21T23:24:27Z through chough gate record 4add0e1958e5; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "plan-split",
+        "title": "Plan split",
+        "description": "plan split",
+        "kind": "documentation",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow",
+          "changelog.d",
+          "skills/chough-workflow",
+          "src/skill.rs",
+          "tests"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Skill guidance for the plan-stage execution split and the test-stage grouping loop; no canonical spec sentence changes and no helper behavior changes.",
+        "acceptance_criteria": [
+          "The workflow skill's plan reference teaches the optional execution split (worker count, per-worker file ownership with no shared file, context budget and reading list, where each worker runs, and why that number, fanning out only when cuts share no files, each cut fits the budget, and at least 3 similar history samples show a wall-clock win), the session records worker count, wall-clock, conflicts, inbox questions and stage-backs after the slices, the testing reference teaches the bounded fix-and-rerun loop on the focused set with grouping by cause before filing and one bug or one lesson per group, and the stages and build references agree; tests pin those sentences and the installed skill copy matches the source."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Uh, yeah, you can send back. Yes, I approve.",
+        "where": "Grok chat on 2026-11-21, relayed by grok-t11b",
+        "recorded_by": "grok-t11b"
+      }
     }
   ],
   "reopenings": [],
