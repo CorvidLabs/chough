@@ -2,6 +2,21 @@
 
 Test what the change affects, not every criterion the product has.
 
+## A bounded loop on the focused set
+
+Run a bounded loop on the focused set.
+
+- Run the change's own checks and the selected cases, fix and rerun.
+- The project lane still runs once before test ends.
+- Group by cause before filing.
+- Search existing bugs first. Ten assertions with one trigger are one group.
+- A group fixed inside the loop becomes one lesson, or one bug if it is worth the
+  backlog, not one bug per assertion.
+- A group still open at the end is one bug with every failed observation linked.
+- Blocking still sends that session back to build.
+- Stop after a few passes or when the focused set is green, and name what remains.
+- The validate side stage stays the long repeated run and still needs consent.
+
 ## Choose the checks
 
 Run `chough cases select --requirement <REQ> --criterion <ID> --path <changed path>`

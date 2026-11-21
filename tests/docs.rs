@@ -1804,6 +1804,104 @@ fn the_new_project_section_shows_a_minimal_hi_file_and_requirements_md() {
     }
 }
 
+/// The plan-split change ships the optional execution split and the bounded test loop
+/// into the workflow skill, and the new sentences are pinned here, in both copies.
+#[test]
+fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
+    let pinned: &[(&str, &str)] = &[
+        (
+            "skills/chough-workflow/references/plan.md",
+            "The one scope approval covers the whole change, and an execution split is optional and",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "- How many workers: one unless a split is clearly cheaper, capped at about four.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "Fan out only when the cuts share no files, each cut fits the budget, and at least three",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "Chough does not launch agents. Workers report with `chough inbox add`, and the session",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "A later slice may be replanned inside the approved paths. A change to intent, contract",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "## A bounded loop on the focused set",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- Run the change's own checks and the selected cases, fix and rerun.",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- The project lane still runs once before test ends.",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- Group by cause before filing.",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- Search existing bugs first. Ten assertions with one trigger are one group.",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- Blocking still sends that session back to build.",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- Stop after a few passes or when the focused set is green, and name what remains.",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- The validate side stage stays the long repeated run and still needs consent.",
+        ),
+        (
+            "skills/chough-workflow/references/bugs.md",
+            "Group by cause before filing; ten assertions with one",
+        ),
+        (
+            "skills/chough-workflow/references/stages.md",
+            "- Execution: an optional execution split inside the one scope approval is planned here, with worker count, file ownership, context budget, where each worker runs and the fan-out bar (see plan.md).",
+        ),
+        (
+            "skills/chough-workflow/references/build.md",
+            "The project lane still runs once before test ends.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "Chough does not launch agents. Workers report with `chough inbox add`, and the session",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/testing.md",
+            "- The project lane still runs once before test ends.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/bugs.md",
+            "Group by cause before filing; ten assertions with one",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/stages.md",
+            "- Execution: an optional execution split inside the one scope approval is planned here, with worker count, file ownership, context budget, where each worker runs and the fan-out bar (see plan.md).",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/build.md",
+            "The project lane still runs once before test ends.",
+        ),
+    ];
+    for (file, sentence) in pinned {
+        assert!(
+            read(file).contains(sentence),
+            "{file} does not pin {sentence:?}"
+        );
+    }
+}
+
 /// Kimi's fresh-eyes finding (1), second round (2026-11-12): asked to skip design while
 /// at intent, an agent ran `chough stage skip` there, and the Timeline recorded `skip ·
 /// intent → design`. `skip` skips the current stage. docs/cli.md and both copies of the

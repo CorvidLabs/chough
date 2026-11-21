@@ -39,6 +39,9 @@ work" is not a regression baseline. State impact separately from priority.
 
 ## Search, then record
 
+Search existing bugs first. Group by cause before filing; ten assertions with one
+trigger are one group.
+
 ```sh
 chough bug search "<symptom and trigger>" --requirement <REQ> --case <case>
 chough bug add --title "…" --symptom "…" --trigger "…" --expected "…" --actual "…" \

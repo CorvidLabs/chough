@@ -567,6 +567,18 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/testing.md",
         "0389a3c78be3736e46ccdc2463f959fc7ca580ab22e9ae1a30222c72fcba5ec0",
     ),
+    // The plan-split change edits the build reference, so the 0.6.1 build digest is a
+    // known previous.
+    (
+        "references/build.md",
+        "970d5a96be20ac737f8e1c9650bc327355792b3ee4b2e525acbbd7dc14c7ad30",
+    ),
+    // The plan-split change edits the plan reference, so the 0.6.2 plan digest is a
+    // known previous.
+    (
+        "references/plan.md",
+        "203e180a8636a9fcf8adfa58ecc344d47136156a3f229f24da24af4e9a4b80d8",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

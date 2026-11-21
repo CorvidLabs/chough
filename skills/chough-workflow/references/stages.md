@@ -87,6 +87,7 @@ observations and evidence named in the refresh list must be redone by their owne
 ## plan
 
 - Purpose: technical design, task plan, estimates and ownership in the native change.
+- Execution: an optional execution split inside the one scope approval is planned here, with worker count, file ownership, context budget, where each worker runs and the fan-out bar (see plan.md).
 - Inputs: intent, design, contracts, architecture, native lessons and principles.
 - Outputs: native change package and deltas (SpecSync), estimates and ownership (plan artifact).
 - Roles and tools: engineering, architecture, QA; `chough change new/answer`.
@@ -111,6 +112,7 @@ observations and evidence named in the refresh list must be redone by their owne
 ## test
 
 - Purpose: focused verification of the affected criteria and behavior.
+- Loop: a bounded loop on the focused set (see testing.md).
 - Inputs: selected cases (`chough cases select`), project-required lane.
 - Outputs: evidence entries in the session's `evidence/` folder (raw logs stay local and in CI), bugs for failures.
 - Roles and tools: QA; `chough cases run/record`; browser for design QA.
