@@ -256,7 +256,7 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `journal add` | Write one short dated post in `knowledge/journal/` that links the records; the move into done and `session close` write one too |
 | `timing` | Read-only report of how long stages, tests, bug fixes and human gates took, as elapsed wall-clock time with history ranges that are estimates, not targets |
 
-This table documents 0.6.1. Every command writes records in the format 0.6.0
+This table documents 0.6.2. Every command writes records in the format 0.6.0
 introduced, which a Chough 0.5.x binary cannot read.
 
 ## Record identities and compatibility
@@ -321,8 +321,8 @@ post-fix Kimi rerun. Other platforms may work but have not been exercised.
   SpecSync 6.1.2 does
   ([CorvidLabs/spec-sync#823](https://github.com/CorvidLabs/spec-sync/pull/823)), and
   Chough's own guard still refuses such a delta with older versions.
-- In a repository with no commits yet, `chough next` reports the raw `git rev-parse
-  HEAD` error as the snapshot; make a first commit before relying on freshness.
+- In a repository with no commits yet, `chough status` reports the raw `git rev-parse
+  HEAD` error as its snapshot; make a first commit before relying on freshness.
 - Cursor, Gemini and Grok have not had real discovery or cold-start exercises. Kimi
   remains limited to the single run above, with no fresh post-fix run. Google
   Antigravity has only the unverified narrative report from closed PR #20, recorded

@@ -106,7 +106,8 @@ The move into done archives the session into one story,
 librarian on, it also writes a journal post; the librarian refreshes the vault at
 release, not at closeout. The finish then takes two commits:
 
-1. Commit the story and the journal post with the archive.
+1. Commit the session folder, the story and the journal post together, as `chough next`
+   names them.
 2. Run `chough doctor --fix`, which removes the session folder now that its bytes are
    committed, and commit that removal.
 

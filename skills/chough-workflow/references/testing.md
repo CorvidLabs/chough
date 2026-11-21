@@ -148,9 +148,10 @@ stripped.
 Chough cannot see what an image shows, so check every screenshot for personal
 information (names, emails, paths, tokens, private messages) before adding it, and
 crop or blur what does not belong. Record a larger image by fingerprint with
-`--artifact` instead. At finish the screenshots move beside the archived story. Do not
-use Git LFS for them while SpecSync `change check` refuses tracked LFS files
-(CorvidLabs/spec-sync#789).
+`--artifact` instead. At finish the screenshots move beside the archived story. Git LFS
+needs the git-lfs driver: SpecSync no longer rejects an unchanged LFS asset
+(CorvidLabs/spec-sync#789, closed), but a `filter=lfs` path without the driver still
+fails its check.
 
 ## No retention to manage
 

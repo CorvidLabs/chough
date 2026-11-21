@@ -10,4 +10,5 @@ flowchart TB
     fledge --> evidence["Observations: revision, inputs, environment"]
     evidence --> chough
     spec -->|"native state gates stages"| chough
+    chough -. "runs change steps; approval or review as the human" .-> spec
     chough --> resume["Any agent resumes from files"]

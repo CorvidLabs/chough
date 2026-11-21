@@ -6,8 +6,9 @@ flowchart TB
     human -->|"changes requested"| build["Back to build"]
     build --> tests
     human -->|"approved"| ship["chough change ship --close-gate: SpecSync review as the human, then ship and finalize (same PR), then done"]
-    ship --> story["Commit the archived story and journal post"]
+    ship --> story["Commit the session folder, the archived story and the journal post"]
+    ship -. "release authorized: the session stays open at done" .-> release["Optional release with real commands"]
+    release -. "the move from release into done archives" .-> story
     story --> cleanup["chough doctor --fix removes the committed session folder; commit"]
     cleanup --> push["Push; hosted CI at the archived tip"]
     push --> merge["Merge through the normal process"]
-    merge -. "only if authorized" .-> release["Optional release with real commands"]

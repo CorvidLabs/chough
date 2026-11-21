@@ -42,7 +42,7 @@ Work only in your own checkout and branch; other branches are not inputs.
 | Intent | Command | Notes |
 |---|---|---|
 | Next stage | `chough stage advance` | Every move meets its destination's native prerequisite (build, test, accept, done) |
-| Several stages at once | `chough stage advance --to <stage>` | Every step is checked first, on one native read; a refused step records nothing, and into done it reads native status once |
+| Several stages at once | `chough stage advance --to <stage>` | Every step is checked first, on one native read; a refused step records nothing, and into done it reads native status once. Without a native lifecycle, across a plan or accept that holds no human decision it refuses as `refused:no-human-decision` unless `--reason "<why>"` is given |
 | Not applicable | `chough stage skip --reason "<why>"` | `skip` skips the current stage, not the next one, and records `skip · <current> → <next>`; the reason is required and kept |
 | Another pass | `chough stage iterate --note "<what changed>"` | |
 | Go back | `chough stage back --to <stage> --reason "<why>"` | Lists what to refresh; history is kept |
@@ -135,7 +135,7 @@ observations and evidence named in the refresh list must be redone by their owne
 ## done
 
 - Purpose: the change is archived. Merge follows the repository's process.
-- Outputs: the move into done archives the session into one story in `.chough/archive/sessions/`, and, when the librarian is on, a journal post. The generated knowledge directory is refreshed at release, not here. Commit the story and the post, if one was written, then run `chough doctor --fix` and commit that.
+- Outputs: the move into done archives the session into one story in `.chough/archive/sessions/`, and, when the librarian is on, a journal post. The generated knowledge directory is refreshed at release, not here. Commit the session folder, the story and the post, if one was written, together, then run `chough doctor --fix` and commit that.
 - Transitions: release only with authorization, asked before done so the session stays open; start new work with `chough session new <key>`.
 
 ## release

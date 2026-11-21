@@ -77,11 +77,12 @@ flowchart TB
     human -->|"changes requested"| build["Back to build"]
     build --> tests
     human -->|"approved"| ship["chough change ship --close-gate: SpecSync review as the human, then ship and finalize (same PR), then done"]
-    ship --> story["Commit the archived story and journal post"]
+    ship --> story["Commit the session folder, the archived story and the journal post"]
+    ship -. "release authorized: the session stays open at done" .-> release["Optional release with real commands"]
+    release -. "the move from release into done archives" .-> story
     story --> cleanup["chough doctor --fix removes the committed session folder; commit"]
     cleanup --> push["Push; hosted CI at the archived tip"]
     push --> merge["Merge through the normal process"]
-    merge -. "only if authorized" .-> release["Optional release with real commands"]
 ```
 
 In the test stage, link failing-first evidence: the commit that adds the failing
@@ -92,9 +93,10 @@ checkpoint records that change.
 
 The order before the review is: when the delta adds or modifies requirements, run
 `chough change check <id> --no-commit` first (SpecSync's check without `--commit`) to
-materialize them; `chough cases run`; open the review gate with
-`chough checkpoint --awaiting-human "Implementation review of <id>"`, which holds
-accept and drives the native review by default; commit the source together with
+materialize them; `chough cases run`; move to accept with `chough stage advance`; open
+the review gate with `chough checkpoint --awaiting-human "Implementation review of <id>"
+--holds accept --drives review` (a gate held at accept drives the native review by
+default); commit the source together with
 `.chough/`; `chough change check <id>` (SpecSync's `change check <id> --commit`);
 present the work. When the human decides, `chough change ship <id> --close-gate
 "<gate>" --decided-by "<who>" --words "<their words>" --where "<where>"
@@ -111,10 +113,13 @@ A request for changes on a review-driving gate is recorded with
 review as that human with verdict block, and the work goes back to build. `--no-native`
 is only for a decision that is neither an approval nor a review; it runs nothing.
 
-The move into done archives the session into one story,
-`.chough/archive/sessions/<id>.md`, and, when the librarian is on, writes a journal
-post. The generated knowledge directory is refreshed at release, not here. Commit the
-story and the post, if one was written.
+The move into done by `chough stage advance` (as `chough change ship` makes it)
+archives the session into one story, `.chough/archive/sessions/<id>.md`, and, when the
+librarian is on, writes a journal post; authorized release or unfolded inbox entries
+keep the session open instead, and `stage skip`, `stage reset --to done` and a return
+to done do not archive. The generated knowledge directory is refreshed at release, not
+here. Commit the session folder, the story and the post, if one was written, together,
+as `chough next` names them.
 Then run `chough doctor --fix`, which removes the session folder now that its bytes are
 committed, and commit that. The closeout is archive-first: the hosted
 Archive gate refuses while a native change is open. So only after finalize and these
@@ -151,11 +156,18 @@ that was done. Build needs a valid definition approval, and test and accept need
 approval or such an archive. Unknown or unavailable native state, an invalid approval
 and an invalid SDD policy refuse these moves, and so does SpecSync configured with SDD
 enabled but no native change recorded in the checkpoint (`refused:no-native-change`;
-record it with `chough checkpoint --native-change <id>`). An invalid native correction
+record it with `chough checkpoint --native-change <id>`, or record that the work needs
+none with `chough checkpoint --no-native-change "<reason>"`, which leaves the moves
+ungated as `ungated:no-native-change-required`). An invalid native correction
 (`refused:native-correction-invalid`) and an approved delta that changed after approval
 or cannot be compared (`refused:native-delta-changed`,
-`refused:native-delta-unverifiable`) also refuse build, test and accept. No SpecSync
-configuration or a valid disabled policy leaves them ungated.
+`refused:native-delta-unverifiable`) also refuse build, and test and accept while the
+change is not yet archived. No SpecSync configuration (`ungated:not-configured`), or a
+SpecSync configuration with no `.specsync/sdd.json` or a valid disabled policy
+(`ungated:sdd-disabled`), leaves them ungated. Then a single `chough stage advance` out
+of plan or accept that holds no human decision says so, and `chough stage advance --to`
+across such a stage refuses as `refused:no-human-decision` unless `--reason "<why>"` is
+given, which the Timeline keeps (REQ-cli-031).
 
 ## Release, monitoring and learning
 
