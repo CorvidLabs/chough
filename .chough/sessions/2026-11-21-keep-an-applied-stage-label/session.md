@@ -5,7 +5,7 @@ aliases: [keep-an-applied-stage-label]
 objective: A pull request that already has its stage label keeps that label.
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -13,15 +13,19 @@ native_change: a-pull-request-that-already-has-its-stage-label-keeps-that-label
 pr: "https://github.com/CorvidLabs/chough/pull/443"
 criteria: [LIFE-31]
 requirements: [REQ-cli-070]
-cases: []
+cases: [TC-cli-keep-applied-stage-label]
 design: []
 files: []
 observations: [2026-11-21-tc-cli-keep-applied-stage-label]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of a-pull-request-that-already-has-its-stage-label-keeps-that-label
+    holds: accept
+    drives: review
+    opened: 2026-11-21T18:01:55Z
 run_consents: []
-next: Skip design, approve the change, and push the script fix. Do not merge.
+next: Open the implementation review and push. Do not merge.
 ---
 # A pull request that already has its stage label keeps that label.
 
@@ -30,6 +34,8 @@ next: Skip design, approve the change, and push the script fix. Do not merge.
 A pull request that already has its stage label keeps that label.
 
 ## Where it stands
+
+- A pull request that already has its stage label keeps it. A different stage label is still removed.
 
 ## Decisions and why
 
@@ -69,4 +75,20 @@ A pull request that already has its stage label keeps that label.
   - native_change: a-pull-request-that-already-has-its-stage-label-keeps-that-label
   - gate: native:approved
   - revision: 727d3bfdeef47b5a5df912d542565f8ba321a377
+  - by: unknown agent (hc t10j)
+- 2026-11-21T18:01:54Z · advance · build → test · native:verifying ^t-dbbead
+  - native_change: a-pull-request-that-already-has-its-stage-label-keeps-that-label
+  - gate: native:verifying
+  - revision: dae4a30df4660b2dcec61bd44d0d8519fda848b7
+  - by: unknown agent (hc t10j)
+- 2026-11-21T18:01:55Z · advance · test → accept · native:verifying ^t-d9744e
+  - native_change: a-pull-request-that-already-has-its-stage-label-keeps-that-label
+  - gate: native:verifying
+  - revision: dae4a30df4660b2dcec61bd44d0d8519fda848b7
+  - by: unknown agent (hc t10j)
+- 2026-11-21T18:01:55Z · gate-opened · accept → accept · Implementation review of a-pull-request-that-already-has-its-stage-label-keeps-that-label ^t-4c562c
+  - native_change: a-pull-request-that-already-has-its-stage-label-keeps-that-label
+  - revision: dae4a30df4660b2dcec61bd44d0d8519fda848b7
+  - holds: accept
+  - drives: review
   - by: unknown agent (hc t10j)
