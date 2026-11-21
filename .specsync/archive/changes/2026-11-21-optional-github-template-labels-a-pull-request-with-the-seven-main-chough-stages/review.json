@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "9f265d9fbb3a914863f1c70fbad6a82ff86a516b",
+  "contract_digest": "5982e3579a25acfe585ca66b0f27b2b88cc646b34ec206301c20bc662f05118a",
+  "execution_digest": "c5c7903342f20e1c77393825b9e86c34574120d3a4bf820839684afef2b0079a",
+  "workspace_digest": "8ada9e9c3413a3827e929c03b8da94c87a6746414c6e5b45af9c15fc138d1be3",
+  "timestamp": 1795280571,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "I approve continue",
+    "where": "Grok chat on 2026-11-21, relayed by grok-build",
+    "recorded_by": "grok-build"
+  }
+}

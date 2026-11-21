@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request",
+  "implementation_commit": "95605d888bdc48c4e3255ef8e23b3913a12c93ff",
+  "implementation_tree": "7cc38d56bba5378b69c7a6b6818d099ea1eb5e9b",
+  "contract_digest": "eb9b396ca21e1d607dc37c080cc439d5dfccf429896c01f3211231e1a7e04d0e",
+  "workspace_digest": "ca2cc8f8d07112501cc7749b01699aac9277d37044ed97e50d0b554c9722671f",
+  "closing_digest": "0f19487e5c24c08401c69f955695bc2fc94da861eb954c1e77490a67f4a6fc1a",
+  "review_digest": "cb8c6efb158fdd0cf378c540c8bb14f63735515603fa56bcd29a3198eb27ee74",
+  "finalization_digest": "c87fd635b1fdbb4f202723289f9cb8f80b8cbfe985c5108a3e2957d4fba33ffa",
+  "timestamp": 1795286291
+}

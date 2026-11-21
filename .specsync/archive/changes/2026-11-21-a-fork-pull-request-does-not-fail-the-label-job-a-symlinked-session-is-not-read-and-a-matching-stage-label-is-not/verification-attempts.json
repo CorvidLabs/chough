@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1795282219,
+      "commit": "bfd6a3a0805cb636ddc7ea7d8985f061f5cc0197",
+      "contract_digest": "1c25d9587054192cd577a0108e9c4b173c69d4e7cc28e95b3df30d6854abd83e",
+      "execution_digest": "47cf7ef8b8e8d98181f1c5dedb84ab41b10591ccd09e7b2860fa3f4341ce6466",
+      "workspace_digest": "5d1b6de3686397c4fc8df1f0628ed6f0b783b887dbc226fb642344e10455e12d",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-070"
+      ]
+    },
+    {
+      "timestamp": 1795282222,
+      "commit": "0494a33146ac11afaaf8ce56d03d7623e5717654",
+      "contract_digest": "1c25d9587054192cd577a0108e9c4b173c69d4e7cc28e95b3df30d6854abd83e",
+      "execution_digest": "47cf7ef8b8e8d98181f1c5dedb84ab41b10591ccd09e7b2860fa3f4341ce6466",
+      "workspace_digest": "60e718908851f468496f0bb2801bafe1e7d341b8f688fda7407c84b6847646bf",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-070"
+      ]
+    },
+    {
+      "timestamp": 1795282222,
+      "commit": "195bdc30073f28b0c49e05ce0a28463f9d8f1abf",
+      "contract_digest": "1c25d9587054192cd577a0108e9c4b173c69d4e7cc28e95b3df30d6854abd83e",
+      "execution_digest": "47cf7ef8b8e8d98181f1c5dedb84ab41b10591ccd09e7b2860fa3f4341ce6466",
+      "workspace_digest": "60e718908851f468496f0bb2801bafe1e7d341b8f688fda7407c84b6847646bf",
+      "acceptance_input_digest": "ee7585ce566d67c4d7f523ddc3a4c2785ee9db179396575e3044a64b3c00b754",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": ".github/workflows/chough-labels.yml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d2b50b8ecafc44deeaac1c89da3bbb008c7c7eeab9baef419c741d8d6129f3a1",
+            "entry_digest": "055183e5cef48342da118b7891fc66e2b17da29f5c701b6adbd74c1a72c2a442",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-21-fork-symlink-label-refresh.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "37613299ba8c5ae17f5aa8b73be98a4ad542da14b3985a39cbd7e6f8a76ffad3",
+            "entry_digest": "87510b67a5d8f170535db5e7936cb8c5cc19ad104e2b278125fb410526b7d397",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "integrations/github/chough-label-prs.sh",
+            "kind": "file",
+            "mode": 33261,
+            "payload_digest": "f73a69cbf3d4e8e33b0316c07645a52be9db94141b4b253b2d5b6ce4ba4fb93a",
+            "entry_digest": "2bf302d4ca929ae06685edd6847a4d1e06f52e0090fd05091ba56e37a1f8a621",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "integrations/github/chough-labels.yml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d2b50b8ecafc44deeaac1c89da3bbb008c7c7eeab9baef419c741d8d6129f3a1",
+            "entry_digest": "dc87eb714864b9df609b546559cc86086802258125f68082a3ab6c119fba98e2",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "specs/cli/cli.3md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "35c0238b3221ca8b600366541d910327bd81b6a85cde2f9278bf38af5ae99074",
+            "entry_digest": "0ed50b4fc722a134345453943f6afc0e00078c6006f0a4df0843db3e745a7cd3",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/cli.spec.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "da619f4d1bb26bdbe13f84d867011f3f383aa8fbd4d0161e7c1430d39837217b",
+            "entry_digest": "438e8c37c68f654de507765b81af294c0d0dfa246cab6fdee3da8416376bccf6",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/context.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8b46f365bff777029f5fdd15c4e1acbd5e21bc59020c42f5d7c3401641235588",
+            "entry_digest": "bdaff9b6032ceb643b10c08714e9b812e9d8ff9fa18b6f3317999e0afb112f0d",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/history/a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5bd091fd0a63178389b4fa834323812516c1462aee2eb7c6a2e3c4268623c6a7",
+            "entry_digest": "79c24a12df12f178418cedf5e4117eccc8154490e544484b2e34def33c3ec9b6",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/history/optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9844978e2d347d81a80568f48ec480f801c3c1a4ba7314535267697ced464bb9",
+            "entry_digest": "89e74a0d5459c1df34547e4c5d92263fd041d4e610ca595100e7cbfec84a6ad6",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/history/specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "c4460cf634bd6efb4b367086d41ab1c9d53843c91478b26200850d6c45912248",
+            "entry_digest": "f74cadc9c763c6b131c904047e64afa7f11d94822089460e9cabc27565305d8e",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/requirements.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1d6ea2addae129207e1c976039cf965ae9fd2511a980ed6b4cddfd42ba7fb1d3",
+            "entry_digest": "5a53a24a02edf57ea796b641be23de3b2bcf5aea95f9923d95c7fcfcc6f06e75",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/tasks.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "06f3a8c0850c62325383f36e79273eb2fd9d355ce4d83a543f3c306c43294c3d",
+            "entry_digest": "8f5dc063d921267ddba11b030ed5d923c31baaedd8368d9816a654c8bf950e56",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/testing.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "483933ab74792a113e55a1b3bf4ab1bc2e36578229a52a89c5dbee82d5375eec",
+            "entry_digest": "8ff2dbf45ad083bbcbd7ab754fb4bf49d644ee8baea9f02dc8dd4f4c313ce848",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "tests/github_labels.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "da83b895f0db5e6f4e92b270bb1b436e5b84955b890c03f4b43b157c3f7fa80e",
+            "entry_digest": "9563ac0cb2cabaf835a01075ee18d67a53232eb30fd5c13bdd139842458344be",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tools/chough-label-prs.sh",
+            "kind": "file",
+            "mode": 33261,
+            "payload_digest": "f73a69cbf3d4e8e33b0316c07645a52be9db94141b4b253b2d5b6ce4ba4fb93a",
+            "entry_digest": "22029c41f8bbe0938ae32b6c1810cc9ec0d781be578f24ad51deda2673991047",
+            "owners": [
+              "@exact:delivery"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-070"
+      ]
+    }
+  ]
+}

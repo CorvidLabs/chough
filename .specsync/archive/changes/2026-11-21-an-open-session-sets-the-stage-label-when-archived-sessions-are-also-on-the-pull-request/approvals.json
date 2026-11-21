@@ -1,0 +1,59 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "grok-build-t10j",
+      "timestamp": 1795284769,
+      "digest": "eb9b396ca21e1d607dc37c080cc439d5dfccf429896c01f3211231e1a7e04d0e",
+      "note": "Approved under \"we need to make sure this change works for multiple sessions.. when they are archived.. they start a new change it should show the new change stages\" (Grok chat on 2026-11-21, relayed by grok-build); covered scope: an open session sets the stage label, and an archived story sets it only when no open session remains; limits: this behavior only, do not merge, do not edit archived records, do not close the keep-label review. Recorded by grok-build (Grok 4.7, hc t10j).",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request",
+        "title": "An open session sets the stage label when archived sessions are also on the pull request",
+        "description": "An open session sets the stage label when archived sessions are also on the pull request",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.open-session-sets-the-stage-label.cases.toml",
+          "INTENT.md",
+          "changelog.d/2026-11-21-open-session-sets-the-stage-label.md",
+          "hi/life.md",
+          "integrations/github/README.md",
+          "integrations/github/chough-label-prs.sh",
+          "specs/cli/history/an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request.md",
+          "specs/cli/requirements.md",
+          "tests/github_labels.rs",
+          "tools/chough-label-prs.sh"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A pull request that introduces an archived session at done and an open session at intent is labeled chough-stage:intent, and the done label is removed. A pull request whose only introduced session is an archived story at done is labeled chough-stage:done. Two open sessions at different stages still get no stage label. The two script copies stay byte-identical."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "tasks.md has no unchecked boxes. The two script copies stay byte-identical. The delta is frozen once approved. Do not edit the approved keep-label change or archived records. Do not merge.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "0039be354b5be788b801caf9bc802576e10a1196cc4a575901bdbabf4db6445b"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-070": "a1ea85c84bc138bf51267688d6d4c955eafcefec3cb278de0b968d7c01df8921"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795286291,
+      "digest": "0f19487e5c24c08401c69f955695bc2fc94da861eb954c1e77490a67f4a6fc1a",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

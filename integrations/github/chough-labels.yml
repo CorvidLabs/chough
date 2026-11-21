@@ -1,0 +1,90 @@
+name: Chough PR labels
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    # A fork pull request has a read-only token, so creating labels would fail the job.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Label PR(s) from Chough session records
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Indented so the workflow file stays valid YAML. The block scalar
+          # strips this indent before bash reads the rows.
+          LABEL_ROWS: |
+            chough-stage:intent|FF0000|Chough lifecycle label, step 1 of 7
+            chough-stage:design|FF4D00|Chough lifecycle label, step 2 of 7
+            chough-stage:plan|FF9900|Chough lifecycle label, step 3 of 7
+            chough-stage:build|FFEE00|Chough lifecycle label, step 4 of 7
+            chough-stage:test|00CC44|Chough lifecycle label, step 5 of 7
+            chough-stage:accept|00BBFF|Chough lifecycle label, step 6 of 7
+            chough-stage:done|8C00FF|Chough lifecycle label, step 7 of 7
+        run: |
+          set -euo pipefail
+          # label-sync: begin
+          # One list. Create a missing label. --force only when its color or
+          # description differs. implement and verify are not stages; delete
+          # them only when this list already contains them.
+          existing="$(gh label list --limit 1000 --json name,color,description \
+            -q '.[] | select(.name | startswith("chough-stage:")) | [.name, .color, .description] | @tsv')"
+          for extra in chough-stage:implement chough-stage:verify; do
+            if printf '%s\n' "$existing" | awk -F '\t' -v name="$extra" '$1 == name { found = 1 } END { exit found ? 0 : 1 }'; then
+              gh label delete "$extra" --yes >/dev/null
+            fi
+          done
+          while IFS='|' read -r name color description; do
+            name="${name#"${name%%[![:space:]]*}"}"
+            name="${name%"${name##*[![:space:]]}"}"
+            [[ -z "$name" ]] && continue
+            current="$(printf '%s\n' "$existing" | awk -F '\t' -v name="$name" '$1 == name { print; exit }')"
+            if [[ -z "$current" ]]; then
+              gh label create "$name" --color "$color" --description "$description" >/dev/null
+              continue
+            fi
+            got_color="$(printf '%s' "$current" | awk -F '\t' '{ print $2 }')"
+            got_desc="$(printf '%s' "$current" | awk -F '\t' '{ print $3 }')"
+            got_color="$(printf '%s' "$got_color" | tr '[:lower:]' '[:upper:]')"
+            want_color="$(printf '%s' "$color" | tr '[:lower:]' '[:upper:]')"
+            if [[ "$got_color" != "$want_color" || "$got_desc" != "$description" ]]; then
+              gh label create "$name" --color "$color" --description "$description" --force >/dev/null
+            fi
+          done <<< "$LABEL_ROWS"
+          # label-sync: end
+
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            # On a push to main, relabel every open PR from that PR's own head.
+            # fetch-depth: 0 already brought every same-repo branch head into
+            # this checkout, so reuse it with a linked worktree.
+            gh pr list --state open --json number,headRefOid -q '.[] | "\(.number) \(.headRefOid)"' | while IFS= read -r line; do
+              pr="${line%% *}"
+              sha="${line##* }"
+              tmp="$(mktemp -d)"
+              if ! git worktree add -q --detach "$tmp" "$sha" 2>/dev/null; then
+                echo "skip PR #$pr: $sha not in this checkout (fork?)"
+                rm -rf "$tmp"
+                continue
+              fi
+              ./tools/chough-label-prs.sh "$pr" "$tmp" < /dev/null \
+                || echo "::warning::labeling PR #$pr failed; continuing"
+              git worktree remove --force "$tmp" 2>/dev/null || true
+              rm -rf "$tmp"
+            done
+          else
+            ./tools/chough-label-prs.sh "${{ github.event.pull_request.number }}"
+          fi

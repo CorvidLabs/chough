@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request",
+  "slug": "an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request",
+  "title": "An open session sets the stage label when archived sessions are also on the pull request",
+  "description": "An open session sets the stage label when archived sessions are also on the pull request",
+  "kind": "feature",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "6bc60913b028761b20832a6906dc8e31d17e70df",
+  "created_at": 1795284636,
+  "updated_at": 1795286294,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "integrations/github/chough-label-prs.sh",
+    "tools/chough-label-prs.sh",
+    "integrations/github/README.md",
+    "tests/github_labels.rs",
+    ".chough/cases/cli.open-session-sets-the-stage-label.cases.toml",
+    "changelog.d/2026-11-21-open-session-sets-the-stage-label.md",
+    "specs/cli/requirements.md",
+    "specs/cli/history/an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request.md",
+    "hi/life.md",
+    "INTENT.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A pull request that introduces an archived session at done and an open session at intent is labeled chough-stage:intent, and the done label is removed. A pull request whose only introduced session is an archived story at done is labeled chough-stage:done. Two open sessions at different stages still get no stage label. The two script copies stay byte-identical."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "tasks.md has no unchecked boxes. The two script copies stay byte-identical. The delta is frozen once approved. Do not edit the approved keep-label change or archived records. Do not merge.",
+    "public_contract": "yes"
+  }
+}

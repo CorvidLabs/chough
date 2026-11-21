@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "195bdc30073f28b0c49e05ce0a28463f9d8f1abf",
+      "contract_digest": "1c25d9587054192cd577a0108e9c4b173c69d4e7cc28e95b3df30d6854abd83e",
+      "execution_digest": "47cf7ef8b8e8d98181f1c5dedb84ab41b10591ccd09e7b2860fa3f4341ce6466",
+      "workspace_digest": "60e718908851f468496f0bb2801bafe1e7d341b8f688fda7407c84b6847646bf",
+      "timestamp": 1795283227,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "i approve continue",
+        "where": "Grok chat on 2026-11-21, relayed by grok-build",
+        "recorded_by": "grok-build-t10j"
+      }
+    }
+  ]
+}

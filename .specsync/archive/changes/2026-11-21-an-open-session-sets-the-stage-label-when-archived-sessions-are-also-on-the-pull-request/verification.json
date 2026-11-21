@@ -1,0 +1,204 @@
+{
+  "timestamp": 1795286253,
+  "commit": "95605d888bdc48c4e3255ef8e23b3913a12c93ff",
+  "contract_digest": "eb9b396ca21e1d607dc37c080cc439d5dfccf429896c01f3211231e1a7e04d0e",
+  "execution_digest": "693da87afef2ccfb6e4aa773167ad406767483b76dc7724f63ac2cfad7e56313",
+  "workspace_digest": "ca2cc8f8d07112501cc7749b01699aac9277d37044ed97e50d0b554c9722671f",
+  "acceptance_input_digest": "61a17ced9ed2db5ca97012a5855de57ff460d4926d4fa3c280c50051f4f8a608",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": ".chough/cases/cli.open-session-sets-the-stage-label.cases.toml",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "d800c09eadf6d9967f35bc9ffaef0dd180a2dbe8790b96d0a74f3540514b8a1b",
+        "entry_digest": "c05519d9e2236ae8cb630b3a6e83e31bc0c4c9d95cd625b4e10cc3ef2f6603ac",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "INTENT.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5d04d04c10b7bc644147d419757a3b692ca0c5cefc9ad9e9c9fbe6aaa9480687",
+        "entry_digest": "e89c92f6c580879d6d3bd50a36bdb843ebc3449348d5aff798a9665b591c1ec8",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/2026-11-21-open-session-sets-the-stage-label.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5c2cd482d7d1ca40b573b46b8f6c47afb4ddb5ad9859016a1e11dd46e92e0c4d",
+        "entry_digest": "b2172824ac8e13e7bc76dce3a282bc3e18dd59a0a63d12dfebfd9f7652860007",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "hi/life.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "7a1cb73af7ca8c22d06e0116e217b82cb6a5c96c2320fab5a103015be9e1c3e9",
+        "entry_digest": "2750e1260aadab9216fee20f617db0bd7a1cb6a2b9314422c639081d111feeaf",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "integrations/github/README.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1084f154a5679dbe47aea0d7c1eefe2f4f8e7b6d2da7d3178a68956a8afb687d",
+        "entry_digest": "d831e0c4c1ee854949cc5f30993539c0e6a5fad7bd31040e85b87280934d8976",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "integrations/github/chough-label-prs.sh",
+        "kind": "file",
+        "mode": 33261,
+        "payload_digest": "663b2ca483d847b99c37713111969e26805eaa0331d9c4e7274269412c45540a",
+        "entry_digest": "760e00b9e5c5dace113a2f97ec4435cf4708eff32955ce70b857115fffbac18e",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.3md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "35c0238b3221ca8b600366541d910327bd81b6a85cde2f9278bf38af5ae99074",
+        "entry_digest": "0ed50b4fc722a134345453943f6afc0e00078c6006f0a4df0843db3e745a7cd3",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "da619f4d1bb26bdbe13f84d867011f3f383aa8fbd4d0161e7c1430d39837217b",
+        "entry_digest": "438e8c37c68f654de507765b81af294c0d0dfa246cab6fdee3da8416376bccf6",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8b46f365bff777029f5fdd15c4e1acbd5e21bc59020c42f5d7c3401641235588",
+        "entry_digest": "bdaff9b6032ceb643b10c08714e9b812e9d8ff9fa18b6f3317999e0afb112f0d",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5bd091fd0a63178389b4fa834323812516c1462aee2eb7c6a2e3c4268623c6a7",
+        "entry_digest": "79c24a12df12f178418cedf5e4117eccc8154490e544484b2e34def33c3ec9b6",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ca0c4a8e25c2a353e0286e98ec6d11dd67246d05a395685e7f7f89f4c51f5416",
+        "entry_digest": "e116eff5c94df0cea9e6b958b495cdbdf3308a25ac50c431ee902750721c23df",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "9844978e2d347d81a80568f48ec480f801c3c1a4ba7314535267697ced464bb9",
+        "entry_digest": "89e74a0d5459c1df34547e4c5d92263fd041d4e610ca595100e7cbfec84a6ad6",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c4460cf634bd6efb4b367086d41ab1c9d53843c91478b26200850d6c45912248",
+        "entry_digest": "f74cadc9c763c6b131c904047e64afa7f11d94822089460e9cabc27565305d8e",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "facdcb6a3529d5cb4565c0502e3d69afba123f9aab7d2ecc02d77369f32df420",
+        "entry_digest": "bbd4472a2486badeb65b718ebef58e3f1714bcfd8601dfdacbcda143a824000c",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "06f3a8c0850c62325383f36e79273eb2fd9d355ce4d83a543f3c306c43294c3d",
+        "entry_digest": "8f5dc063d921267ddba11b030ed5d923c31baaedd8368d9816a654c8bf950e56",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "483933ab74792a113e55a1b3bf4ab1bc2e36578229a52a89c5dbee82d5375eec",
+        "entry_digest": "8ff2dbf45ad083bbcbd7ab754fb4bf49d644ee8baea9f02dc8dd4f4c313ce848",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "tests/github_labels.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "e7de73a88b10626961ac8ec3f820ee6d6c8aa29e0c0875238792f5b79bf30ae2",
+        "entry_digest": "75b49cae60d4533cf665602ac3b2405c35dcdb2c521a028e68ca57d17d3078e6",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tools/chough-label-prs.sh",
+        "kind": "file",
+        "mode": 33261,
+        "payload_digest": "663b2ca483d847b99c37713111969e26805eaa0331d9c4e7274269412c45540a",
+        "entry_digest": "2fc7c82084110727e0c56331dbe25b49b1713ff921b9c168c646c53ff951bc58",
+        "owners": [
+          "@exact:delivery"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec cli",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": [
+    "REQ-cli-070"
+  ]
+}
