@@ -46,6 +46,13 @@
         "where": "Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this documentation-only change: no spec wording, no refusal. Its scope is Leif's own ask, relayed by t4c on 2026-11-21: the README and all documentation, Mermaid diagrams included, checked and made accurate for 0.6.2, code bugs filed not fixed (#433 to #440); with the roadmap's 0.6.2 row under his 'Yes, release 0.6.2' of 2026-11-20 about 23:59Z. src/skill.rs and the skill-release fixture change only so an installed 0.6.2 skill updates to the corrected files. Recorded by t4c",
         "recorded_by": "t4c"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795223498,
+      "digest": "f176dabaf3523e6b95d01a418dfb675b5bebad5a0ed7f9147ddf1cf520af04b8",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

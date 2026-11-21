@@ -5,7 +5,7 @@ aliases: [docs-0-6-2-release]
 objective: The roadmap's delivered table has the 0.6.2 release row, and the README's command table says it documents 0.6.2
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,17 @@ files: []
 observations: [2026-11-21-after-the-v0-6-2-tag-1bac91a4-and-cargo-publish-crates-io]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of docs-the-0-6-2-release-row-and-the-readme-release-sentence
+    holds: accept
+    drives: review
+    opened: 2026-11-21T01:11:25Z
 run_consents: []
-next: Continue build
+next: Continue accept
+title: The documentation checked against Chough 0.6.2
+summary:
+  - "The README and all documentation, the Mermaid diagrams included, were checked against what Chough 0.6.2 does and every inaccuracy fixed: the closeout commits the session folder with the story, the lifecycle diagram's release path, refused:no-human-decision and --reason, what closes a session, temp files, leak scope and stale claims; the lifecycle and ownership SVGs re-rendered; the roadmap's 0.6.2 row; an installed 0.6.2 skill updates. Code bugs filed: #433 to #440."
+  - "Verified at 417e1cc7 on macOS with SpecSync 6.4.0: all eleven verify steps (57 test binaries), the docs tests on diagrams and labels, and the skill-release test."
 ---
 # The roadmap's delivered table has the 0.6.2 release row, and the README's command table says it documents 0.6.2
 
@@ -75,3 +83,19 @@ The roadmap's delivered table has the 0.6.2 release row, and the README's comman
   - gate: native:approved
   - revision: 853add98bd9110f120a0ef7fdf1bcb74de762cdc
   - by: fable (claude-opus-5-5, hc t85)
+- 2026-11-21T01:11:25Z · advance · build → test · native:verifying ^t-6ad03a
+  - native_change: docs-the-0-6-2-release-row-and-the-readme-release-sentence
+  - gate: native:verifying
+  - revision: 5b680fa2c6ff71cbee9cfe18782effaaa517a5af
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-21T01:11:25Z · advance · test → accept · native:verifying ^t-32c2ec
+  - native_change: docs-the-0-6-2-release-row-and-the-readme-release-sentence
+  - gate: native:verifying
+  - revision: 5b680fa2c6ff71cbee9cfe18782effaaa517a5af
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-21T01:11:25Z · gate-opened · accept → accept · Implementation review of docs-the-0-6-2-release-row-and-the-readme-release-sentence ^t-270d18
+  - native_change: docs-the-0-6-2-release-row-and-the-readme-release-sentence
+  - revision: 5b680fa2c6ff71cbee9cfe18782effaaa517a5af
+  - holds: accept
+  - drives: review
+  - by: t4c (claude-opus-5-5, hc t4c)

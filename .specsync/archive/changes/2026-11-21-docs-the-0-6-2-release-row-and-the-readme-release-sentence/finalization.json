@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "docs-the-0-6-2-release-row-and-the-readme-release-sentence",
+  "implementation_commit": "5b680fa2c6ff71cbee9cfe18782effaaa517a5af",
+  "implementation_tree": "fcfe3883e2ec67034ed469e845458c6204cae4a9",
+  "contract_digest": "17f6a52a37d0a054a2382a4205d03c6840da21d31e16c4ff3ebaa1bf0a56e133",
+  "workspace_digest": "b7e3a4019bd36fe96e7b38edeaabc16b087741b254a384265e54fa2fcadc1821",
+  "closing_digest": "f176dabaf3523e6b95d01a418dfb675b5bebad5a0ed7f9147ddf1cf520af04b8",
+  "review_digest": "0b2356fc8991fe1a86fd783072830a8c4995ad0751d51d7f20eaf47441416b69",
+  "finalization_digest": "1fb4b1d6ad0bb06bdc6b56a305273c0bec856f4a6dc19821f033d191d979592f",
+  "timestamp": 1795223498
+}
