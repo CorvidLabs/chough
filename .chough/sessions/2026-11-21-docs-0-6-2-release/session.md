@@ -16,7 +16,7 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
+observations: [2026-11-21-after-the-v0-6-2-tag-1bac91a4-and-cargo-publish-crates-io]
 bugs: []
 blockers: []
 waiting_on_human:
@@ -38,6 +38,8 @@ The roadmap's delivered table has the 0.6.2 release row, and the README's comman
 ## Decisions and why
 
 ## What was verified
+
+- [After the v0.6.2 tag (1bac91a4) and cargo publish (crates.io chough 0.6.2, 2026-11-21T00:29Z), cargo install chough --version 0.6.2 --locked into an empty root with a fresh target directory and cargo 1.100.0 on macOS arm64 exited 0; the installed chough --version printed 'chough 0.6.2'; in a new Git repository chough init and chough next exited 0, and chough status exited 0 once a session was open (with none open it says to run chough session new, exit 1). The chough in this Mac's cargo and local bin folders also prints 0.6.2.](evidence/2026-11-21-after-the-v0-6-2-tag-1bac91a4-and-cargo-publish-crates-io.md)
 
 ## Open threads
 
