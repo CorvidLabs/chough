@@ -1,0 +1,50 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "grok-build-t10j",
+      "timestamp": 1795281464,
+      "digest": "1c25d9587054192cd577a0108e9c4b173c69d4e7cc28e95b3df30d6854abd83e",
+      "note": "Approved under \"Three fixes on Chough PR #443 (optional GitHub stage labels), from a review. Keep the scope to these three; change nothing else.\" (Grok chat on 2026-11-21, relayed by grok-build); covered scope: skip the label job when a pull request head repository is not this repository, skip a symlinked session path before reading it, and create a chough-stage label only when it is missing or its color or description differs, deleting implement and verify only when they exist; limits: do not edit the archived change, do not reopen or send back, do not merge, and change nothing outside these three fixes. Recorded by grok-build (Grok 4.7, hc t10j).",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not",
+        "title": "A fork pull request does not fail the label job, a symlinked session is not read, and a matching stage label is not recreated.",
+        "description": "A fork pull request does not fail the label job, a symlinked session is not read, and a matching stage label is not recreated.",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".github/workflows/chough-labels.yml",
+          "changelog.d/2026-11-21-fork-symlink-label-refresh.md",
+          "integrations/github/chough-label-prs.sh",
+          "integrations/github/chough-labels.yml",
+          "specs/cli/history/a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not.md",
+          "specs/cli/requirements.md",
+          "tests/github_labels.rs",
+          "tools/chough-label-prs.sh"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A fork pull request skips the label job. A symlinked session.md is not read. An existing label is created only when it is missing, and --force is used only when its color or description differs. implement and verify are deleted only when they exist."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "tasks.md has no unchecked boxes. An approved delta stays frozen. The checkout pin stays the commit ci.yml uses.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "cdfce70ddff83a24af48ea8c57269ce55d785af544e8eaf66e96b02fd85591ad"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-070": "9f9dd614c0b5d2e7fcc7ddcdf32942bec945b23f102fdeaad38ba52304147732"
+      }
+    }
+  ],
+  "reopenings": []
+}

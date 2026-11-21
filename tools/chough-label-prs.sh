@@ -55,6 +55,7 @@ while IFS= read -r f; do
     .chough/sessions/*/session.md|.chough/archive/sessions/*.md) ;;
     *) continue ;;
   esac
+  [[ -L "$f" ]] && continue
   [[ -e "$f" ]] || continue
   stage="$(awk -F': ' '
     /^stage:/ {

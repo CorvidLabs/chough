@@ -12,6 +12,8 @@ permissions:
 
 jobs:
   label:
+    # A fork pull request has a read-only token, so creating labels would fail the job.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
@@ -35,19 +37,35 @@ jobs:
             chough-stage:done|8C00FF|Chough lifecycle label, step 7 of 7
         run: |
           set -euo pipefail
-          # Seven main stages, rainbow left to right. --force refreshes color
-          # and description when the label already exists. implement and verify
-          # are not stages; drop them if an older run created them.
+          # label-sync: begin
+          # One list. Create a missing label. --force only when its color or
+          # description differs. implement and verify are not stages; delete
+          # them only when this list already contains them.
+          existing="$(gh label list --limit 1000 --json name,color,description \
+            -q '.[] | select(.name | startswith("chough-stage:")) | [.name, .color, .description] | @tsv')"
           for extra in chough-stage:implement chough-stage:verify; do
-            gh label delete "$extra" --yes >/dev/null 2>&1 || true
+            if printf '%s\n' "$existing" | awk -F '\t' -v name="$extra" '$1 == name { found = 1 } END { exit found ? 0 : 1 }'; then
+              gh label delete "$extra" --yes >/dev/null
+            fi
           done
           while IFS='|' read -r name color description; do
+            name="${name#"${name%%[![:space:]]*}"}"
+            name="${name%"${name##*[![:space:]]}"}"
             [[ -z "$name" ]] && continue
-            gh label create "$name" \
-              --color "$color" \
-              --description "$description" \
-              --force >/dev/null
+            current="$(printf '%s\n' "$existing" | awk -F '\t' -v name="$name" '$1 == name { print; exit }')"
+            if [[ -z "$current" ]]; then
+              gh label create "$name" --color "$color" --description "$description" >/dev/null
+              continue
+            fi
+            got_color="$(printf '%s' "$current" | awk -F '\t' '{ print $2 }')"
+            got_desc="$(printf '%s' "$current" | awk -F '\t' '{ print $3 }')"
+            got_color="$(printf '%s' "$got_color" | tr '[:lower:]' '[:upper:]')"
+            want_color="$(printf '%s' "$color" | tr '[:lower:]' '[:upper:]')"
+            if [[ "$got_color" != "$want_color" || "$got_desc" != "$description" ]]; then
+              gh label create "$name" --color "$color" --description "$description" --force >/dev/null
+            fi
           done <<< "$LABEL_ROWS"
+          # label-sync: end
 
           if [[ "${{ github.event_name }}" == "push" ]]; then
             # On a push to main, relabel every open PR from that PR's own head.

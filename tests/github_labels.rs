@@ -143,6 +143,160 @@ fn chough_init_does_not_install_the_label_workflow() {
 }
 
 #[test]
+fn the_script_ignores_a_symlinked_session() {
+    let (stdout, log) = run(
+        |root| {
+            git(root, &["checkout", "-b", "pr"]);
+            let real = root.join("elsewhere.md");
+            fs::write(&real, "---\nstage: build\n---\n# linked\n").unwrap();
+            let session = root.join(".chough/sessions/one/session.md");
+            fs::remove_file(&session).unwrap();
+            std::os::unix::fs::symlink(&real, &session).unwrap();
+            git(root, &["add", "."]);
+            git(root, &["commit", "-m", "pr"]);
+        },
+        "",
+    );
+    assert!(
+        stdout.contains("stage=none"),
+        "a symlink must not supply a stage: {stdout}"
+    );
+    assert!(!log.contains("--add-label"), "{log}");
+}
+
+#[test]
+fn the_workflow_does_not_recreate_matching_labels() {
+    let workflow = read("integrations/github/chough-labels.yml");
+    let installed = read(".github/workflows/chough-labels.yml");
+    assert_eq!(
+        workflow, installed,
+        "the installed workflow drifted from the template"
+    );
+    assert_eq!(
+        fs::read(root().join("integrations/github/chough-label-prs.sh")).unwrap(),
+        fs::read(root().join("tools/chough-label-prs.sh")).unwrap(),
+        "the installed script drifted from the template"
+    );
+    assert!(
+        workflow.contains("github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository"),
+        "a fork pull request must skip the label job"
+    );
+
+    let rows = label_rows();
+    let matching = label_table(&rows);
+    let with_implement = format!("{matching}chough-stage:implement\t000000\told\n");
+    let log = sync_labels(&rows, &with_implement);
+    assert!(log.contains("label delete chough-stage:implement"), "{log}");
+    assert!(!log.contains("label delete chough-stage:verify"), "{log}");
+    assert!(!log.contains("label create"), "{log}");
+
+    let missing_build = matching
+        .lines()
+        .filter(|line| !line.starts_with("chough-stage:build\t"))
+        .collect::<Vec<_>>()
+        .join("\n");
+    let log = sync_labels(&rows, &format!("{missing_build}\n"));
+    assert!(
+        log.contains("label create chough-stage:build") && !log.contains("--force"),
+        "{log}"
+    );
+    assert!(!log.contains("label create chough-stage:intent"), "{log}");
+
+    let wrong_color = matching.replace(
+        "chough-stage:build\tFFEE00\t",
+        "chough-stage:build\tFFFFFF\t",
+    );
+    let log = sync_labels(&rows, &wrong_color);
+    assert!(
+        log.contains("label create chough-stage:build") && log.contains("--force"),
+        "{log}"
+    );
+    assert!(!log.contains("label create chough-stage:intent"), "{log}");
+}
+
+fn label_rows() -> String {
+    let workflow = read("integrations/github/chough-labels.yml");
+    workflow
+        .lines()
+        .filter_map(|line| {
+            let line = line.trim();
+            if line.starts_with("chough-stage:")
+                && line.contains('|')
+                && !line.contains("implement")
+                && !line.contains("verify")
+            {
+                Some(line.to_string())
+            } else {
+                None
+            }
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+fn label_table(rows: &str) -> String {
+    rows.lines()
+        .map(|line| line.replace('|', "\t"))
+        .collect::<Vec<_>>()
+        .join("\n")
+        + "\n"
+}
+
+fn sync_labels(rows: &str, existing: &str) -> String {
+    let body = label_sync_body();
+    let tmp = tempfile::tempdir().unwrap();
+    let bin = tmp.path().join("bin");
+    fs::create_dir_all(&bin).unwrap();
+    let gh = bin.join("gh");
+    fs::write(
+        &gh,
+        "#!/bin/sh\nprintf '%s\\n' \"$*\" >> \"$GH_LOG\"\ncase \"$*\" in\n  *'label list'*) cat \"$GH_LABELS\" ;;\nesac\nexit 0\n",
+    )
+    .unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let mut perms = fs::metadata(&gh).unwrap().permissions();
+        perms.set_mode(0o755);
+        fs::set_permissions(&gh, perms).unwrap();
+    }
+    let log = tmp.path().join("gh.log");
+    let labels = tmp.path().join("labels.txt");
+    fs::write(&labels, existing).unwrap();
+    let path = std::env::var("PATH").unwrap_or_default();
+    let output = Command::new("bash")
+        .arg("-c")
+        .arg(format!("set -euo pipefail\n{body}"))
+        .env("PATH", format!("{}:{path}", bin.display()))
+        .env("GH_LOG", &log)
+        .env("GH_LABELS", &labels)
+        .env("LABEL_ROWS", rows)
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "label sync failed: {}\n{}",
+        String::from_utf8_lossy(&output.stderr),
+        String::from_utf8_lossy(&output.stdout)
+    );
+    fs::read_to_string(&log).unwrap_or_default()
+}
+
+fn label_sync_body() -> String {
+    let workflow = read("integrations/github/chough-labels.yml");
+    let marker = "# label-sync: begin\n";
+    let start = workflow
+        .find(marker)
+        .expect("workflow marks the label sync")
+        + marker.len();
+    let rest = &workflow[start..];
+    let end = rest
+        .find("# label-sync: end")
+        .expect("workflow ends the label sync");
+    rest[..end].to_string()
+}
+
+#[test]
 fn the_script_labels_one_main_stage_and_refuses_anything_else() {
     let (stdout, log) = label("build", &[], "");
     assert!(stdout.contains("stage=build"), "{stdout}");
