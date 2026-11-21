@@ -5,7 +5,7 @@ aliases: [open-session-sets-the-stage-label]
 objective: An open session sets the stage label when archived sessions are also on the pull request.
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-21-tc-cli-open-session-sets-the-stage-label-5cb5f5
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request
-    holds: accept
-    drives: review
-    opened: 2026-11-21T18:15:19Z
+waiting_on_human: []
 run_consents: []
-next: Open the implementation review and push. Do not merge.
+next: Continue done
 title: An open session sets the stage label
 summary:
   - When a pull request archives a session and starts a new one, the stage label shows the new open session. An archived story sets the label only when no open session remains.
@@ -47,6 +43,7 @@ An open session sets the stage label when archived sessions are also on the pull
 ## Decisions and why
 
 - The user said "we need to make sure this change works for multiple sessions.. when they are archived.. they start a new change it should show the new change stages". Scope is that an open session sets the stage label and an archived story is used only when no open session remains. Merging is not authorized. The keep-label review stays open.
+- 0xLeif decided "Implementation review of an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request": "Yes, record the review and archive both." (Grok chat on 2026-11-21, relayed by grok-build); recorded by grok-build-t10j; a relayed claim, not authenticated; ran specsync change review an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -99,4 +96,20 @@ An open session sets the stage label when archived sessions are also on the pull
   - revision: 6bc60913b028761b20832a6906dc8e31d17e70df
   - holds: accept
   - drives: review
+  - by: unknown agent (hc t10j)
+- 2026-11-21T18:39:18Z · gate-closed · accept → accept · Implementation review of an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request ^t-08cad0
+  - native_change: an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request
+  - revision: 55244f9c89746e17b23bdfdec927f67562720751
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, record the review and archive both.
+    - where: Grok chat on 2026-11-21, relayed by grok-build
+    - recorded_by: grok-build-t10j
+    - native: specsync change review an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request
+    - actor: 0xLeif
+  - by: unknown agent (hc t10j)
+- 2026-11-21T18:39:20Z · advance · accept → done · native:archived ^t-fd883d
+  - native_change: an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request
+  - gate: native:archived
+  - revision: 55244f9c89746e17b23bdfdec927f67562720751
   - by: unknown agent (hc t10j)
