@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "docs-the-0-6-2-release-row-and-the-readme-release-sentence",
   "slug": "docs-the-0-6-2-release-row-and-the-readme-release-sentence",
   "title": "Docs: the 0.6.2 release row and the README release sentence",
   "description": "Docs: the 0.6.2 release row and the README release sentence",
   "kind": "documentation",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "1bac91a4136691074c731f6fc24fd06f57af45d6",
   "created_at": 1795221154,
-  "updated_at": 1795222689,
+  "updated_at": 1795222734,
   "affected_specs": [
     "cli"
   ],

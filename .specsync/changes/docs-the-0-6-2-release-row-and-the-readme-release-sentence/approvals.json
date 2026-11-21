@@ -1,4 +1,52 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795222734,
+      "digest": "17f6a52a37d0a054a2382a4205d03c6840da21d31e16c4ff3ebaa1bf0a56e133",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of docs-the-0-6-2-release-row-and-the-readme-release-sentence (native approval)\": \"Standing OK, tell me after\" (Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this documentation-only change: no spec wording, no refusal. Its scope is Leif's own ask, relayed by t4c on 2026-11-21: the README and all documentation, Mermaid diagrams included, checked and made accurate for 0.6.2, code bugs filed not fixed (#433 to #440); with the roadmap's 0.6.2 row under his 'Yes, release 0.6.2' of 2026-11-20 about 23:59Z. src/skill.rs and the skill-release fixture change only so an installed 0.6.2 skill updates to the corrected files. Recorded by t4c). Relayed and recorded by t4c at 2026-11-21T00:58:53Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "docs-the-0-6-2-release-row-and-the-readme-release-sentence",
+        "title": "Docs: the 0.6.2 release row and the README release sentence",
+        "description": "Docs: the 0.6.2 release row and the README release sentence",
+        "kind": "documentation",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/",
+          "README.md",
+          "changelog.d/2026-11-21-docs-0-6-2-release.md",
+          "docs/",
+          "skills/chough-workflow/",
+          "src/skill.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Two documentation facts only: docs/releasing.md step 9 asks for the 0.6.2 release row in the roadmap's delivered table, and README.md's command table still says it documents 0.6.1. No requirement text changes.",
+        "acceptance_criteria": [
+          "The roadmap's delivered table has the 0.6.2 release row with its publication and clean install, and the README's command table says it documents 0.6.2."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Documentation only, as Leif asked: code bugs are filed (#433 to #440), not fixed; the diagrams' sources, embedded blocks and SVGs stay equal; an installed 0.6.2 skill must update, so src/skill.rs lists the replaced files (REQ-cli-016).",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Standing OK, tell me after",
+        "where": "Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this documentation-only change: no spec wording, no refusal. Its scope is Leif's own ask, relayed by t4c on 2026-11-21: the README and all documentation, Mermaid diagrams included, checked and made accurate for 0.6.2, code bugs filed not fixed (#433 to #440); with the roadmap's 0.6.2 row under his 'Yes, release 0.6.2' of 2026-11-20 about 23:59Z. src/skill.rs and the skill-release fixture change only so an installed 0.6.2 skill updates to the corrected files. Recorded by t4c",
+        "recorded_by": "t4c"
+      }
+    }
+  ],
   "reopenings": []
 }

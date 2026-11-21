@@ -19,13 +19,9 @@ files: []
 observations: [2026-11-21-after-the-v0-6-2-tag-1bac91a4-and-cargo-publish-crates-io]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Scope approval of docs-the-0-6-2-release-row-and-the-readme-release-sentence (native approval)
-    holds: design
-    drives: approve
-    opened: 2026-11-21T00:33:10Z
+waiting_on_human: []
 run_consents: []
-next: Read scoped intent and native status, then choose the next action within the authorized scope.
+next: "Gate \"Scope approval of docs-the-0-6-2-release-row-and-the-readme-release-sentence (native approval)\" closed (approved); run `chough stage advance` to move on."
 ---
 # The roadmap's delivered table has the 0.6.2 release row, and the README's command table says it documents 0.6.2
 
@@ -36,6 +32,8 @@ The roadmap's delivered table has the 0.6.2 release row, and the README's comman
 ## Where it stands
 
 ## Decisions and why
+
+- 0xLeif decided "Scope approval of docs-the-0-6-2-release-row-and-the-readme-release-sentence (native approval)": "Standing OK, tell me after" (Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this documentation-only change: no spec wording, no refusal. Its scope is Leif's own ask, relayed by t4c on 2026-11-21: the README and all documentation, Mermaid diagrams included, checked and made accurate for 0.6.2, code bugs filed not fixed (#433 to #440); with the roadmap's 0.6.2 row under his 'Yes, release 0.6.2' of 2026-11-20 about 23:59Z. src/skill.rs and the skill-release fixture change only so an installed 0.6.2 skill updates to the corrected files. Recorded by t4c); recorded by t4c; a relayed claim, not authenticated; ran specsync change approve docs-the-0-6-2-release-row-and-the-readme-release-sentence as 0xLeif
 
 ## What was verified
 
@@ -57,3 +55,14 @@ The roadmap's delivered table has the 0.6.2 release row, and the README's comman
   - holds: design
   - drives: approve
   - by: fable (claude-opus-5-5, hc t85)
+- 2026-11-21T00:58:53Z · gate-closed · design → design · Scope approval of docs-the-0-6-2-release-row-and-the-readme-release-sentence (native approval) ^t-a35af9
+  - native_change: docs-the-0-6-2-release-row-and-the-readme-release-sentence
+  - revision: f6bd0d69ac69b52efc86ac08fa12b75505fb36d6
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Standing OK, tell me after
+    - where: Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this documentation-only change: no spec wording, no refusal. Its scope is Leif's own ask, relayed by t4c on 2026-11-21: the README and all documentation, Mermaid diagrams included, checked and made accurate for 0.6.2, code bugs filed not fixed (#433 to #440); with the roadmap's 0.6.2 row under his 'Yes, release 0.6.2' of 2026-11-20 about 23:59Z. src/skill.rs and the skill-release fixture change only so an installed 0.6.2 skill updates to the corrected files. Recorded by t4c
+    - recorded_by: t4c
+    - native: specsync change approve docs-the-0-6-2-release-row-and-the-readme-release-sentence
+    - actor: 0xLeif
+  - by: t4c (claude-opus-5-5, hc t4c)
