@@ -38,7 +38,8 @@ Keep specs and source lean and composable, without being dogmatic about it:
 When subagents help, give each explicit files or modules, the relevant contract and
 requirements, and instructions to preserve others' edits. Only one agent edits a
 shared file at a time. The checkpoint has one writer; other agents report back
-instead of editing it.
+instead of editing it. When the plan forked the slice, each worker edits only the
+files in its half, and the manager does not write either half.
 
 ## Escalate only what matters
 

@@ -6,25 +6,28 @@ artifact: context
 # Context
 
 Leif agreed in chat on 2026-11-21 how the plan stage may split execution across
-workers and how the test stage runs its fix-and-rerun loop. This change writes that
+workers and how the test stage runs its fix-and-rerun loop. He later replaced the
+split with a fork: "Yes, replace it with the fork." This change writes that
 agreement into the workflow skill (the source bundle `skills/chough-workflow/` and
 its installed copy `.agents/skills/chough-workflow/`, which must stay equal), with
-tests that pin the wording. Leif's words are the intent being written down, not a
-recorded approval; the scope gate still needs his decision.
+tests that pin the wording.
 
 Constraints already agreed:
 
-- The plan stage keeps its single scope approval; the split is optional guidance
+- The plan stage keeps its single scope approval. A fork is optional guidance
   inside it, not a second gate.
-- Fan out only when the cuts share no files, each cut fits its named context
-  budget, and history has at least 3 similar samples showing a wall-clock win.
-  Fewer than 3 samples is too thin; say so. Do not invent a speed.
-- Chough does not launch agents and adds no model client. Workers report with
-  `chough inbox add`; the session owner folds the inbox.
-- After the slices the session records worker count, wall-clock, conflicts, inbox
-  questions and stage-backs; tokens only when the host reports a number, otherwise
-  unknown. The next plan reads that the way it reads `chough timing`. No second
-  timing store.
+- One question: can this slice be cut into a left half and a right half with no
+  shared file? If it cannot, one worker does the whole slice. If it can, one
+  manager spawns two workers. Each worker has its own checkout and its own session.
+  A separate clone is the default. The two file lists share no file. The manager
+  does not write either half and merges both reports into one answer. A shared file
+  stays with the manager. One fork is the batch. A half is forked again only when
+  that half still has its own seam, and the total stays at about four agents.
+- Chough does not launch the agents and adds no model client. The host spawns them.
+  Workers report with `chough inbox add`, and the manager folds the inbox.
+- After the merge the session records whether the two halves joined cleanly, the
+  wall-clock, and any conflict. That is the sample the next fork reads. Tokens only
+  when the host reports a number, otherwise unknown. No second timing store.
 - A later slice may be replanned inside the approved paths; a change to intent,
   contract or paths goes back through scope approval.
 - The test stage is a bounded loop on the focused set: run the change's checks and

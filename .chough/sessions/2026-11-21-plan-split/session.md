@@ -5,7 +5,7 @@ aliases: [plan-split]
 objective: Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 intent_scope: ""
 modules: []
-stage: build
+stage: plan
 stage_status: active
 iteration: 1
 callers: []
@@ -127,4 +127,20 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
   - native_change: plan-split
   - gate: native:approved
   - revision: 336fd0a5b9a439dffb111bce0cb7d1851e83af96
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:38:03Z · direct-native-write · build → build · plan-split's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state approved → draft ^t-337b7d
+  - native_change: plan-split
+  - revision: 0272b5c48aba25e5315ccddaf5edfc1c70494d8c
+  - direct_write:
+    - change: plan-split
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: approved
+    - after_state: draft
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:38:03Z · back · build → plan · Leif replaced the execution split with a fork ^t-c158a7
+  - native_change: plan-split
+  - revision: 0272b5c48aba25e5315ccddaf5edfc1c70494d8c
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition
   - by: unknown agent (hc t11b)

@@ -30,34 +30,29 @@ new` prints the lessons of the modules you declare.
 5. If several agents will build, assign file or module ownership in the plan.
 6. Record the change: `chough checkpoint --native-change <id>`.
 
-## Optional execution split
+## Fork
 
-The one scope approval covers the whole change, and an execution split is optional and
-inside it.
+The one scope approval covers the whole change. A fork is optional and inside it.
 
-- How many workers: one unless a split is clearly cheaper, capped at about four.
-- Which files or modules each worker owns: the cut assigns files or modules, and no two
-  workers own a shared file.
-- Context budget: each worker gets a context budget and the short list of files or
-  modules it must read.
-- Where each worker runs: its own checkout and its own session; a separate clone is the
-  default, a worktree is an explicit option.
-- Why that number: one worker is the default, and a split is worth it only when it is
-  clearly cheaper.
+One question: can this slice be cut into a left half and a right half with no shared
+file?
 
-Say why that number.
+- If it cannot, one worker does the whole slice.
+- If it can, one manager spawns two workers. Each worker has its own checkout and its
+  own session. A separate clone is the default, and a worktree is an explicit option.
+  Each worker owns its own files, and the two lists share no file. The manager does not
+  write either half. The manager is the merge: it takes both reports and sends one
+  answer back.
+- A shared file stays with the manager.
+- One fork is the batch: one manager and two workers. A half is forked again only when
+  that half still has its own seam, and the total stays at about four agents.
 
-Fan out only when the cuts share no files, each cut fits the budget, and at least three
-similar history samples show a wall-clock win. Fewer than three is too thin; say so and
-do not invent a speed.
+Chough does not launch the agents. The host spawns them. Workers report with `chough
+inbox add`, and the manager folds the inbox.
 
-Chough does not launch agents. Workers report with `chough inbox add`, and the session
-owner folds the inbox.
-
-After the slices, record on the session: worker count, wall-clock, conflicts, inbox
-questions, and stage-backs. Tokens only when the host reports a number, otherwise
-unknown. The next plan reads that the way it reads `chough timing`. No second timing
-store holds it.
+After the merge, record on the session whether the two halves joined cleanly, the
+wall-clock, and any conflict. That is the sample the next fork reads. Tokens only when
+the host reports a number, otherwise unknown. No second timing store holds it.
 
 A later slice may be replanned inside the approved paths. A change to intent, contract
 or paths goes back through scope approval.

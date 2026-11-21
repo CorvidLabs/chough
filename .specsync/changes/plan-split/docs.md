@@ -7,16 +7,15 @@ artifact: docs
 
 The deliverable is documentation: the workflow skill files themselves.
 
-- `references/plan.md` gains the optional execution split inside the existing
-  one-approval section: how many workers (one unless a split is clearly cheaper,
-  cap about 4), per-worker file or module ownership with no shared file, the
-  context budget and the short list each worker must read, where each worker runs
-  (its own checkout and its own session; a separate clone is the default, a
-  worktree an explicit option), and why that number. Fan-out conditions, the 3-sample
-  history rule, `chough inbox add` reporting, the post-slice session record
-  (worker count, wall-clock, conflicts, inbox questions, stage-backs; tokens only
-  when the host reports a number), and replanning inside approved paths versus
-  back through scope approval.
+- `references/plan.md` gains an optional fork inside the existing one-approval
+  section. One question: can the slice be cut into a left half and a right half
+  with no shared file? If it cannot, one worker does the whole slice. If it can,
+  one manager spawns two workers, each in its own checkout and session, with no
+  shared file. A separate clone is the default. The manager does not write either
+  half and merges both reports into one answer. One fork is the batch. A half is
+  forked again only when it still has its own seam, and the total stays at about
+  four agents. Chough does not launch the agents. After the merge the session
+  records whether the halves joined cleanly, the wall-clock, and any conflict.
 - `references/testing.md` gains the bounded fix-and-rerun loop on the focused set,
   grouping by cause before filing, searching existing bugs first, one lesson or
   one bug per fixed group, one open bug per still-open group with every failed
@@ -24,7 +23,8 @@ The deliverable is documentation: the workflow skill files themselves.
   green, naming what remains.
 - `references/bugs.md` gains the grouping rule cross-reference (a group, not one
   bug per assertion).
-- `references/build.md` gains the worker-ownership pointer to the plan split.
+- `references/build.md` says that when the plan forked the slice, each worker edits
+  only the files in its half, and the manager does not write either half.
 - `references/stages.md` gains the same wording in the fast path where the stage
   steps say build and test.
 - `SKILL.md` changes only if the stage table must change.

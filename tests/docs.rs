@@ -1804,26 +1804,26 @@ fn the_new_project_section_shows_a_minimal_hi_file_and_requirements_md() {
     }
 }
 
-/// The plan-split change ships the optional execution split and the bounded test loop
+/// The plan-split change ships the optional fork and the bounded test loop
 /// into the workflow skill, and the new sentences are pinned here, in both copies.
 #[test]
 fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
     let pinned: &[(&str, &str)] = &[
         (
             "skills/chough-workflow/references/plan.md",
-            "The one scope approval covers the whole change, and an execution split is optional and",
+            "The one scope approval covers the whole change. A fork is optional and inside it.",
         ),
         (
             "skills/chough-workflow/references/plan.md",
-            "- How many workers: one unless a split is clearly cheaper, capped at about four.",
+            "One question: can this slice be cut into a left half and a right half with no shared",
         ),
         (
             "skills/chough-workflow/references/plan.md",
-            "Fan out only when the cuts share no files, each cut fits the budget, and at least three",
+            "- One fork is the batch: one manager and two workers. A half is forked again only when",
         ),
         (
             "skills/chough-workflow/references/plan.md",
-            "Chough does not launch agents. Workers report with `chough inbox add`, and the session",
+            "Chough does not launch the agents. The host spawns them. Workers report with `chough",
         ),
         (
             "skills/chough-workflow/references/plan.md",
@@ -1867,15 +1867,15 @@ fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
         ),
         (
             "skills/chough-workflow/references/stages.md",
-            "- Execution: an optional execution split inside the one scope approval is planned here, with worker count, file ownership, context budget, where each worker runs and the fan-out bar (see plan.md).",
+            "- Fork: an optional fork inside the one scope approval is planned here. One question: can the slice be cut into a left half and a right half with no shared file? See plan.md.",
         ),
         (
             "skills/chough-workflow/references/build.md",
-            "The project lane still runs once before test ends.",
+            "When the plan forked the slice, each worker edits only the",
         ),
         (
             ".agents/skills/chough-workflow/references/plan.md",
-            "Chough does not launch agents. Workers report with `chough inbox add`, and the session",
+            "Chough does not launch the agents. The host spawns them. Workers report with `chough",
         ),
         (
             ".agents/skills/chough-workflow/references/testing.md",
@@ -1887,11 +1887,11 @@ fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
         ),
         (
             ".agents/skills/chough-workflow/references/stages.md",
-            "- Execution: an optional execution split inside the one scope approval is planned here, with worker count, file ownership, context budget, where each worker runs and the fan-out bar (see plan.md).",
+            "- Fork: an optional fork inside the one scope approval is planned here. One question: can the slice be cut into a left half and a right half with no shared file? See plan.md.",
         ),
         (
             ".agents/skills/chough-workflow/references/build.md",
-            "The project lane still runs once before test ends.",
+            "When the plan forked the slice, each worker edits only the",
         ),
     ];
     for (file, sentence) in pinned {

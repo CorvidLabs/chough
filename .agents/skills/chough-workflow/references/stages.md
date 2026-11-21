@@ -87,7 +87,7 @@ observations and evidence named in the refresh list must be redone by their owne
 ## plan
 
 - Purpose: technical design, task plan, estimates and ownership in the native change.
-- Execution: an optional execution split inside the one scope approval is planned here, with worker count, file ownership, context budget, where each worker runs and the fan-out bar (see plan.md).
+- Fork: an optional fork inside the one scope approval is planned here. One question: can the slice be cut into a left half and a right half with no shared file? See plan.md.
 - Inputs: intent, design, contracts, architecture, native lessons and principles.
 - Outputs: native change package and deltas (SpecSync), estimates and ownership (plan artifact).
 - Roles and tools: engineering, architecture, QA; `chough change new/answer`.
