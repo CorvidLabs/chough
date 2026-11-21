@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages",
   "slug": "optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages",
   "title": "Optional GitHub template labels a pull request with the seven main Chough stages",
   "description": "Optional GitHub template labels a pull request with the seven main Chough stages",
   "kind": "feature",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "b5627125d1df640ae03882588e48b27f5f84f0c6",
   "created_at": 1795278542,
-  "updated_at": 1795280536,
+  "updated_at": 1795280582,
   "affected_specs": [
     "cli"
   ],

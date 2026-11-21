@@ -5,7 +5,7 @@ aliases: [optional-github-stage-labels]
 objective: Ship an optional GitHub template that labels a pull request with the seven main Chough stages, in rainbow order, without Chough calling GitHub.
 intent_scope: LIFE
 modules: [cli]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,12 +19,24 @@ cases:
   - TC-cli-optional-github-stage-labels-init-does-not-install
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-21-tc-cli-optional-github-stage-labels
+  - 2026-11-21-tc-cli-optional-github-stage-labels-match-the-main-stages
+  - 2026-11-21-tc-cli-optional-github-stage-labels-init-does-not-install
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
+    holds: accept
+    drives: review
+    opened: 2026-11-21T17:02:42Z
 run_consents: []
 next: Refresh the native check, run the three label cases, then record the implementation review.
+title: Optional GitHub labels for the seven main stages
+summary:
+  - The optional integrations/github template labels a pull request with intent, design, plan, build, test, accept and done. Chough runs the same workflow and script. chough init does not install them, and the binary does not call GitHub.
+  - "Three cases passed: the script labels one main stage and refuses anything else, the template matches the seven stages, and chough init does not install the workflow. Pull request 443's workflow run applied chough-stage:build. Raven draft 723 walked all seven colors."
+  - Hosted CI is next, after the change is archived. The pull request is not merged.
 ---
 # Ship an optional GitHub template that labels a pull request with the seven main Chough stages, in rainbow order, without Chough calling GitHub.
 
@@ -43,6 +55,10 @@ Ship an optional GitHub template that labels a pull request with the seven main 
 - Scope approved as grok-build under the user's 2026-11-21 words: ok go checkout the chough project and help add this. Limits: init does not install the workflow, src does not call GitHub.
 
 ## What was verified
+
+- [Ran cargo test --locked --test github_labels -- --exact the_script_labels_one_main_stage_and_refuses_anything_else for TC-cli-optional-github-stage-labels: passed (exit 0, tests run 1).](evidence/2026-11-21-tc-cli-optional-github-stage-labels.md)
+- [Ran cargo test --locked --test github_labels -- --exact the_template_follows_the_main_stages_and_chough_runs_that_copy for TC-cli-optional-github-stage-labels-match-the-main-stages: passed (exit 0, tests run 1).](evidence/2026-11-21-tc-cli-optional-github-stage-labels-match-the-main-stages.md)
+- [Ran cargo test --locked --test github_labels -- --exact chough_init_does_not_install_the_label_workflow for TC-cli-optional-github-stage-labels-init-does-not-install: passed (exit 0, tests run 1).](evidence/2026-11-21-tc-cli-optional-github-stage-labels-init-does-not-install.md)
 
 ## Open threads
 
@@ -72,4 +88,42 @@ Ship an optional GitHub template that labels a pull request with the seven main 
   - native_change: optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
   - gate: native:approved
   - revision: b5627125d1df640ae03882588e48b27f5f84f0c6
+  - by: unknown agent (hc t10j)
+- 2026-11-21T17:02:25Z · direct-native-write · build → build · optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-b83d47
+  - native_change: optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
+  - revision: 9f265d9fbb3a914863f1c70fbad6a82ff86a516b
+  - direct_write:
+    - change: optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: unknown agent (hc t10j)
+- 2026-11-21T17:02:25Z · direct-native-write · build → build · optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state draft → approved ^t-ffd06c
+  - native_change: optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
+  - revision: 9f265d9fbb3a914863f1c70fbad6a82ff86a516b
+  - direct_write:
+    - change: optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: draft
+    - after_state: approved
+  - by: unknown agent (hc t10j)
+- 2026-11-21T17:02:25Z · advance · build → test · native:verifying ^t-228404
+  - native_change: optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
+  - gate: native:verifying
+  - revision: 9f265d9fbb3a914863f1c70fbad6a82ff86a516b
+  - by: unknown agent (hc t10j)
+- 2026-11-21T17:02:42Z · advance · test → accept · native:verifying ^t-d11584
+  - native_change: optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
+  - gate: native:verifying
+  - revision: 9f265d9fbb3a914863f1c70fbad6a82ff86a516b
+  - by: unknown agent (hc t10j)
+- 2026-11-21T17:02:42Z · gate-opened · accept → accept · Implementation review of optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages ^t-6b67d8
+  - native_change: optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
+  - revision: 9f265d9fbb3a914863f1c70fbad6a82ff86a516b
+  - holds: accept
+  - drives: review
   - by: unknown agent (hc t10j)

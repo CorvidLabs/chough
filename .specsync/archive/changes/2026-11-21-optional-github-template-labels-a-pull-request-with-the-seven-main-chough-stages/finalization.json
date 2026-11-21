@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages",
+  "implementation_commit": "9f265d9fbb3a914863f1c70fbad6a82ff86a516b",
+  "implementation_tree": "9934de4af391ed931381ccda019b29ba94e0970a",
+  "contract_digest": "5982e3579a25acfe585ca66b0f27b2b88cc646b34ec206301c20bc662f05118a",
+  "workspace_digest": "8ada9e9c3413a3827e929c03b8da94c87a6746414c6e5b45af9c15fc138d1be3",
+  "closing_digest": "9ac9dafa16bae0ccda3db67c39dc7fd83544c9686bae78d094747c175f9d7249",
+  "review_digest": "9fe1a8f9f27a0d9ad57f01e4ddd0374e8d0075d45dba167ce805a5193c46ba13",
+  "finalization_digest": "2ca070b1a29acd7a77ac84748f137f6c8bcd15223b97e91e8d6311ab7f840429",
+  "timestamp": 1795280582
+}
