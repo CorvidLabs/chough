@@ -5,7 +5,7 @@ aliases: [keep-an-applied-stage-label]
 objective: A pull request that already has its stage label keeps that label.
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: [2026-11-21-tc-cli-keep-applied-stage-label]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of a-pull-request-that-already-has-its-stage-label-keeps-that-label
-    holds: accept
-    drives: review
-    opened: 2026-11-21T18:01:55Z
+waiting_on_human: []
 run_consents: []
-next: Open the implementation review and push. Do not merge.
+next: Continue done
 title: Keep an applied stage label
 summary:
   - A pull request that already has its stage label keeps that label. A different stage label is still removed, and a missing one is still added.
@@ -45,6 +41,7 @@ A pull request that already has its stage label keeps that label.
 ## Decisions and why
 
 - corvid-agent requested that a pull request keep a stage label it already has. The user said "corvid-agent requesting changing". Scope is that script behavior, its test, and a refreshed pull request body. Merging is not authorized.
+- 0xLeif decided "Implementation review of a-pull-request-that-already-has-its-stage-label-keeps-that-label": "Yes, record the review and archive both." (Grok chat on 2026-11-21, relayed by grok-build); recorded by grok-build-t10j; a relayed claim, not authenticated; ran specsync change review a-pull-request-that-already-has-its-stage-label-keeps-that-label as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -96,4 +93,20 @@ A pull request that already has its stage label keeps that label.
   - revision: dae4a30df4660b2dcec61bd44d0d8519fda848b7
   - holds: accept
   - drives: review
+  - by: unknown agent (hc t10j)
+- 2026-11-21T18:34:23Z · gate-closed · accept → accept · Implementation review of a-pull-request-that-already-has-its-stage-label-keeps-that-label ^t-f4ebff
+  - native_change: a-pull-request-that-already-has-its-stage-label-keeps-that-label
+  - revision: 5135fe365bdc4aa4418f3d53e7182832cb478fd9
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, record the review and archive both.
+    - where: Grok chat on 2026-11-21, relayed by grok-build
+    - recorded_by: grok-build-t10j
+    - native: specsync change review a-pull-request-that-already-has-its-stage-label-keeps-that-label
+    - actor: 0xLeif
+  - by: unknown agent (hc t10j)
+- 2026-11-21T18:34:24Z · advance · accept → done · native:archived ^t-8f7c89
+  - native_change: a-pull-request-that-already-has-its-stage-label-keeps-that-label
+  - gate: native:archived
+  - revision: 5135fe365bdc4aa4418f3d53e7182832cb478fd9
   - by: unknown agent (hc t10j)
