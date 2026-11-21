@@ -7,16 +7,19 @@
   "title": "Plan split",
   "description": "plan split",
   "kind": "documentation",
-  "state": "approved",
+  "state": "draft",
   "base_commit": "51b76c626599ce28494a23b1edd740d1dff21854",
   "created_at": 1795293065,
-  "updated_at": 1795298740,
-  "affected_specs": [],
+  "updated_at": 1795303427,
+  "affected_specs": [
+    "cli"
+  ],
   "affected_paths": [
     "skills/chough-workflow",
     ".agents/skills/chough-workflow",
     "tests",
-    "changelog.d"
+    "changelog.d",
+    "src/skill.rs"
   ],
   "no_spec_change": true,
   "no_spec_change_rationale": "Skill guidance for the plan-stage execution split and the test-stage grouping loop; no canonical spec sentence changes and no helper behavior changes.",
@@ -30,6 +33,7 @@
   "dependencies": [],
   "answers": {
     "architecture_risk": "no",
+    "constraints": "none",
     "public_contract": "no"
   }
 }

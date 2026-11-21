@@ -1,6 +1,6 @@
 ---
 id: plan-split
-state: approved
+state: draft
 type: documentation
 base_commit: 51b76c626599ce28494a23b1edd740d1dff21854
 ---
@@ -13,7 +13,7 @@ plan split
 
 ## Affected Canonical Specs
 
-- None
+- `cli`
 
 ## Acceptance Criteria
 

@@ -5,7 +5,7 @@ aliases: [plan-split]
 objective: Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 intent_scope: ""
 modules: []
-stage: build
+stage: plan
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,13 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Scope approval of plan-split including src/skill.rs
+    holds: plan
+    drives: approve
+    opened: 2026-11-21T23:24:03Z
 run_consents: []
-next: Waiting for Leif to send plan-split back so src/skill.rs can be declared. Then dogfood the widened scope and open a draft pull request. Do not mark it ready.
+next: Waiting for the widened scope approval of plan-split
 ---
 # Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 
@@ -86,3 +90,25 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
   - gate: native:approved
   - revision: 3968a2160e1c39b0dc82433afcf500f02c249a2e
   - by: unknown agent (hc t11f)
+- 2026-11-21T23:23:21Z · direct-native-write · build → build · plan-split's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state approved → draft ^t-3d6c63
+  - native_change: plan-split
+  - revision: c423aa9766eb72c1b8a05e33aeea9eb27793e6bc
+  - direct_write:
+    - change: plan-split
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: approved
+    - after_state: draft
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:23:21Z · back · build → plan · Leif sent the change back so src/skill.rs can be declared ^t-932ee2
+  - native_change: plan-split
+  - revision: c423aa9766eb72c1b8a05e33aeea9eb27793e6bc
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:24:03Z · gate-opened · plan → plan · Scope approval of plan-split including src/skill.rs ^t-31c6d9
+  - native_change: plan-split
+  - revision: c423aa9766eb72c1b8a05e33aeea9eb27793e6bc
+  - holds: plan
+  - drives: approve
+  - by: unknown agent (hc t11b)
