@@ -19,9 +19,13 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Scope approval of the plan-split fork
+    holds: plan
+    drives: approve
+    opened: 2026-11-21T23:38:22Z
 run_consents: []
-next: Draft pull request 445 is open. Do not mark it ready.
+next: Waiting for approval of the fork wording
 ---
 # Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 
@@ -143,4 +147,10 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
   - native_change: plan-split
   - revision: 0272b5c48aba25e5315ccddaf5edfc1c70494d8c
   - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:38:22Z · gate-opened · plan → plan · Scope approval of the plan-split fork ^t-0b3327
+  - native_change: plan-split
+  - revision: 53fe59d7d63fb97fad599a1c73d052743ec41bb7
+  - holds: plan
+  - drives: approve
   - by: unknown agent (hc t11b)
