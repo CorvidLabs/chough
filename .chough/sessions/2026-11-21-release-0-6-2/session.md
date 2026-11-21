@@ -5,7 +5,7 @@ aliases: [release-0-6-2]
 objective: "Prepare the Chough 0.6.2 release: the version, the change log assembled from the merged fragments, and the rebuilt knowledge index, per docs/releasing.md"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: [2026-11-21-at-5237b7b6-on-release-0-6-2-cargo-package-list-locked-listed]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of release-0-6-2
-    holds: accept
-    drives: review
-    opened: 2026-11-21T00:15:38Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: "Chough 0.6.2: release preparation"
 summary:
   - "Chough 0.6.2's release preparation per docs/releasing.md: version 0.6.2, the change log assembled from the 43 merged fragments (58 entries) with its release link, and the knowledge index rebuilt. 0.6.2 needs SpecSync 6.4.0."
@@ -42,6 +38,7 @@ Prepare the Chough 0.6.2 release: the version, the change log assembled from the
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of release-0-6-2 (native approval)": "Yes, release 0.6.2 (Recommended)" (Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-21 about 23:59Z, to: 'Chough 0.6.2 is done ... Move that remainder to 0.6.3, and release Chough 0.6.2 (version bump, changelog, tag, crates.io and the installed binaries on this Mac) once the last regression check passes?' This approves the release preparation: the version, the change log and the rebuilt knowledge index; the tag and crates.io wait for the tester's regression line on main e272a6f3. Recorded by t4c itself, at the draft 33eb3818); recorded by t4c; a relayed claim, not authenticated; ran specsync change approve release-0-6-2 as 0xLeif
+- 0xLeif decided "Implementation review of release-0-6-2": "Pass (Recommended)" (Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-21 about 00:14Z, to his review of Chough #432, the 0.6.2 release PR at 6e1fd682: version 0.6.2, the changelog's 58 entries from 43 fragments, no code, spec or test changes, the macOS checks and the publish dry run. Recorded by t4c); recorded by t4c; a relayed claim, not authenticated; ran specsync change review release-0-6-2 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -98,4 +95,20 @@ Prepare the Chough 0.6.2 release: the version, the change log assembled from the
   - revision: 6e1fd6823933738f230927b55fca1dff2031d524
   - holds: accept
   - drives: review
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-21T00:16:54Z · gate-closed · accept → accept · Implementation review of release-0-6-2 ^t-0ef2eb
+  - native_change: release-0-6-2
+  - revision: 4ed848e1b508f70551c2ad3356f4e3c53ab44cd1
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Pass (Recommended)
+    - where: Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-21 about 00:14Z, to his review of Chough #432, the 0.6.2 release PR at 6e1fd682: version 0.6.2, the changelog's 58 entries from 43 fragments, no code, spec or test changes, the macOS checks and the publish dry run. Recorded by t4c
+    - recorded_by: t4c
+    - native: specsync change review release-0-6-2
+    - actor: 0xLeif
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-21T00:16:56Z · advance · accept → done · native:archived ^t-040b48
+  - native_change: release-0-6-2
+  - gate: native:archived
+  - revision: 4ed848e1b508f70551c2ad3356f4e3c53ab44cd1
   - by: t4c (claude-opus-5-5, hc t4c)
