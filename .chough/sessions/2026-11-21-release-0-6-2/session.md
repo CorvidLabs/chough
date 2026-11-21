@@ -5,7 +5,7 @@ aliases: [release-0-6-2]
 objective: "Prepare the Chough 0.6.2 release: the version, the change log assembled from the merged fragments, and the rebuilt knowledge index, per docs/releasing.md"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,17 @@ files: []
 observations: [2026-11-21-at-5237b7b6-on-release-0-6-2-cargo-package-list-locked-listed]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of release-0-6-2
+    holds: accept
+    drives: review
+    opened: 2026-11-21T00:15:38Z
 run_consents: []
-next: Continue build
+next: Continue accept
+title: "Chough 0.6.2: release preparation"
+summary:
+  - "Chough 0.6.2's release preparation per docs/releasing.md: version 0.6.2, the change log assembled from the 43 merged fragments (58 entries) with its release link, and the knowledge index rebuilt. 0.6.2 needs SpecSync 6.4.0."
+  - "Verified at 07afc7cc on macOS with SpecSync 6.4.0: the eleven verify steps (57 test binaries), fledge run release-check, cargo package --list --locked (only src, skills/chough-workflow, Cargo.toml, Cargo.lock, README.md and LICENSE) and cargo publish --dry-run --locked; crates.io lists 0xLeif as the only owner. Nothing tagged or published."
 ---
 # Prepare the Chough 0.6.2 release: the version, the change log assembled from the merged fragments, and the rebuilt knowledge index, per docs/releasing.md
 
@@ -75,3 +83,19 @@ Prepare the Chough 0.6.2 release: the version, the change log assembled from the
   - gate: native:approved
   - revision: 5e5eb1b443b5e90efacb656ed7d271ef85efa917
   - by: fable (claude-opus-5-5, hc t85)
+- 2026-11-21T00:15:38Z · advance · build → test · native:verifying ^t-f2e39c
+  - native_change: release-0-6-2
+  - gate: native:verifying
+  - revision: 6e1fd6823933738f230927b55fca1dff2031d524
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-21T00:15:38Z · advance · test → accept · native:verifying ^t-5c87b4
+  - native_change: release-0-6-2
+  - gate: native:verifying
+  - revision: 6e1fd6823933738f230927b55fca1dff2031d524
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-21T00:15:38Z · gate-opened · accept → accept · Implementation review of release-0-6-2 ^t-805fa4
+  - native_change: release-0-6-2
+  - revision: 6e1fd6823933738f230927b55fca1dff2031d524
+  - holds: accept
+  - drives: review
+  - by: t4c (claude-opus-5-5, hc t4c)

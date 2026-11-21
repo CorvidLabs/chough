@@ -7,11 +7,11 @@
   "title": "Release 0.6.2",
   "description": "Release 0.6.2",
   "kind": "operations",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "e272a6f3a77338404fe2448dcfeb9d68f84998dc",
   "created_at": 1795219236,
-  "updated_at": 1795219948,
+  "updated_at": 1795220158,
   "affected_specs": [],
   "affected_paths": [
     "Cargo.toml",

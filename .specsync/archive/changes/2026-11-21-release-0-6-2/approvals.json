@@ -42,6 +42,13 @@
         "where": "Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-21 about 23:59Z, to: 'Chough 0.6.2 is done ... Move that remainder to 0.6.3, and release Chough 0.6.2 (version bump, changelog, tag, crates.io and the installed binaries on this Mac) once the last regression check passes?' This approves the release preparation: the version, the change log and the rebuilt knowledge index; the tag and crates.io wait for the tester's regression line on main e272a6f3. Recorded by t4c itself, at the draft 33eb3818",
         "recorded_by": "t4c"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795220155,
+      "digest": "1e9965dde3d5c4cce83265d6e881a8b0951911ffb9fe64b7196edaf86b4a2b51",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

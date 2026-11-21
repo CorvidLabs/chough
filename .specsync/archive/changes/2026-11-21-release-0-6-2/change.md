@@ -1,6 +1,6 @@
 ---
 id: release-0-6-2
-state: implementing
+state: archived
 type: operations
 base_commit: e272a6f3a77338404fe2448dcfeb9d68f84998dc
 ---
