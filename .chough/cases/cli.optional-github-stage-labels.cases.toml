@@ -19,8 +19,51 @@ paths = [
 ]
 environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/github_labels.rs passes"]
+expected = ["tests/github_labels.rs::the_script_labels_one_main_stage_and_refuses_anything_else passes"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "github_labels"
+test = "the_script_labels_one_main_stage_and_refuses_anything_else"
+
+[[case]]
+id = "TC-cli-optional-github-stage-labels-match-the-main-stages"
+title = "The template, the installed copy and the stage order stay the same seven stages"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-31"]
+requirements = ["REQ-cli-070"]
+paths = [
+  "integrations/github/chough-labels.yml",
+  "integrations/github/chough-label-prs.sh",
+  ".github/workflows/chough-labels.yml",
+  "tools/chough-label-prs.sh",
+  "src/stage.rs",
+]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/github_labels.rs::the_template_follows_the_main_stages_and_chough_runs_that_copy passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "github_labels"
+test = "the_template_follows_the_main_stages_and_chough_runs_that_copy"
+
+[[case]]
+id = "TC-cli-optional-github-stage-labels-init-does-not-install"
+title = "chough init does not install the label workflow"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-31"]
+requirements = ["REQ-cli-070"]
+paths = ["src/main.rs", "tests/github_labels.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/github_labels.rs::chough_init_does_not_install_the_label_workflow passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "github_labels"
+test = "chough_init_does_not_install_the_label_workflow"

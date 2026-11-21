@@ -13,7 +13,10 @@ native_change: optional-github-template-labels-a-pull-request-with-the-seven-mai
 pr: "443"
 criteria: [LIFE-31]
 requirements: [REQ-cli-070]
-cases: [TC-cli-optional-github-stage-labels]
+cases:
+  - TC-cli-optional-github-stage-labels
+  - TC-cli-optional-github-stage-labels-match-the-main-stages
+  - TC-cli-optional-github-stage-labels-init-does-not-install
 design: []
 files: []
 observations: []
@@ -21,7 +24,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Pull request 443 is open and not merged. Archive stays red until the change ships.
+next: Refresh the native check, run the three label cases, then record the implementation review.
 ---
 # Ship an optional GitHub template that labels a pull request with the seven main Chough stages, in rainbow order, without Chough calling GitHub.
 
