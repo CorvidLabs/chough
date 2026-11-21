@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "plan-split",
+  "slug": "plan-split",
+  "title": "Plan split",
+  "description": "plan split",
+  "kind": "documentation",
+  "state": "draft",
+  "base_commit": "51b76c626599ce28494a23b1edd740d1dff21854",
+  "created_at": 1795293065,
+  "updated_at": 1795293149,
+  "affected_specs": [],
+  "affected_paths": [
+    "skills/chough-workflow",
+    ".agents/skills/chough-workflow",
+    "tests",
+    "changelog.d"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Skill guidance for the plan-stage execution split and the test-stage grouping loop; no canonical spec sentence changes and no helper behavior changes.",
+  "acceptance_criteria": [
+    "The workflow skill's plan reference teaches the optional execution split (worker count, per-worker file ownership with no shared file, context budget and reading list, where each worker runs, and why that number, fanning out only when cuts share no files, each cut fits the budget, and at least 3 similar history samples show a wall-clock win), the session records worker count, wall-clock, conflicts, inbox questions and stage-backs after the slices, the testing reference teaches the bounded fix-and-rerun loop on the focused set with grouping by cause before filing and one bug or one lesson per group, and the stages and build references agree; tests pin those sentences and the installed skill copy matches the source."
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}
