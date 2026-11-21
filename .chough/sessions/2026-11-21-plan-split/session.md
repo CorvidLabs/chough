@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: Open a draft pull request for plan-split. Do not mark it ready.
 ---
 # Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 
@@ -32,6 +32,7 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
 ## Where it stands
 
 - Dogfood of the execution split: one build worker, Flint hc t11r, in this checkout. Not fanned out: the skill text, its installed copy and the pinning tests are one coupled cut, and fewer than 3 similar runs exist, so no speed was invented. Wall-clock from the plan-to-build advance at 2026-11-21T22:06:46Z to skill commit dc416ad3 at 2026-11-21T23:04:59Z was 58 minutes. The changelog newline follow-up 5b43ccf8 landed at 2026-11-21T23:16:02Z. Conflicts: none. Inbox questions: none. Stage-backs: none. Tokens: the host showed a context meter and did not report one task total, so tokens are unknown. Test loop: fmt, the full test lane, lint and skill_releases were green on the first pass. The missing changelog newline was one fix, not a bug. The undeclared src/skill.rs digest registration is one scope gap, not a product defect.
+- Dogfood after the widened scope: cargo test --offline --test docs, filter the_plan_split_sentences_are_pinned_in_both_skill_copies, passed 1. cargo test --offline --test skill_releases passed 7. No new failure, so nothing was filed.
 
 ## Decisions and why
 
