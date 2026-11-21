@@ -1,4 +1,0 @@
-- A change's description, `--rationale` and answers pass the leak check (#412, REQ-cli-057, REQ-records-006):
-  - `chough change new` and `chough change answer` refuse a description, rationale or answer holding a local path, user or host name, email or credential before SpecSync writes it into the change's committed records. The refusal names the argument and the kind, never the value. `--redact` is the way out: SpecSync then gets `<redacted:<kind>>`, and one line says how many values were replaced.
-  - `chough doctor` also scans the open changes under `.specsync/changes/`, but not their `deltas/` or SpecSync's archive. `--fix --redact` skips a finding there, naming `chough change answer` or a send-back.
-  - The last places that repeated a value you gave now name what it holds (the rest of #367): `change ship --close-gate`, and an explicit evidence ID.
