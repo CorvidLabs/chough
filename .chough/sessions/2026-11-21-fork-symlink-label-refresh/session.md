@@ -5,7 +5,7 @@ aliases: [fork-symlink-label-refresh]
 objective: A fork pull request does not fail the label job, a symlinked session is not read, and a matching stage label is not recreated.
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -13,15 +13,27 @@ native_change: a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-sessi
 pr: "https://github.com/CorvidLabs/chough/pull/443"
 criteria: [LIFE-31]
 requirements: [REQ-cli-070]
-cases: []
+cases:
+  - TC-cli-optional-github-stage-labels
+  - TC-cli-optional-github-stage-labels-match-the-main-stages
+  - TC-cli-optional-github-stage-labels-init-does-not-install
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-21-tc-cli-optional-github-stage-labels-099eb9
+  - 2026-11-21-tc-cli-optional-github-stage-labels-match-the-main-stages-1bd3ff
+  - 2026-11-21-tc-cli-optional-github-stage-labels-init-does-not-install-6ea2e8
+  - 2026-11-21-cargo-test-locked-test-github-labels-passed-5-tests-including
+  - 2026-11-21-fledge-lanes-run-verify-completed-all-11-steps-specsync-6-4-0
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not
+    holds: accept
+    drives: review
+    opened: 2026-11-21T17:36:14Z
 run_consents: []
-next: Commit the follow-up, record verification, and push the pull request branch. Do not merge.
+next: The implementation review is open. Do not merge.
 ---
 # A fork pull request does not fail the label job, a symlinked session is not read, and a matching stage label is not recreated.
 
@@ -32,12 +44,19 @@ A fork pull request does not fail the label job, a symlinked session is not read
 ## Where it stands
 
 - Fork pull requests skip the label job, symlinked session files are not read, and a matching stage label is not recreated.
+- Recorded passing runs of the three bound label cases, the five github_labels tests, and the verify lane.
 
 ## Decisions and why
 
 - The review of pull request 443 authorizes three fixes only: skip the label job for a fork pull request, do not read a symlinked session file, and create a stage label only when it is missing or its color or description differs. Reopening the archived change is out of scope. Merging is not authorized.
 
 ## What was verified
+
+- [Ran cargo test --locked --test github_labels -- --exact the_script_labels_one_main_stage_and_refuses_anything_else for TC-cli-optional-github-stage-labels: passed (exit 0, tests run 1).](evidence/2026-11-21-tc-cli-optional-github-stage-labels-099eb9.md)
+- [Ran cargo test --locked --test github_labels -- --exact the_template_follows_the_main_stages_and_chough_runs_that_copy for TC-cli-optional-github-stage-labels-match-the-main-stages: passed (exit 0, tests run 1).](evidence/2026-11-21-tc-cli-optional-github-stage-labels-match-the-main-stages-1bd3ff.md)
+- [Ran cargo test --locked --test github_labels -- --exact chough_init_does_not_install_the_label_workflow for TC-cli-optional-github-stage-labels-init-does-not-install: passed (exit 0, tests run 1).](evidence/2026-11-21-tc-cli-optional-github-stage-labels-init-does-not-install-6ea2e8.md)
+- [cargo test --locked --test github_labels passed 5 tests, including the_script_ignores_a_symlinked_session and the_workflow_does_not_recreate_matching_labels. Those two have no case binding: adding one now would touch a case file outside the approved paths.](evidence/2026-11-21-cargo-test-locked-test-github-labels-passed-5-tests-including.md)
+- [fledge lanes run verify completed all 11 steps. SpecSync 6.4.0 and Fledge 1.8.0 were placed first on PATH because the copies found first on this machine were newer than the CI pins.](evidence/2026-11-21-fledge-lanes-run-verify-completed-all-11-steps-specsync-6-4-0.md)
 
 ## Open threads
 
@@ -74,4 +93,15 @@ A fork pull request does not fail the label job, a symlinked session is not read
   - native_change: a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not
   - gate: native:approved
   - revision: 97df042ea89d865cc08b36d1f96c3901103e366d
+  - by: unknown agent (hc t10j)
+- 2026-11-21T17:36:07Z · advance · test → accept · native:verifying ^t-103582
+  - native_change: a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not
+  - gate: native:verifying
+  - revision: 178b66a1607e3d830bbae4de41ce33996f057ef7
+  - by: unknown agent (hc t10j)
+- 2026-11-21T17:36:14Z · gate-opened · accept → accept · Implementation review of a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not ^t-ced641
+  - native_change: a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not
+  - revision: 178b66a1607e3d830bbae4de41ce33996f057ef7
+  - holds: accept
+  - drives: review
   - by: unknown agent (hc t10j)
