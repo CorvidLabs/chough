@@ -19,13 +19,9 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Scope approval of plan-split
-    holds: plan
-    drives: approve
-    opened: 2026-11-21T20:57:42Z
+waiting_on_human: []
 run_consents: []
-next: Waiting for scope approval of plan-split
+next: "Gate \"Scope approval of plan-split\" closed (approved); run `chough stage advance` to move on."
 ---
 # Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 
@@ -36,6 +32,8 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
 ## Where it stands
 
 ## Decisions and why
+
+- 0xLeif decided "Scope approval of plan-split": "yes I approve" (Grok chat on 2026-11-21, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve plan-split as 0xLeif
 
 ## What was verified
 
@@ -58,3 +56,26 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
   - holds: plan
   - drives: approve
   - by: unknown agent (hc t11f)
+- 2026-11-21T22:05:39Z · direct-native-write · plan → plan · plan-split's lifecycle records changed outside Chough: state.json changed; state stays draft ^t-17ae82
+  - native_change: plan-split
+  - revision: 7cb20d96c57f55d77c919382d935845cf4569fbe
+  - direct_write:
+    - change: plan-split
+    - files:
+      - state.json: changed
+    - before_state: draft
+    - after_state: draft
+  - by: unknown agent (hc t11b)
+- 2026-11-21T22:05:39Z · gate-closed · plan → plan · Scope approval of plan-split ^t-c7176e
+  - native_change: plan-split
+  - revision: 7cb20d96c57f55d77c919382d935845cf4569fbe
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: yes I approve
+    - where: Grok chat on 2026-11-21, relayed by grok-t11b
+    - recorded_by: grok-t11b
+    - summary_digest: 74ae18e0b306c565873f7524687fa6ac87a7ac93c3c6fa739346faeb1274ca19
+    - list: 882da74f3137
+    - native: specsync change approve plan-split
+    - actor: 0xLeif
+  - by: unknown agent (hc t11b)

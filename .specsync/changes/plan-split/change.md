@@ -1,6 +1,6 @@
 ---
 id: plan-split
-state: draft
+state: approved
 type: documentation
 base_commit: 51b76c626599ce28494a23b1edd740d1dff21854
 ---
