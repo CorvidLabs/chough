@@ -16,7 +16,7 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
+observations: [2026-11-21-at-5237b7b6-on-release-0-6-2-cargo-package-list-locked-listed]
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -36,6 +36,8 @@ Prepare the Chough 0.6.2 release: the version, the change log assembled from the
 - 0xLeif decided "Scope approval of release-0-6-2 (native approval)": "Yes, release 0.6.2 (Recommended)" (Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-21 about 23:59Z, to: 'Chough 0.6.2 is done ... Move that remainder to 0.6.3, and release Chough 0.6.2 (version bump, changelog, tag, crates.io and the installed binaries on this Mac) once the last regression check passes?' This approves the release preparation: the version, the change log and the rebuilt knowledge index; the tag and crates.io wait for the tester's regression line on main e272a6f3. Recorded by t4c itself, at the draft 33eb3818); recorded by t4c; a relayed claim, not authenticated; ran specsync change approve release-0-6-2 as 0xLeif
 
 ## What was verified
+
+- [At 5237b7b6 on release/0.6.2: cargo package --list --locked listed only src (34), skills/chough-workflow (24), Cargo.toml, Cargo.lock, README.md and LICENSE plus cargo's generated files; cargo publish --dry-run --locked built chough v0.6.2 and stopped at 'aborting upload due to dry run'; crates.io's owners API listed 0xLeif as the only owner of chough, at 0.6.1. At 55002ee7, after the change log was assembled and the knowledge index rebuilt, fledge run release-check passed. A rehearsal: nothing was published.](evidence/2026-11-21-at-5237b7b6-on-release-0-6-2-cargo-package-list-locked-listed.md)
 
 ## Open threads
 
