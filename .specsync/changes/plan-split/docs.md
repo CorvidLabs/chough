@@ -10,9 +10,10 @@ The deliverable is documentation: the workflow skill files themselves.
 - `references/plan.md` gains an optional fork inside the existing one-approval
   section. One question: can the slice be cut into a left half and a right half
   with no shared file? If it cannot, one worker does the whole slice. If it can,
-  one manager spawns two workers, each in its own checkout and session, with no
-  shared file. A separate clone is the default. The manager does not write either
-  half and merges both reports into one answer. One fork is the batch. A half is
+  one manager spawns two workers, each in its own clone and session, with no
+  shared file. Do not use a worktree for a fork. A worker that finishes stops.
+  Before the merge, a path outside that worker's list is left out. The manager does
+  not write either half and merges both reports into one answer. One fork is the batch. A half is
   forked again only when it still has its own seam, and the total stays at about
   four agents. Chough does not launch the agents. After the merge the session
   records whether the halves joined cleanly, the wall-clock, and any conflict.

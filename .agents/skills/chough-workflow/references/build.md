@@ -39,7 +39,9 @@ When subagents help, give each explicit files or modules, the relevant contract 
 requirements, and instructions to preserve others' edits. Only one agent edits a
 shared file at a time. The checkpoint has one writer; other agents report back
 instead of editing it. When the plan forked the slice, each worker edits only the
-files in its half, and the manager does not write either half.
+files in its half, and the manager does not write either half. A worker that finishes
+stops. It does not edit the other half. The manager leaves out any path outside that
+worker's list.
 
 ## Escalate only what matters
 

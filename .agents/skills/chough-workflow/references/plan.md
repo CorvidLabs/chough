@@ -38,14 +38,23 @@ One question: can this slice be cut into a left half and a right half with no sh
 file?
 
 - If it cannot, one worker does the whole slice.
-- If it can, one manager spawns two workers. Each worker has its own checkout and its
-  own session. A separate clone is the default, and a worktree is an explicit option.
-  Each worker owns its own files, and the two lists share no file. The manager does not
-  write either half. The manager is the merge: it takes both reports and sends one
-  answer back.
+- If it can, one manager spawns two workers. Each worker has its own clone and its own
+  session. Do not use a worktree for a fork. Each worker owns its own files, and the
+  two lists share no file. A worker that finishes stops. It does not pull the other
+  half, and it does not edit a file on the other list. The manager does not write
+  either half. The manager is the merge: it takes both reports and sends one answer
+  back.
 - A shared file stays with the manager.
 - One fork is the batch: one manager and two workers. A half is forked again only when
   that half still has its own seam, and the total stays at about four agents.
+
+Before the merge, the manager compares each worker's diff with that worker's file
+list. A path outside that list is left out. The other worker keeps going on its own
+list. The early worker does not take over the remaining half. Record on the session
+which worker, which paths, and that those edits were left out. The check is read-only
+in the worker's clone: `git diff --name-only <base>...HEAD` and `git status
+--porcelain`. The manager does not rewrite that clone, and it does not merge that
+branch as a whole. It takes only the paths on that worker's list.
 
 Chough does not launch the agents. The host spawns them. Workers report with `chough
 inbox add`, and the manager folds the inbox.

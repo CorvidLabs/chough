@@ -18,10 +18,12 @@ Constraints already agreed:
   inside it, not a second gate.
 - One question: can this slice be cut into a left half and a right half with no
   shared file? If it cannot, one worker does the whole slice. If it can, one
-  manager spawns two workers. Each worker has its own checkout and its own session.
-  A separate clone is the default. The two file lists share no file. The manager
-  does not write either half and merges both reports into one answer. A shared file
-  stays with the manager. One fork is the batch. A half is forked again only when
+  manager spawns two workers. Each worker has its own clone and its own session.
+  Do not use a worktree for a fork. The two file lists share no file. A worker that
+  finishes stops and does not edit the other half. The manager does not write either
+  half. Before the merge, a path outside that worker's list is left out, and the
+  other worker keeps going. The manager merges both reports into one answer. A shared
+  file stays with the manager. One fork is the batch. A half is forked again only when
   that half still has its own seam, and the total stays at about four agents.
 - Chough does not launch the agents and adds no model client. The host spawns them.
   Workers report with `chough inbox add`, and the manager folds the inbox.

@@ -1823,6 +1823,30 @@ fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
         ),
         (
             "skills/chough-workflow/references/plan.md",
+            "Do not use a worktree for a fork.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "A worker that finishes stops.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "A path outside that list is left out.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "branch as a whole.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "does not pull the other",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "The early worker does not take over the remaining half.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
             "Chough does not launch the agents. The host spawns them. Workers report with `chough",
         ),
         (
@@ -1875,7 +1899,27 @@ fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
         ),
         (
             ".agents/skills/chough-workflow/references/plan.md",
-            "Chough does not launch the agents. The host spawns them. Workers report with `chough",
+            "Do not use a worktree for a fork.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "A worker that finishes stops.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "A path outside that list is left out.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "branch as a whole.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "does not pull the other",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "The early worker does not take over the remaining half.",
         ),
         (
             ".agents/skills/chough-workflow/references/testing.md",
