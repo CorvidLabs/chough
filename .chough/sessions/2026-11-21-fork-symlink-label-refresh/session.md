@@ -5,7 +5,7 @@ aliases: [fork-symlink-label-refresh]
 objective: A fork pull request does not fail the label job, a symlinked session is not read, and a matching stage label is not recreated.
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -27,13 +27,9 @@ observations:
   - 2026-11-21-fledge-lanes-run-verify-completed-all-11-steps-specsync-6-4-0
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not
-    holds: accept
-    drives: review
-    opened: 2026-11-21T17:36:14Z
+waiting_on_human: []
 run_consents: []
-next: The implementation review is open. Do not merge.
+next: Continue done
 title: Stage labels skip forks and keep matches
 summary:
   - Fork pull requests skip the label job, a symlinked session file is not read, and a stage label is created only when it is missing or its color or description differs.
@@ -54,6 +50,7 @@ A fork pull request does not fail the label job, a symlinked session is not read
 ## Decisions and why
 
 - The review of pull request 443 authorizes three fixes only: skip the label job for a fork pull request, do not read a symlinked session file, and create a stage label only when it is missing or its color or description differs. Reopening the archived change is out of scope. Merging is not authorized.
+- 0xLeif decided "Implementation review of a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not": "i approve continue" (Grok chat on 2026-11-21, relayed by grok-build); recorded by grok-build-t10j; a relayed claim, not authenticated; ran specsync change review a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -109,4 +106,20 @@ A fork pull request does not fail the label job, a symlinked session is not read
   - revision: 178b66a1607e3d830bbae4de41ce33996f057ef7
   - holds: accept
   - drives: review
+  - by: unknown agent (hc t10j)
+- 2026-11-21T17:48:22Z · gate-closed · accept → accept · Implementation review of a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not ^t-dc2d37
+  - native_change: a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not
+  - revision: ec37de383be49b8823582b1579cf7fc23f045325
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: i approve continue
+    - where: Grok chat on 2026-11-21, relayed by grok-build
+    - recorded_by: grok-build-t10j
+    - native: specsync change review a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not
+    - actor: 0xLeif
+  - by: unknown agent (hc t10j)
+- 2026-11-21T17:48:24Z · advance · accept → done · native:archived ^t-5fa133
+  - native_change: a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not
+  - gate: native:archived
+  - revision: ec37de383be49b8823582b1579cf7fc23f045325
   - by: unknown agent (hc t10j)
