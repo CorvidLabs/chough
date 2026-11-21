@@ -5,7 +5,7 @@ aliases: [docs-0-6-2-release]
 objective: The roadmap's delivered table has the 0.6.2 release row, and the README's command table says it documents 0.6.2
 intent_scope: ""
 modules: []
-stage: design
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Scope approval of docs-the-0-6-2-release-row-and-the-readme-release-sentence (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # The roadmap's delivered table has the 0.6.2 release row, and the README's command table says it documents 0.6.2
 
@@ -66,3 +66,12 @@ The roadmap's delivered table has the 0.6.2 release row, and the README's comman
     - native: specsync change approve docs-the-0-6-2-release-row-and-the-readme-release-sentence
     - actor: 0xLeif
   - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-21T00:58:58Z · advance · design → plan ·  ^t-5dae59
+  - native_change: docs-the-0-6-2-release-row-and-the-readme-release-sentence
+  - revision: 853add98bd9110f120a0ef7fdf1bcb74de762cdc
+  - by: fable (claude-opus-5-5, hc t85)
+- 2026-11-21T00:58:58Z · advance · plan → build · native:approved ^t-8f5ad5
+  - native_change: docs-the-0-6-2-release-row-and-the-readme-release-sentence
+  - gate: native:approved
+  - revision: 853add98bd9110f120a0ef7fdf1bcb74de762cdc
+  - by: fable (claude-opus-5-5, hc t85)
