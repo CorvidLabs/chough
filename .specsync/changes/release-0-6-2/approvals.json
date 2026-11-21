@@ -1,4 +1,48 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795219433,
+      "digest": "9cddcd2d19512b05d462d8ab3e15f28041404036f7ad7d0da3d277c1a4289c97",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of release-0-6-2 (native approval)\": \"Yes, release 0.6.2 (Recommended)\" (Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-21 about 23:59Z, to: 'Chough 0.6.2 is done ... Move that remainder to 0.6.3, and release Chough 0.6.2 (version bump, changelog, tag, crates.io and the installed binaries on this Mac) once the last regression check passes?' This approves the release preparation: the version, the change log and the rebuilt knowledge index; the tag and crates.io wait for the tester's regression line on main e272a6f3. Recorded by t4c itself, at the draft 33eb3818). Relayed and recorded by t4c at 2026-11-21T00:03:52Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "release-0-6-2",
+        "title": "Release 0.6.2",
+        "description": "Release 0.6.2",
+        "kind": "operations",
+        "affected_specs": [],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "Cargo.lock",
+          "Cargo.toml",
+          "changelog.d/",
+          "knowledge/",
+          "tests/changelog.rs",
+          "tests/fixtures/changelog/"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "A patch release changes no requirement text: the crate version becomes 0.6.2, the changelog fragments of merged changes are assembled into CHANGELOG.md, and the generated knowledge index is rebuilt.",
+        "acceptance_criteria": [
+          "Cargo.toml and Cargo.lock say 0.6.2; CHANGELOG.md has a 0.6.2 section with every merged fragment from changelog.d, which is then empty, and its release link; fledge run release-check passes; cargo package --list and cargo publish --dry-run pass; the verify lane is green."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes, release 0.6.2 (Recommended)",
+        "where": "Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-21 about 23:59Z, to: 'Chough 0.6.2 is done ... Move that remainder to 0.6.3, and release Chough 0.6.2 (version bump, changelog, tag, crates.io and the installed binaries on this Mac) once the last regression check passes?' This approves the release preparation: the version, the change log and the rebuilt knowledge index; the tag and crates.io wait for the tester's regression line on main e272a6f3. Recorded by t4c itself, at the draft 33eb3818",
+        "recorded_by": "t4c"
+      }
+    }
+  ],
   "reopenings": []
 }
