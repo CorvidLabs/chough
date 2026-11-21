@@ -1,0 +1,27 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# LIFE-32: an open session sets the stage label when an archived session is also
+# on the pull request (REQ-cli-070).
+
+[[case]]
+id = "TC-cli-open-session-sets-the-stage-label"
+title = "An open session sets the stage label ahead of an archived one"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-32", "LIFE-31"]
+requirements = ["REQ-cli-070"]
+paths = [
+  "integrations/github/chough-label-prs.sh",
+  "tools/chough-label-prs.sh",
+  "tests/github_labels.rs",
+]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/github_labels.rs::the_script_follows_an_open_session_ahead_of_an_archived_one passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "github_labels"
+test = "the_script_follows_an_open_session_ahead_of_an_archived_one"
