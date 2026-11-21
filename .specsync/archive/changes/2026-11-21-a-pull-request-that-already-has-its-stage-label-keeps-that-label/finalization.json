@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "a-pull-request-that-already-has-its-stage-label-keeps-that-label",
+  "implementation_commit": "522fb47fc2aaabfdb22a1df1eebba7665d5a6ee1",
+  "implementation_tree": "58027221ca638b762efbf6f9e78455efb300aa7b",
+  "contract_digest": "b1bbaa3829084f2619c29d21b4af32e8b8ec82281d720571b1a6ac8af0077263",
+  "workspace_digest": "e263240e47095e47d488e1243f5916a4c4932625361235d5304f2c2dc119eb4a",
+  "closing_digest": "d5f0c3940a5e8fd6f1b83223014258eed76961651820e4182f0040a9ad706f67",
+  "review_digest": "dbc1a060d4d846fbeeda8ec3d5db6ec4a409f4071b1197918d884d525631d947",
+  "finalization_digest": "fa12feac49c6883b89f5353f755831f40dde5e246f3922c24973b79e6f43e75f",
+  "timestamp": 1795285998
+}

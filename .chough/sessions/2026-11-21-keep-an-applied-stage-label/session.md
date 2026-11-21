@@ -26,6 +26,11 @@ waiting_on_human:
     opened: 2026-11-21T18:01:55Z
 run_consents: []
 next: Open the implementation review and push. Do not merge.
+title: Keep an applied stage label
+summary:
+  - A pull request that already has its stage label keeps that label. A different stage label is still removed, and a missing one is still added.
+  - "Verified on this machine: the keep-label case passed, cargo test --test github_labels passed, and the verify lane completed 11 steps with SpecSync 6.4.0 and Fledge 1.8.0."
+  - "Next: archive the open-session change on pull request 443. Merging was not requested."
 ---
 # A pull request that already has its stage label keeps that label.
 

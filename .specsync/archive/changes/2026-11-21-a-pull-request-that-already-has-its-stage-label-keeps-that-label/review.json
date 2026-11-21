@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "a-pull-request-that-already-has-its-stage-label-keeps-that-label",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "522fb47fc2aaabfdb22a1df1eebba7665d5a6ee1",
+  "contract_digest": "b1bbaa3829084f2619c29d21b4af32e8b8ec82281d720571b1a6ac8af0077263",
+  "execution_digest": "619591fc2cdee67e39740cb456aed5bc6fe9991d68abf48065c52cfdc8c0a760",
+  "workspace_digest": "e263240e47095e47d488e1243f5916a4c4932625361235d5304f2c2dc119eb4a",
+  "timestamp": 1795285984,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Yes, record the review and archive both.",
+    "where": "Grok chat on 2026-11-21, relayed by grok-build",
+    "recorded_by": "grok-build-t10j"
+  }
+}
