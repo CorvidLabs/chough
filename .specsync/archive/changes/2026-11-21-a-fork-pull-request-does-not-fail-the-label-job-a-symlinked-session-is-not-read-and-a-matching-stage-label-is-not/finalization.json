@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not",
+  "implementation_commit": "195bdc30073f28b0c49e05ce0a28463f9d8f1abf",
+  "implementation_tree": "7f0f1ab3aaa8047f8a9a4a83c584f0594142b97f",
+  "contract_digest": "1c25d9587054192cd577a0108e9c4b173c69d4e7cc28e95b3df30d6854abd83e",
+  "workspace_digest": "60e718908851f468496f0bb2801bafe1e7d341b8f688fda7407c84b6847646bf",
+  "closing_digest": "dd92a7f679d4e85057852cab988b9d6ef2cfbe8f87370332658f1997bc998287",
+  "review_digest": "ad585b10a9c8d905fcdcc2ed56f1045d3f24f0f826515eb28698fc879c79c3e9",
+  "finalization_digest": "6e93b8dd16a366535a5824271aec7a23f53d6f8ab6187a4ad1ba4f763d9f4fca",
+  "timestamp": 1795283241
+}

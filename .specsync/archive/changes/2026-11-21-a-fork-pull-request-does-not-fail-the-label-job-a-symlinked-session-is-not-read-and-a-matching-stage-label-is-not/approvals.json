@@ -44,6 +44,13 @@
       "approved_delta_bases": {
         "cli: REQUIREMENT REQ-cli-070": "9f9dd614c0b5d2e7fcc7ddcdf32942bec945b23f102fdeaad38ba52304147732"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795283241,
+      "digest": "dd92a7f679d4e85057852cab988b9d6ef2cfbe8f87370332658f1997bc998287",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

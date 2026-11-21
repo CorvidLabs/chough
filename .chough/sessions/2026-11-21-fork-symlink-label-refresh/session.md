@@ -34,6 +34,11 @@ waiting_on_human:
     opened: 2026-11-21T17:36:14Z
 run_consents: []
 next: The implementation review is open. Do not merge.
+title: Stage labels skip forks and keep matches
+summary:
+  - Fork pull requests skip the label job, a symlinked session file is not read, and a stage label is created only when it is missing or its color or description differs.
+  - "Verified on this machine: the three bound label cases passed, cargo test --locked --test github_labels passed 5, and the verify lane completed 11 steps with SpecSync 6.4.0 and Fledge 1.8.0."
+  - "Next: push the archive on pull request 443 and watch CI. Merging was not requested."
 ---
 # A fork pull request does not fail the label job, a symlinked session is not read, and a matching stage label is not recreated.
 

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not",
+  "slug": "a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not",
+  "title": "A fork pull request does not fail the label job, a symlinked session is not read, and a matching stage label is not recreated.",
+  "description": "A fork pull request does not fail the label job, a symlinked session is not read, and a matching stage label is not recreated.",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "97df042ea89d865cc08b36d1f96c3901103e366d",
+  "created_at": 1795280994,
+  "updated_at": 1795283241,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "integrations/github/chough-labels.yml",
+    "integrations/github/chough-label-prs.sh",
+    ".github/workflows/chough-labels.yml",
+    "tools/chough-label-prs.sh",
+    "tests/github_labels.rs",
+    "changelog.d/2026-11-21-fork-symlink-label-refresh.md",
+    "specs/cli/requirements.md",
+    "specs/cli/history/a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A fork pull request skips the label job. A symlinked session.md is not read. An existing label is created only when it is missing, and --force is used only when its color or description differs. implement and verify are deleted only when they exist."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs",
+    "research",
+    "plan"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "tasks.md has no unchecked boxes. An approved delta stays frozen. The checkout pin stays the commit ci.yml uses.",
+    "public_contract": "yes"
+  }
+}
