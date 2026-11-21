@@ -1,0 +1,26 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# LIFE-31: optional GitHub labels for the seven main stages (REQ-cli-070).
+
+[[case]]
+id = "TC-cli-optional-github-stage-labels"
+title = "The optional GitHub template labels one main stage and refuses anything else"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-31"]
+requirements = ["REQ-cli-070"]
+paths = [
+  "integrations/github/chough-labels.yml",
+  "integrations/github/chough-label-prs.sh",
+  "tests/github_labels.rs",
+  "src/stage.rs",
+]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/github_labels.rs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "github_labels"

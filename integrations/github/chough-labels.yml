@@ -1,0 +1,70 @@
+name: Chough PR labels
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Label PR(s) from Chough session records
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Seven main stages, rainbow left to right. --force refreshes color
+          # and description when the label already exists. implement and verify
+          # are not stages; drop them if an older run created them.
+          for extra in chough-stage:implement chough-stage:verify; do
+            gh label delete "$extra" --yes >/dev/null 2>&1 || true
+          done
+          while IFS='|' read -r name color description; do
+            [[ -z "$name" ]] && continue
+            gh label create "$name" \
+              --color "$color" \
+              --description "$description" \
+              --force >/dev/null
+          done <<'EOF'
+chough-stage:intent|FF0000|Chough lifecycle label, step 1 of 7
+chough-stage:design|FF4D00|Chough lifecycle label, step 2 of 7
+chough-stage:plan|FF9900|Chough lifecycle label, step 3 of 7
+chough-stage:build|FFEE00|Chough lifecycle label, step 4 of 7
+chough-stage:test|00CC44|Chough lifecycle label, step 5 of 7
+chough-stage:accept|00BBFF|Chough lifecycle label, step 6 of 7
+chough-stage:done|8C00FF|Chough lifecycle label, step 7 of 7
+EOF
+
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            # On a push to main, relabel every open PR from that PR's own head.
+            # fetch-depth: 0 already brought every same-repo branch head into
+            # this checkout, so reuse it with a linked worktree.
+            gh pr list --state open --json number,headRefOid -q '.[] | "\(.number) \(.headRefOid)"' | while IFS= read -r line; do
+              pr="${line%% *}"
+              sha="${line##* }"
+              tmp="$(mktemp -d)"
+              if ! git worktree add -q --detach "$tmp" "$sha" 2>/dev/null; then
+                echo "skip PR #$pr: $sha not in this checkout (fork?)"
+                rm -rf "$tmp"
+                continue
+              fi
+              ./tools/chough-label-prs.sh "$pr" "$tmp" < /dev/null \
+                || echo "::warning::labeling PR #$pr failed; continuing"
+              git worktree remove --force "$tmp" 2>/dev/null || true
+              rm -rf "$tmp"
+            done
+          else
+            ./tools/chough-label-prs.sh "${{ github.event.pull_request.number }}"
+          fi

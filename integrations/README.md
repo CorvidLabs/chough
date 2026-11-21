@@ -30,6 +30,13 @@ The local template's command is a placeholder. Replace it with your local agent'
 invocation. It counts as a supported host only once a local setup passes the
 host-matrix run (#220).
 
+## GitHub stage labels
+
+[github/README.md](github/README.md) is a separate optional template (LIFE-31).
+Copying it into a project is what turns on pull request labels for the seven
+main Chough stages. Chough does not call GitHub, and `chough init` does not
+install the workflow.
+
 ## Using a template
 
 hc reads templates from its own templates folder. Copy one there under its `name`, for

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages",
+  "slug": "optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages",
+  "title": "Optional GitHub template labels a pull request with the seven main Chough stages",
+  "description": "Optional GitHub template labels a pull request with the seven main Chough stages",
+  "kind": "feature",
+  "state": "verifying",
+  "canonical_applied": true,
+  "base_commit": "b5627125d1df640ae03882588e48b27f5f84f0c6",
+  "created_at": 1795278542,
+  "updated_at": 1795278991,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "integrations/github",
+    "integrations/README.md",
+    "docs/integrations.md",
+    "tests/github_labels.rs",
+    ".github/workflows/chough-labels.yml",
+    "tools/chough-label-prs.sh",
+    "hi/life.md",
+    "changelog.d/2026-11-21-optional-github-stage-labels.md",
+    ".chough/cases/cli.optional-github-stage-labels.cases.toml",
+    "INTENT.md",
+    "specs/cli/requirements.md",
+    "specs/cli/history/optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A project that copies the template gets seven chough-stage labels, one per main stage, in rainbow order. A pull request whose introduced sessions share one main stage gets that label. Any other stage, or more than one stage, gets no stage label. chough init does not install the workflow, and src/ does not call GitHub."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Pin actions/checkout to the same commit ci.yml already uses. Write tasks.md without unchecked boxes, because change check refuses them. Treat the delta as frozen once approved.",
+    "public_contract": "yes"
+  }
+}

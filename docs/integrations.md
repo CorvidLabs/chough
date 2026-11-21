@@ -85,6 +85,11 @@ templates for Claude Code, Codex, Kimi, Grok and a local agent (REQ-cli-065, LIF
 The local agent's template is unqualified until #220 qualifies a setup. Chough has no
 runtime dependency on hc, Herdr or Rune.
 
+[integrations/github/](../integrations/github/README.md) is a separate optional
+template (REQ-cli-070, LIFE-31). Copying it into a project is what turns on GitHub
+pull request labels for the seven main stages. Chough does not call GitHub, and
+`chough init` does not install that workflow.
+
 ## Native tools
 
 | Tool | Native ownership | Chough boundary |
