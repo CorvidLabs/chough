@@ -10,10 +10,10 @@ stage_status: active
 iteration: 1
 callers: []
 native_change: optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
-pr: ""
+pr: "443"
 criteria: [LIFE-31]
-requirements: []
-cases: []
+requirements: [REQ-cli-070]
+cases: [TC-cli-optional-github-stage-labels]
 design: []
 files: []
 observations: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Commit the branch. It is not pushed.
+next: Pull request 443 is open and not merged. Archive stays red until the change ships.
 ---
 # Ship an optional GitHub template that labels a pull request with the seven main Chough stages, in rainbow order, without Chough calling GitHub.
 
@@ -32,6 +32,7 @@ Ship an optional GitHub template that labels a pull request with the seven main 
 ## Where it stands
 
 - Optional GitHub stage-label template, dogfood copies, REQ-cli-070 and github_labels tests. change check passed.
+- Pushed optional-github-stage-labels and opened pull request 443.
 
 ## Decisions and why
 

@@ -38,6 +38,7 @@ fn main_stages() -> Vec<String> {
 fn workflow_rows(text: &str) -> Vec<(String, String)> {
     text.lines()
         .filter_map(|line| {
+            let line = line.trim();
             let mut parts = line.split('|');
             let name = parts.next()?;
             let stage = name.strip_prefix("chough-stage:")?;

@@ -23,6 +23,16 @@ jobs:
       - name: Label PR(s) from Chough session records
         env:
           GH_TOKEN: ${{ github.token }}
+          # Indented so the workflow file stays valid YAML. The block scalar
+          # strips this indent before bash reads the rows.
+          LABEL_ROWS: |
+            chough-stage:intent|FF0000|Chough lifecycle label, step 1 of 7
+            chough-stage:design|FF4D00|Chough lifecycle label, step 2 of 7
+            chough-stage:plan|FF9900|Chough lifecycle label, step 3 of 7
+            chough-stage:build|FFEE00|Chough lifecycle label, step 4 of 7
+            chough-stage:test|00CC44|Chough lifecycle label, step 5 of 7
+            chough-stage:accept|00BBFF|Chough lifecycle label, step 6 of 7
+            chough-stage:done|8C00FF|Chough lifecycle label, step 7 of 7
         run: |
           set -euo pipefail
           # Seven main stages, rainbow left to right. --force refreshes color
@@ -37,15 +47,7 @@ jobs:
               --color "$color" \
               --description "$description" \
               --force >/dev/null
-          done <<'EOF'
-chough-stage:intent|FF0000|Chough lifecycle label, step 1 of 7
-chough-stage:design|FF4D00|Chough lifecycle label, step 2 of 7
-chough-stage:plan|FF9900|Chough lifecycle label, step 3 of 7
-chough-stage:build|FFEE00|Chough lifecycle label, step 4 of 7
-chough-stage:test|00CC44|Chough lifecycle label, step 5 of 7
-chough-stage:accept|00BBFF|Chough lifecycle label, step 6 of 7
-chough-stage:done|8C00FF|Chough lifecycle label, step 7 of 7
-EOF
+          done <<< "$LABEL_ROWS"
 
           if [[ "${{ github.event_name }}" == "push" ]]; then
             # On a push to main, relabel every open PR from that PR's own head.
