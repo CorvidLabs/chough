@@ -54,7 +54,10 @@ why, the session's moves then read `ungated:no-native-change-required`, and it
 advances to done and is archived with outcome `done`. A human gate still holds until
 a person closes it, and the flag is refused while a native change is recorded. Two cases are not gated at all: with no SpecSync configuration
 the gate reads `ungated:not-configured`, and with no `.specsync/sdd.json` or one with
-`"enabled": false` it reads `ungated:sdd-disabled`. A stage move never runs `approve`,
+`"enabled": false` it reads `ungated:sdd-disabled`. There, a single `chough stage advance`
+out of plan or accept that holds no human decision says so, and
+`chough stage advance --to <stage>` across such a plan or accept refuses as
+`refused:no-human-decision` unless `--reason "<why>"` is given; the Timeline keeps it. A stage move never runs `approve`,
 `review` or `finalize`. Those native writers run in one of two ways, and the records
 say which: a human's decision at a gate that drives one, recorded through Chough,
 runs it as that human; otherwise the current agent runs it on applicable human
@@ -141,10 +144,11 @@ need can be seen (DRIVE-21).
 The native review is a recorded claim bound to the reviewed content, not proof of who
 reviewed; the relay is a claim too. The reviewer may be the scope approver. Do not
 commit between review and ship or finalize. The move into done archives the session
-into one story, `.chough/archive/sessions/<id>.md`, writes a journal post, and the
-librarian refreshes the generated knowledge directory at release, not here.
-Commit the post, then run `chough doctor --fix`, which removes the now-committed session
-folder, and commit that. Archive on the same pull request, then push and observe required
+into one story, `.chough/archive/sessions/<id>.md`, writes a journal post when the
+librarian is on, and the librarian refreshes the generated knowledge directory at
+release, not here. Commit the session folder, the story and the post together, as
+`chough next` names them, then run `chough doctor --fix`, which removes the
+now-committed session folder, and commit that. Archive on the same pull request, then push and observe required
 CI at the
 actual tip, and merge only when every change on that pull request is archived. A push
 before the review only shows the work early: expect the Archive gate red and do not

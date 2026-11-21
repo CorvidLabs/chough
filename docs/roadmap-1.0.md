@@ -27,7 +27,8 @@ LIFE-21: all four are required.
    full Chough cycle, intent to done, on the release candidate, with no
    data-loss or stale-record bugs.
 2. **Zero known flakes.** CI is green with zero known flaky tests on macOS and
-   Linux for two consecutive weeks. Today's known flakes: #187 and #132.
+   Linux for two consecutive weeks. The flakes known earlier, #187, #132, #169 and
+   #247, are closed.
 3. **Frozen format + migrations.** The `.chough` record format is frozen at
    1.0, with tested migrations from every 0.x release.
 4. **Host-matrix e2e.** Before each release, a scripted end-to-end cycle
@@ -48,9 +49,9 @@ to crates.io. The human steps of [releasing](releasing.md) stay human steps.
 Leif decided on 2026-11-10 that the human-first redesign (M1 to M3) ships as ONE
 change, **Chough 0.6.0**, dogfooded on the chough repository itself before any
 other repo updates. The redesign covers slug folders, Markdown records named by date
-and slug, the links-never-copies vault and the cleanup. It is the native change
-`chough-0-6-0-human-first-records-…` on draft PR #238 (branch
-leif/human-first-records).
+and slug, the links-never-copies vault and the cleanup. It was the native change
+`chough-0-6-0-human-first-records-…` on PR #238 (branch leif/human-first-records),
+released as 0.6.0 on 2026-11-12.
 
 It folds in these issues:
 - #214: slug folders, with #207's side-effect fix;
@@ -63,8 +64,7 @@ It folds in these issues:
 - #12: Chough's records stay out of SpecSync's verification;
 - #165: no roll-up of archived sessions.
 
-Only after that dogfood passes on chough do the other repos pick it up (M6 order). It
-has not been merged or released yet.
+Only after that dogfood passed on chough did the other repos pick it up (M6 order).
 
 Each milestone names the bar items it serves, what "done" means and how it is
 tested. Milestones overlap in time; the dependencies are between the issues,
@@ -291,6 +291,7 @@ agent before a project migrates. The receipt and Git history are the rollback.
 | 0.5.0 release | Session lifecycle and gate helpers, current-agent SpecSync steps, rebuildable Linux verification | Published 2026-11-06: tag `v0.5.0` at 455cb643 (release prep PR #185), crates.io `chough` 0.5.0 and the [GitHub release](https://github.com/CorvidLabs/chough/releases/tag/v0.5.0). A clean `cargo install chough --version 0.5.0 --locked` into an empty root with cargo 1.99.0 on macOS arm64 exited 0 and `chough --version` printed `chough 0.5.0` |
 | 0.6.0 release | Human-first records: Markdown records in session folders, gates that hold their own stage, approval or review as the configured human, no leaks, a links-never-copies vault, `chough migrate` | Published 2026-11-12: tag `v0.6.0` at 443c63ab (release prep PRs #238 and #239), crates.io `chough` 0.6.0 and the [GitHub release](https://github.com/CorvidLabs/chough/releases/tag/v0.6.0). A clean `cargo install chough --version 0.6.0 --locked` into an empty root with a fresh target directory on macOS arm64 succeeded, and the installed `chough --version` printed `chough 0.6.0` (observed by claude-code-t370, 2026-11-13) |
 | 0.6.1 release | Fixes only: a blocking bug stops only the sessions it is related to, `journal add` holds the writer lock, a FIFO in a record's place blocks no reader, leak-check corrections, and `evidence add`, `cases run` and `cases record` re-read the session under the writer lock | Published 2026-11-18: tag `v0.6.1` at cef86e26 (release prep PR #326), crates.io `chough` 0.6.1 and the [GitHub release](https://github.com/CorvidLabs/chough/releases/tag/v0.6.1). A clean `cargo install chough --version 0.6.1 --locked` into an empty root with cargo 1.100.0 on macOS arm64 exited 0 and `chough --version` printed `chough 0.6.1`; `chough init` and `chough next` in a new Git repository exited 0 |
+| 0.6.2 release | Readiness and integrity: `chough change ready` names what SpecSync 6.4.0's approval dry run refuses; a new bug or journal post is written whole or not at all; an unclosed code fence hides nothing; the gate summary counts evidence and uncommitted work truthfully; an unattended `stage advance --to` past plan or accept needs `--reason`; leak checks cover a change's text and output; `doctor --fix` keeps work it cannot prove committed, and parallel `skill update` and `init` runs are safe. Needs SpecSync 6.4.0 | Published 2026-11-21: tag `v0.6.2` at 1bac91a4 (release prep PR #432), crates.io `chough` 0.6.2 and the [GitHub release](https://github.com/CorvidLabs/chough/releases/tag/v0.6.2). A clean `cargo install chough --version 0.6.2 --locked` into an empty root with a fresh target directory and cargo 1.100.0 on macOS arm64 exited 0 and `chough --version` printed `chough 0.6.2`; `chough init` and `chough next` in a new Git repository exited 0, and `chough status` did once a session was open |
 | First real project loop | Use the workflow on a real CorvidLabs feature and bug | Used once in real work, on a private CorvidLabs project; it found BUG-0015 to BUG-0019, of which BUG-0015, 0016, 0018 and 0019 are fixed and verified and BUG-0017's error half is fixed and its documented-order half is addressed by merged PR #41 (8fb0ea7, #11). More runs are needed |
 | More hosts | Exercise Cursor, Gemini and Grok discovery and cold starts. One Kimi Code CLI 0.41.0 run on macOS arm64 passed `.agents` discovery but could not safely cold-resume because of BUG-0024's stale archived-resume action and BUG-0021's guidance gap. Google Antigravity has a separate unverified narrative report in closed PR #20 | Kimi run observed 2026-11-01, with no fresh post-fix rerun; Cursor, Gemini and Grok remain proposed |
 | Observation reuse | Recognize unchanged inputs at a descendant commit | Narrower content-identity form delivered by D-018 in PR #17; the ancestry check and separate reuse label stay unapproved (the deferred proposal is in Git history and D-018) |

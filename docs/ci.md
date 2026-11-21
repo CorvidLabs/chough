@@ -31,8 +31,9 @@ commit with `archive-gate-only: 'true'`; 6.1.2 was the first release with that i
 (#832). Fledge is 1.8.0, installed by the Fledge Action at its reviewed commit with
 `version: v1.8.0` (the GitHub release of the version published to crates.io), and HI
 is 0.8.0, installed with `cargo install human-intent --version 0.8.0 --locked`. These
-pins match README.md and AGENTS.md; `tests/package.rs::tool_and_rust_version_pins_agree`
-fails when they disagree. The `MSRV / 1.88.0` job runs `cargo test --locked` with
+pins match README.md and AGENTS.md;
+`tests/package.rs::versions_agree_across_readme_agents_ci_and_specsync_config` fails
+when they disagree. The `MSRV / 1.88.0` job runs `cargo test --locked` with
 Rust 1.88.0, the `rust-version` in Cargo.toml. Workflow actions are pinned to
 verified commit SHAs.
 

@@ -33,8 +33,8 @@ Below, `X.Y.Z` is the version being released.
 4. Check the version and the change log: `Cargo.toml` says `version = "X.Y.Z"`, and
    `fledge run changelog -- --release X.Y.Z --date <release date>` has assembled every
    fragment in `changelog.d/` into [CHANGELOG.md](../CHANGELOG.md), newest first, and
-   removed them (#290); it refuses, writing nothing, when that version already has a
-   heading. The entries that ship in this release then sit under
+   removed them (#290); with fragments to assemble, it refuses, writing nothing, when
+   that version already has a heading, and with none it writes nothing. The entries that ship in this release then sit under
    `## [X.Y.Z] - <release date>`, with a `[X.Y.Z]` link to
    `https://github.com/CorvidLabs/chough/releases/tag/vX.Y.Z` at the end. The release
    preparation change normally does this (0.4.0's did, in #116); if it did not, do it

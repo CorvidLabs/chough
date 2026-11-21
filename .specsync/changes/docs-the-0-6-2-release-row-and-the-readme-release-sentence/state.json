@@ -10,11 +10,18 @@
   "state": "draft",
   "base_commit": "1bac91a4136691074c731f6fc24fd06f57af45d6",
   "created_at": 1795221154,
-  "updated_at": 1795221178,
-  "affected_specs": [],
+  "updated_at": 1795222689,
+  "affected_specs": [
+    "cli"
+  ],
   "affected_paths": [
-    "docs/roadmap-1.0.md",
     "README.md",
+    "docs/",
+    "skills/chough-workflow/",
+    ".agents/skills/chough-workflow/",
+    "src/skill.rs",
+    "tests/fixtures/skill-releases/manifest.json",
+    "tests/skill_releases.rs",
     "changelog.d/2026-11-21-docs-0-6-2-release.md"
   ],
   "no_spec_change": true,
@@ -29,6 +36,7 @@
   "dependencies": [],
   "answers": {
     "architecture_risk": "no",
+    "constraints": "Documentation only, as Leif asked: code bugs are filed (#433 to #440), not fixed; the diagrams' sources, embedded blocks and SVGs stay equal; an installed 0.6.2 skill must update, so src/skill.rs lists the replaced files (REQ-cli-016).",
     "public_contract": "no"
   }
 }

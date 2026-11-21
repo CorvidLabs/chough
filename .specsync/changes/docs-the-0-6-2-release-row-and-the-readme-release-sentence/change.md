@@ -13,7 +13,7 @@ Docs: the 0.6.2 release row and the README release sentence
 
 ## Affected Canonical Specs
 
-- None
+- `cli`
 
 ## Acceptance Criteria
 

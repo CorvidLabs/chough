@@ -33,7 +33,7 @@ See [lifecycle](references/lifecycle.md) for scope, provenance and ordering.
 2. Find the checkpoint: run `chough next --environment <env>`. Without the helper,
    read the active session's `session.md` (see
    [checkpoint.md](references/checkpoint.md)), `.chough/README.md`, open bugs in
-   `.chough/bugs/` and `chough change status <native_change>`.
+   `.chough/bugs/` and `specsync change status <native_change>`.
 3. Check what is still true: native state, evidence freshness, open blocking bugs,
    and open gates. A saved stage or next action is a suggestion; native status
    decides gates.

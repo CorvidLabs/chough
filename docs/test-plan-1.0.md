@@ -41,7 +41,7 @@ issue as `GitHub #<n>` in a Log note. The label is the current list. It was seed
 - #187: a timing test under a full macOS verify;
 - #132: fork and fd inheritance (ETXTBSY on stand-in scripts, a held checkpoint lock);
 - #169: a timing trace test straddling a second;
-- #247: the exercise's same-second race, still open.
+- #247: the exercise's same-second race, open then (closed 2026-11-13).
 
 Rules:
 

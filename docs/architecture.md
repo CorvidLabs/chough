@@ -4,7 +4,9 @@ The current agent interprets requests and follows the workflow skill. The Rust h
 does only deterministic work: keep the checkpoint, route stages within native gates,
 validate and run test definitions, bind observations, keep local bugs, separate
 preferences from consent, index the librarian's knowledge directory and write its
-journal (on by default), and install the skill per host. Each existing tool keeps its own records.
+journal (on by default), install the skill per host, and run SpecSync's change steps
+through `chough change` and its approval or review as the configured human when a
+human's decision closes a gate. Each existing tool keeps its own records.
 
 ![Record ownership](diagrams/ownership.svg)
 
@@ -21,6 +23,7 @@ flowchart TB
     fledge --> evidence["Observations: revision, inputs, environment"]
     evidence --> chough
     spec -->|"native state gates stages"| chough
+    chough -. "runs change steps; approval or review as the human" .-> spec
     chough --> resume["Any agent resumes from files"]
 ```
 
@@ -107,8 +110,9 @@ beside the story when the session finishes (REQ-records-013).
 ## Checkpoint authority
 
 There is exactly one writable checkpoint at a time: the front matter of the active
-session's `.chough/sessions/<id>/session.md`, named by `.chough/local/active-session`
-or, with no pointer, the only open session that is not finished. Hand edits are
+session's `.chough/sessions/<id>/session.md`, named by `--session` or `CHOUGH_SESSION`
+when one is given, else by `.chough/local/active-session`, or, with no pointer, by the
+one open session, or among several the only one that is not finished. Hand edits are
 allowed and validated on every read: the strict YAML subset, the keys and their
 types, the size bound and closed stage names. A key Chough does not know is kept. Each
 command resolves the active session once and saves only to it, by an atomic replace.
@@ -237,10 +241,13 @@ entries were rewritten. An entry is at most 64 KiB and a Timeline at most 4,096
 entries. Recent guidance reads the newest 128 entries, and timing reads at most 4,096
 entries and 16 MiB of Timelines per request, reporting the rest as partial.
 
-A session closes only itself, at its own move into done or with `chough session close
---reason`. It writes its story, `.chough/archive/sessions/<id>.md`, by create-new: the
-front matter with the outcome and a receipt per evidence entry, the story as written,
-the Timeline and a closing line. Chough reads the story back, then removes each file
+A session closes only itself: at its own move into done by `chough stage advance`
+(`--to` and `chough change ship` included), unless release is authorized or inbox
+entries are unfolded, which keep it open; or with `chough session close <key> --reason
+<why>`. `stage skip`, `stage reset --to done` and a return to done leave it open. It
+writes its story, `.chough/archive/sessions/<id>.md`, by create-new: the front matter
+with the outcome, the story as written, the Timeline, a closing line, and then
+`## Receipts`, one per evidence entry. Chough reads the story back, then removes each file
 of the session folder whose bytes are committed at HEAD, keeps and reports the rest,
 and clears the active pointer. `chough doctor --fix` finishes the removal after the
 commit. Starting or switching work never moves or rewrites another session's folder or story.

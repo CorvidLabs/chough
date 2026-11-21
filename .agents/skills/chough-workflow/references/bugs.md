@@ -52,7 +52,7 @@ behavior, not titles. For the same defect, append to the existing record with
 but distinct one, add with `--distinct "<why>"` and link it with `--related`.
 
 Search wider sources only when they are in scope, for example `fledge github issues
---state all --limit 100 --json`. That list is bounded and can hide fetch errors; say
+--state all --limit 100 --json`, which needs the `fledge-plugin-github` plugin. That list is bounded and can hide fetch errors; say
 what you searched and its limits.
 
 ## Scope decides the next step

@@ -116,7 +116,8 @@ drift, and BUG-0023 records oversized `next` and `status` output; both were open
 out of scope for the Kimi change. The baseline used HI 0.5.0 and Fledge 1.8.0 with
 SpecSync 6.1.1, so it was neither final CI-toolchain verification nor hosted CI.
 Later release-verified HI 0.8.0 and Fledge 1.7.2 tools were placed under
-`target/tmp/ci-tools`; SpecSync 6.1.1 is required with them for final checks.
+`target/tmp/ci-tools`; SpecSync 6.1.1 was required with them for final checks then. The
+current pins are in the README's toolchain section.
 
 Integration follow-up: the earlier native-routing fix for BUG-0024 was superseded
 during merge by main's newer REQ-cli-021 new-cycle behavior. BUG-0025 records that

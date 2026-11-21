@@ -13,7 +13,8 @@ verifier. Approvals and consents inside the copies were SYNTHETIC.
 
 Found along the way: BUG-0014 (bug verification does not check that the pass came
 after the failure), recorded for a later change. In a repository without commits
-`chough next` shows the raw `git rev-parse` error as the snapshot.
+`chough next` showed the raw `git rev-parse` error as the snapshot; in 0.6.2 only
+`chough status` reports it.
 
 ## Since then (2026-11-01)
 

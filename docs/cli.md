@@ -74,7 +74,7 @@ example by an older Chough, is refused the same way. See [Migration](#migration)
 
 ## Commands
 
-Chough prints its help with `--help` or `-h` on every command, and `chough -V` and `chough --version` print its version. The top-level `chough help --help` (or `-h`) prints the top-level help, as `chough --help` does, also after the global options `--root`, `--redact` and `--session` (#399), while `chough help <command>` prints that command's help. A command whose standard output or standard error is closed, as in `chough next | head -1`, stops printing and exits with the code it would have had, never a panic (#383); the rows below name every command the helper lists and every flag it accepts.
+Chough prints its help with `--help` or `-h` on every command, and `chough -V` and `chough --version` print its version. The top-level `chough help --help` (or `-h`) prints the top-level help, as `chough --help` does, also after the global options `--root`, `--redact` and `--session` (#399), while `chough help <command>` prints that command's help. A command whose standard output or standard error is closed, as in `chough next | head -1`, stops printing and exits with the code it would have had, never a panic (#383); the rows below name every command the helper lists and its main flags; later sections give the rest, and `chough <command> --help` lists every flag a command accepts.
 
 | Command | Behavior |
 |---|---|
@@ -88,7 +88,7 @@ Chough prints its help with `--help` or `-h` on every command, and `chough -V` a
 | `cases check\|list\|select\|run\|record` | Validate curated slug and exact legacy numeric definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding with `--environment`; record a manual or agent-assisted run with `--environment`, `--method manual\|agent-assisted`, `--summary`, optional `--artifact` and `--limitation`, and `--verdict N=pass\|fail` for every expected outcome. `run` and `record` name the evidence when `--observation-id` is omitted (see [Record names](#record-names)) and exit 3 when the recorded outcome is not passed. `record` returns the evidence as `observation` and the case ID as `case` beside `recorded`; `run` returns `case`, `observation`, `outcome` and `summary`. |
 | `evidence add [ID]` | `add`: at least one `--criterion`, and kind, outcome, environment and summary; optional `--requirement` and `--contract`, each validated when given (a requirement the active session's native change adds or modifies in its approved delta counts, see [Approved delta links](#approved-delta-links)), `--artifact` (a project file spelled canonically: relative, `/`-separated; or one absolute path outside the project, fingerprinted in place), `--case`, `--method`, `--track`, `--limitation` (at most 8 per entry, each at most 512 bytes; more is refused as `refused:limitations` with nothing written, and `cases record --limitation` has the same bound), `--failing-lines` (a manual failure's key failing lines), `--screenshot` (one key screenshot committed beside the entry) and `--raw-log` (the CI run that holds the raw log); see [Evidence entries](#evidence-entries). Omitting ID names the evidence for you; an explicit ID must be a new-form name for a new write. Returns the stored ID as `observation` beside `recorded`. Never replaces an ID. There is no evidence retention in 0.6.0; see [Retention](#retention). |
 | `bug add\|update\|list\|search\|show\|report\|merge` | Local backlog, one Markdown file per bug; see [Bugs](#bugs). `add` takes `--title`, `--symptom`, `--trigger`, `--expected`, `--actual` and `--environment` (required), and optionally `--impact`, `--criterion`, `--requirement`, `--case`, `--step` (in order), `--fixture`, `--observation`, `--classification`, `--scope`, `--regression-baseline` and `--source`; it refuses likely duplicates unless `--distinct REASON`, listing each similar bug, most similar first, as a line `<id>: <title> (<status>)` and naming `chough bug update <id> --observation <id> --note <text>` to append evidence instead, and regression needs `--regression-baseline`. `update ID` (the bug's name or any alias) appends one Log entry and takes `--fix TEXT` (sets the Fix paragraph and logs it), `--status` (`open`, `investigating`, `fix-pending-verification`, `verified`, `deferred`, `duplicate`, `wont-fix` or `fixed-upstream`, which needs `--note`), `--note`, `--observation`, `--duplicate-of`, `--related`, `--scope`, `--classification` and `--regression-baseline`; an update never renames the bug. `verified` needs a linked failed observation and a present linked passed observation observed after it (see [freshness](#observation-outcomes-and-freshness)); without them the refusal names `chough bug update ID --observation OBS`. `--duplicate-of` and `--related` must name another existing bug: a link to the bug itself or to an unknown bug, and an update or report of an unknown bug, are refused with nothing written and name `chough bug list --all`. Changing a duplicate's status clears its `duplicate_of` and notes it, so `--status open` reopens a bug marked duplicate by mistake (REQ-cli-054). `list` shows open bugs, `--all` every bug; `search TEXT` scores words in title, symptom and trigger plus shared `--criterion`, `--requirement` and `--case` IDs; `report` prints Markdown and posts nothing. `merge BASE OURS THEIRS` is the Git merge driver for `.chough/bugs/*.md` that `.gitattributes` declares as `merge=chough-bug` (see [Merging branches](#merging-branches)). |
-| `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `migration` on-request, standing (a standing `migration` preference gives the human's consent to `chough migrate --apply`); `monitor-initiation` capture-only, propose-change; `librarian` on, off (on by default; `off` is the recorded opt-out); `library-dir` a path (default `knowledge`); `required-lane` a name (default empty). Only `always` and `standing` authorize without a run consent. |
+| `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set or unset with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `migration` on-request, standing (a standing `migration` preference gives the human's consent to `chough migrate --apply`); `monitor-initiation` capture-only, propose-change; `librarian` on, off (on by default; `off` is the recorded opt-out); `library-dir` a path (default `knowledge`); `required-lane` a name (default empty). Only `always` and `standing` authorize without a run consent. |
 | `consent show\|grant KEY --source S\|revoke KEY` | Run consent for the current objective: repeat-validation, monitoring and release. |
 | `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits and local capture of failures. `run CASE --times N --environment E [--interval S]` (N from 1 to 1000; S from 0, the default, to 3600 seconds) needs a case with a binding and a `repeat-validation` run consent or `pref set repeat-validation always`; unlike `stage enter validate`, `monitoring` does not authorize it. `resume ID` continues a stored run under its original ID or alias; `stop` and `status` take no argument. A stop request (state `stopped`) or a paused checkpoint stage (state `paused`) is checked immediately before every attempt, including after the interval, which is waited in slices of at most 200 ms; both states resume with `validate resume`. |
 | `library init\|index [--check]\|merge BASE OURS THEIRS` | The librarian, on by default in `knowledge/` (opt out with `pref set librarian off --source ...`); see [Knowledge vault](#knowledge-vault). `init` builds `index.md`, `journal/` and `lessons/`. `index` regenerates `index.md` and the feed, and removes a `README.md` an earlier release generated once its bytes are committed; `index --check` writes nothing, fails naming each generated file that is missing or differs from a rebuild, and is the release check's second step, run after the release task rebuilds (see [Merging branches](#merging-branches)). `merge` is the Git merge driver for those two files: it keeps ours, and the next `library index` rebuilds them. No gate reads the knowledge directory. |
@@ -266,7 +266,8 @@ create-new for a new record. A new record is written whole or not at all: to a
 temporary file in `.chough/local/`, synced, then given its name without replacing
 anything, so a full disk or a file-size limit leaves no file at the name; where the file
 system cannot rename that way, it is created at its name and removed again on any error.
-No hard link is used, so a volume without them, such as exFAT, works (#260, #424). The
+A new bug or journal post, and `chough init`'s `.chough/local/.gitignore`, use no hard
+link, so they work on a volume without them, such as exFAT (#260, #424). The
 folder that holds the new name is not synced after the move, so a power loss just after a
 write can still lose the name; the record is then missing, never partial. An empty
 record file is named as empty, with the way out.
@@ -426,12 +427,13 @@ the other command finishes. The lock file stays after use and is safe to delete 
 no Chough command runs for the project. `CHOUGH_TRACE=1` adds a
 `chough-trace: checkpoint-lock waited_ms=<n>` line to stderr for each writer.
 
-A session write goes to `.session.md.<pid>.tmp` in the session folder and is renamed
-over `session.md`; an inbox add writes a temporary file in the inbox folder and links
-it into place. `.chough/sessions/.gitignore` ignores those temps. A writer holding the
-lock removes a temp a killed writer left, just before it saves, and says so on stderr,
-for example `chough: removed .chough/sessions/<id>/<temp> (<bytes> bytes), left by a
-session write that was stopped before it saved; the session was not changed by it`.
+A write of a record under `.chough/` goes to a temporary file in the Git-ignored
+`.chough/local/`, named `.<8 hex digits>.<name>.<pid>.tmp`, and is renamed over its
+record; an inbox add writes its entry there too and links it into place. A writer
+holding the lock removes a temp a killed writer left, just before it saves, and says so
+on stderr, for example `chough: removed .chough/local/<temp> (<bytes> bytes), left by a
+record write that was stopped before it saved; no record was changed by it`. A temp an
+older release left in a session folder or its inbox is removed the same way.
 The killed command's update was never saved. Other file names are left alone.
 
 The lock orders Chough's own writers only. A Git command that rewrites the worktree,
@@ -735,7 +737,8 @@ aliases = ["<another name they go by>"]
 specsync_actor = "<their SpecSync actor>"
 ```
 
-`name` is how records show the person, `aliases` is optional, and `specsync_actor` is
+`name` is the display name SpecSync's approval note shows (Chough's own records keep
+the `--decided-by` text as given), `aliases` is optional, and `specsync_actor` is
 the actor SpecSync records. At every gate close, through `checkpoint --close-gate`,
 `gate record` or `change ship --close-gate`, whatever the gate drives and with or
 without `--no-native`, `--decided-by` must name exactly one configured human, by
@@ -951,7 +954,7 @@ native read, and never records a human decision, approval, review or consent.
 | Kind | What it finds | Fix |
 |---|---|---|
 | `unmigrated` | 0.5.x records, such as `.chough/session.json` (REQ-records-010); the finding lists up to 20 of their `paths` and the `total` | Names `chough migrate`; doctor never migrates. The session findings below wait until the tree is migrated |
-| `leak` | A file Git tracks under `.chough/` or the knowledge directory that matches the leak patterns of REQ-records-006, one finding per `line` and `match` (the kind), never the text | `chough doctor --fix --redact` replaces each match with `<redacted:<kind>>` in place; `--fix` alone skips it. Not a decision. An ID is never rewritten, since a redacted ID no longer reads (#320): a match on a front matter line that gives a record's `id`, its aliases or an ID it references keeps its line byte for byte, its finding stays `skipped` and names the recovery, `chough session shelve <id>` for a session record and a reviewed hand edit otherwise, while the record's other matches are still redacted. A session's `modules` and a bug's `regression_baseline` are ID lines too. A Markdown link in a record's body to a file whose name holds a match is redacted with the rest of the body, so that link no longer resolves; the record still reads, and the file keeps its name. A save refused for such an ID names the same recovery |
+| `leak` | A file Git tracks under `.chough/`, the knowledge directory or `.specsync/changes/` (outside `deltas/`, #412) that matches the leak patterns of REQ-records-006, one finding per `line` and `match` (the kind), never the text | `chough doctor --fix --redact` replaces each match with `<redacted:<kind>>` in place; `--fix` alone skips it. Not a decision. An ID is never rewritten, since a redacted ID no longer reads (#320): a match on a front matter line that gives a record's `id`, its aliases or an ID it references keeps its line byte for byte, its finding stays `skipped` and names the recovery, `chough session shelve <id>` for a session record and a reviewed hand edit otherwise, while the record's other matches are still redacted. A session's `modules` and a bug's `regression_baseline` are ID lines too. A Markdown link in a record's body to a file whose name holds a match is redacted with the rest of the body, so that link no longer resolves; the record still reads, and the file keeps its name. A save refused for such an ID names the same recovery |
 | `stale_pointer` | The active pointer names a missing or archived session | Remove the pointer |
 | `finished_session` | An open session at done, or with its native change archived on HEAD | Archive it into its story; one with unfolded inbox entries is skipped, naming `chough inbox fold` |
 | `unfinished_archive` | A session folder whose story exists and that still holds files. Its fix names the files to commit, the session's journal post among them while it is not committed, though an untracked or ignored post never holds the finish (#389). `--fix` removes every committed file but two kinds, so no work is lost (#381): an evidence entry the story's receipts do not hold, by its ID and the receipt it gives now, compared on the fields the story's receipt holds, so a story an earlier release wrote still holds its entries, with the screenshot beside it, and an unfolded `agent/inbox/` entry. A merge that keeps main's archive of a session a branch added to leaves one. The finding is then `skipped`, naming each in `kept` and the way out by hand: move an evidence entry into an open session's `evidence/` with `git mv` and commit it, or drop it with `git rm`; add an inbox entry's text again in an open session with `chough inbox add`, then drop the kept copy with `git rm`. An evidence entry that cannot be read is kept and named too, with dropping it as its way out, since moving it would make an open session unreadable. Nothing is removed while the session's story is not committed at HEAD as it is, an edit after its commit or a story Git ignores included, and the finding names it to commit first, as a command (`git add -f` for an ignored story), so the folder never goes while the story is not committed; a journal post, which the finish never removes, holds nothing (#389). Each way out is printed as a whole command that runs as pasted, and with open sessions but none active it names them for the person to pick one. macOS metadata in the folder is removed whether committed or not (#377). A file the finish reads that cannot be read, such as an empty or cut-off entry or a story over its bound, leaves the finding `skipped` and removes nothing, while that file's own finding says why and the rest of `doctor` runs | Remove each file whose bytes are committed at HEAD; otherwise skipped, naming the commit to make |
@@ -1033,7 +1036,8 @@ done and its save succeeds, the same command goes on, with no further native rea
    then the story as written, with one line `Objective at closeout: <objective>` after the
    Goal paragraph when the Goal is not the current objective, as after a later
    `checkpoint --objective` (#344), and a `## Bugs` section after What was verified that
-   names each bug of the session's checkpoint with its title and status, linked to its
+   names each bug of the session, the checkpoint's and those filed in it (#382), with its
+   title and status, linked to its
    record; then the Timeline and a closing line `Closed <date>: <outcome>.`; and last a
    `## Receipts` section holding the receipts as one fenced YAML block. It reads the
    story back, then removes each file of the session folder whose exact bytes are
@@ -1064,9 +1068,10 @@ there is no open session, names `chough session new <key>` and exits 0, since th
 normal state after done, while `chough status` refuses with "no open session" and names
 the same command (DRIVE-13).
 
-The finish takes two commits. First commit the story and the journal post. The session's
-own `session.md` changed in the move, so its bytes were not yet committed and it stayed.
-Then run `chough doctor --fix`, which removes the session folder now that its bytes are
+The finish takes two commits. First commit the session folder, the story and the journal
+post together, as `chough next` names them: the session's own `session.md` changed in
+the move, and `doctor --fix` removes nothing while it is not committed. Then run
+`chough doctor --fix`, which removes the session folder now that its bytes are
 committed, and commit that.
 
 Each evidence entry the session holds becomes one map in the story's `receipts`, the
@@ -1284,7 +1289,8 @@ through `chough` alone (REQ-cli-057, REQ-cli-059, DRIVE-20):
 Each runs in the `--root` directory with the `specsync` on `PATH`, the one Chough's
 native reads use. SpecSync's standard output, standard error and exit code pass through
 byte for byte, including its refusals and the recovery commands they name. Chough adds
-nothing and writes nothing under `.chough/`.
+nothing and writes nothing under `.chough/` but the untracked direct-write baseline,
+`.chough/local/native-writes/<id>.json`, of `new`, `answer` and `check`.
 
 SpecSync writes a change's description, its `--rationale` and each answer into the
 change's committed records, so Chough checks them before SpecSync runs, as it checks any
@@ -1443,7 +1449,7 @@ approve the scope.
 The change's own `.specsync/changes/<id>/testing.md` must name every requirement its
 deltas add or modify before `specsync change check` (and so `chough change check`)
 verifies it; until then it refuses with "no requirement evidence for <ID>; add a row
-for it to the `## Requirement evidence` table". SpecSync 6.3.0 looks only for the ID in
+for it to the `## Requirement evidence` table". SpecSync 6.3.0 and 6.4.0 look only for the ID in
 that file or in a test file, so give each requirement a row naming the test or check
 that shows it:
 
@@ -1506,7 +1512,7 @@ review (REQ-cli-059). It runs in these steps:
    close's and the move's, so an agent loses nothing.
 
 The gate closes after the ship, so even a project that keeps Chough's records in
-SpecSync's verification writes nothing under `.chough/` between `change check
+SpecSync's verification writes no tracked file under `.chough/` between `change check
 --commit` and finalize (see `chough_writes` in [The next view](#the-next-view)).
 
 `--list <list> --gate <n>` may stand in for `--close-gate <gate>`. The gate is then
@@ -1747,7 +1753,7 @@ stage on that response, and shows:
 | `skill_outdated` | How many installed skill files are an earlier release's copy; while it is above 0 the text view shows the line ``Skill files are outdated: run `chough skill update` `` below the objective |
 | `skill_update` | Empty unless a skill folder was not inspected (doctor's `skill_uninspected`); then one `chough skill update --host <host>` for each installed copy that was inspected, which update exactly the copies doctor could inspect; plain `chough skill update` skips such a folder too and updates the rest (#403). The text view shows them on a line after the skill line |
 | `native` | `change`, `read` (the native section state), `state`, `approval_valid`, `correction_valid`, `terminal_evidence`, `next_action` and `approved_deltas` (`unchanged: <modules>`, `no semantic deltas (no_spec_change)`, `changed: ...`, `unverifiable: ...` or `not checked: <why>`; with SpecSync configured but SDD off, as `specsync init` leaves it, the reason is ``native SDD is disabled; run `specsync change adopt` to gate stages``, and the `ungated:sdd-disabled` gate detail says the same); unknown values are `null` |
-| `native_check` | For a recorded native change with a workspace under `.specsync/changes/`, otherwise `null`: `last_attempt` (the latest attempt in its `verification-attempts.json` by timestamp: `passed`, `at_unix_seconds`, a 12-character `commit` and `failed_commands` with at most 3 `command` and `exit_code` entries and their `total`, or `null`), `not_passed_for_tree` (native state `approved` or `implementing`, or `verifying` while SpecSync's `handoff.readiness` from the same read is not `safe`, which it reports when the tree moved after the last check; a `verifying` reply with no readiness gives an "unknown" note instead), `note` and `unknown` (why the record could not be read; never shown as no failure). SpecSync 6.1.2 records an attempt only when a verification command runs; a refusal before verifying, such as incomplete tasks or missing requirement evidence, leaves no record or reason, so the note names `specsync change check <id>` (#86). It reads that one local file and no native command |
+| `native_check` | For a recorded native change with a workspace under `.specsync/changes/`, otherwise `null`: `last_attempt` (the latest attempt in its `verification-attempts.json` by timestamp: `passed`, `at_unix_seconds`, a 12-character `commit` and `failed_commands` with at most 3 `command` and `exit_code` entries and their `total`, or `null`), `not_passed_for_tree` (native state `approved` or `implementing`, or `verifying` while SpecSync's `handoff.readiness` from the same read is not `safe`, which it reports when the tree moved after the last check; a `verifying` reply with no readiness gives an "unknown" note instead), `note` and `unknown` (why the record could not be read; never shown as no failure). Chough reads only an attempt's commands, so for a refusal before verifying, such as incomplete tasks or missing requirement evidence, the note names `specsync change check <id>` (#86); SpecSync 6.4.0 records such a refusal's reason in the attempt, which Chough does not show yet. It reads that one local file and no native command |
 | `direct_writes` | Pending direct lifecycle writes; see [Direct lifecycle writes](#direct-lifecycle-writes) |
 | `native_verification_warning` | A sentence when the native check runs none of the project's commands, judged from the change's effective commands in the status read, otherwise `null`; `status` carries the same key. See [Native verification that runs no project command](#native-verification-that-runs-no-project-command) |
 | `next_valid_action` | `action`, `reason` and, when one applies, `command`; `status` reports the same `action` as its `next_valid_action` |
@@ -1959,8 +1965,8 @@ authority.
 
 | Label | When | Next native action |
 |---|---|---|
-| `refused:native-delta-changed` | A delta of one of the change's affected specs or approved modules differs from its approved digest or is deleted. A delta for a module in neither is not compared here; SpecSync's `change check` refuses it. SpecSync 6.3.0 itself reports an approval with a changed delta invalid, so there the same edit is refused first as `refused:native-approval-invalid` | Restore the approved delta, or have the changed scope approved: open a scope gate with `chough checkpoint --awaiting-human "<gate>" --drives approve` and record the human's decision with `chough checkpoint --close-gate`, which runs the approval as them; on authority they gave in advance, record `specsync change approve <id> --actor "<agent>-<terminal>" --note "Approved under <the human's words> (<source>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>)."`. Then run `specsync change check <id>` |
-| `refused:native-delta-unverifiable` | The ledger is missing, unreadable, over 4 MiB or malformed; it has no definition approval; status reports no `change.affected_specs`; a module name is not one SpecSync 6.1.1 accepts; a delta cannot be read | Run `specsync change status <id>` |
+| `refused:native-delta-changed` | A delta of one of the change's affected specs or approved modules differs from its approved digest or is deleted. A delta for a module in neither is not compared here; SpecSync's `change check` refuses it. SpecSync 6.3.0 and later report an approval with a changed delta invalid, so there the same edit is refused first as `refused:native-approval-invalid` | Restore the approved delta, or have the changed scope approved: open a scope gate with `chough checkpoint --awaiting-human "<gate>" --drives approve` and record the human's decision with `chough checkpoint --close-gate`, which runs the approval as them; on authority they gave in advance, record `specsync change approve <id> --actor "<agent>-<terminal>" --note "Approved under <the human's words> (<source>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>)."`. Then run `specsync change check <id>` |
+| `refused:native-delta-unverifiable` | The ledger is missing, unreadable, over 4 MiB or malformed; it has no definition approval; status reports no `change.affected_specs`; a module name is not one SpecSync accepts; a delta cannot be read | Run `specsync change status <id>` |
 | `refused:native-delta-unverifiable` | A change with deltas has an approval without `approved_delta_digests` | An approval records the digests, the same two ways as for `refused:native-delta-changed`; then run `specsync change check <id>`; a status read cannot clear it |
 
 A no-spec-change approval with no deltas and an empty or absent digest map passes. The
