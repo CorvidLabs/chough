@@ -5,7 +5,7 @@ aliases: [docs-0-6-2-release]
 objective: The roadmap's delivered table has the 0.6.2 release row, and the README's command table says it documents 0.6.2
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: [2026-11-21-after-the-v0-6-2-tag-1bac91a4-and-cargo-publish-crates-io]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of docs-the-0-6-2-release-row-and-the-readme-release-sentence
-    holds: accept
-    drives: review
-    opened: 2026-11-21T01:11:25Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: The documentation checked against Chough 0.6.2
 summary:
   - "The README and all documentation, the Mermaid diagrams included, were checked against what Chough 0.6.2 does and every inaccuracy fixed: the closeout commits the session folder with the story, the lifecycle diagram's release path, refused:no-human-decision and --reason, what closes a session, temp files, leak scope and stale claims; the lifecycle and ownership SVGs re-rendered; the roadmap's 0.6.2 row; an installed 0.6.2 skill updates. Code bugs filed: #433 to #440."
@@ -42,6 +38,7 @@ The roadmap's delivered table has the 0.6.2 release row, and the README's comman
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of docs-the-0-6-2-release-row-and-the-readme-release-sentence (native approval)": "Standing OK, tell me after" (Leif's standing OK for scope approvals ('Standing OK, tell me after', a Claude Code question dialog in his planning session hc t4c, 2026-11-20 about 04:17Z), confirmed by t4c for this documentation-only change: no spec wording, no refusal. Its scope is Leif's own ask, relayed by t4c on 2026-11-21: the README and all documentation, Mermaid diagrams included, checked and made accurate for 0.6.2, code bugs filed not fixed (#433 to #440); with the roadmap's 0.6.2 row under his 'Yes, release 0.6.2' of 2026-11-20 about 23:59Z. src/skill.rs and the skill-release fixture change only so an installed 0.6.2 skill updates to the corrected files. Recorded by t4c); recorded by t4c; a relayed claim, not authenticated; ran specsync change approve docs-the-0-6-2-release-row-and-the-readme-release-sentence as 0xLeif
+- 0xLeif decided "Implementation review of docs-the-0-6-2-release-row-and-the-readme-release-sentence": "Pass (Recommended)" (Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-21 about 01:10Z, to his review of Chough #441, the 0.6.2 documentation PR: the audit by five read-only agents checked in the code, the fixes by file, the two re-rendered diagrams, the skill's known-previous data change, the 8 filed bugs, the green lane. Recorded by t4c); recorded by t4c; a relayed claim, not authenticated; ran specsync change review docs-the-0-6-2-release-row-and-the-readme-release-sentence as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -98,4 +95,20 @@ The roadmap's delivered table has the 0.6.2 release row, and the README's comman
   - revision: 5b680fa2c6ff71cbee9cfe18782effaaa517a5af
   - holds: accept
   - drives: review
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-21T01:12:33Z · gate-closed · accept → accept · Implementation review of docs-the-0-6-2-release-row-and-the-readme-release-sentence ^t-6cb1c2
+  - native_change: docs-the-0-6-2-release-row-and-the-readme-release-sentence
+  - revision: a58f5f77410f109941414b90ea435b2ac319d80b
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Pass (Recommended)
+    - where: Leif's own answer in a Claude Code question dialog in his planning session (hc t4c), 2026-11-21 about 01:10Z, to his review of Chough #441, the 0.6.2 documentation PR: the audit by five read-only agents checked in the code, the fixes by file, the two re-rendered diagrams, the skill's known-previous data change, the 8 filed bugs, the green lane. Recorded by t4c
+    - recorded_by: t4c
+    - native: specsync change review docs-the-0-6-2-release-row-and-the-readme-release-sentence
+    - actor: 0xLeif
+  - by: t4c (claude-opus-5-5, hc t4c)
+- 2026-11-21T01:12:34Z · advance · accept → done · native:archived ^t-909ab2
+  - native_change: docs-the-0-6-2-release-row-and-the-readme-release-sentence
+  - gate: native:archived
+  - revision: a58f5f77410f109941414b90ea435b2ac319d80b
   - by: t4c (claude-opus-5-5, hc t4c)
