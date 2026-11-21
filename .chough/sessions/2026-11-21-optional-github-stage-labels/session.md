@@ -5,7 +5,7 @@ aliases: [optional-github-stage-labels]
 objective: Ship an optional GitHub template that labels a pull request with the seven main Chough stages, in rainbow order, without Chough calling GitHub.
 intent_scope: LIFE
 modules: [cli]
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -25,13 +25,9 @@ observations:
   - 2026-11-21-tc-cli-optional-github-stage-labels-init-does-not-install
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
-    holds: accept
-    drives: review
-    opened: 2026-11-21T17:02:42Z
+waiting_on_human: []
 run_consents: []
-next: Refresh the native check, run the three label cases, then record the implementation review.
+next: Continue done
 title: Optional GitHub labels for the seven main stages
 summary:
   - The optional integrations/github template labels a pull request with intent, design, plan, build, test, accept and done. Chough runs the same workflow and script. chough init does not install them, and the binary does not call GitHub.
@@ -53,6 +49,7 @@ Ship an optional GitHub template that labels a pull request with the seven main 
 
 - Optional GitHub stage labels ship as a copied template. The user said to add that shape to Chough on 2026-11-21.
 - Scope approved as grok-build under the user's 2026-11-21 words: ok go checkout the chough project and help add this. Limits: init does not install the workflow, src does not call GitHub.
+- 0xLeif decided "Implementation review of optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages": "I approve continue" (Grok chat on 2026-11-21, relayed by grok-build); recorded by grok-build; a relayed claim, not authenticated; ran specsync change review optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -126,4 +123,20 @@ Ship an optional GitHub template that labels a pull request with the seven main 
   - revision: 9f265d9fbb3a914863f1c70fbad6a82ff86a516b
   - holds: accept
   - drives: review
+  - by: unknown agent (hc t10j)
+- 2026-11-21T17:03:58Z · gate-closed · accept → accept · Implementation review of optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages ^t-f0a108
+  - native_change: optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
+  - revision: 9e08bfa97251b22247dc2ffda9a9328105450ba1
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: I approve continue
+    - where: Grok chat on 2026-11-21, relayed by grok-build
+    - recorded_by: grok-build
+    - native: specsync change review optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
+    - actor: 0xLeif
+  - by: unknown agent (hc t10j)
+- 2026-11-21T17:03:59Z · advance · accept → done · native:archived ^t-fa6002
+  - native_change: optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages
+  - gate: native:archived
+  - revision: 9e08bfa97251b22247dc2ffda9a9328105450ba1
   - by: unknown agent (hc t10j)
