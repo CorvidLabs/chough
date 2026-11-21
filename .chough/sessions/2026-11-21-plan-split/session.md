@@ -10,7 +10,7 @@ stage_status: active
 iteration: 1
 callers: []
 native_change: plan-split
-pr: ""
+pr: "445"
 criteria: [FLOW-5, FLOW-6, FLOW-8, DRIVE-3, LIFE-10, KNOW-3]
 requirements: []
 cases: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Open a draft pull request for plan-split. Do not mark it ready.
+next: Draft pull request 445 is open. Do not mark it ready.
 ---
 # Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 
