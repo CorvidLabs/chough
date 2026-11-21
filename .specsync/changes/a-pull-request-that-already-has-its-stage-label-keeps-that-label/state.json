@@ -7,10 +7,11 @@
   "title": "A pull request that already has its stage label keeps that label",
   "description": "A pull request that already has its stage label keeps that label",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "727d3bfdeef47b5a5df912d542565f8ba321a377",
   "created_at": 1795283626,
-  "updated_at": 1795283728,
+  "updated_at": 1795284103,
   "affected_specs": [
     "cli"
   ],

@@ -1,6 +1,6 @@
 ---
 id: a-pull-request-that-already-has-its-stage-label-keeps-that-label
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 727d3bfdeef47b5a5df912d542565f8ba321a377
 ---
