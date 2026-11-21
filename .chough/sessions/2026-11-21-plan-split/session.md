@@ -5,7 +5,7 @@ aliases: [plan-split]
 objective: Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Scope approval of plan-split\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 
@@ -79,3 +79,8 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
     - native: specsync change approve plan-split
     - actor: 0xLeif
   - by: unknown agent (hc t11b)
+- 2026-11-21T22:06:46Z · advance · plan → build · native:approved ^t-19a9e7
+  - native_change: plan-split
+  - gate: native:approved
+  - revision: 3968a2160e1c39b0dc82433afcf500f02c249a2e
+  - by: unknown agent (hc t11f)
