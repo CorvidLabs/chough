@@ -760,17 +760,18 @@ The workflow and the script SHALL name the main stages in the order of `const OR
 
 `.github/workflows/chough-labels.yml` and `tools/chough-label-prs.sh` SHALL be byte-identical to the template files.
 
-The script SHALL read `stage:` from the session files the pull request introduces (`.chough/sessions/*/session.md` and `.chough/archive/sessions/*.md` that differ from the merge base with the pull request's base branch). It SHALL NOT read a session path that is a symlink. When those sessions share exactly one main stage, it SHALL apply `chough-stage:<stage>` and remove every other `chough-stage:*` label. When they share none, more than one, or a stage that is not a main stage, it SHALL remove every `chough-stage:*` label and apply none. It SHALL NOT use a session's `pr:` field to choose the pull request.
+The script SHALL read `stage:` from the session files the pull request introduces (`.chough/sessions/*/session.md` and `.chough/archive/sessions/*.md` that differ from the merge base with the pull request's base branch). It SHALL NOT read a session path that is a symlink. When any introduced file is still an open session, the script SHALL choose the stage from those open sessions and SHALL ignore archived session stories. When no open session remains, it SHALL choose the stage from the archived stories. When the chosen sessions share exactly one main stage, it SHALL apply `chough-stage:<stage>` and remove every other `chough-stage:*` label. When they share none, more than one, or a stage that is not a main stage, it SHALL remove every `chough-stage:*` label and apply none. It SHALL NOT use a session's `pr:` field to choose the pull request.
 
-`docs/integrations.md` and `integrations/README.md` SHALL say the template is optional and that copying it is what turns the labels on. Trace: LIFE-31.
+`docs/integrations.md` and `integrations/README.md` SHALL say the template is optional and that copying it is what turns the labels on. Trace: LIFE-31, LIFE-32.
 
 Acceptance Criteria
 - The workflow's created labels, in order, are the seven names in `const ORDER`, with the colors above, and the script accepts only those names.
 - Chough's installed workflow and script match the template bytes.
-- A pull request that introduces one session at `build` is labeled `chough-stage:build`. One at `implement`, two sessions at different stages, and a pull request that introduces no session each end with no `chough-stage:*` label.
+- A pull request that introduces one session at `build` is labeled `chough-stage:build`. One at `implement`, two open sessions at different stages, and a pull request that introduces no session each end with no `chough-stage:*` label.
 - `chough init` in a fresh project does not write `.github/workflows/chough-labels.yml`.
 - `src/` contains no `gh label` and no `chough-labels.yml`.
 - The label job does not run for a pull request whose head repository is not this repository.
 - A symlinked session file is not read.
 - When the seven labels already match the table, the workflow does not create them again. `--force` is used only when an existing label's color or description differs. `implement` and `verify` are deleted only when they exist.
+- A pull request that introduces an archived session at `done` and an open session at `intent` is labeled `chough-stage:intent`. A pull request whose only introduced session is an archived story at `done` is labeled `chough-stage:done`.
 

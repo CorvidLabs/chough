@@ -326,6 +326,82 @@ fn the_script_labels_one_main_stage_and_refuses_anything_else() {
 }
 
 #[test]
+fn the_script_follows_an_open_session_ahead_of_an_archived_one() {
+    let (stdout, log) = run(
+        |root| {
+            git(root, &["checkout", "-b", "pr"]);
+            fs::create_dir_all(root.join(".chough/archive/sessions")).unwrap();
+            fs::write(
+                root.join(".chough/archive/sessions/old.md"),
+                "---\nstage: done\n---\n# old\n",
+            )
+            .unwrap();
+            fs::write(
+                root.join(".chough/sessions/one/session.md"),
+                "---\nstage: intent\n---\n# new\n",
+            )
+            .unwrap();
+            git(root, &["add", "."]);
+            git(root, &["commit", "-m", "pr"]);
+        },
+        "chough-stage:done\n",
+    );
+    assert!(
+        stdout.contains("stage=intent"),
+        "the open session sets the label: {stdout}"
+    );
+    assert!(log.contains("--remove-label chough-stage:done"), "{log}");
+    assert!(log.contains("--add-label chough-stage:intent"), "{log}");
+    assert!(!log.contains("--add-label chough-stage:done"), "{log}");
+
+    let (stdout, log) = run(
+        |root| {
+            git(root, &["checkout", "-b", "pr"]);
+            fs::create_dir_all(root.join(".chough/archive/sessions")).unwrap();
+            fs::write(
+                root.join(".chough/archive/sessions/old.md"),
+                "---\nstage: done\n---\n# old\n",
+            )
+            .unwrap();
+            git(root, &["add", "."]);
+            git(root, &["commit", "-m", "pr"]);
+        },
+        "",
+    );
+    assert!(
+        stdout.contains("stage=done"),
+        "an archived session still labels a pull request with no open session: {stdout}"
+    );
+    assert!(log.contains("--add-label chough-stage:done"), "{log}");
+
+    let (stdout, log) = run(
+        |root| {
+            git(root, &["checkout", "-b", "pr"]);
+            fs::create_dir_all(root.join(".chough/archive/sessions")).unwrap();
+            fs::write(
+                root.join(".chough/archive/sessions/old.md"),
+                "---\nstage: done\n---\n# old\n",
+            )
+            .unwrap();
+            fs::write(
+                root.join(".chough/sessions/one/session.md"),
+                "---\nstage: bugs\n---\n# side\n",
+            )
+            .unwrap();
+            git(root, &["add", "."]);
+            git(root, &["commit", "-m", "pr"]);
+        },
+        "chough-stage:done\n",
+    );
+    assert!(
+        stdout.contains("not a main stage"),
+        "an open side stage does not fall back to the archive: {stdout}"
+    );
+    assert!(log.contains("--remove-label chough-stage:done"), "{log}");
+    assert!(!log.contains("--add-label"), "{log}");
+}
+
+#[test]
 fn the_script_keeps_a_label_it_already_applied() {
     let (stdout, log) = label("build", &[], "chough-stage:build\n");
     assert!(stdout.contains("stage=build"), "{stdout}");

@@ -8,9 +8,12 @@
 #
 # A session's pr: field is not used. The script reads stage: from the session
 # files this pull request introduces, compared with the merge base of its base
-# branch. One distinct main stage applies chough-stage:<stage>. Zero, several,
-# or a stage outside the main line applies no stage label. Stale chough-stage
-# labels are removed either way.
+# branch. An open session sets the stage, and archived stories are ignored
+# while one remains. When no open session remains, archived stories set the
+# stage. One distinct main stage among the chosen sessions applies
+# chough-stage:<stage>. Zero, several, or a stage outside the main line
+# applies no stage label. A symlink is not read. Stale chough-stage labels
+# are removed either way.
 #
 # Main stages, in order: intent design plan build test accept done.
 # Requires: gh, bash, awk, git.
@@ -46,8 +49,10 @@ fi
 changed_files="$(git diff --name-only "$base" HEAD -- \
   '.chough/sessions/' '.chough/archive/sessions/' 2>/dev/null || true)"
 
-map_file="$(mktemp)"
-trap 'rm -f "$map_file"' EXIT
+open_file="$(mktemp)"
+archive_file="$(mktemp)"
+trap 'rm -f "$open_file" "$archive_file"' EXIT
+open_present=0
 
 while IFS= read -r f; do
   [[ -z "$f" ]] && continue
@@ -57,16 +62,33 @@ while IFS= read -r f; do
   esac
   [[ -L "$f" ]] && continue
   [[ -e "$f" ]] || continue
+  # A symlink was skipped above, so it is not an open session.
+  case "$f" in
+    .chough/sessions/*/session.md)
+      open_present=1
+      dest="$open_file"
+      ;;
+    *)
+      dest="$archive_file"
+      ;;
+  esac
   stage="$(awk -F': ' '
     /^stage:/ {
       v=$2; gsub(/^"/, "", v); gsub(/"$/, "", v); print v; exit
     }
   ' "$f")"
   [[ -z "$stage" || "$stage" == '""' ]] && continue
-  printf '%s\n' "$stage" >> "$map_file"
+  printf '%s\n' "$stage" >> "$dest"
 done <<< "$changed_files"
 
-distinct="$(sort -u "$map_file" | grep -v '^$' || true)"
+# An open session, even one with an empty stage, hides archived stories.
+if [[ "$open_present" -eq 1 ]]; then
+  chosen="$open_file"
+else
+  chosen="$archive_file"
+fi
+
+distinct="$(sort -u "$chosen" | grep -v '^$' || true)"
 stage=""
 reason=""
 if [[ -n "$distinct" ]]; then

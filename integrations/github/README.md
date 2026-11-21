@@ -39,11 +39,14 @@ request's base branch, so the diff follows that branch.
 
 The script reads `stage:` from the session files the pull request introduces:
 `.chough/sessions/*/session.md` and `.chough/archive/sessions/*.md`. It does not
-use a session's `pr:` field.
+use a session's `pr:` field, and it does not read a session path that is a symlink.
 
-One distinct main stage applies `chough-stage:<stage>` and removes any other
-stage label. Zero sessions, several stages, or a stage outside the main line
-(`release`, `bugs`, `validate`, `librarian`, or a name that is not a stage)
+When any introduced file is still an open session, that open session sets the
+label and archived stories are ignored. When no open session remains, the
+archived stories set the label. One distinct main stage among the chosen
+sessions applies `chough-stage:<stage>` and removes any other stage label.
+Zero chosen sessions, several stages among them, or a stage outside the main
+line (`release`, `bugs`, `validate`, `librarian`, or a name that is not a stage)
 removes every `chough-stage:*` label and applies none. `implement` and `verify`
 are not stages. The workflow deletes those two labels if an older copy created
 them.
