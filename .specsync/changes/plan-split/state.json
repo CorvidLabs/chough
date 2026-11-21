@@ -7,10 +7,10 @@
   "title": "Plan split",
   "description": "plan split",
   "kind": "documentation",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "51b76c626599ce28494a23b1edd740d1dff21854",
   "created_at": 1795293065,
-  "updated_at": 1795304283,
+  "updated_at": 1795304309,
   "affected_specs": [
     "cli"
   ],

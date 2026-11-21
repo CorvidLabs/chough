@@ -5,7 +5,7 @@ aliases: [plan-split]
 objective: Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Scope approval of the plan-split fork
-    holds: plan
-    drives: approve
-    opened: 2026-11-21T23:38:22Z
+waiting_on_human: []
 run_consents: []
-next: Waiting for approval of the fork wording
+next: Continue build
 ---
 # Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 
@@ -42,6 +38,7 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
 
 - 0xLeif decided "Scope approval of plan-split": "yes I approve" (Grok chat on 2026-11-21, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve plan-split as 0xLeif
 - 0xLeif decided "Scope approval of plan-split including src/skill.rs": "Uh, yeah, you can send back. Yes, I approve." (Grok chat on 2026-11-21, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve plan-split as 0xLeif
+- 0xLeif decided "Scope approval of the plan-split fork": "Yes, replace it with the fork." (Grok chat on 2026-11-21, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve plan-split as 0xLeif
 
 ## What was verified
 
@@ -153,4 +150,22 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
   - revision: 53fe59d7d63fb97fad599a1c73d052743ec41bb7
   - holds: plan
   - drives: approve
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:38:28Z · gate-closed · plan → plan · Scope approval of the plan-split fork ^t-a8c624
+  - native_change: plan-split
+  - revision: 3dd1543db6f9d5145c23481ced22c13e8a769b1c
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, replace it with the fork.
+    - where: Grok chat on 2026-11-21, relayed by grok-t11b
+    - recorded_by: grok-t11b
+    - summary_digest: 3fdd201e443551eacc015be27be8187399d50b4daf84a1b6ba2119a458b559a4
+    - list: 1e6794be56d9
+    - native: specsync change approve plan-split
+    - actor: 0xLeif
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:38:29Z · advance · plan → build · native:approved ^t-acb801
+  - native_change: plan-split
+  - gate: native:approved
+  - revision: 3dd1543db6f9d5145c23481ced22c13e8a769b1c
   - by: unknown agent (hc t11b)
