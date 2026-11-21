@@ -7,10 +7,11 @@
   "title": "A fork pull request does not fail the label job, a symlinked session is not read, and a matching stage label is not recreated.",
   "description": "A fork pull request does not fail the label job, a symlinked session is not read, and a matching stage label is not recreated.",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "97df042ea89d865cc08b36d1f96c3901103e366d",
   "created_at": 1795280994,
-  "updated_at": 1795281464,
+  "updated_at": 1795282220,
   "affected_specs": [
     "cli"
   ],

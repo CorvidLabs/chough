@@ -1,6 +1,6 @@
 ---
 id: a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 97df042ea89d865cc08b36d1f96c3901103e366d
 ---
