@@ -24,6 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [Chough 0.6.2: release preparation](journal/2026-11-21-chough-0-6-2-release-preparation.md) (2026-11-21, shipped)
 - [Chough moves to SpecSync 6.4.0, and change ready asks its dry run](journal/2026-11-20-chough-moves-to-specsync-6-4-0-and-change-ready-asks-its-dry.md) (2026-11-20, shipped)
 - [A change's description](journal/2026-11-20-a-change-s-description.md) (2026-11-20, shipped)
 - [The gate summary tells the truth, and an unattended done needs a reason](journal/2026-11-20-the-gate-summary-tells-the-truth-and-an-unattended-done-needs.md) (2026-11-20, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [bug add records the session on the new bug and never writes the session](journal/2026-11-20-bug-add-records-the-session-on-the-new-bug-and-never-writes.md) (2026-11-20, shipped)
 - [Skill and create-new batch](journal/2026-11-20-skill-and-create-new-batch.md) (2026-11-20, shipped)
 - [change ready counts only a change's own work after a rebase](journal/2026-11-20-change-ready-counts-only-a-change-s-own-work-after-a-rebase.md) (2026-11-20, shipped)
-- [Control and echo batch](journal/2026-11-20-control-and-echo-batch.md) (2026-11-20, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [release-0-6-2](../.specsync/archive/changes/2026-11-21-release-0-6-2/lesson-bundle.md), Release 0.6.2
 - [specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments](../.specsync/archive/changes/2026-11-20-specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments/lesson-bundle.md), SpecSync 6.4.0: change ready asks the approval dry run, and spec history is recorded in fragments
 - [change-leaks](../.specsync/archive/changes/2026-11-20-change-leaks/lesson-bundle.md), Change leaks
-- [fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason](../.specsync/archive/changes/2026-11-20-fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason/lesson-bundle.md), Fix G2: the gate summary tells the truth and an unattended done needs a reason
 
 ## Snapshots and briefs
 
