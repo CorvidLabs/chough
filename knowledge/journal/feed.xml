@@ -2,147 +2,147 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>2026-11-18T17:33:42Z</updated>
+<updated>2026-11-20T23:45:13Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
   <entry>
-<title>Chough 0.6.1 release preparation</title>
-<id>urn:chough:journal:2026-11-18-chough-0-6-1-release-preparation</id>
-<updated>2026-11-18T17:33:42Z</updated>
-<link href="2026-11-18-chough-0-6-1-release-preparation.md"/>
+<title>Chough moves to SpecSync 6.4.0, and change ready asks its dry run</title>
+<id>urn:chough:journal:2026-11-20-chough-moves-to-specsync-6-4-0-and-change-ready-asks-its-dry</id>
+<updated>2026-11-20T23:45:13Z</updated>
+<link href="2026-11-20-chough-moves-to-specsync-6-4-0-and-change-ready-asks-its-dry.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>A test asserts the gate summary&apos;s Change line separator</title>
-<id>urn:chough:journal:2026-11-18-a-test-asserts-the-gate-summary-s-change-line-separator</id>
-<updated>2026-11-18T17:10:31Z</updated>
-<link href="2026-11-18-a-test-asserts-the-gate-summary-s-change-line-separator.md"/>
+<title>A change&apos;s description</title>
+<id>urn:chough:journal:2026-11-20-a-change-s-description</id>
+<updated>2026-11-20T22:44:55Z</updated>
+<link href="2026-11-20-a-change-s-description.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>evidence add, cases run and cases record re-read session.md under…</title>
-<id>urn:chough:journal:2026-11-18-evidence-add-cases-run-and-cases-record-re-read-session-md</id>
-<updated>2026-11-18T17:03:45Z</updated>
-<link href="2026-11-18-evidence-add-cases-run-and-cases-record-re-read-session-md.md"/>
+<title>The gate summary tells the truth, and an unattended done needs a reason</title>
+<id>urn:chough:journal:2026-11-20-the-gate-summary-tells-the-truth-and-an-unattended-done-needs</id>
+<updated>2026-11-20T21:35:51Z</updated>
+<link href="2026-11-20-the-gate-summary-tells-the-truth-and-an-unattended-done-needs.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>The feature-bug-loop example stops at a refused chough or SpecSync…</title>
-<id>urn:chough:journal:2026-11-18-the-feature-bug-loop-example-stops-at-a-refused-chough-or</id>
-<updated>2026-11-18T16:55:11Z</updated>
-<link href="2026-11-18-the-feature-bug-loop-example-stops-at-a-refused-chough-or.md"/>
+<title>A code fence that never closes hides no section</title>
+<id>urn:chough:journal:2026-11-20-a-code-fence-that-never-closes-hides-no-section</id>
+<updated>2026-11-20T19:34:47Z</updated>
+<link href="2026-11-20-a-code-fence-that-never-closes-hides-no-section.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>Revert #306&apos;s new-record writer for 0.6.1</title>
-<id>urn:chough:journal:2026-11-18-revert-306-s-new-record-writer-for-0-6-1</id>
-<updated>2026-11-18T16:46:28Z</updated>
-<link href="2026-11-18-revert-306-s-new-record-writer-for-0-6-1.md"/>
+<title>A new record is written whole or not at all</title>
+<id>urn:chough:journal:2026-11-20-a-new-record-is-written-whole-or-not-at-all</id>
+<updated>2026-11-20T18:58:07Z</updated>
+<link href="2026-11-20-a-new-record-is-written-whole-or-not-at-all.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>checkpoint --file and --design values pass the write-time leak guard</title>
-<id>urn:chough:journal:2026-11-18-checkpoint-file-and-design-values-pass-the-write-time-leak</id>
-<updated>2026-11-18T16:22:51Z</updated>
-<link href="2026-11-18-checkpoint-file-and-design-values-pass-the-write-time-leak.md"/>
+<title>A closed standard output ends a command quietly with its own exit code</title>
+<id>urn:chough:journal:2026-11-20-a-closed-standard-output-ends-a-command-quietly-with-its-own</id>
+<updated>2026-11-20T17:34:18Z</updated>
+<link href="2026-11-20-a-closed-standard-output-ends-a-command-quietly-with-its-own.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>A slug with -sk- is not a model-provider key again</title>
-<id>urn:chough:journal:2026-11-18-a-slug-with-sk-is-not-a-model-provider-key-again</id>
-<updated>2026-11-18T16:01:02Z</updated>
-<link href="2026-11-18-a-slug-with-sk-is-not-a-model-provider-key-again.md"/>
+<title>bug add records the session on the new bug and never writes the session</title>
+<id>urn:chough:journal:2026-11-20-bug-add-records-the-session-on-the-new-bug-and-never-writes</id>
+<updated>2026-11-20T17:04:27Z</updated>
+<link href="2026-11-20-bug-add-records-the-session-on-the-new-bug-and-never-writes.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>A new record whose write fails is not left behind</title>
-<id>urn:chough:journal:2026-11-18-a-new-record-whose-write-fails-is-not-left-behind</id>
-<updated>2026-11-18T14:10:31Z</updated>
-<link href="2026-11-18-a-new-record-whose-write-fails-is-not-left-behind.md"/>
+<title>Skill and create-new batch</title>
+<id>urn:chough:journal:2026-11-20-skill-and-create-new-batch</id>
+<updated>2026-11-20T15:33:35Z</updated>
+<link href="2026-11-20-skill-and-create-new-batch.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>A FIFO swapped in at the open blocks no reader</title>
-<id>urn:chough:journal:2026-11-18-a-fifo-swapped-in-at-the-open-blocks-no-reader</id>
-<updated>2026-11-18T06:11:18Z</updated>
-<link href="2026-11-18-a-fifo-swapped-in-at-the-open-blocks-no-reader.md"/>
+<title>change ready counts only a change&apos;s own work after a rebase</title>
+<id>urn:chough:journal:2026-11-20-change-ready-counts-only-a-change-s-own-work-after-a-rebase</id>
+<updated>2026-11-20T14:17:24Z</updated>
+<link href="2026-11-20-change-ready-counts-only-a-change-s-own-work-after-a-rebase.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>journal add holds the writer lock with no .chough directory</title>
-<id>urn:chough:journal:2026-11-18-journal-add-holds-the-writer-lock-with-no-chough-directory</id>
-<updated>2026-11-18T05:59:23Z</updated>
-<link href="2026-11-18-journal-add-holds-the-writer-lock-with-no-chough-directory.md"/>
+<title>Control and echo batch</title>
+<id>urn:chough:journal:2026-11-20-control-and-echo-batch</id>
+<updated>2026-11-20T07:33:43Z</updated>
+<link href="2026-11-20-control-and-echo-batch.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>Docs and help-text change for the list-valued checkpoint flags and…</title>
-<id>urn:chough:journal:2026-11-18-docs-and-help-text-change-for-the-list-valued-checkpoint-flags</id>
-<updated>2026-11-18T03:37:40Z</updated>
-<link href="2026-11-18-docs-and-help-text-change-for-the-list-valued-checkpoint-flags.md"/>
+<title>Migration refuses before it writes and leaves a working tree</title>
+<id>urn:chough:journal:2026-11-20-migration-refuses-before-it-writes-and-leaves-a-working-tree</id>
+<updated>2026-11-20T06:25:08Z</updated>
+<link href="2026-11-20-migration-refuses-before-it-writes-and-leaves-a-working-tree.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>A FIFO in a record&apos;s place blocks no reader</title>
-<id>urn:chough:journal:2026-11-18-a-fifo-in-a-record-s-place-blocks-no-reader</id>
-<updated>2026-11-18T01:15:47Z</updated>
-<link href="2026-11-18-a-fifo-in-a-record-s-place-blocks-no-reader.md"/>
+<title>No Git rewrites of a worktree while another agent works there</title>
+<id>urn:chough:journal:2026-11-20-no-git-rewrites-of-a-worktree-while-another-agent-works-there</id>
+<updated>2026-11-20T02:16:30Z</updated>
+<link href="2026-11-20-no-git-rewrites-of-a-worktree-while-another-agent-works-there.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>A credential glued to a hyphen is a leak</title>
-<id>urn:chough:journal:2026-11-18-a-credential-glued-to-a-hyphen-is-a-leak</id>
-<updated>2026-11-18T01:07:18Z</updated>
-<link href="2026-11-18-a-credential-glued-to-a-hyphen-is-a-leak.md"/>
+<title>doctor --fix never destroys or hangs</title>
+<id>urn:chough:journal:2026-11-20-doctor-fix-never-destroys-or-hangs</id>
+<updated>2026-11-20T01:16:16Z</updated>
+<link href="2026-11-20-doctor-fix-never-destroys-or-hangs.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>journal add holds the writer lock</title>
-<id>urn:chough:journal:2026-11-18-journal-add-holds-the-writer-lock</id>
-<updated>2026-11-18T00:58:31Z</updated>
-<link href="2026-11-18-journal-add-holds-the-writer-lock.md"/>
+<title>G1: gates and session pins fail closed</title>
+<id>urn:chough:journal:2026-11-19-g1-gates-and-session-pins-fail-closed</id>
+<updated>2026-11-19T19:44:14Z</updated>
+<link href="2026-11-19-g1-gates-and-session-pins-fail-closed.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>A blocking bug stops only its session</title>
-<id>urn:chough:journal:2026-11-18-a-blocking-bug-stops-only-its-session</id>
-<updated>2026-11-18T00:36:40Z</updated>
-<link href="2026-11-18-a-blocking-bug-stops-only-its-session.md"/>
+<title>chough change ready: a read-only report before approval</title>
+<id>urn:chough:journal:2026-11-19-chough-change-ready-a-read-only-report-before-approval</id>
+<updated>2026-11-19T15:39:11Z</updated>
+<link href="2026-11-19-chough-change-ready-a-read-only-report-before-approval.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>Previous stages digest updates; session reads qualified</title>
-<id>urn:chough:journal:2026-11-17-previous-stages-digest-updates-session-reads-qualified</id>
-<updated>2026-11-17T14:50:06Z</updated>
-<link href="2026-11-17-previous-stages-digest-updates-session-reads-qualified.md"/>
+<title>Leak and output batch</title>
+<id>urn:chough:journal:2026-11-19-leak-and-output-batch</id>
+<updated>2026-11-19T14:44:53Z</updated>
+<link href="2026-11-19-leak-and-output-batch.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>Skill release pin matches the edited fast path</title>
-<id>urn:chough:journal:2026-11-17-skill-release-pin-matches-the-edited-fast-path</id>
-<updated>2026-11-17T14:31:55Z</updated>
-<link href="2026-11-17-skill-release-pin-matches-the-edited-fast-path.md"/>
+<title>A bug&apos;s Log links its evidence, and doctor relinks after archiving</title>
+<id>urn:chough:journal:2026-11-19-a-bug-s-log-links-its-evidence-and-doctor-relinks-after</id>
+<updated>2026-11-19T02:53:52Z</updated>
+<link href="2026-11-19-a-bug-s-log-links-its-evidence-and-doctor-relinks-after.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>Docs and host templates match current main</title>
-<id>urn:chough:journal:2026-11-17-docs-and-host-templates-match-current-main</id>
-<updated>2026-11-17T14:23:56Z</updated>
-<link href="2026-11-17-docs-and-host-templates-match-current-main.md"/>
+<title>Doctor and next name skill update for outdated skill files</title>
+<id>urn:chough:journal:2026-11-19-doctor-and-next-name-skill-update-for-outdated-skill-files</id>
+<updated>2026-11-19T02:36:37Z</updated>
+<link href="2026-11-19-doctor-and-next-name-skill-update-for-outdated-skill-files.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>The init case runs the real preservation test</title>
-<id>urn:chough:journal:2026-11-16-the-init-case-runs-the-real-preservation-test</id>
-<updated>2026-11-16T03:44:05Z</updated>
-<link href="2026-11-16-the-init-case-runs-the-real-preservation-test.md"/>
+<title>The code-fence scan visits each line a bounded number of times</title>
+<id>urn:chough:journal:2026-11-19-the-code-fence-scan-visits-each-line-a-bounded-number-of-times</id>
+<updated>2026-11-19T01:43:58Z</updated>
+<link href="2026-11-19-the-code-fence-scan-visits-each-line-a-bounded-number-of-times.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
-<title>Spec files use SpecSync&apos;s merge driver</title>
-<id>urn:chough:journal:2026-11-16-spec-files-use-specsync-s-merge-driver</id>
-<updated>2026-11-16T03:24:31Z</updated>
-<link href="2026-11-16-spec-files-use-specsync-s-merge-driver.md"/>
+<title>next and the skill teach --no-native-change</title>
+<id>urn:chough:journal:2026-11-19-next-and-the-skill-teach-no-native-change</id>
+<updated>2026-11-19T01:30:37Z</updated>
+<link href="2026-11-19-next-and-the-skill-teach-no-native-change.md"/>
 <category term="shipped"/>
 </entry>
 </feed>

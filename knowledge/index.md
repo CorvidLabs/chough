@@ -24,16 +24,16 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
-- [Chough 0.6.1 release preparation](journal/2026-11-18-chough-0-6-1-release-preparation.md) (2026-11-18, shipped)
-- [A test asserts the gate summary's Change line separator](journal/2026-11-18-a-test-asserts-the-gate-summary-s-change-line-separator.md) (2026-11-18, shipped)
-- [evidence add, cases run and cases record re-read session.md under…](journal/2026-11-18-evidence-add-cases-run-and-cases-record-re-read-session-md.md) (2026-11-18, shipped)
-- [The feature-bug-loop example stops at a refused chough or SpecSync…](journal/2026-11-18-the-feature-bug-loop-example-stops-at-a-refused-chough-or.md) (2026-11-18, shipped)
-- [Revert #306's new-record writer for 0.6.1](journal/2026-11-18-revert-306-s-new-record-writer-for-0-6-1.md) (2026-11-18, shipped)
-- [checkpoint --file and --design values pass the write-time leak guard](journal/2026-11-18-checkpoint-file-and-design-values-pass-the-write-time-leak.md) (2026-11-18, shipped)
-- [A slug with -sk- is not a model-provider key again](journal/2026-11-18-a-slug-with-sk-is-not-a-model-provider-key-again.md) (2026-11-18, shipped)
-- [A new record whose write fails is not left behind](journal/2026-11-18-a-new-record-whose-write-fails-is-not-left-behind.md) (2026-11-18, shipped)
-- [A FIFO swapped in at the open blocks no reader](journal/2026-11-18-a-fifo-swapped-in-at-the-open-blocks-no-reader.md) (2026-11-18, shipped)
-- [journal add holds the writer lock with no .chough directory](journal/2026-11-18-journal-add-holds-the-writer-lock-with-no-chough-directory.md) (2026-11-18, shipped)
+- [Chough moves to SpecSync 6.4.0, and change ready asks its dry run](journal/2026-11-20-chough-moves-to-specsync-6-4-0-and-change-ready-asks-its-dry.md) (2026-11-20, shipped)
+- [A change's description](journal/2026-11-20-a-change-s-description.md) (2026-11-20, shipped)
+- [The gate summary tells the truth, and an unattended done needs a reason](journal/2026-11-20-the-gate-summary-tells-the-truth-and-an-unattended-done-needs.md) (2026-11-20, shipped)
+- [A code fence that never closes hides no section](journal/2026-11-20-a-code-fence-that-never-closes-hides-no-section.md) (2026-11-20, shipped)
+- [A new record is written whole or not at all](journal/2026-11-20-a-new-record-is-written-whole-or-not-at-all.md) (2026-11-20, shipped)
+- [A closed standard output ends a command quietly with its own exit code](journal/2026-11-20-a-closed-standard-output-ends-a-command-quietly-with-its-own.md) (2026-11-20, shipped)
+- [bug add records the session on the new bug and never writes the session](journal/2026-11-20-bug-add-records-the-session-on-the-new-bug-and-never-writes.md) (2026-11-20, shipped)
+- [Skill and create-new batch](journal/2026-11-20-skill-and-create-new-batch.md) (2026-11-20, shipped)
+- [change ready counts only a change's own work after a rebase](journal/2026-11-20-change-ready-counts-only-a-change-s-own-work-after-a-rebase.md) (2026-11-20, shipped)
+- [Control and echo batch](journal/2026-11-20-control-and-echo-batch.md) (2026-11-20, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
-- [release-0-6-1](../.specsync/archive/changes/2026-11-18-release-0-6-1/lesson-bundle.md), Release 0 6 1
-- [fix-294](../.specsync/archive/changes/2026-11-18-fix-294/lesson-bundle.md), Fix 294
-- [fix-317](../.specsync/archive/changes/2026-11-18-fix-317/lesson-bundle.md), Fix 317
+- [specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments](../.specsync/archive/changes/2026-11-20-specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments/lesson-bundle.md), SpecSync 6.4.0: change ready asks the approval dry run, and spec history is recorded in fragments
+- [change-leaks](../.specsync/archive/changes/2026-11-20-change-leaks/lesson-bundle.md), Change leaks
+- [fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason](../.specsync/archive/changes/2026-11-20-fix-g2-the-gate-summary-tells-the-truth-and-an-unattended-done-needs-a-reason/lesson-bundle.md), Fix G2: the gate summary tells the truth and an unattended done needs a reason
 
 ## Snapshots and briefs
 
