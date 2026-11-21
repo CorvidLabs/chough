@@ -38,12 +38,16 @@ One question: can this slice be cut into a left half and a right half with no sh
 file?
 
 - If it cannot, one worker does the whole slice.
-- If it can, one manager spawns two workers. Each worker has its own clone and its own
-  session. Do not use a worktree for a fork. Each worker owns its own files, and the
-  two lists share no file. A worker that finishes stops. It does not pull the other
-  half, and it does not edit a file on the other list. The manager does not write
-  either half. The manager is the merge: it takes both reports and sends one answer
-  back.
+- If it can, one manager spawns two workers. Each worker has its own clone, its own
+  branch, and its own session. Do not use a worktree for a fork. Each worker owns its
+  own files, and the two lists share no file. Those lists stay as planned until the
+  manager merges. Neither worker fetches, pulls, merges, rebases, cherry-picks,
+  checks out, or copies the other half. A worker that finishes stops.
+  It does not pull the other half, and it does not edit a file on the other list.
+  A worker does not push to the other worker's branch or clone.
+  The host leaves a finished worker and its clone stopped, and does not point them at the other list. The manager does not
+  write either half. The manager is the merge: it takes both reports and sends one
+  answer back.
 - A shared file stays with the manager.
 - One fork is the batch: one manager and two workers. A half is forked again only when
   that half still has its own seam, and the total stays at about four agents.

@@ -1847,6 +1847,22 @@ fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
         ),
         (
             "skills/chough-workflow/references/plan.md",
+            "Those lists stay as planned until the",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "A worker does not push to the other worker's branch or clone.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "The host leaves a finished worker and its clone stopped",
+        ),
+        (
+            "skills/chough-workflow/references/build.md",
+            "A forked worker takes only a task whose files are in its half.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
             "Chough does not launch the agents. The host spawns them. Workers report with `chough",
         ),
         (
@@ -1920,6 +1936,22 @@ fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
         (
             ".agents/skills/chough-workflow/references/plan.md",
             "The early worker does not take over the remaining half.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "Those lists stay as planned until the",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "A worker does not push to the other worker's branch or clone.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "The host leaves a finished worker and its clone stopped",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/build.md",
+            "A forked worker takes only a task whose files are in its half.",
         ),
         (
             ".agents/skills/chough-workflow/references/testing.md",

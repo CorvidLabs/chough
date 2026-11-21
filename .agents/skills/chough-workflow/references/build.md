@@ -4,6 +4,8 @@
 definition approved. Then:
 
 1. Take the next task from the native `tasks.md`. Stay inside the approved paths.
+   A forked worker takes only a task whose files are in its half. When those are
+   done it stops, and it does not fix a failure by editing the other half.
 2. Implement with the project's conventions. Keep contracts, requirements
    traceability, tests and documentation in step.
 3. Add or update case definitions for the affected requirements (see
@@ -40,8 +42,9 @@ requirements, and instructions to preserve others' edits. Only one agent edits a
 shared file at a time. The checkpoint has one writer; other agents report back
 instead of editing it. When the plan forked the slice, each worker edits only the
 files in its half, and the manager does not write either half. A worker that finishes
-stops. It does not edit the other half. The manager leaves out any path outside that
-worker's list.
+stops. It does not edit the other half. Neither worker fetches, pulls, or merges the
+other half. Those lists stay as planned until the manager merges. The manager leaves
+out any path outside that worker's list.
 
 ## Escalate only what matters
 
