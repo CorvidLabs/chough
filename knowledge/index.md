@@ -24,6 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [Prepare the Chough 0.6.3 release](journal/2026-11-22-prepare-the-chough-0-6-3-release.md) (2026-11-22, shipped)
 - [Write the agreed plan-stage execution split and test-stage grouping…](journal/2026-11-22-write-the-agreed-plan-stage-execution-split-and-test-stage.md) (2026-11-22, shipped)
 - [An open session sets the stage label](journal/2026-11-21-an-open-session-sets-the-stage-label.md) (2026-11-21, shipped)
 - [Keep an applied stage label](journal/2026-11-21-keep-an-applied-stage-label.md) (2026-11-21, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [Chough 0.6.2: release preparation](journal/2026-11-21-chough-0-6-2-release-preparation.md) (2026-11-21, shipped)
 - [Chough moves to SpecSync 6.4.0, and change ready asks its dry run](journal/2026-11-20-chough-moves-to-specsync-6-4-0-and-change-ready-asks-its-dry.md) (2026-11-20, shipped)
 - [A change's description](journal/2026-11-20-a-change-s-description.md) (2026-11-20, shipped)
-- [The gate summary tells the truth, and an unattended done needs a reason](journal/2026-11-20-the-gate-summary-tells-the-truth-and-an-unattended-done-needs.md) (2026-11-20, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [release-0-6-3](../.specsync/archive/changes/2026-11-22-release-0-6-3/lesson-bundle.md), Release 0.6.3
 - [plan-split](../.specsync/archive/changes/2026-11-22-plan-split/lesson-bundle.md), Plan split
 - [an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request](../.specsync/archive/changes/2026-11-21-an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request/lesson-bundle.md), An open session sets the stage label when archived sessions are also on the pull request
-- [a-pull-request-that-already-has-its-stage-label-keeps-that-label](../.specsync/archive/changes/2026-11-21-a-pull-request-that-already-has-its-stage-label-keeps-that-label/lesson-bundle.md), A pull request that already has its stage label keeps that label
 
 ## Snapshots and briefs
 
