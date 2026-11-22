@@ -66,7 +66,7 @@ manager's checkout and does not edit the session body:
 
 ```sh
 chough --root <manager-clone> inbox add --session <manager-key> --from <name> \
-  --kind observation --text "<what finished, or which paths were left out>"
+  --kind completed --text "<what finished, or which paths were left out>"
 ```
 
 The manager folds that inbox with `chough inbox fold` in its own checkout.
