@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: Open the 0.6.3 preparation pull request. Do not tag or publish.
 ---
 # Prepare the Chough 0.6.3 release: the version, the change log assembled from the merged fragments, and the rebuilt knowledge index, per docs/releasing.md
 
@@ -30,6 +30,8 @@ next: Continue build
 Prepare the Chough 0.6.3 release: the version, the change log assembled from the merged fragments, and the rebuilt knowledge index, per docs/releasing.md
 
 ## Where it stands
+
+- 0.6.3 preparation at this commit: fledge run release-check passed after the knowledge index was committed. cargo package --list --locked listed src, skills/chough-workflow, Cargo.toml, Cargo.lock, README.md and LICENSE. cargo publish --dry-run --locked packaged chough 0.6.3 and aborted the upload. crates.io lists 0xLeif as the only owner and max version 0.6.2. cargo test --offline --test changelog passed 19. Nothing tagged or published.
 
 ## Decisions and why
 
