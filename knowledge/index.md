@@ -24,6 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [The roadmap's delivered table has the 0.6.3 release row](journal/2026-11-22-the-roadmap-s-delivered-table-has-the-0-6-3-release-row.md) (2026-11-22, shipped)
 - [Prepare the Chough 0.6.3 release](journal/2026-11-22-prepare-the-chough-0-6-3-release.md) (2026-11-22, shipped)
 - [Write the agreed plan-stage execution split and test-stage grouping…](journal/2026-11-22-write-the-agreed-plan-stage-execution-split-and-test-stage.md) (2026-11-22, shipped)
 - [An open session sets the stage label](journal/2026-11-21-an-open-session-sets-the-stage-label.md) (2026-11-21, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [The documentation checked against Chough 0.6.2](journal/2026-11-21-the-documentation-checked-against-chough-0-6-2.md) (2026-11-21, shipped)
 - [Chough 0.6.2: release preparation](journal/2026-11-21-chough-0-6-2-release-preparation.md) (2026-11-21, shipped)
 - [Chough moves to SpecSync 6.4.0, and change ready asks its dry run](journal/2026-11-20-chough-moves-to-specsync-6-4-0-and-change-ready-asks-its-dry.md) (2026-11-20, shipped)
-- [A change's description](journal/2026-11-20-a-change-s-description.md) (2026-11-20, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [docs-0-6-3-release](../.specsync/archive/changes/2026-11-22-docs-0-6-3-release/lesson-bundle.md), Docs 0.6.3 release
 - [release-0-6-3](../.specsync/archive/changes/2026-11-22-release-0-6-3/lesson-bundle.md), Release 0.6.3
 - [plan-split](../.specsync/archive/changes/2026-11-22-plan-split/lesson-bundle.md), Plan split
-- [an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request](../.specsync/archive/changes/2026-11-21-an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request/lesson-bundle.md), An open session sets the stage label when archived sessions are also on the pull request
 
 ## Snapshots and briefs
 
