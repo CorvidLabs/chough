@@ -1,6 +1,6 @@
 ---
 id: docs-0-6-3-release
-state: implementing
+state: archived
 type: documentation
 base_commit: 0267cfebfdc1d0df638d0fa7a12c771354144238
 ---
