@@ -19,9 +19,13 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of docs-0-6-3-release
+    holds: accept
+    drives: review
+    opened: 2026-11-22T02:15:33Z
 run_consents: []
-next: Continue accept
+next: Waiting for the implementation review of the 0.6.3 roadmap row
 ---
 # The roadmap's delivered table has the 0.6.3 release row, with the clean install of chough 0.6.3
 
@@ -85,4 +89,10 @@ The roadmap's delivered table has the 0.6.3 release row, with the clean install 
   - native_change: docs-0-6-3-release
   - gate: native:verifying
   - revision: 0e9b082cc16061a66e4ee0d6fce611d5a10bf472
+  - by: unknown agent (hc t11b)
+- 2026-11-22T02:15:33Z · gate-opened · accept → accept · Implementation review of docs-0-6-3-release ^t-1e6d3e
+  - native_change: docs-0-6-3-release
+  - revision: feae356ee5f54af1b01a973f058281879151627d
+  - holds: accept
+  - drives: review
   - by: unknown agent (hc t11b)
