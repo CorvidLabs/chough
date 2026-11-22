@@ -5,7 +5,7 @@ aliases: [docs-0-6-3-release]
 objective: The roadmap's delivered table has the 0.6.3 release row, with the clean install of chough 0.6.3
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of docs-0-6-3-release
-    holds: accept
-    drives: review
-    opened: 2026-11-22T02:15:33Z
+waiting_on_human: []
 run_consents: []
-next: Waiting for the implementation review of the 0.6.3 roadmap row
+next: Continue done
 ---
 # The roadmap's delivered table has the 0.6.3 release row, with the clean install of chough 0.6.3
 
@@ -38,6 +34,7 @@ The roadmap's delivered table has the 0.6.3 release row, with the clean install 
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of docs-0-6-3-release": "pr has change requests" (Grok chat on 2026-11-22, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve docs-0-6-3-release as 0xLeif
+- 0xLeif decided "Implementation review of docs-0-6-3-release": "pr has change requests" (Grok chat on 2026-11-22, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change review docs-0-6-3-release as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -95,4 +92,20 @@ The roadmap's delivered table has the 0.6.3 release row, with the clean install 
   - revision: feae356ee5f54af1b01a973f058281879151627d
   - holds: accept
   - drives: review
+  - by: unknown agent (hc t11b)
+- 2026-11-22T02:16:58Z · gate-closed · accept → accept · Implementation review of docs-0-6-3-release ^t-9bccd9
+  - native_change: docs-0-6-3-release
+  - revision: 54153b63805e3f5eba7952c65b67929514af91f8
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: pr has change requests
+    - where: Grok chat on 2026-11-22, relayed by grok-t11b
+    - recorded_by: grok-t11b
+    - native: specsync change review docs-0-6-3-release
+    - actor: 0xLeif
+  - by: unknown agent (hc t11b)
+- 2026-11-22T02:17:00Z · advance · accept → done · native:archived ^t-4329b0
+  - native_change: docs-0-6-3-release
+  - gate: native:archived
+  - revision: 54153b63805e3f5eba7952c65b67929514af91f8
   - by: unknown agent (hc t11b)
