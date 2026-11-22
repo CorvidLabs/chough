@@ -5,7 +5,7 @@ aliases: [plan-split]
 objective: Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of plan-split
-    holds: accept
-    drives: review
-    opened: 2026-11-22T00:57:24Z
+waiting_on_human: []
 run_consents: []
-next: Waiting for the implementation review of plan-split
+next: Continue done
 ---
 # Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 
@@ -46,6 +42,7 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
 - 0xLeif decided "Scope approval of plan-split": "yes I approve" (Grok chat on 2026-11-21, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve plan-split as 0xLeif
 - 0xLeif decided "Scope approval of plan-split including src/skill.rs": "Uh, yeah, you can send back. Yes, I approve." (Grok chat on 2026-11-21, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve plan-split as 0xLeif
 - 0xLeif decided "Scope approval of the plan-split fork": "Yes, replace it with the fork." (Grok chat on 2026-11-21, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve plan-split as 0xLeif
+- 0xLeif decided "Implementation review of plan-split": "can we move this session to done / archive?" (Grok chat on 2026-11-22, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change review plan-split as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -191,4 +188,20 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
   - revision: 65f39227dc029d6ca3467cd6fd30e0f4b741dd9a
   - holds: accept
   - drives: review
+  - by: unknown agent (hc t11b)
+- 2026-11-22T00:58:53Z · gate-closed · accept → accept · Implementation review of plan-split ^t-ccc982
+  - native_change: plan-split
+  - revision: 5553d9aea69413e448e2f1ed3db515dc22da1b97
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: can we move this session to done / archive?
+    - where: Grok chat on 2026-11-22, relayed by grok-t11b
+    - recorded_by: grok-t11b
+    - native: specsync change review plan-split
+    - actor: 0xLeif
+  - by: unknown agent (hc t11b)
+- 2026-11-22T00:58:55Z · advance · accept → done · native:archived ^t-c089d3
+  - native_change: plan-split
+  - gate: native:archived
+  - revision: 5553d9aea69413e448e2f1ed3db515dc22da1b97
   - by: unknown agent (hc t11b)
