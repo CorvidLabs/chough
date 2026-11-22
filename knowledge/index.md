@@ -24,16 +24,16 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [Write the agreed plan-stage execution split and test-stage grouping…](journal/2026-11-22-write-the-agreed-plan-stage-execution-split-and-test-stage.md) (2026-11-22, shipped)
+- [An open session sets the stage label](journal/2026-11-21-an-open-session-sets-the-stage-label.md) (2026-11-21, shipped)
+- [Keep an applied stage label](journal/2026-11-21-keep-an-applied-stage-label.md) (2026-11-21, shipped)
+- [Stage labels skip forks and keep matches](journal/2026-11-21-stage-labels-skip-forks-and-keep-matches.md) (2026-11-21, shipped)
+- [Optional GitHub labels for the seven main stages](journal/2026-11-21-optional-github-labels-for-the-seven-main-stages.md) (2026-11-21, shipped)
+- [The documentation checked against Chough 0.6.2](journal/2026-11-21-the-documentation-checked-against-chough-0-6-2.md) (2026-11-21, shipped)
 - [Chough 0.6.2: release preparation](journal/2026-11-21-chough-0-6-2-release-preparation.md) (2026-11-21, shipped)
 - [Chough moves to SpecSync 6.4.0, and change ready asks its dry run](journal/2026-11-20-chough-moves-to-specsync-6-4-0-and-change-ready-asks-its-dry.md) (2026-11-20, shipped)
 - [A change's description](journal/2026-11-20-a-change-s-description.md) (2026-11-20, shipped)
 - [The gate summary tells the truth, and an unattended done needs a reason](journal/2026-11-20-the-gate-summary-tells-the-truth-and-an-unattended-done-needs.md) (2026-11-20, shipped)
-- [A code fence that never closes hides no section](journal/2026-11-20-a-code-fence-that-never-closes-hides-no-section.md) (2026-11-20, shipped)
-- [A new record is written whole or not at all](journal/2026-11-20-a-new-record-is-written-whole-or-not-at-all.md) (2026-11-20, shipped)
-- [A closed standard output ends a command quietly with its own exit code](journal/2026-11-20-a-closed-standard-output-ends-a-command-quietly-with-its-own.md) (2026-11-20, shipped)
-- [bug add records the session on the new bug and never writes the session](journal/2026-11-20-bug-add-records-the-session-on-the-new-bug-and-never-writes.md) (2026-11-20, shipped)
-- [Skill and create-new batch](journal/2026-11-20-skill-and-create-new-batch.md) (2026-11-20, shipped)
-- [change ready counts only a change's own work after a rebase](journal/2026-11-20-change-ready-counts-only-a-change-s-own-work-after-a-rebase.md) (2026-11-20, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
-- [release-0-6-2](../.specsync/archive/changes/2026-11-21-release-0-6-2/lesson-bundle.md), Release 0.6.2
-- [specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments](../.specsync/archive/changes/2026-11-20-specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments/lesson-bundle.md), SpecSync 6.4.0: change ready asks the approval dry run, and spec history is recorded in fragments
-- [change-leaks](../.specsync/archive/changes/2026-11-20-change-leaks/lesson-bundle.md), Change leaks
+- [plan-split](../.specsync/archive/changes/2026-11-22-plan-split/lesson-bundle.md), Plan split
+- [an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request](../.specsync/archive/changes/2026-11-21-an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request/lesson-bundle.md), An open session sets the stage label when archived sessions are also on the pull request
+- [a-pull-request-that-already-has-its-stage-label-keeps-that-label](../.specsync/archive/changes/2026-11-21-a-pull-request-that-already-has-its-stage-label-keeps-that-label/lesson-bundle.md), A pull request that already has its stage label keeps that label
 
 ## Snapshots and briefs
 
