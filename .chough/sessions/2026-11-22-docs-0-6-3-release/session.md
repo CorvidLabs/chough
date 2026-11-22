@@ -5,12 +5,12 @@ aliases: [docs-0-6-3-release]
 objective: The roadmap's delivered table has the 0.6.3 release row, with the clean install of chough 0.6.3
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
 native_change: docs-0-6-3-release
-pr: ""
+pr: "447"
 criteria: [LIFE-25]
 requirements: []
 cases: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: Continue accept
 ---
 # The roadmap's delivered table has the 0.6.3 release row, with the clean install of chough 0.6.3
 
@@ -75,4 +75,14 @@ The roadmap's delivered table has the 0.6.3 release row, with the clean install 
   - native_change: docs-0-6-3-release
   - gate: native:approved
   - revision: b7d62b742cece11613acb24873b5e7aa4291b6d2
+  - by: unknown agent (hc t11b)
+- 2026-11-22T02:15:31Z · advance · build → test · native:verifying ^t-d9b886
+  - native_change: docs-0-6-3-release
+  - gate: native:verifying
+  - revision: 0e9b082cc16061a66e4ee0d6fce611d5a10bf472
+  - by: unknown agent (hc t11b)
+- 2026-11-22T02:15:33Z · advance · test → accept · native:verifying ^t-a6566d
+  - native_change: docs-0-6-3-release
+  - gate: native:verifying
+  - revision: 0e9b082cc16061a66e4ee0d6fce611d5a10bf472
   - by: unknown agent (hc t11b)
