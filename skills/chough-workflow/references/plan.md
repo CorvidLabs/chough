@@ -61,8 +61,15 @@ in the worker's clone: `git diff --name-only <base>...HEAD` and `git status
 The manager does not rewrite that clone, and it does not merge that
 branch as a whole. It takes only the paths on that worker's list.
 
-Chough does not launch the agents. The host spawns them. Workers report with `chough
-inbox add`, and the manager folds the inbox.
+Chough does not launch the agents. The host spawns them. A worker reports into the
+manager's checkout and does not edit the session body:
+
+```sh
+chough --root <manager-clone> inbox add --session <manager-key> --from <name> \
+  --kind observation --text "<what finished, or which paths were left out>"
+```
+
+The manager folds that inbox with `chough inbox fold` in its own checkout.
 
 After the merge, record on the session whether the two halves joined cleanly, the
 wall-clock, and any conflict. That is the sample the next fork reads. Tokens only when

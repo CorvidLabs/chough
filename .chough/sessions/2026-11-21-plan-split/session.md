@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Draft pull request 445 is open. Do not mark it ready.
+next: Pull request 445 is ready for review. Do not merge.
 ---
 # Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 
@@ -35,6 +35,7 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
 - Dogfood after the widened scope: cargo test --offline --test docs, filter the_plan_split_sentences_are_pinned_in_both_skill_copies, passed 1. cargo test --offline --test skill_releases passed 7. No new failure, so nothing was filed.
 - Simple fork check, no shared map: a worker diff of left.txt and right.txt against a list of left.txt kept left.txt and left out right.txt. fledge lanes run check on 6c8883cd passed: fmt, lint, and the full test lane, exit 0, about 5 minutes 26 seconds.
 - Fork path-check stress: 16 of 16 clean clones passed, including a crossed commit, untracked files, spaces, a rename, a delete, a prefix, a nested basename, 400 owned files plus one cross, a staged and an unstaged cross, and two workers both touching a shared file. A quoted filename needs git status --porcelain -z, which the plan reference now names.
+- Review of 445 found two bugs, both fixed before ready: worker reports go to the manager checkout with chough --root and inbox add, and the parent digests of bugs.md, stages.md and testing.md are known-previous. The build steps no longer repeat the project lane, and a blocking bug sends the session back only when it is related.
 
 ## Decisions and why
 

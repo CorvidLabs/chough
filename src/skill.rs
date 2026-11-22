@@ -567,17 +567,30 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/testing.md",
         "0389a3c78be3736e46ccdc2463f959fc7ca580ab22e9ae1a30222c72fcba5ec0",
     ),
-    // The plan-split change edits the build reference, so the 0.6.1 build digest is a
-    // known previous.
+    // A 0.6.1 build reference is known-outdated, so `chough skill update` replaces it.
     (
         "references/build.md",
         "970d5a96be20ac737f8e1c9650bc327355792b3ee4b2e525acbbd7dc14c7ad30",
     ),
-    // The plan-split change edits the plan reference, so the 0.6.2 plan digest is a
-    // known previous.
+    // A 0.6.2 plan reference is known-outdated, so `chough skill update` replaces it.
     (
         "references/plan.md",
         "203e180a8636a9fcf8adfa58ecc344d47136156a3f229f24da24af4e9a4b80d8",
+    ),
+    // Main 51b76c62, the bugs, stages and testing references this branch replaced.
+    // A pristine install of those copies is known-outdated, so `chough skill update`
+    // replaces them (REQ-cli-016).
+    (
+        "references/bugs.md",
+        "f31e80cfefa5205afe4026e32ac966826ffcc1868d5d9af2bed29b229ed168aa",
+    ),
+    (
+        "references/stages.md",
+        "98f90cf145d3420127fea1a5b96c2a04f0b3e5bac3772edaa7bd427fcebbfe7f",
+    ),
+    (
+        "references/testing.md",
+        "412d52c94f475024259674fa14637bfa6c47cba85cf262a3eb0f2989c9ce0344",
     ),
 ];
 

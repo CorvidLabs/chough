@@ -16,8 +16,6 @@ definition approved. Then:
 6. Mark the task done in `tasks.md`, then save a checkpoint:
    `chough checkpoint --completed "<increment>" --next-action "<next step>"`.
 
-The project lane still runs once before test ends.
-
 ## Keep it composable
 
 Keep specs and source lean and composable, without being dogmatic about it:

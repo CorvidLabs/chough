@@ -13,7 +13,9 @@ Run a bounded loop on the focused set.
 - A group fixed inside the loop becomes one lesson, or one bug if it is worth the
   backlog, not one bug per assertion.
 - A group still open at the end is one bug with every failed observation linked.
-- Blocking still sends that session back to build.
+- A blocking bug sends that session back to build only when the session lists it,
+  its evidence names that session, or they share a criterion, requirement, or case.
+  An unrelated blocking bug is named and does not stop the session.
 - Stop after a few passes or when the focused set is green, and name what remains.
 - The validate side stage stays the long repeated run and still needs consent.
 

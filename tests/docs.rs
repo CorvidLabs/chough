@@ -1867,7 +1867,7 @@ fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
         ),
         (
             "skills/chough-workflow/references/plan.md",
-            "Chough does not launch the agents. The host spawns them. Workers report with `chough",
+            "A worker reports into the",
         ),
         (
             "skills/chough-workflow/references/plan.md",
@@ -1895,7 +1895,7 @@ fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
         ),
         (
             "skills/chough-workflow/references/testing.md",
-            "- Blocking still sends that session back to build.",
+            "- A blocking bug sends that session back to build only when the session lists it,",
         ),
         (
             "skills/chough-workflow/references/testing.md",
