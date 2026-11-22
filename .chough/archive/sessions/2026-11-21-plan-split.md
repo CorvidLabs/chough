@@ -35,6 +35,14 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
 
 ## What was verified
 
+- `chough change check plan-split` passed and committed verification. `specsync check --spec cli --spec history --spec records --spec reporting` is the check recorded at `d070e731` in `.specsync/archive/changes/2026-11-22-plan-split/verification.json`.
+- `fledge lanes run check` passed on `6c8883cd`: fmt, lint, and the full test lane, exit 0.
+- `cargo test --offline --test docs -- the_plan_split_sentences_are_pinned_in_both_skill_copies` passed, 1 test, including after `6b5e0047`.
+- `cargo test --offline --test skill_releases` passed, 7 tests, including after `6b5e0047`.
+- `cargo test --offline --bin chough every_released_file_the_bundle_replaces_is_known_previous` passed, 1 test.
+- `cargo build --locked --release` passed on `bb8a3796`.
+- A 16-case path-check stress passed: owned files kept, paths outside the list left out, including two workers both touching a shared file.
+
 ## Bugs
 
 None.
