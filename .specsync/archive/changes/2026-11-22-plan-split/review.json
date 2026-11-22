@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "plan-split",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "d070e731ad78b92457c3617597a391f2ff8fab83",
+  "contract_digest": "aa5ef4177e1c4757cbfbebb07615e4bbfc52c9c7b915588d3f9bdf325cbaf0c4",
+  "execution_digest": "728974c6cb1a5cb48233c8f58f3b53ee8ad45b0dbe3d67903c6ac9f0237bae70",
+  "workspace_digest": "6d04cf941ba8e5bfb09a5447d1ba732fe6baedcd766531654d7cd2d6021fc6bc",
+  "timestamp": 1795309049,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "can we move this session to done / archive?",
+    "where": "Grok chat on 2026-11-22, relayed by grok-t11b",
+    "recorded_by": "grok-t11b"
+  }
+}

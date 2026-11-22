@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "plan-split",
+  "implementation_commit": "d070e731ad78b92457c3617597a391f2ff8fab83",
+  "implementation_tree": "4e8691b7b4677cdce257024a75df0e2769472f78",
+  "contract_digest": "aa5ef4177e1c4757cbfbebb07615e4bbfc52c9c7b915588d3f9bdf325cbaf0c4",
+  "workspace_digest": "6d04cf941ba8e5bfb09a5447d1ba732fe6baedcd766531654d7cd2d6021fc6bc",
+  "closing_digest": "fb9fbc947a882b8a966273edb4c0bd2c4293a184bd552387b0564a9706b77494",
+  "review_digest": "5614d98afa9cf2f62fefc537685e072820b558fdfa1f3bca1ab7745c43bd8064",
+  "finalization_digest": "e8d819c08dbfd71af632522d376b6ad5471f28667a62cee6306991e8b73671f7",
+  "timestamp": 1795309064
+}
