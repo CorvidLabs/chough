@@ -1,0 +1,216 @@
+---
+kind: session
+id: 2026-11-21-plan-split
+aliases: [plan-split]
+objective: Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
+stage: done
+stage_status: archived
+iteration: 1
+native_change: plan-split
+pr: "445"
+criteria: [FLOW-5, FLOW-6, FLOW-8, DRIVE-3, LIFE-10, KNOW-3]
+closed: 2026-11-22
+outcome: done
+---
+# Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
+
+## Goal
+
+Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
+
+## Where it stands
+
+- Dogfood of the execution split: one build worker, Flint hc t11r, in this checkout. Not fanned out: the skill text, its installed copy and the pinning tests are one coupled cut, and fewer than 3 similar runs exist, so no speed was invented. Wall-clock from the plan-to-build advance at 2026-11-21T22:06:46Z to skill commit dc416ad3 at 2026-11-21T23:04:59Z was 58 minutes. The changelog newline follow-up 5b43ccf8 landed at 2026-11-21T23:16:02Z. Conflicts: none. Inbox questions: none. Stage-backs: none. Tokens: the host showed a context meter and did not report one task total, so tokens are unknown. Test loop: fmt, the full test lane, lint and skill_releases were green on the first pass. The missing changelog newline was one fix, not a bug. The undeclared src/skill.rs digest registration is one scope gap, not a product defect.
+- Dogfood after the widened scope: cargo test --offline --test docs, filter the_plan_split_sentences_are_pinned_in_both_skill_copies, passed 1. cargo test --offline --test skill_releases passed 7. No new failure, so nothing was filed.
+- Simple fork check, no shared map: a worker diff of left.txt and right.txt against a list of left.txt kept left.txt and left out right.txt. fledge lanes run check on 6c8883cd passed: fmt, lint, and the full test lane, exit 0, about 5 minutes 26 seconds.
+- Fork path-check stress: 16 of 16 clean clones passed, including a crossed commit, untracked files, spaces, a rename, a delete, a prefix, a nested basename, 400 owned files plus one cross, a staged and an unstaged cross, and two workers both touching a shared file. A quoted filename needs git status --porcelain -z, which the plan reference now names.
+- Review of 445 found two bugs, both fixed before ready: worker reports go to the manager checkout with chough --root and inbox add, and the parent digests of bugs.md, stages.md and testing.md are known-previous. The build steps no longer repeat the project lane, and a blocking bug sends the session back only when it is related.
+
+## Decisions and why
+
+- 0xLeif decided "Scope approval of plan-split": "yes I approve" (Grok chat on 2026-11-21, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve plan-split as 0xLeif
+- 0xLeif decided "Scope approval of plan-split including src/skill.rs": "Uh, yeah, you can send back. Yes, I approve." (Grok chat on 2026-11-21, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve plan-split as 0xLeif
+- 0xLeif decided "Scope approval of the plan-split fork": "Yes, replace it with the fork." (Grok chat on 2026-11-21, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve plan-split as 0xLeif
+- 0xLeif decided "Implementation review of plan-split": "can we move this session to done / archive?" (Grok chat on 2026-11-22, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change review plan-split as 0xLeif with verdict pass
+
+## What was verified
+
+- `chough change check plan-split` passed and committed verification. `specsync check --spec cli --spec history --spec records --spec reporting` is the check recorded at `d070e731` in `.specsync/archive/changes/2026-11-22-plan-split/verification.json`.
+- `fledge lanes run check` passed on `6c8883cd`: fmt, lint, and the full test lane, exit 0.
+- `cargo test --offline --test docs -- the_plan_split_sentences_are_pinned_in_both_skill_copies` passed, 1 test, including after `6b5e0047`.
+- `cargo test --offline --test skill_releases` passed, 7 tests, including after `6b5e0047`.
+- `cargo test --offline --bin chough every_released_file_the_bundle_replaces_is_known_previous` passed, 1 test.
+- `cargo build --locked --release` passed on `bb8a3796`.
+- A 16-case path-check stress passed: owned files kept, paths outside the list left out, including two workers both touching a shared file.
+
+## Bugs
+
+None.
+
+## Open threads
+
+## Timeline
+
+- 2026-11-21T20:24:14Z · start · intent → intent · plan-split ^t-c8b73d
+  - revision: 51b76c626599ce28494a23b1edd740d1dff21854
+  - by: unknown agent (hc t11f)
+- 2026-11-21T20:33:23Z · advance · intent → design ·  ^t-659104
+  - revision: 51b76c626599ce28494a23b1edd740d1dff21854
+  - by: unknown agent (hc t11f)
+- 2026-11-21T20:33:23Z · skip · design → plan · no visual change ^t-5d8a75
+  - revision: 51b76c626599ce28494a23b1edd740d1dff21854
+  - by: unknown agent (hc t11f)
+- 2026-11-21T20:57:42Z · gate-opened · plan → plan · Scope approval of plan-split ^t-2d2719
+  - native_change: plan-split
+  - revision: 6e084f477102063c7d32ec79f1f32c91421efc8e
+  - holds: plan
+  - drives: approve
+  - by: unknown agent (hc t11f)
+- 2026-11-21T22:05:39Z · direct-native-write · plan → plan · plan-split's lifecycle records changed outside Chough: state.json changed; state stays draft ^t-17ae82
+  - native_change: plan-split
+  - revision: 7cb20d96c57f55d77c919382d935845cf4569fbe
+  - direct_write:
+    - change: plan-split
+    - files:
+      - state.json: changed
+    - before_state: draft
+    - after_state: draft
+  - by: unknown agent (hc t11b)
+- 2026-11-21T22:05:39Z · gate-closed · plan → plan · Scope approval of plan-split ^t-c7176e
+  - native_change: plan-split
+  - revision: 7cb20d96c57f55d77c919382d935845cf4569fbe
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: yes I approve
+    - where: Grok chat on 2026-11-21, relayed by grok-t11b
+    - recorded_by: grok-t11b
+    - summary_digest: 74ae18e0b306c565873f7524687fa6ac87a7ac93c3c6fa739346faeb1274ca19
+    - list: 882da74f3137
+    - native: specsync change approve plan-split
+    - actor: 0xLeif
+  - by: unknown agent (hc t11b)
+- 2026-11-21T22:06:46Z · advance · plan → build · native:approved ^t-19a9e7
+  - native_change: plan-split
+  - gate: native:approved
+  - revision: 3968a2160e1c39b0dc82433afcf500f02c249a2e
+  - by: unknown agent (hc t11f)
+- 2026-11-21T23:23:21Z · direct-native-write · build → build · plan-split's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state approved → draft ^t-3d6c63
+  - native_change: plan-split
+  - revision: c423aa9766eb72c1b8a05e33aeea9eb27793e6bc
+  - direct_write:
+    - change: plan-split
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: approved
+    - after_state: draft
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:23:21Z · back · build → plan · Leif sent the change back so src/skill.rs can be declared ^t-932ee2
+  - native_change: plan-split
+  - revision: c423aa9766eb72c1b8a05e33aeea9eb27793e6bc
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:24:03Z · gate-opened · plan → plan · Scope approval of plan-split including src/skill.rs ^t-31c6d9
+  - native_change: plan-split
+  - revision: c423aa9766eb72c1b8a05e33aeea9eb27793e6bc
+  - holds: plan
+  - drives: approve
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:24:27Z · gate-closed · plan → plan · Scope approval of plan-split including src/skill.rs ^t-7f470d
+  - native_change: plan-split
+  - revision: 336fd0a5b9a439dffb111bce0cb7d1851e83af96
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Uh, yeah, you can send back. Yes, I approve.
+    - where: Grok chat on 2026-11-21, relayed by grok-t11b
+    - recorded_by: grok-t11b
+    - summary_digest: 0d6069646d57394f8aa29ce297480da031ea7dd41143d4bfc6ee9e135c049b89
+    - list: 4add0e1958e5
+    - native: specsync change approve plan-split
+    - actor: 0xLeif
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:24:41Z · advance · plan → build · native:approved ^t-d7c7db
+  - native_change: plan-split
+  - gate: native:approved
+  - revision: 336fd0a5b9a439dffb111bce0cb7d1851e83af96
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:38:03Z · direct-native-write · build → build · plan-split's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state approved → draft ^t-337b7d
+  - native_change: plan-split
+  - revision: 0272b5c48aba25e5315ccddaf5edfc1c70494d8c
+  - direct_write:
+    - change: plan-split
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: approved
+    - after_state: draft
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:38:03Z · back · build → plan · Leif replaced the execution split with a fork ^t-c158a7
+  - native_change: plan-split
+  - revision: 0272b5c48aba25e5315ccddaf5edfc1c70494d8c
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:38:22Z · gate-opened · plan → plan · Scope approval of the plan-split fork ^t-0b3327
+  - native_change: plan-split
+  - revision: 53fe59d7d63fb97fad599a1c73d052743ec41bb7
+  - holds: plan
+  - drives: approve
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:38:28Z · gate-closed · plan → plan · Scope approval of the plan-split fork ^t-a8c624
+  - native_change: plan-split
+  - revision: 3dd1543db6f9d5145c23481ced22c13e8a769b1c
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, replace it with the fork.
+    - where: Grok chat on 2026-11-21, relayed by grok-t11b
+    - recorded_by: grok-t11b
+    - summary_digest: 3fdd201e443551eacc015be27be8187399d50b4daf84a1b6ba2119a458b559a4
+    - list: 1e6794be56d9
+    - native: specsync change approve plan-split
+    - actor: 0xLeif
+  - by: unknown agent (hc t11b)
+- 2026-11-21T23:38:29Z · advance · plan → build · native:approved ^t-acb801
+  - native_change: plan-split
+  - gate: native:approved
+  - revision: 3dd1543db6f9d5145c23481ced22c13e8a769b1c
+  - by: unknown agent (hc t11b)
+- 2026-11-22T00:56:52Z · advance · build → test · native:verifying ^t-e3c087
+  - native_change: plan-split
+  - gate: native:verifying
+  - revision: ccb2b352f4ee442edbf855adb00d521e01e5e17e
+  - by: unknown agent (hc t11b)
+- 2026-11-22T00:56:57Z · advance · test → accept · native:verifying ^t-1bf442
+  - native_change: plan-split
+  - gate: native:verifying
+  - revision: ccb2b352f4ee442edbf855adb00d521e01e5e17e
+  - by: unknown agent (hc t11b)
+- 2026-11-22T00:57:24Z · gate-opened · accept → accept · Implementation review of plan-split ^t-3914e5
+  - native_change: plan-split
+  - revision: 65f39227dc029d6ca3467cd6fd30e0f4b741dd9a
+  - holds: accept
+  - drives: review
+  - by: unknown agent (hc t11b)
+- 2026-11-22T00:58:53Z · gate-closed · accept → accept · Implementation review of plan-split ^t-ccc982
+  - native_change: plan-split
+  - revision: 5553d9aea69413e448e2f1ed3db515dc22da1b97
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: can we move this session to done / archive?
+    - where: Grok chat on 2026-11-22, relayed by grok-t11b
+    - recorded_by: grok-t11b
+    - native: specsync change review plan-split
+    - actor: 0xLeif
+  - by: unknown agent (hc t11b)
+- 2026-11-22T00:58:55Z · advance · accept → done · native:archived ^t-c089d3
+  - native_change: plan-split
+  - gate: native:archived
+  - revision: 5553d9aea69413e448e2f1ed3db515dc22da1b97
+  - by: unknown agent (hc t11b)
+
+Closed 2026-11-22: done.
+
+## Receipts
+
+```yaml
+receipts: []
+```

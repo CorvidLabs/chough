@@ -87,6 +87,7 @@ observations and evidence named in the refresh list must be redone by their owne
 ## plan
 
 - Purpose: technical design, task plan, estimates and ownership in the native change.
+- Fork: an optional fork inside the one scope approval is planned here. One question: can the slice be cut into a left half and a right half with no shared file? See plan.md.
 - Inputs: intent, design, contracts, architecture, native lessons and principles.
 - Outputs: native change package and deltas (SpecSync), estimates and ownership (plan artifact).
 - Roles and tools: engineering, architecture, QA; `chough change new/answer`.
@@ -111,6 +112,7 @@ observations and evidence named in the refresh list must be redone by their owne
 ## test
 
 - Purpose: focused verification of the affected criteria and behavior.
+- Loop: a bounded loop on the focused set (see testing.md).
 - Inputs: selected cases (`chough cases select`), project-required lane.
 - Outputs: evidence entries in the session's `evidence/` folder (raw logs stay local and in CI), bugs for failures.
 - Roles and tools: QA; `chough cases run/record`; browser for design QA.

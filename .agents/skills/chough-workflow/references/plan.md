@@ -30,6 +30,54 @@ new` prints the lessons of the modules you declare.
 5. If several agents will build, assign file or module ownership in the plan.
 6. Record the change: `chough checkpoint --native-change <id>`.
 
+## Fork
+
+The one scope approval covers the whole change. A fork is optional and inside it.
+
+One question: can this slice be cut into a left half and a right half with no shared
+file?
+
+- If it cannot, one worker does the whole slice.
+- If it can, one manager spawns two workers. Each worker has its own clone, its own
+  branch, and its own session. Do not use a worktree for a fork. Each worker owns its
+  own files, and the two lists share no file. Those lists stay as planned until the
+  manager merges. Neither worker fetches, pulls, merges, rebases, cherry-picks,
+  checks out, or copies the other half. A worker that finishes stops.
+  It does not pull the other half, and it does not edit a file on the other list.
+  A worker does not push to the other worker's branch or clone.
+  The host leaves a finished worker and its clone stopped, and does not point them at the other list. The manager does not
+  write either half. The manager is the merge: it takes both reports and sends one
+  answer back.
+- A shared file stays with the manager.
+- One fork is the batch: one manager and two workers. A half is forked again only when
+  that half still has its own seam, and the total stays at about four agents.
+
+Before the merge, the manager compares each worker's diff with that worker's file
+list. A path outside that list is left out. The other worker keeps going on its own
+list. The early worker does not take over the remaining half. Record on the session
+which worker, which paths, and that those edits were left out. The check is read-only
+in the worker's clone: `git diff --name-only -z <base>...HEAD` and `git status
+--porcelain -z`. The `-z` form keeps a path with a space or a quote as one path.
+The manager does not rewrite that clone, and it does not merge that
+branch as a whole. It takes only the paths on that worker's list.
+
+Chough does not launch the agents. The host spawns them. A worker reports into the
+manager's checkout and does not edit the session body:
+
+```sh
+chough --root <manager-clone> inbox add --session <manager-key> --from <name> \
+  --kind completed --text "<what finished, or which paths were left out>"
+```
+
+The manager folds that inbox with `chough inbox fold` in its own checkout.
+
+After the merge, record on the session whether the two halves joined cleanly, the
+wall-clock, and any conflict. That is the sample the next fork reads. Tokens only when
+the host reports a number, otherwise unknown. No second timing store holds it.
+
+A later slice may be replanned inside the approved paths. A change to intent, contract
+or paths goes back through scope approval.
+
 ## One approval
 
 Prepare one coherent concrete package: outcome, contract delta, plan, verification

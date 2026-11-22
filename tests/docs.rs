@@ -1804,6 +1804,204 @@ fn the_new_project_section_shows_a_minimal_hi_file_and_requirements_md() {
     }
 }
 
+/// The plan-split change ships the optional fork and the bounded test loop
+/// into the workflow skill, and the new sentences are pinned here, in both copies.
+#[test]
+fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
+    let pinned: &[(&str, &str)] = &[
+        (
+            "skills/chough-workflow/references/plan.md",
+            "The one scope approval covers the whole change. A fork is optional and inside it.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "One question: can this slice be cut into a left half and a right half with no shared",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "- One fork is the batch: one manager and two workers. A half is forked again only when",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "Do not use a worktree for a fork.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "A worker that finishes stops.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "A path outside that list is left out.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "branch as a whole.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "--name-only -z <base>...HEAD` and `git status",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "--porcelain -z`",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "--kind completed --text",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "does not pull the other",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "The early worker does not take over the remaining half.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "Those lists stay as planned until the",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "A worker does not push to the other worker's branch or clone.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "The host leaves a finished worker and its clone stopped",
+        ),
+        (
+            "skills/chough-workflow/references/build.md",
+            "A forked worker takes only a task whose files are in its half.",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "A worker reports into the",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
+            "A later slice may be replanned inside the approved paths. A change to intent, contract",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "## A bounded loop on the focused set",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- Run the change's own checks and the selected cases, fix and rerun.",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- The project lane still runs once before test ends.",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- Group by cause before filing.",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- Search existing bugs first. Ten assertions with one trigger are one group.",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- A blocking bug sends that session back to build only when the session lists it,",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- Stop after a few passes or when the focused set is green, and name what remains.",
+        ),
+        (
+            "skills/chough-workflow/references/testing.md",
+            "- The validate side stage stays the long repeated run and still needs consent.",
+        ),
+        (
+            "skills/chough-workflow/references/bugs.md",
+            "Group by cause before filing; ten assertions with one",
+        ),
+        (
+            "skills/chough-workflow/references/stages.md",
+            "- Fork: an optional fork inside the one scope approval is planned here. One question: can the slice be cut into a left half and a right half with no shared file? See plan.md.",
+        ),
+        (
+            "skills/chough-workflow/references/build.md",
+            "When the plan forked the slice, each worker edits only the",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "Do not use a worktree for a fork.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "A worker that finishes stops.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "A path outside that list is left out.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "branch as a whole.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "--name-only -z <base>...HEAD` and `git status",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "--porcelain -z`",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "--kind completed --text",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "does not pull the other",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "The early worker does not take over the remaining half.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "Those lists stay as planned until the",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "A worker does not push to the other worker's branch or clone.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "The host leaves a finished worker and its clone stopped",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/build.md",
+            "A forked worker takes only a task whose files are in its half.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/testing.md",
+            "- The project lane still runs once before test ends.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/bugs.md",
+            "Group by cause before filing; ten assertions with one",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/stages.md",
+            "- Fork: an optional fork inside the one scope approval is planned here. One question: can the slice be cut into a left half and a right half with no shared file? See plan.md.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/build.md",
+            "When the plan forked the slice, each worker edits only the",
+        ),
+    ];
+    for (file, sentence) in pinned {
+        assert!(
+            read(file).contains(sentence),
+            "{file} does not pin {sentence:?}"
+        );
+    }
+}
+
 /// Kimi's fresh-eyes finding (1), second round (2026-11-12): asked to skip design while
 /// at intent, an agent ran `chough stage skip` there, and the Timeline recorded `skip ·
 /// intent → design`. `skip` skips the current stage. docs/cli.md and both copies of the
