@@ -19,9 +19,13 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Scope approval of docs-0-6-3-release
+    holds: plan
+    drives: approve
+    opened: 2026-11-22T02:15:11Z
 run_consents: []
-next: Read scoped intent and native status, then choose the next action within the authorized scope.
+next: Waiting for scope approval of the 0.6.3 roadmap row
 ---
 # The roadmap's delivered table has the 0.6.3 release row, with the clean install of chough 0.6.3
 
@@ -49,4 +53,10 @@ The roadmap's delivered table has the 0.6.3 release row, with the clean install 
 - 2026-11-22T02:14:48Z · skip · design → plan · no visual change ^t-7f3169
   - native_change: docs-0-6-3-release
   - revision: 0267cfebfdc1d0df638d0fa7a12c771354144238
+  - by: unknown agent (hc t11b)
+- 2026-11-22T02:15:11Z · gate-opened · plan → plan · Scope approval of docs-0-6-3-release ^t-6a6d60
+  - native_change: docs-0-6-3-release
+  - revision: d37519ee6e7578b09908ac1dfbaf737c8dc62169
+  - holds: plan
+  - drives: approve
   - by: unknown agent (hc t11b)
