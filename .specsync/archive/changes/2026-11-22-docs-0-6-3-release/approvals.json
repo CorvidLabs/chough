@@ -1,0 +1,50 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795313717,
+      "digest": "aba8441088f3485ccd02829a87aa080d29f101209e350e0a420667b35a65cf5b",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of docs-0-6-3-release\": \"pr has change requests\" (Grok chat on 2026-11-22, relayed by grok-t11b). Relayed and recorded by grok-t11b at 2026-11-22T02:15:16Z through chough gate record ef9270ea361d; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "docs-0-6-3-release",
+        "title": "Docs 0.6.3 release",
+        "description": "docs 0.6.3 release",
+        "kind": "documentation",
+        "affected_specs": [],
+        "affected_paths": [
+          "changelog.d",
+          "docs/roadmap-1.0.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "The roadmap row records a release that already happened. No requirement text changes.",
+        "acceptance_criteria": [
+          "The roadmap delivered table has a 0.6.3 release row marked published on 2026-11-22, naming tag v0.6.3 at dadea1c4, pull request 446, crates.io chough 0.6.3, and the clean install result. A changelog fragment names that row."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "pr has change requests",
+        "where": "Grok chat on 2026-11-22, relayed by grok-t11b",
+        "recorded_by": "grok-t11b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795313752,
+      "digest": "6d363ffe3dfbc945170c5f468803e2de229f4fd4dce57d8d40bdcfe8b5869c58",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

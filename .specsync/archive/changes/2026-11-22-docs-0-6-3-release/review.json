@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "docs-0-6-3-release",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "4e37e0c5164f0e2d41b834844ce6af33642f71d1",
+  "contract_digest": "aba8441088f3485ccd02829a87aa080d29f101209e350e0a420667b35a65cf5b",
+  "execution_digest": "1f9f898296fde3fd80248b8e0feb8f9d8b8d1d8fd1be2ec70492c66415afe510",
+  "workspace_digest": "5217a55d2363776faeaf6d5e782255bc3dbea4a6bf9e6d3a808d24175ea34529",
+  "timestamp": 1795313738,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "pr has change requests",
+    "where": "Grok chat on 2026-11-22, relayed by grok-t11b",
+    "recorded_by": "grok-t11b"
+  }
+}
