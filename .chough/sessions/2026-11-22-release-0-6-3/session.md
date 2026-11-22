@@ -19,9 +19,13 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of release-0-6-3
+    holds: accept
+    drives: review
+    opened: 2026-11-22T01:24:49Z
 run_consents: []
-next: Open the 0.6.3 preparation pull request. Do not tag or publish.
+next: Waiting for the implementation review of release-0-6-3
 ---
 # Prepare the Chough 0.6.3 release: the version, the change log assembled from the merged fragments, and the rebuilt knowledge index, per docs/releasing.md
 
@@ -87,4 +91,10 @@ Prepare the Chough 0.6.3 release: the version, the change log assembled from the
   - native_change: release-0-6-3
   - gate: native:verifying
   - revision: e9c9dc03c6c74b0a1dce5a474c78b096dbdfd282
+  - by: unknown agent (hc t11b)
+- 2026-11-22T01:24:49Z · gate-opened · accept → accept · Implementation review of release-0-6-3 ^t-3842fe
+  - native_change: release-0-6-3
+  - revision: d559c5f2784d44e94057aa7050c7a80a8f2a2768
+  - holds: accept
+  - drives: review
   - by: unknown agent (hc t11b)
