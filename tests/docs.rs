@@ -1839,7 +1839,7 @@ fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
         ),
         (
             "skills/chough-workflow/references/plan.md",
-            "--porcelain -z`",
+            "--name-only -z <base>...HEAD` and `git status",
         ),
         (
             "skills/chough-workflow/references/plan.md",
@@ -1935,7 +1935,7 @@ fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
         ),
         (
             ".agents/skills/chough-workflow/references/plan.md",
-            "--porcelain -z`",
+            "--name-only -z <base>...HEAD` and `git status",
         ),
         (
             ".agents/skills/chough-workflow/references/plan.md",
