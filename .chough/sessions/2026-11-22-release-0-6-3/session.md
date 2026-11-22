@@ -5,7 +5,7 @@ aliases: [release-0-6-3]
 objective: "Prepare the Chough 0.6.3 release: the version, the change log assembled from the merged fragments, and the rebuilt knowledge index, per docs/releasing.md"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -77,4 +77,14 @@ Prepare the Chough 0.6.3 release: the version, the change log assembled from the
   - native_change: release-0-6-3
   - gate: native:approved
   - revision: 6ebfc7ab6ce42e565008177782d2f46562e5d834
+  - by: unknown agent (hc t11b)
+- 2026-11-22T01:24:47Z · advance · build → test · native:verifying ^t-6f1a05
+  - native_change: release-0-6-3
+  - gate: native:verifying
+  - revision: e9c9dc03c6c74b0a1dce5a474c78b096dbdfd282
+  - by: unknown agent (hc t11b)
+- 2026-11-22T01:24:49Z · advance · test → accept · native:verifying ^t-794bb1
+  - native_change: release-0-6-3
+  - gate: native:verifying
+  - revision: e9c9dc03c6c74b0a1dce5a474c78b096dbdfd282
   - by: unknown agent (hc t11b)
