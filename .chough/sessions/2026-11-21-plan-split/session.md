@@ -19,9 +19,13 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of plan-split
+    holds: accept
+    drives: review
+    opened: 2026-11-22T00:57:24Z
 run_consents: []
-next: Pull request 445 is ready for review. Do not merge.
+next: Waiting for the implementation review of plan-split
 ---
 # Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 
@@ -181,4 +185,10 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
   - native_change: plan-split
   - gate: native:verifying
   - revision: ccb2b352f4ee442edbf855adb00d521e01e5e17e
+  - by: unknown agent (hc t11b)
+- 2026-11-22T00:57:24Z · gate-opened · accept → accept · Implementation review of plan-split ^t-3914e5
+  - native_change: plan-split
+  - revision: 65f39227dc029d6ca3467cd6fd30e0f4b741dd9a
+  - holds: accept
+  - drives: review
   - by: unknown agent (hc t11b)
