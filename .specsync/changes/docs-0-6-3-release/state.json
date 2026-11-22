@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "docs-0-6-3-release",
+  "slug": "docs-0-6-3-release",
+  "title": "Docs 0.6.3 release",
+  "description": "docs 0.6.3 release",
+  "kind": "documentation",
+  "state": "draft",
+  "base_commit": "0267cfebfdc1d0df638d0fa7a12c771354144238",
+  "created_at": 1795313677,
+  "updated_at": 1795313687,
+  "affected_specs": [],
+  "affected_paths": [
+    "docs/roadmap-1.0.md",
+    "changelog.d"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "The roadmap row records a release that already happened. No requirement text changes.",
+  "acceptance_criteria": [
+    "The roadmap delivered table has a 0.6.3 release row marked published on 2026-11-22, naming tag v0.6.3 at dadea1c4, pull request 446, crates.io chough 0.6.3, and the clean install result. A changelog fragment names that row."
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}
