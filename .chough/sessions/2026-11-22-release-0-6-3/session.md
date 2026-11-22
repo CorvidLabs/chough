@@ -5,7 +5,7 @@ aliases: [release-0-6-3]
 objective: "Prepare the Chough 0.6.3 release: the version, the change log assembled from the merged fragments, and the rebuilt knowledge index, per docs/releasing.md"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of release-0-6-3
-    holds: accept
-    drives: review
-    opened: 2026-11-22T01:24:49Z
+waiting_on_human: []
 run_consents: []
-next: Waiting for the implementation review of release-0-6-3
+next: Continue done
 ---
 # Prepare the Chough 0.6.3 release: the version, the change log assembled from the merged fragments, and the rebuilt knowledge index, per docs/releasing.md
 
@@ -40,6 +36,7 @@ Prepare the Chough 0.6.3 release: the version, the change log assembled from the
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of release-0-6-3": "Okay, so we're ready to do a release after this, so to introduce this." (Grok chat on 2026-11-22, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve release-0-6-3 as 0xLeif
+- 0xLeif decided "Implementation review of release-0-6-3": "get it to archive??" (Grok chat on 2026-11-22, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change review release-0-6-3 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -97,4 +94,20 @@ Prepare the Chough 0.6.3 release: the version, the change log assembled from the
   - revision: d559c5f2784d44e94057aa7050c7a80a8f2a2768
   - holds: accept
   - drives: review
+  - by: unknown agent (hc t11b)
+- 2026-11-22T01:26:13Z · gate-closed · accept → accept · Implementation review of release-0-6-3 ^t-bc89ee
+  - native_change: release-0-6-3
+  - revision: 38e57f55fe2f10d5d5de1076fe40e42b2cef931a
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: get it to archive??
+    - where: Grok chat on 2026-11-22, relayed by grok-t11b
+    - recorded_by: grok-t11b
+    - native: specsync change review release-0-6-3
+    - actor: 0xLeif
+  - by: unknown agent (hc t11b)
+- 2026-11-22T01:26:15Z · advance · accept → done · native:archived ^t-b008b7
+  - native_change: release-0-6-3
+  - gate: native:archived
+  - revision: 38e57f55fe2f10d5d5de1076fe40e42b2cef931a
   - by: unknown agent (hc t11b)
