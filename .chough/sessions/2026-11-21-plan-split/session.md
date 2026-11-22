@@ -5,7 +5,7 @@ aliases: [plan-split]
 objective: Write the agreed plan-stage execution split and test-stage grouping loop into the workflow skill, with tests pinning the wording
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -171,4 +171,14 @@ Write the agreed plan-stage execution split and test-stage grouping loop into th
   - native_change: plan-split
   - gate: native:approved
   - revision: 3dd1543db6f9d5145c23481ced22c13e8a769b1c
+  - by: unknown agent (hc t11b)
+- 2026-11-22T00:56:52Z · advance · build → test · native:verifying ^t-e3c087
+  - native_change: plan-split
+  - gate: native:verifying
+  - revision: ccb2b352f4ee442edbf855adb00d521e01e5e17e
+  - by: unknown agent (hc t11b)
+- 2026-11-22T00:56:57Z · advance · test → accept · native:verifying ^t-1bf442
+  - native_change: plan-split
+  - gate: native:verifying
+  - revision: ccb2b352f4ee442edbf855adb00d521e01e5e17e
   - by: unknown agent (hc t11b)
