@@ -57,7 +57,8 @@ list. A path outside that list is left out. The other worker keeps going on its 
 list. The early worker does not take over the remaining half. Record on the session
 which worker, which paths, and that those edits were left out. The check is read-only
 in the worker's clone: `git diff --name-only <base>...HEAD` and `git status
---porcelain`. The manager does not rewrite that clone, and it does not merge that
+--porcelain -z`. The `-z` form keeps a path with a space or a quote as one path.
+The manager does not rewrite that clone, and it does not merge that
 branch as a whole. It takes only the paths on that worker's list.
 
 Chough does not launch the agents. The host spawns them. Workers report with `chough

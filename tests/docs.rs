@@ -1839,6 +1839,10 @@ fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
         ),
         (
             "skills/chough-workflow/references/plan.md",
+            "--porcelain -z`",
+        ),
+        (
+            "skills/chough-workflow/references/plan.md",
             "does not pull the other",
         ),
         (
@@ -1928,6 +1932,10 @@ fn the_plan_split_sentences_are_pinned_in_both_skill_copies() {
         (
             ".agents/skills/chough-workflow/references/plan.md",
             "branch as a whole.",
+        ),
+        (
+            ".agents/skills/chough-workflow/references/plan.md",
+            "--porcelain -z`",
         ),
         (
             ".agents/skills/chough-workflow/references/plan.md",
