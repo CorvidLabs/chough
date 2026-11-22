@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "release-0-6-3",
+  "slug": "release-0-6-3",
+  "title": "Release 0.6.3",
+  "description": "Release 0.6.3",
+  "kind": "operations",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "61479feb1e88a57bc45716ff4e42ce84fb2b463b",
+  "created_at": 1795310459,
+  "updated_at": 1795310710,
+  "affected_specs": [],
+  "affected_paths": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "CHANGELOG.md",
+    "changelog.d",
+    "knowledge/index.md",
+    "knowledge/journal/feed.xml"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "A patch release changes no requirement text: the crate version becomes 0.6.3, the changelog fragments of merged changes are assembled into CHANGELOG.md, and the generated knowledge index is rebuilt.",
+  "acceptance_criteria": [
+    "Cargo.toml and Cargo.lock say 0.6.3; CHANGELOG.md has a 0.6.3 section dated 2026-11-22 with every merged fragment from changelog.d, which is then empty, and its release link; fledge run release-check passes; cargo package --list --locked lists only the package files; cargo publish --dry-run --locked passes. Nothing is tagged or published."
+  ],
+  "selected_artifacts": [
+    "context",
+    "plan",
+    "testing",
+    "design",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}

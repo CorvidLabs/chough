@@ -6,6 +6,39 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-11-22
+
+- The workflow skill now ships an optional plan-stage fork and the bounded
+  test-stage grouping loop, with tests pinning the wording. The plan reference asks
+  one question: can the slice be cut into a left half and a right half with no shared
+  file? One worker does a slice that cannot. A slice that can gets one manager and two
+  workers, each in its own clone and branch. A worker that finishes stops, and neither
+  worker imports the other half. The manager leaves out any path outside that worker's
+  list, and then merges the two reports. The test reference names the bounded
+  loop, the bug grouping and the validate consent. The stages and build references
+  agree with the same wording.
+- Optional GitHub stage labels. `integrations/github/` ships a workflow and a
+  script a project copies in to label a pull request with the seven main Chough
+  stages, in rainbow order. `chough init` does not install them, and the `chough`
+  binary does not call GitHub. This repository runs the same two files.
+- GitHub stage labels follow the open Chough session when a pull request
+  also archives an older one. An archived story sets the label only when no
+  open session remains.
+- GitHub stage labels leave a pull request's current stage label in place.
+  A different `chough-stage:*` label is still removed, and a missing stage
+  label is still added.
+- GitHub stage labels skip a fork pull request, ignore a symlinked session
+  file, and create a label only when it is missing or its color or description
+  differs. `chough-stage:implement` and `chough-stage:verify` are deleted only
+  when they already exist.
+- The documentation is checked against 0.6.2: the README, every page under `docs/`,
+  the lifecycle and ownership diagrams, the workflow skill and the exercises. The
+  closeout now commits the session folder with the story and the journal post; the
+  release branch of the lifecycle diagram stays open at done; `stage advance --to`
+  needs `--reason` across an unattended plan or accept; stale versions, test names,
+  temp-file paths and leak-scan scope are corrected. The roadmap has the 0.6.2 row,
+  and an installed 0.6.2 skill updates to the corrected files.
+
 ## [0.6.2] - 2026-11-21
 
 - `chough change ready` counts only the change's own work after a rebase onto the
@@ -1473,6 +1506,7 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.6.3]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.3
 [0.6.2]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.2
 [0.6.1]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.1
 [0.6.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.0
