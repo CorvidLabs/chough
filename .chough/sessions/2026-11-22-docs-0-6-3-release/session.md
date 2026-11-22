@@ -5,7 +5,7 @@ aliases: [docs-0-6-3-release]
 objective: The roadmap's delivered table has the 0.6.3 release row, with the clean install of chough 0.6.3
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Scope approval of docs-0-6-3-release
-    holds: plan
-    drives: approve
-    opened: 2026-11-22T02:15:11Z
+waiting_on_human: []
 run_consents: []
-next: Waiting for scope approval of the 0.6.3 roadmap row
+next: Continue build
 ---
 # The roadmap's delivered table has the 0.6.3 release row, with the clean install of chough 0.6.3
 
@@ -36,6 +32,8 @@ The roadmap's delivered table has the 0.6.3 release row, with the clean install 
 ## Where it stands
 
 ## Decisions and why
+
+- 0xLeif decided "Scope approval of docs-0-6-3-release": "pr has change requests" (Grok chat on 2026-11-22, relayed by grok-t11b); recorded by grok-t11b; a relayed claim, not authenticated; ran specsync change approve docs-0-6-3-release as 0xLeif
 
 ## What was verified
 
@@ -59,4 +57,22 @@ The roadmap's delivered table has the 0.6.3 release row, with the clean install 
   - revision: d37519ee6e7578b09908ac1dfbaf737c8dc62169
   - holds: plan
   - drives: approve
+  - by: unknown agent (hc t11b)
+- 2026-11-22T02:15:16Z · gate-closed · plan → plan · Scope approval of docs-0-6-3-release ^t-1bcd4b
+  - native_change: docs-0-6-3-release
+  - revision: b7d62b742cece11613acb24873b5e7aa4291b6d2
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: pr has change requests
+    - where: Grok chat on 2026-11-22, relayed by grok-t11b
+    - recorded_by: grok-t11b
+    - summary_digest: 67de028434509fb67f914d0bedaa3b562278988ea8016a37705eaef695799506
+    - list: ef9270ea361d
+    - native: specsync change approve docs-0-6-3-release
+    - actor: 0xLeif
+  - by: unknown agent (hc t11b)
+- 2026-11-22T02:15:18Z · advance · plan → build · native:approved ^t-825567
+  - native_change: docs-0-6-3-release
+  - gate: native:approved
+  - revision: b7d62b742cece11613acb24873b5e7aa4291b6d2
   - by: unknown agent (hc t11b)
