@@ -41,6 +41,13 @@
         "where": "Grok chat on 2026-11-22, relayed by grok-t11b",
         "recorded_by": "grok-t11b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795310707,
+      "digest": "b28e3e5a4dcda14b22a085b61182981bd9743f4c199eb4a1a253834fc413be0f",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

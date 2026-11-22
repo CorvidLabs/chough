@@ -1,0 +1,82 @@
+{
+  "timestamp": 1795310678,
+  "commit": "f474ed76a1c6283c91ae16b4c906061b1a5be777",
+  "contract_digest": "be19124fe37687c2791f3796aef9f1d1b7ee91398c6f05d707d60588e4aea740",
+  "execution_digest": "2a869ff048920bff01e9cbd074f8c4b5594ce92356b18bbf18d9553e7625affb",
+  "workspace_digest": "671c25e7ab9edfa89898d81edea81f48c57fb06c58b53f8653a18e176264ebf3",
+  "acceptance_input_digest": "b4a5634bb4a3f85dcdb9f8b7263d6f99894c5210f703b5992796017409d456a9",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": "CHANGELOG.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "f11dff97bd1d9aae7b1577cd37f12c9f87895cf0a4ec15d9225132157b5822c9",
+        "entry_digest": "738b1a0f29b50ff82d58d6094bac92211364e3b208b69aa28dae640f33d8e365",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "Cargo.lock",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "fbfbdda7756bdce7641c37134613e286c6b2e3f8bbd55db8582343989404a2dd",
+        "entry_digest": "bc9876ede2c7c8b2bcd4ea010c6a81b9bc489c954423c1d33682507b9e5d2fda",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "Cargo.toml",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b76dd7bb9b612e9ed242cf5b25e8bd4935e764ea71fa1d2b3083006d2e14dc13",
+        "entry_digest": "46acfd3b682712e7c82aadc211a350add059de44afa5dadadc10a42e8003a589",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d",
+        "kind": "non_file",
+        "mode": 0,
+        "payload_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "entry_digest": "6f56e328248bbc9dd161aeceecb04275f0a738de67e64ac9014a043d7415d0d3",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "knowledge/index.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1fe54d7fa9334f80c92c184e56717bbb4a28b732a9c3e4f419c3258d38ed9f69",
+        "entry_digest": "b2e303a5dcd5bf64e856a347bd32dc37a824aad027dd6562008efc8ae720ec36",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "knowledge/journal/feed.xml",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5394b846370a2c5e3250aee1e8ddf75a93e9b4656d0eae4d86a3a5736f8c2904",
+        "entry_digest": "eb7dc34789485282c8a14e26d4ac0bb43c07a8c427cc247c7552d4770efd250f",
+        "owners": [
+          "@exact:delivery"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check (no spec in scope)",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}
