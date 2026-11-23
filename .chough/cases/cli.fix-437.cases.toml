@@ -1,0 +1,24 @@
+# fix-437: a direct-write entry writes before_state and after_state as
+# none when the state is absent, in the Timeline and the entry text
+# (REQ-history-013).
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-direct-write-absent-state-is-none"
+title = "a direct lifecycle write with an absent state records none, not unknown, and keeps its state lines"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2"]
+requirements = ["REQ-history-013"]
+paths = ["src/session_md.rs", "src/direct_writes.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["src/direct_writes.rs::a_direct_write_with_an_absent_state_says_state_stays_none passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "--", "--exact", "direct_writes::tests::a_direct_write_with_an_absent_state_says_state_stays_none"]
+expect_output = ["test direct_writes::tests::a_direct_write_with_an_absent_state_says_state_stays_none ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600

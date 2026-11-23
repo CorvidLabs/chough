@@ -417,6 +417,33 @@ fn a_direct_write_is_written_as_labelled_lines() {
     );
 }
 
+/// fix-437: a direct write whose change has no state writes its states as `none` in the
+/// Timeline entry and its text, so the entry reads back with `none` and says `state stays
+/// none` rather than leaving the lines out and saying `unknown`.
+#[test]
+fn a_direct_write_with_an_absent_state_writes_none_and_says_state_stays_none() {
+    let fixture = project();
+    // The change's state is absent while its lifecycle records still differ.
+    fixture.write(&format!("{DIR}/state.json"), "{}\n");
+    iterate(&fixture, "first sight");
+    fixture.write(
+        &format!("{DIR}/approvals.json"),
+        "{\"approvals\":[{\"gate\":\"definition\",\"actor\":\"SYNTHETIC-direct\",\"approved_delta_digests\":{}}],\"reopenings\":[]}\n",
+    );
+    iterate(&fixture, "after a record the state did not name");
+    let found = direct_writes(&fixture);
+    assert_eq!(found.len(), 1, "{found:#?}");
+    assert_eq!(
+        found[0]["reason"],
+        "d1's lifecycle records changed outside Chough: approvals.json changed; state stays none"
+    );
+    assert_eq!(found[0]["direct_write"]["before_state"], "none");
+    assert_eq!(found[0]["direct_write"]["after_state"], "none");
+    let session = fixture.read(&fixture.session_file());
+    assert!(session.contains("    - before_state: none\n"), "{session}");
+    assert!(session.contains("    - after_state: none\n"), "{session}");
+}
+
 /// Fresh-eyes finding F9 (REQ-cli-057, REQ-cli-060): `chough change check <id>
 /// --no-commit` runs `specsync change check <id>` without `--commit`, the check the
 /// workflow's accept step runs first, passes its output through, and the next stage move

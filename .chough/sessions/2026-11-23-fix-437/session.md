@@ -5,7 +5,7 @@ aliases: [fix-437]
 objective: "Fix chough#437: a direct-write entry writes before_state and after_state as none when the state is absent, in the Timeline and its text"
 intent_scope: ""
 modules: []
-stage: plan
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -13,15 +13,22 @@ native_change: fix-437
 pr: ""
 criteria: [FLOW-2]
 requirements: []
-cases: []
+cases: [TC-cli-direct-write-absent-state-is-none]
 design: []
 files: []
-observations: [2026-11-23-tc-records-inbox-add-without-hard-links-8d250e]
+observations:
+  - 2026-11-23-tc-records-inbox-add-without-hard-links-8d250e
+  - 2026-11-23-tc-cli-direct-write-absent-state-is-none
+  - 2026-11-23-tc-cli-direct-write-absent-state-is-none-2a2c0d
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-437
+    holds: accept
+    drives: review
+    opened: 2026-11-23T15:29:24Z
 run_consents: []
-next: Continue plan
+next: Continue accept
 ---
 # Fix chough#437: a direct-write entry writes before_state and after_state as none when the state is absent, in the Timeline and its text
 
@@ -38,6 +45,8 @@ Fix chough#437: a direct-write entry writes before_state and after_state as none
 ## What was verified
 
 - [Ran cargo test --locked --test no_hard_links -- --ignored --exact new_records_are_written_on_a_volume_without_hard_links for TC-records-inbox-add-without-hard-links: passed (exit 0).](evidence/2026-11-23-tc-records-inbox-add-without-hard-links-8d250e.md)
+- [Ran cargo test --locked --lib -- --exact direct_writes::tests::a_direct_write_with_an_absent_state_says_state_stays_none for TC-cli-direct-write-absent-state-is-none: failed (exit 101).](evidence/2026-11-23-tc-cli-direct-write-absent-state-is-none.md)
+- [Ran cargo test --locked --bin chough -- --exact direct_writes::tests::a_direct_write_with_an_absent_state_says_state_stays_none for TC-cli-direct-write-absent-state-is-none: passed (exit 0).](evidence/2026-11-23-tc-cli-direct-write-absent-state-is-none-2a2c0d.md)
 
 ## Open threads
 
@@ -82,4 +91,25 @@ Fix chough#437: a direct-write entry writes before_state and after_state as none
 - 2026-11-23T14:56:27Z · advance · design → plan ·  ^t-ae5e7b
   - native_change: fix-437
   - revision: f64a87d77ce3e6075051119797060f9885db93b6
+  - by: unknown agent (hc t14z)
+- 2026-11-23T15:29:18Z · advance · plan → build · native:approved ^t-6c4308
+  - native_change: fix-437
+  - gate: native:approved
+  - revision: 4fbb7766ad13298491229d97ade73bf9515af354
+  - by: unknown agent (hc t14z)
+- 2026-11-23T15:29:19Z · advance · build → test · native:approved ^t-7ee0f0
+  - native_change: fix-437
+  - gate: native:approved
+  - revision: 4fbb7766ad13298491229d97ade73bf9515af354
+  - by: unknown agent (hc t14z)
+- 2026-11-23T15:29:19Z · advance · test → accept · native:approved ^t-92eff5
+  - native_change: fix-437
+  - gate: native:approved
+  - revision: 4fbb7766ad13298491229d97ade73bf9515af354
+  - by: unknown agent (hc t14z)
+- 2026-11-23T15:29:24Z · gate-opened · accept → accept · Implementation review of fix-437 ^t-9afe64
+  - native_change: fix-437
+  - revision: 4fbb7766ad13298491229d97ade73bf9515af354
+  - holds: accept
+  - drives: review
   - by: unknown agent (hc t14z)
