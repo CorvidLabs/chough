@@ -9,4 +9,4 @@ artifact: tasks
 - [x] Verify a below-limit grouped success, both-session refusal, retry behavior and one-step native boundaries.
 - [x] Prepare and publish all named closes in one checkpoint update with existing history semantics.
 - [x] Clarify grouped gate recovery and the native boundary in the CLI docs and add a changelog fragment.
-- [ ] Run the targeted tests and required verification after implementation.
+- [x] Run the targeted tests and required verification after implementation.
