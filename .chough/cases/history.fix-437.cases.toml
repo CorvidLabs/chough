@@ -2,10 +2,10 @@
 # none when the state is absent, in the Timeline and the entry text
 # (REQ-history-013).
 profile = "chough-testing/1"
-module = "cli"
+module = "history"
 
 [[case]]
-id = "TC-cli-direct-write-absent-state-is-none"
+id = "TC-history-direct-write-absent-state-is-none"
 title = "a direct lifecycle write with an absent state records none, not unknown, and keeps its state lines"
 status = "active"
 track = "functional"

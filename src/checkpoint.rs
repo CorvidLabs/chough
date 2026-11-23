@@ -957,6 +957,11 @@ pub(super) struct CheckpointArgs {
     /// is neither an approval nor a review, such as a request for changes.
     #[arg(long, requires = "close_gate")]
     no_native: bool,
+    /// Run every check a gate close runs, write nothing and run no native step, and
+    /// report the projected record size; a rehearsal of the close that refuses like the
+    /// close would (fix-438).
+    #[arg(long, hide = true, requires = "close_gate")]
+    dry_run: bool,
     /// The native step `chough change ship` already ran for this gate, which the
     /// decision names; nothing more runs (REQ-cli-059).
     #[arg(long, hide = true, requires = "close_gate", conflicts_with_all = ["verdict", "no_native"])]
@@ -1412,7 +1417,7 @@ pub(super) fn withdraw_gates(root: &Path, reason: &str) -> Result<Vec<String>> {
 /// What a gate close decided, which the next action it leaves names with the step that
 /// decision allows (F3, REQ-cli-021).
 #[derive(Clone, Copy)]
-enum Closed {
+pub(super) enum Closed {
     /// The native approval ran: the stage can move on.
     Approved,
     /// The gate drives no native step: the close is the decision, and the stage can move
@@ -1430,7 +1435,7 @@ enum Closed {
     NoNative,
 }
 
-fn close_decision(
+pub(super) fn close_decision(
     drives: crate::humans::Drives,
     verdict: Option<&str>,
     no_native: bool,
@@ -1463,7 +1468,7 @@ pub(super) fn is_gate_close_next_action(next_action: &str) -> bool {
 /// on one line and cut so the next action stays within 4096 bytes, the decision when it
 /// made one beyond closing, and the step it allows, never `chough next` (F3). `change`
 /// is the session's native change, which a review pass ships.
-fn closed_gate_next_action(gate: &str, closed: Closed, change: Option<&str>) -> String {
+pub(super) fn closed_gate_next_action(gate: &str, closed: Closed, change: Option<&str>) -> String {
     let advance = "run `chough stage advance` to move on".to_string();
     let (decided, step) = match closed {
         Closed::Approved => (" (approved)", advance),
@@ -1506,6 +1511,38 @@ fn closed_gate_next_action(gate: &str, closed: Closed, change: Option<&str>) -> 
     format!("{head}{name}{tail}")
 }
 
+/// The next action a close of one open gate leaves on the session, as the close runs it
+/// (F3, REQ-cli-021): unless the call gives its own, it names the gate the decision closed,
+/// on one line and cut so the next action stays within its bound, and the step it allows,
+/// never `chough next`; the decision closed the gate, so the move it names is replaced.
+pub(super) fn apply_gate_close_next_action(
+    session: &mut Checkpoint,
+    gate: &str,
+    holds: &str,
+    next_given: bool,
+    verdict: Option<&str>,
+    no_native: bool,
+    native_ran: bool,
+) -> bool {
+    let decision = close_decision(
+        crate::session_md::gate(session, gate).drives(),
+        verdict,
+        no_native,
+        native_ran,
+    );
+    if !next_given
+        && *holds == session.stage.current
+        && !session
+            .awaiting_human
+            .iter()
+            .any(|open| crate::session_md::gate(session, open).holds == session.stage.current)
+    {
+        session.next_action =
+            closed_gate_next_action(gate, decision, session.native_change.as_deref());
+    }
+    false
+}
+
 impl CheckpointArgs {
     /// Whether this call only shows the checkpoint and changes nothing (REQ-cli-069), so
     /// it still runs while `.chough/` is mid-conflict. The destructuring names every
@@ -1536,6 +1573,7 @@ impl CheckpointArgs {
             recorded_by,
             verdict,
             no_native,
+            dry_run,
             native_ran,
             native_command,
             native_actor,
@@ -1575,6 +1613,7 @@ impl CheckpointArgs {
             && !clear_blockers
             && !clear_awaiting_human
             && !no_native
+            && !dry_run
             && [
                 decisions,
                 questions,
@@ -1918,6 +1957,13 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             closed_gate_next_action(gate, *decision, session.native_change.as_deref());
         changed = true;
     }
+    // fix-438: a dry run of a gate close checks every gate the close checks — the relay,
+    // the leak guards, the native-step decision, the record render and its size bound —
+    // through the same code the save runs, but writes nothing and runs no native step, and
+    // reports the projected record size. Only a close can dry run: the flag requires
+    // `--close-gate`.
+    let dry_run_close = args.dry_run && relayed.is_some();
+    let mut projected_record_bytes: Option<usize> = None;
     if changed {
         let current_stage = session.stage.current.clone();
         let opened: Vec<String> = session
@@ -1926,28 +1972,44 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             .filter(|gate| !open_before_additions.contains(gate))
             .cloned()
             .collect();
-        queue_gate_events(
-            root,
-            &mut session,
-            &current_stage,
-            &cleared,
-            &opened,
-            relay_for,
-        )?;
-        if let Some(native) = &native {
-            // Every check the save makes, before the native step runs, so a refused
-            // save never follows a native write.
-            render_checkpoint(&session)?;
-            native_report = Some(run_native_step(root, native)?);
+        if dry_run_close {
+            // Every check the save makes, before the native step runs, so a refused save
+            // never follows a native write, runs here instead of the save's write.
+            let (record, _redacted) = render_counted(&session)?;
+            projected_record_bytes = Some(record.render().len());
+            // The dry run checks the close's native step and runs none of it.
+            if native.is_none() {
+                native_text = Some("no native step ran (--dry-run)".to_string());
+            }
+        } else {
+            queue_gate_events(
+                root,
+                &mut session,
+                &current_stage,
+                &cleared,
+                &opened,
+                relay_for,
+            )?;
+            if let Some(native) = &native {
+                // Every check the save makes, before the native step runs, so a refused
+                // save never follows a native write.
+                render_checkpoint(&session)?;
+                native_report = Some(run_native_step(root, native)?);
+            }
+            save_checkpoint(root, &mut session)?;
         }
-        save_checkpoint(root, &mut session)?;
     }
     // REQ-cli-060 (F9): a gate close recorded the direct writes before its entry, so
     // the baseline is the records now, the close's own native step included. A failed
-    // baseline write is reported and never undoes the close.
-    let settled = (changed && relayed.is_some())
-        .then(|| crate::direct_writes::settle(root, session.native_change.as_deref()).err())
-        .flatten();
+    // baseline write is reported and never undoes the close. A dry run writes nothing and
+    // runs no native step, so it settles nothing.
+    let settled = if dry_run_close {
+        None
+    } else {
+        (changed && relayed.is_some())
+            .then(|| crate::direct_writes::settle(root, session.native_change.as_deref()).err())
+            .flatten()
+    };
     let mut output = json!({"schema_version": 1, "saved": changed, "checkpoint": session});
     // REQ-cli-012: the session's bugs, those its checkpoint holds and those filed in it.
     output["checkpoint"]["bugs"] = json!(crate::bugs::of_session(root, &session));
@@ -1968,6 +2030,14 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             "provenance": RELAY_PROVENANCE,
             "native_step": native_report.clone().unwrap_or_else(|| json!({"ran": null, "why": why})),
         });
+    }
+    if dry_run_close {
+        // The close was checked, not run: nothing was written and no native step ran, so
+        // the report the close would have printed says so, with the size it would have
+        // written (fix-438).
+        output["saved"] = json!(false);
+        output["dry_run"] = json!(true);
+        output["projected_record_bytes"] = json!(projected_record_bytes.unwrap_or(0));
     }
     print_json(&output)
 }

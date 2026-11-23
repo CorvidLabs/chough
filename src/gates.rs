@@ -1086,34 +1086,100 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
     // command, so the record and its checks are exactly that command's.
     let chough = std::env::current_exe()?;
     let mut closed = vec![];
+    // fix-438: before any real close writes, dry-run every named gate's close, so a close
+    // that would be refused over the session record bound refuses the whole reply with
+    // nothing written instead of closing the gates before it. The dry runs close each
+    // named gate in order on the state the earlier named gates' closes left, write
+    // nothing and run no native step, and share the close's checks.
+    let mut dry = crate::checkpoint::read_checkpoint(root)?;
+    for listed in &checked {
+        let stage = dry.stage.current.clone();
+        let values = [
+            ("--decided-by", args.decided_by.as_deref()),
+            ("--words", args.words.as_deref()),
+            ("--where", args.place.as_deref()),
+            ("--recorded-by", args.recorded_by.as_deref()),
+        ];
+        let relayed =
+            crate::checkpoint::check_relay(&dry.awaiting_human, Some(&listed.gate), values)
+                .map_err(dry_relay_refusal)?;
+        let (gate, relay, _decision) = relayed.expect("a close names its gate");
+        let (_native, native_text) = crate::checkpoint::native_step_for(
+            root,
+            &dry,
+            &gate,
+            &relay,
+            args.verdict.as_deref(),
+            args.no_native,
+        )
+        .map_err(|error| {
+            let named: Vec<String> = checked
+                .iter()
+                .map(|listed| listed.number.to_string())
+                .collect();
+            anyhow::anyhow!(
+                "closing gate {} (\"{}\") was refused: {}\nRun `chough gate list`, then `chough gate record` for gates {} again.\nNo gate was closed and nothing was written, for the reply naming gates {}.",
+                listed.number,
+                listed.gate,
+                error,
+                named.join(","),
+                named.join(",")
+            )
+        })?;
+        let decision = crate::checkpoint::decision_text(&gate, &relay, native_text.as_deref());
+        if decision.len() > crate::stage::RELAY_TEXT_LIMIT {
+            bail!(
+                "refused:relay-too-long: the decision for gate \"{gate}\" would be {} bytes, over the {}-byte checkpoint text bound, so nothing ran or was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{gate}\"` with the four values again.",
+                decision.len(),
+                crate::stage::RELAY_TEXT_LIMIT
+            );
+        }
+        crate::stage::log_gate(
+            root,
+            &mut dry,
+            crate::stage::GATE_CLOSED,
+            &stage,
+            &listed.gate,
+            Some(relay.clone()),
+        )?;
+        dry.awaiting_human.retain(|open| open != &listed.gate);
+        dry.decisions.push(decision.clone());
+        let (record, _redacted) = crate::checkpoint::render_counted(&dry)?;
+        // The save a real close runs next settles the entry it queued, so the state the
+        // next named gate's dry run checks is the one the earlier closes left.
+        dry.source = Some(record);
+        dry.pending.clear();
+        dry.evidence_links = crate::checkpoint::evidence_links(root, &dry);
+        let holds = crate::session_md::gate(&dry, &listed.gate).holds.clone();
+        crate::checkpoint::apply_gate_close_next_action(
+            &mut dry,
+            &listed.gate,
+            &holds,
+            false,
+            args.verdict.as_deref(),
+            args.no_native,
+            false,
+        );
+    }
+    // The dry runs held the checkpoint writer lock for the rest of this process; release
+    // it so the real closes below take it again before they read and save (REQ-cli-040).
+    crate::checkpoint::release_checkpoint_locks();
     for (index, listed) in checked.iter().enumerate() {
-        let mut command = Command::new(&chough);
-        command.arg("--root").arg(root);
-        // REQ-records-006: a `gate record --redact` redacts in the close it runs too.
-        if crate::leaks::redacting() {
-            command.arg("--redact");
-        }
-        command
-            .args(["checkpoint", "--close-gate", &listed.gate])
-            .args([
-                "--decided-by",
-                args.decided_by.as_deref().unwrap_or_default(),
-            ])
-            .args(["--words", args.words.as_deref().unwrap_or_default()])
-            .args(["--where", args.place.as_deref().unwrap_or_default()])
-            .args([
-                "--recorded-by",
-                args.recorded_by.as_deref().unwrap_or_default(),
-            ])
-            .args(["--summary-digest", &listed.digest, "--list", &args.list])
-            .current_dir(root);
-        if drives(listed) != crate::humans::Drives::None {
-            if args.no_native {
-                command.arg("--no-native");
-            } else if let Some(verdict) = &args.verdict {
-                command.args(["--verdict", verdict]);
-            }
-        }
+        let mut command = close_command(
+            root,
+            &chough,
+            listed,
+            &drives(listed),
+            args.decided_by.as_deref().unwrap_or_default(),
+            args.words.as_deref().unwrap_or_default(),
+            args.place.as_deref().unwrap_or_default(),
+            args.recorded_by.as_deref().unwrap_or_default(),
+            &listed.digest,
+            &args.list,
+            false,
+            args.no_native,
+            args.verdict.as_deref(),
+        );
         let output = records::run_owned(&mut command, None)?;
         if !output.status.success() {
             // A refused native step's own output stays visible (REQ-records-008).
@@ -1157,6 +1223,95 @@ fn quoted_refusal(stderr: &str) -> String {
         .map(|line| line.strip_prefix("Error: ").unwrap_or(line))
         .collect::<Vec<_>>()
         .join("\n")
+}
+
+/// The refusal a dry run of one named gate's close hits, as the close words it
+/// (fix-438): the relay values the close would have checked.
+fn dry_relay_refusal(problem: crate::checkpoint::RelayProblem) -> anyhow::Error {
+    use crate::checkpoint::RelayProblem;
+    match problem {
+        RelayProblem::WithoutGate(given) => anyhow::anyhow!(
+            "refused:relay-without-gate: {} describe a human's decision at a gate, so they need --close-gate with that gate's exact text; nothing was saved.\nRun `chough next` to list the open gates, then `{}` with one of them.",
+            given.join(", "),
+            crate::stage::CLOSE_GATE_COMMAND
+        ),
+        RelayProblem::Incomplete(gate, missing) => anyhow::anyhow!(
+            "refused:relay-incomplete: closing gate \"{}\" on a human's behalf needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing was saved.\nRun `chough checkpoint --close-gate \"{}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
+            crate::leaks::shown("gate", &gate),
+            missing.join(", "),
+            if missing.len() == 1 { "is" } else { "are" },
+            if crate::leaks::unshowable(&gate).is_none() {
+                gate.clone()
+            } else {
+                "<gate>".to_string()
+            }
+        ),
+        RelayProblem::NotOpen(gate, closest) => anyhow::anyhow!(
+            "refused:gate-not-open: no open gate has the exact text \"{}\", so nothing was saved.{ }\nRun `chough next` to list the open gates, then close one by its exact text.",
+            crate::leaks::shown("gate", &gate),
+            closest
+                .map(|closest| format!(" Did you mean \"{closest}\"?"))
+                .unwrap_or_default()
+        ),
+        RelayProblem::TooLong(gate, length) => anyhow::anyhow!(
+            "refused:relay-too-long: the decision for gate \"{}\" would be {length} bytes, over the {}-byte checkpoint text bound, so nothing was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{}\"` with the four values again.",
+            crate::leaks::shown("gate", &gate),
+            crate::stage::RELAY_TEXT_LIMIT,
+            if crate::leaks::unshowable(&gate).is_none() {
+                gate.clone()
+            } else {
+                "<gate>".to_string()
+            }
+        ),
+    }
+}
+
+/// The close `chough checkpoint --close-gate <gate>` runs for one listed gate's reply,
+/// through Chough's own command, so the record and its checks are exactly that command's;
+/// with `dry_run`, the close is a rehearsal that writes nothing and runs no native step.
+#[allow(clippy::too_many_arguments)]
+fn close_command(
+    root: &Path,
+    chough: &Path,
+    listed: &Listed,
+    drives: &crate::humans::Drives,
+    decided_by: &str,
+    words: &str,
+    place: &str,
+    recorded_by: &str,
+    digest: &str,
+    list: &str,
+    dry_run: bool,
+    no_native: bool,
+    verdict: Option<&str>,
+) -> Command {
+    let mut command = Command::new(chough);
+    command.arg("--root").arg(root);
+    // REQ-records-006: a `gate record --redact` redacts in the close it runs too.
+    if crate::leaks::redacting() {
+        command.arg("--redact");
+    }
+    command
+        .args(["checkpoint", "--close-gate", &listed.gate])
+        .args(["--decided-by", decided_by])
+        .args(["--words", words])
+        .args(["--where", place])
+        .args(["--recorded-by", recorded_by])
+        .args(["--summary-digest", digest, "--list", list])
+        .current_dir(root);
+    if dry_run {
+        // fix-438: a dry run of the close adds its own flag, so the close checks every gate
+        // the close checks but writes nothing and runs no native step.
+        command.arg("--dry-run");
+    }
+    if !dry_run && *drives != crate::humans::Drives::None {
+        if no_native {
+            command.arg("--no-native");
+        } else if let Some(verdict) = verdict {
+            command.args(["--verdict", verdict]);
+        }
+    }
+    command
 }
 
 #[cfg(test)]
