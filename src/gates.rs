@@ -1067,7 +1067,7 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
         ("--where", args.place.as_deref()),
         ("--recorded-by", args.recorded_by.as_deref()),
     ];
-    let relay = |listed: &Listed| {
+    let relay = |listed: &Listed| -> Result<checkpoint::Relayed> {
         let mut relayed = checkpoint::check_relay(&session.awaiting_human, Some(&listed.gate), values).map_err(|_| {
             anyhow::anyhow!(
                 "refused:relay-incomplete: one reply needs who decided, their words, where they said them and the recording agent, each non-blank and within the checkpoint text bound, so nothing was written.\nRun `chough gate record {} --gates {} --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
@@ -1079,15 +1079,22 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
         relayed.1.list = Some(args.list.clone());
         Ok(relayed)
     };
+    let mut prepared = checked
+        .into_iter()
+        .map(|listed| Ok((listed, relay(listed)?)))
+        .collect::<Result<Vec<_>>>()?;
+    // Keep the identity refusal ahead of the relay's leak checks. An unknown
+    // person is described by what the rejected value holds, never by the value.
+    crate::humans::resolve(root, args.decided_by.as_deref().unwrap_or_default())?;
     // REQ-cli-061: at most one named gate may drive a native step, and it runs first,
     // as the decided human, before any gate is closed.
     let drives = |listed: &Listed| {
         crate::humans::Drives::parse(&listed.drives)
             .unwrap_or_else(|| crate::humans::Drives::default_for(&listed.holds))
     };
-    let driving: Vec<&Listed> = checked
+    let driving: Vec<&Listed> = prepared
         .iter()
-        .copied()
+        .map(|(listed, _)| *listed)
         .filter(|listed| drives(listed) != crate::humans::Drives::None)
         .collect();
     if driving.len() > 1 && !args.no_native {
@@ -1117,11 +1124,8 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
             args.gates
         );
     }
-    checked.sort_by_key(|listed| drives(listed) == crate::humans::Drives::None);
-    let relays = checked
-        .iter()
-        .map(|listed| relay(listed))
-        .collect::<Result<Vec<_>>>()?;
+    prepared.sort_by_key(|(listed, _)| drives(listed) == crate::humans::Drives::None);
+    let (checked, relays): (Vec<_>, Vec<_>) = prepared.into_iter().unzip();
     let (reports, settled) = checkpoint::close_listed_gates(
         root,
         &mut session,
