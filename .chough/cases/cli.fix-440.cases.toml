@@ -1,0 +1,23 @@
+# fix-440: the stage advance --to not-ahead refusal names --reason for
+# stage back and stage reset (FLOW-2).
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-advance-to-not-ahead-hint-names-reason"
+title = "stage advance --to a stage that is not ahead refuses with a go-back hint that names --reason"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2"]
+requirements = ["REQ-cli-031"]
+paths = ["src/stage.rs", "tests/advance_to.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/advance_to.rs::a_refused_step_refuses_the_whole_batch_with_nothing_recorded passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "advance_to", "--", "--exact", "a_refused_step_refuses_the_whole_batch_with_nothing_recorded"]
+expect_output = ["test a_refused_step_refuses_the_whole_batch_with_nothing_recorded ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600

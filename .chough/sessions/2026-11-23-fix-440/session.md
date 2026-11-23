@@ -5,7 +5,7 @@ aliases: [fix-440]
 objective: "Fix chough#440: the stage advance --to go-back hint must name --reason like every other back/reset hint"
 intent_scope: ""
 modules: []
-stage: plan
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -13,15 +13,19 @@ native_change: fix-440
 pr: ""
 criteria: [FLOW-2]
 requirements: []
-cases: []
+cases: [TC-cli-advance-to-not-ahead-hint-names-reason]
 design: []
 files: []
-observations: []
+observations: [2026-11-23-tc-cli-advance-to-not-ahead-hint-names-reason]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-440
+    holds: accept
+    drives: review
+    opened: 2026-11-23T14:15:52Z
 run_consents: []
-next: "Gate \"Approve the scope of fix-440\" closed (approved); run `chough stage advance` to move on."
+next: Continue accept
 ---
 # Fix chough#440: the stage advance --to go-back hint must name --reason like every other back/reset hint
 
@@ -37,6 +41,8 @@ Fix chough#440: the stage advance --to go-back hint must name --reason like ever
 - 0xLeif decided "Approve the scope of fix-440": "I approve" (pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch); recorded by pi-t14z; a relayed claim, not authenticated; ran specsync change approve fix-440 as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test advance_to -- --exact a_refused_step_refuses_the_whole_batch_with_nothing_recorded for TC-cli-advance-to-not-ahead-hint-names-reason: passed (exit 0).](evidence/2026-11-23-tc-cli-advance-to-not-ahead-hint-names-reason.md)
 
 ## Open threads
 
@@ -94,4 +100,25 @@ Fix chough#440: the stage advance --to go-back hint must name --reason like ever
     - list: 27771af38ae1
     - native: specsync change approve fix-440
     - actor: 0xLeif
+  - by: unknown agent (hc t14z)
+- 2026-11-23T14:15:45Z · advance · plan → build · native:approved ^t-4689bc
+  - native_change: fix-440
+  - gate: native:approved
+  - revision: 6fd77b85ab3c24501f1f818e8b230d34335c067c
+  - by: unknown agent (hc t14z)
+- 2026-11-23T14:15:46Z · advance · build → test · native:approved ^t-776ba6
+  - native_change: fix-440
+  - gate: native:approved
+  - revision: 6fd77b85ab3c24501f1f818e8b230d34335c067c
+  - by: unknown agent (hc t14z)
+- 2026-11-23T14:15:48Z · advance · test → accept · native:approved ^t-78979a
+  - native_change: fix-440
+  - gate: native:approved
+  - revision: 6fd77b85ab3c24501f1f818e8b230d34335c067c
+  - by: unknown agent (hc t14z)
+- 2026-11-23T14:15:52Z · gate-opened · accept → accept · Implementation review of fix-440 ^t-7dd89c
+  - native_change: fix-440
+  - revision: 6fd77b85ab3c24501f1f818e8b230d34335c067c
+  - holds: accept
+  - drives: review
   - by: unknown agent (hc t14z)
