@@ -1,9 +1,9 @@
 //! REQ-records-001 (#313): a new record can be created on a file system that has no
 //! hard links. #306 linked a temporary file to the record's name, which such a file
-//! system refuses, so `init`, `bug add` and `journal add` failed there; that writer was
-//! reverted. macOS only, and opt-in: the test makes and mounts a small exFAT image with
-//! `hdiutil`, which can hang while other image operations run, so it is ignored by
-//! default. Run it by hand: `cargo test --locked --test no_hard_links -- --ignored`.
+//! system refuses, so `init`, `bug add`, `journal add` and `inbox add` failed there; that
+//! writer was reverted. macOS only, and opt-in: the test makes and mounts a small exFAT
+//! image with `hdiutil`, which can hang while other image operations run, so it is
+//! ignored by default. Run it by hand: `cargo test --locked --test no_hard_links -- --ignored`.
 #![cfg(target_os = "macos")]
 
 use std::path::{Path, PathBuf};
@@ -67,7 +67,8 @@ fn ok(root: &Path, args: &[&str]) {
 }
 
 /// On an exFAT volume, where a
-/// hard link is refused, `init`, `bug add` and `journal add` write whole records.
+/// hard link is refused, `init`, `bug add`, `journal add` and `inbox add` write whole
+/// records.
 #[test]
 #[ignore = "mounts an exFAT image with hdiutil; run by hand with -- --ignored"]
 fn new_records_are_written_on_a_volume_without_hard_links() {
@@ -131,6 +132,40 @@ fn new_records_are_written_on_a_volume_without_hard_links() {
             "A post.",
         ],
     );
+    // The inbox add of an observation, on a volume without hard links, writes its entry
+    // whole through the same writer.
+    let session = std::fs::read_dir(root.join(".chough/sessions"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .find(|name| {
+            std::fs::metadata(root.join(".chough/sessions").join(name).join("session.md")).is_ok()
+        })
+        .expect("the session the init made");
+    ok(
+        &root,
+        &[
+            "inbox",
+            "add",
+            "--session",
+            session.as_str(),
+            "--from",
+            "SYNTHETIC-agent",
+            "--kind",
+            "observation",
+            "--text",
+            "OBS-synthetic-inbox",
+        ],
+    );
+    // The entry the add wrote is there, and it is not empty; macOS keeps extended
+    // attributes on exFAT in `._<name>` files of its own, so skip those.
+    let inbox = root.join(format!(".chough/sessions/{session}/agent/inbox"));
+    let entry = std::fs::read_dir(&inbox)
+        .unwrap()
+        .flatten()
+        .find(|candidate| !candidate.file_name().to_string_lossy().starts_with("._"))
+        .expect("the inbox entry the add wrote");
+    let text = std::fs::read_to_string(entry.path()).unwrap();
+    assert!(!text.is_empty(), "the inbox entry was empty");
     // No temporary file is left behind in the record folders.
     for folder in [".chough/bugs", ".chough/local"] {
         for entry in std::fs::read_dir(root.join(folder)).unwrap().flatten() {

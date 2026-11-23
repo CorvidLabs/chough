@@ -601,37 +601,20 @@ pub(super) fn remove_orphaned_temps(root: &Path) -> Result<()> {
     Ok(())
 }
 
-/// Publish an inbox entry whole (#99 review): write it to `.<id>.json.<pid>.tmp` in the
-/// inbox directory, which Git ignores and no reader lists, then hard-link it to its
-/// name, which never replaces an existing file. An add stopped partway leaves at most
-/// that temp, never a partial `INB-*.json`, and the next checkpoint save removes it.
-/// Returns false when an entry of that name already exists.
+/// Publish an inbox entry whole (#99 review, #435): write it through the shared
+/// whole-or-not-at-all writer `records::write_new_bytes`, which writes the bytes to a
+/// temporary in `.chough/local/` and moves it to the entry's name without replacing
+/// anything, or creates the file at its name and removes it again on error; no hard link
+/// is taken, so the entry is written whole or not at all and the command works on volumes
+/// without hard links, such as exFAT. An add stopped partway leaves at most a temp, never
+/// a partial entry, and returns false when an entry of that name already exists.
 fn publish_entry(root: &Path, file: &str, content: &str) -> Result<bool> {
-    use std::io::Write as _;
     ensure!(
         content.len() as u64 <= INBOX_LIMIT,
         "managed file exceeds {INBOX_LIMIT} bytes: {file}"
     );
-    let path = local_path(root, file)?;
-    let parent = path.parent().context("inbox entry has no parent")?;
-    fs::create_dir_all(parent)?;
-    local_path(root, file)?;
-    let temporary = crate::records::temporary_for(root, file, &path)?;
-    let published = (|| -> std::io::Result<bool> {
-        let mut out = fs::OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .open(&temporary)?;
-        out.write_all(content.as_bytes())?;
-        out.sync_all()?;
-        match fs::hard_link(&temporary, &path) {
-            Ok(()) => Ok(true),
-            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => Ok(false),
-            Err(error) => Err(error),
-        }
-    })();
-    let _ = fs::remove_file(&temporary);
-    published.with_context(|| format!("writing {file}"))
+    crate::records::write_new_bytes(root, file, content.as_bytes())
+        .with_context(|| format!("writing {file}"))
 }
 
 pub(super) fn read_at(root: &Path, relative: &str) -> Result<Checkpoint> {
