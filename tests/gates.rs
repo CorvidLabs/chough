@@ -1181,3 +1181,206 @@ fn a_session_started_before_the_first_commit_counts_from_it() {
     assert!(summary.contains(&root[..8]), "{summary}");
     assert!(summary.contains("before the first commit"), "{summary}");
 }
+
+const GROUP_A: &str = "Grouped gate A";
+const GROUP_B: &str = "Grouped gate B";
+const TIMELINE_BOUND: usize = 4096;
+const SESSION_BOUND: usize = 1_048_576;
+
+fn pad_timeline_for_one_close(fixture: &Fixture) {
+    let file = fixture.session_file();
+    let original = fixture.read(&file);
+    let history = fixture.ok(&["history", "show"]);
+    let count = history["entries"].as_array().unwrap().len();
+    let mut padded = original;
+    for index in 0..TIMELINE_BOUND - 1 - count {
+        use std::fmt::Write;
+        writeln!(
+            padded,
+            "- 2026-11-11T00:00:00Z · gate-opened · intent → intent · Synthetic history ^t-{:06x}",
+            0xa00000 + index
+        )
+        .unwrap();
+    }
+    fixture.write(&file, &padded);
+    let history = fixture.ok(&["history", "show"]);
+    assert_eq!(history["entries"].as_array().unwrap().len(), 4095);
+    assert!(padded.len() < SESSION_BOUND);
+}
+
+#[test]
+fn a_grouped_reply_is_atomic_at_the_real_timeline_cap() {
+    let fixture = project(&[GROUP_A, GROUP_B]);
+    pad_timeline_for_one_close(&fixture);
+    let listed = list(&fixture);
+    let args = record(listed["list"].as_str().unwrap(), "1,2", "close both");
+    let before = records(fixture.root());
+    for _ in 0..2 {
+        let error = fixture.fails(&args);
+        assert!(error.contains("4096 entries"), "{error}");
+        assert!(
+            records(fixture.root()) == before,
+            "the session changed: {error}"
+        );
+        assert_eq!(
+            session(&fixture)["awaiting_human"],
+            json!([GROUP_A, GROUP_B])
+        );
+    }
+}
+
+#[test]
+fn a_grouped_reply_is_atomic_at_the_real_session_byte_cap_and_can_retry() {
+    let fixture = project(&[GROUP_A, GROUP_B]);
+    let file = fixture.session_file();
+    let original = fixture.read(&file);
+    let mut padded = format!("{original}\n## Synthetic record padding\n\n");
+    // Both closures fit on an ordinary checkpoint. Leave room for just one at the cap.
+    padded.push_str(&"size filler\n".repeat((SESSION_BOUND - 720 - padded.len()) / 12));
+    assert!((710..=731).contains(&(SESSION_BOUND - padded.len())));
+    fixture.write(&file, &padded);
+    let listed = list(&fixture);
+    let words = "close both with this synthetic fixture reply";
+    let before = records(fixture.root());
+    let error = fixture.fails(&record(listed["list"].as_str().unwrap(), "1,2", words));
+    assert!(error.contains("1048576 bytes"), "{error}");
+    assert!(
+        records(fixture.root()) == before,
+        "the session changed: {error}"
+    );
+    assert_eq!(
+        session(&fixture)["awaiting_human"],
+        json!([GROUP_A, GROUP_B])
+    );
+
+    fixture.write(&file, &original);
+    let listed = list(&fixture);
+    let args = record(listed["list"].as_str().unwrap(), "1,2", words);
+    fixture.ok(&args);
+    assert!(
+        session(&fixture)["awaiting_human"]
+            .as_array()
+            .unwrap()
+            .is_empty()
+    );
+    let closed = closed_relays(&fixture);
+    assert_eq!(closed.len(), 2);
+    for gate in listed["gates"].as_array().unwrap() {
+        let relay = &closed[gate["gate"].as_str().unwrap()];
+        assert_eq!(relay["words"], words);
+        assert_eq!(relay["summary_digest"], gate["digest"]);
+        assert_eq!(relay["list"], listed["list"]);
+    }
+    let closed_records = records(fixture.root());
+    assert!(fixture.fails(&args).contains("gate-not-open"));
+    assert_eq!(records(fixture.root()), closed_records);
+}
+
+#[test]
+fn a_group_spanning_two_sessions_leaves_both_records_pending() {
+    let fixture = project(&[GROUP_A]);
+    fixture.ok(&["session", "new", "group-other", "--objective", "Other work"]);
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        GROUP_B,
+        "--awaiting-human",
+        "Third gate",
+    ]);
+    let listed = list(&fixture);
+    let ids = |first: &str, second: &str| {
+        let gates = listed["gates"].as_array().unwrap();
+        let number =
+            |name| gates.iter().find(|gate| gate["gate"] == name).unwrap()["number"].to_string();
+        format!("{},{}", number(first), number(second))
+    };
+    let before = records(fixture.root());
+    let id = listed["list"].as_str().unwrap();
+    let error = fixture.fails(&record(id, &ids(GROUP_B, GROUP_A), "close both"));
+    assert!(error.contains("refused:other-session"), "{error}");
+    assert_eq!(records(fixture.root()), before);
+    fixture.ok(&record(id, &ids(GROUP_B, "Third gate"), "close both"));
+    assert_eq!(session(&fixture)["awaiting_human"], json!([GROUP_A]));
+    assert_eq!(
+        fixture.session_json("group-other")["awaiting_human"],
+        json!([])
+    );
+}
+
+fn mixed_group_fixture() -> Fixture {
+    let fixture = project(&[]);
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        GROUP_A,
+        "--drives",
+        "approve",
+    ]);
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        GROUP_B,
+        "--drives",
+        "none",
+    ]);
+    fixture.write(
+        "bin/specsync",
+        r#"#!/bin/sh
+case "$2" in
+approve)
+    printf '%s\n' "$*" >> .stub-approve-calls
+    if test -e .stub-refuse; then
+        printf '%s\n' 'synthetic approval refused' >&2
+        exit 9
+    fi
+    printf '%s\n' 'synthetic approval accepted'
+    ;;
+*) printf '{}\n' ;;
+esac
+"#,
+    );
+    fixture.commit("open the mixed group");
+    fixture
+}
+
+#[test]
+fn mixed_group_checks_full_capacity_before_running_the_native_step() {
+    let fixture = mixed_group_fixture();
+    pad_timeline_for_one_close(&fixture);
+    let listed = list(&fixture);
+    let before = records(fixture.root());
+    let error = fixture.fails(&record(
+        listed["list"].as_str().unwrap(),
+        "1,2",
+        "close both",
+    ));
+    assert!(error.contains("4096 entries"), "{error}");
+    assert!(!fixture.exists(".stub-approve-calls"));
+    assert_eq!(records(fixture.root()), before);
+}
+
+#[test]
+fn native_refusal_keeps_the_mixed_group_pending_and_a_safe_retry_closes_both() {
+    let fixture = mixed_group_fixture();
+    fixture.write(".stub-refuse", "");
+    fixture.commit("make the synthetic native command refuse");
+    let listed = list(&fixture);
+    let before = records(fixture.root());
+    let error = fixture.fails(&record(
+        listed["list"].as_str().unwrap(),
+        "1,2",
+        "close both",
+    ));
+    assert!(error.contains("synthetic approval refused"), "{error}");
+    assert_eq!(records(fixture.root()), before);
+    assert_eq!(fixture.read(".stub-approve-calls").lines().count(), 1);
+
+    fs::remove_file(fixture.root().join(".stub-refuse")).unwrap();
+    let listed = list(&fixture);
+    let args = record(listed["list"].as_str().unwrap(), "1,2", "close both");
+    fixture.ok(&args);
+    assert_eq!(fixture.read(".stub-approve-calls").lines().count(), 2);
+    assert_eq!(closed_relays(&fixture).len(), 2);
+    assert!(fixture.fails(&args).contains("gate-not-open"));
+    assert_eq!(fixture.read(".stub-approve-calls").lines().count(), 2);
+}
