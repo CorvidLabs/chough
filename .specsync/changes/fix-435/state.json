@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-435",
+  "slug": "fix-435",
+  "title": "Fix 435",
+  "description": "fix 435",
+  "kind": "feature",
+  "state": "approved",
+  "base_commit": "4a46668220663eb00524cb6990a325b0713eb099",
+  "created_at": 1795443729,
+  "updated_at": 1795443783,
+  "affected_specs": [
+    "records",
+    "history",
+    "cli"
+  ],
+  "affected_paths": [
+    "src/sessions.rs",
+    "src/records.rs",
+    "tests/no_hard_links.rs",
+    "changelog.d"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "publish_entry switches to the existing whole-or-not-at-all writer write_new_bytes (REQ-records-001, #313); no contract text changes",
+  "acceptance_criteria": [
+    "On a volume without hard links (exFAT), chough inbox add writes its entry whole or not at all and succeeds, as init, bug add and journal add do since #260 and #424; the ignored test tests/no_hard_links.rs covers it."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "none",
+    "public_contract": "no"
+  }
+}
