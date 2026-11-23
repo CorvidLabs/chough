@@ -9,7 +9,7 @@ stage: intent
 stage_status: active
 iteration: 1
 callers: []
-native_change: ""
+native_change: fix-437
 pr: ""
 criteria: [FLOW-2]
 requirements: []
@@ -19,7 +19,11 @@ files: []
 observations: [2026-11-23-tc-records-inbox-add-without-hard-links-8d250e]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Approve the scope of fix-437
+    holds: intent
+    drives: approve
+    opened: 2026-11-23T14:55:50Z
 run_consents: []
 next: Read scoped intent and native status, then choose the next action within the authorized scope.
 ---
@@ -43,4 +47,10 @@ Fix chough#437: a direct-write entry writes before_state and after_state as none
 
 - 2026-11-23T14:44:33Z · start · intent → intent · fix-437 ^t-87f09a
   - revision: 35828a1df3d308677a38b138e7aebe0e7b6770ef
+  - by: unknown agent (hc t14z)
+- 2026-11-23T14:55:50Z · gate-opened · intent → intent · Approve the scope of fix-437 ^t-b5dbe6
+  - native_change: fix-437
+  - revision: a067aa560974bb904dd07c18e56ded5c038fd77d
+  - holds: intent
+  - drives: approve
   - by: unknown agent (hc t14z)
