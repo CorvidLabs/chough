@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-438",
+  "slug": "fix-438",
+  "title": "Fix 438",
+  "description": "fix 438",
+  "kind": "feature",
+  "state": "approved",
+  "base_commit": "2053788676035ddbe4658b6cc07b18d817c597e6",
+  "created_at": 1795448263,
+  "updated_at": 1795448358,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/gates.rs",
+    "src/checkpoint.rs",
+    "tests",
+    "changelog.d"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "gate record already requires all-or-none in REQ-cli-061; the code is brought in line, no contract text changes",
+  "acceptance_criteria": [
+    "One chough gate record reply naming several gates closes all of them or none: when any named gate's close would be refused (for example a later save over the session record bound), the whole record is refused with nothing written and no earlier gate left closed."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "none",
+    "public_contract": "no"
+  }
+}

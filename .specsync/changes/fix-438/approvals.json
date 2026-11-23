@@ -1,0 +1,48 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795448358,
+      "digest": "3dffe93ef4669693c9aee077f6a21646549d768f1f3fa565bd3bc1351e8b0449",
+      "note": "Approved by 0xLeif at the Chough gate \"Approve the scope of fix-438\": \"I approve\" (pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch). Relayed and recorded by pi-t14z at 2026-11-23T15:39:17Z through chough gate record 5688183919dd; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-438",
+        "title": "Fix 438",
+        "description": "fix 438",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "changelog.d",
+          "src/checkpoint.rs",
+          "src/gates.rs",
+          "tests"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "gate record already requires all-or-none in REQ-cli-061; the code is brought in line, no contract text changes",
+        "acceptance_criteria": [
+          "One chough gate record reply naming several gates closes all of them or none: when any named gate's close would be refused (for example a later save over the session record bound), the whole record is refused with nothing written and no earlier gate left closed."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "I approve",
+        "where": "pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch",
+        "recorded_by": "pi-t14z"
+      }
+    }
+  ],
+  "reopenings": []
+}
