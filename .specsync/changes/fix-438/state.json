@@ -7,10 +7,11 @@
   "title": "Fix 438",
   "description": "fix 438",
   "kind": "feature",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "2053788676035ddbe4658b6cc07b18d817c597e6",
   "created_at": 1795448263,
-  "updated_at": 1795448358,
+  "updated_at": 1795457341,
   "affected_specs": [
     "cli"
   ],
