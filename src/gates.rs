@@ -2,14 +2,16 @@
 //! numbers every open human gate with a one-screen summary of what is being decided
 //! and the SHA-256 digest of that summary, and saves the list untracked;
 //! `chough gate record` closes only listed gates with one relayed reply, each relay
-//! keeping its own summary digest and the list. No native read is made.
+//! keeping its own summary digest and the list. Listing makes no native read.
 
+use crate::checkpoint::{self, Checkpoint};
 use crate::records::{self, local_path, print_json};
 use anyhow::{Context, Result, bail};
 use clap::Subcommand;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use std::collections::BTreeSet;
 use std::fs;
 use std::path::Path;
 use std::process::Command;
@@ -125,23 +127,27 @@ fn open_sessions(root: &Path) -> Result<Vec<(String, String, Value)>> {
     for id in crate::sessions::open_ids(root)? {
         let file = crate::sessions::session_file(&id);
         let session = crate::sessions::read_at(root, &file)?;
-        let mut value = serde_json::to_value(&session)?;
-        // What each open gate holds and drives, which the checkpoint JSON leaves out.
-        value["gate_meta"] = session
-            .awaiting_human
-            .iter()
-            .map(|gate| {
-                let meta = crate::session_md::gate(&session, gate);
-                (
-                    gate.clone(),
-                    json!({"holds": meta.holds, "drives": meta.drives}),
-                )
-            })
-            .collect::<serde_json::Map<_, _>>()
-            .into();
-        sessions.push((id, file, value));
+        sessions.push((id, file, gate_view(&session)?));
     }
     Ok(sessions)
+}
+
+/// What each open gate holds and drives, which the checkpoint JSON leaves out.
+fn gate_view(session: &Checkpoint) -> Result<Value> {
+    let mut value = serde_json::to_value(session)?;
+    value["gate_meta"] = session
+        .awaiting_human
+        .iter()
+        .map(|gate| {
+            let meta = crate::session_md::gate(session, gate);
+            (
+                gate.clone(),
+                json!({"holds": meta.holds, "drives": meta.drives}),
+            )
+        })
+        .collect::<serde_json::Map<_, _>>()
+        .into();
+    Ok(value)
 }
 
 /// The change's state record, from its workspace or, failing that, its archive.
@@ -953,34 +959,53 @@ fn active_key(root: &Path) -> Option<String> {
 /// Returns the listed gate. `ship` is the command that closes a verifying change's
 /// gate, given the relay placeholders.
 pub(super) fn check_listed(root: &Path, id: &str, number: usize) -> Result<Listed> {
-    let Some(gates) = load(root, id) else {
-        bail!(
-            "refused:unknown-list: there is no gate list {id}, so nothing was written.\nRun `chough gate list` to number the open gates, then reply with its list."
-        );
-    };
-    let Some(listed) = gates.iter().find(|gate| gate.number == number).cloned() else {
-        let numbers: Vec<String> = gates.iter().map(|gate| gate.number.to_string()).collect();
-        bail!(
-            "refused:not-listed: list {id} has no gate {number} (it lists {}), so nothing was written.\nRun `chough gate list` to see the open gates and their numbers.",
-            if numbers.is_empty() {
-                "none".to_string()
-            } else {
-                numbers.join(", ")
-            }
-        );
-    };
-    if active_key(root).as_deref() != Some(listed.session.as_str()) {
+    let gates = require_list(root, id)?;
+    let listed = require_number(&gates, id, number)?;
+    check_active_session(listed, id, active_key(root).as_deref())?;
+    let session = open_sessions(root)?
+        .into_iter()
+        .find(|(key, _, _)| *key == listed.session)
+        .map(|(_, _, value)| value)
+        .unwrap_or(Value::Null);
+    check_current_gate(root, listed, id, &session)?;
+    Ok(listed.clone())
+}
+
+fn require_list(root: &Path, id: &str) -> Result<Vec<Listed>> {
+    load(root, id).with_context(|| {
+        format!("refused:unknown-list: there is no gate list {id}, so nothing was written.\nRun `chough gate list` to number the open gates, then reply with its list.")
+    })
+}
+
+fn require_number<'a>(gates: &'a [Listed], id: &str, number: usize) -> Result<&'a Listed> {
+    if let Some(listed) = gates.iter().find(|gate| gate.number == number) {
+        return Ok(listed);
+    }
+    let numbers: Vec<String> = gates.iter().map(|gate| gate.number.to_string()).collect();
+    bail!(
+        "refused:not-listed: list {id} has no gate {number} (it lists {}), so nothing was written.\nRun `chough gate list` to see the open gates and their numbers.",
+        if numbers.is_empty() {
+            "none".to_string()
+        } else {
+            numbers.join(", ")
+        }
+    );
+}
+
+fn check_active_session(listed: &Listed, id: &str, active: Option<&str>) -> Result<()> {
+    if active != Some(listed.session.as_str()) {
+        let number = listed.number;
         bail!(
             "refused:other-session: gate {number} of list {id} is in session {}, which is not active, so nothing was written.\nRun `chough session use {}`, then `chough gate record {id} --gates {number}` with the relay again.",
             listed.session,
             listed.session
         );
     }
-    let session = open_sessions(root)?
-        .into_iter()
-        .find(|(key, _, _)| *key == listed.session)
-        .map(|(_, _, value)| value)
-        .unwrap_or(Value::Null);
+    Ok(())
+}
+
+fn check_current_gate(root: &Path, listed: &Listed, id: &str, session: &Value) -> Result<()> {
+    let number = listed.number;
     let open = session["awaiting_human"]
         .as_array()
         .is_some_and(|gates| gates.iter().any(|gate| gate.as_str() == Some(&listed.gate)));
@@ -990,13 +1015,13 @@ pub(super) fn check_listed(root: &Path, id: &str, number: usize) -> Result<Liste
             listed.gate
         );
     }
-    if sha256(&summary(root, &session, &listed.gate)) != listed.digest {
+    if sha256(&summary(root, session, &listed.gate)) != listed.digest {
         bail!(
             "refused:summary-changed: the summary of gate {number} (\"{}\") has changed since list {id} showed it, so the reply was not given on it and nothing was written.\nRun `chough gate list` to show the current summaries, and record the reply against that list.",
             listed.gate
         );
     }
-    Ok(listed)
+    Ok(())
 }
 
 fn record(root: &Path, args: RecordArgs) -> Result<()> {
@@ -1011,12 +1036,23 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
                 crate::leaks::shown("--gates", &args.gates)
             )
         })?;
-    let mut checked: Vec<Listed> = vec![];
+    let gates = require_list(root, &args.list)?;
+    let mut selected = BTreeSet::new();
+    let mut checked = Vec::new();
+    let mut session = checkpoint::read_checkpoint(root)?;
+    let snapshot = gate_view(&session)?;
     for number in &numbers {
-        let listed = check_listed(root, &args.list, *number)?;
+        if !selected.insert(*number) {
+            bail!(
+                "refused:duplicate-gate: gate {number} is listed twice, so nothing was written.\nRun `chough gate list` and name each gate once."
+            );
+        }
+        let listed = require_number(&gates, &args.list, *number)?;
+        check_active_session(listed, &args.list, Some(&session.meta.id))?;
+        check_current_gate(root, listed, &args.list, &snapshot)?;
         // F6: the reason is how such a gate closes, never that Chough's records may not
         // be written, which verification_ignored_paths allows.
-        if let Some(change) = verifying(root, &listed) {
+        if let Some(change) = verifying(root, listed) {
             bail!(
                 "refused:verifying: gate {number} (\"{}\") belongs to {change}, which is verifying, so it closes through the ship, which runs the review as the human and closes the gate after the native ship; nothing was written.\nRun `chough change ship {change} --list {} --gate {number} {RELAY}`.",
                 listed.gate,
@@ -1031,19 +1067,18 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
         ("--where", args.place.as_deref()),
         ("--recorded-by", args.recorded_by.as_deref()),
     ];
-    let open: Vec<String> = checked.iter().map(|listed| listed.gate.clone()).collect();
-    for listed in &checked {
-        crate::checkpoint::check_relay(&open, Some(&listed.gate), values).map_err(|_| {
+    let relay = |listed: &Listed| {
+        let mut relayed = checkpoint::check_relay(&session.awaiting_human, Some(&listed.gate), values).map_err(|_| {
             anyhow::anyhow!(
                 "refused:relay-incomplete: one reply needs who decided, their words, where they said them and the recording agent, each non-blank and within the checkpoint text bound, so nothing was written.\nRun `chough gate record {} --gates {} --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
                 args.list,
                 args.gates
             )
-        })?;
-    }
-    // REQ-records-008: every reply names one configured human, whatever its gates
-    // drive, before anything runs or is written.
-    crate::humans::resolve(root, args.decided_by.as_deref().unwrap_or_default())?;
+        })?.context("a listed gate has no relayed decision")?;
+        relayed.1.summary_digest = Some(listed.digest.clone());
+        relayed.1.list = Some(args.list.clone());
+        Ok(relayed)
+    };
     // REQ-cli-061: at most one named gate may drive a native step, and it runs first,
     // as the decided human, before any gate is closed.
     let drives = |listed: &Listed| {
@@ -1052,6 +1087,7 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
     };
     let driving: Vec<&Listed> = checked
         .iter()
+        .copied()
         .filter(|listed| drives(listed) != crate::humans::Drives::None)
         .collect();
     if driving.len() > 1 && !args.no_native {
@@ -1082,81 +1118,34 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
         );
     }
     checked.sort_by_key(|listed| drives(listed) == crate::humans::Drives::None);
-    // Close each gate as `chough checkpoint --close-gate` does, through Chough's own
-    // command, so the record and its checks are exactly that command's.
-    let chough = std::env::current_exe()?;
-    let mut closed = vec![];
-    for (index, listed) in checked.iter().enumerate() {
-        let mut command = Command::new(&chough);
-        command.arg("--root").arg(root);
-        // REQ-records-006: a `gate record --redact` redacts in the close it runs too.
-        if crate::leaks::redacting() {
-            command.arg("--redact");
-        }
-        command
-            .args(["checkpoint", "--close-gate", &listed.gate])
-            .args([
-                "--decided-by",
-                args.decided_by.as_deref().unwrap_or_default(),
-            ])
-            .args(["--words", args.words.as_deref().unwrap_or_default()])
-            .args(["--where", args.place.as_deref().unwrap_or_default()])
-            .args([
-                "--recorded-by",
-                args.recorded_by.as_deref().unwrap_or_default(),
-            ])
-            .args(["--summary-digest", &listed.digest, "--list", &args.list])
-            .current_dir(root);
-        if drives(listed) != crate::humans::Drives::None {
-            if args.no_native {
-                command.arg("--no-native");
-            } else if let Some(verdict) = &args.verdict {
-                command.args(["--verdict", verdict]);
-            }
-        }
-        let output = records::run_owned(&mut command, None)?;
-        if !output.status.success() {
-            // A refused native step's own output stays visible (REQ-records-008).
-            use std::io::Write;
-            let _ = std::io::stdout().write_all(&output.stdout);
-            let remaining: Vec<String> = checked[index..]
-                .iter()
-                .map(|listed| listed.number.to_string())
-                .collect();
-            bail!(
-                "closing gate {} (\"{}\") was refused: {}\nRun `chough gate list`, then `chough gate record` for gates {} again.",
-                listed.number,
-                listed.gate,
-                quoted_refusal(&String::from_utf8_lossy(&output.stderr)),
-                remaining.join(",")
-            );
-        }
-        // The close's own report names the native step it ran, or why none did
-        // (REQ-records-008); the reply passes it on for each gate.
-        let native_step = serde_json::from_slice::<Value>(&output.stdout)
-            .ok()
-            .and_then(|report| report.pointer("/relayed_decision/native_step").cloned())
-            .unwrap_or(Value::Null);
-        closed.push(json!({
-            "number": listed.number,
-            "gate": listed.gate,
-            "summary_digest": listed.digest,
-            "native_step": native_step,
-        }));
+    let relays = checked
+        .iter()
+        .map(|listed| relay(listed))
+        .collect::<Result<Vec<_>>>()?;
+    let (reports, settled) = checkpoint::close_listed_gates(
+        root,
+        &mut session,
+        relays,
+        args.verdict.as_deref(),
+        args.no_native,
+    )?;
+    let closed: Vec<_> = checked
+        .iter()
+        .zip(reports)
+        .map(|(listed, native_step)| {
+            json!({
+                "number": listed.number,
+                "gate": listed.gate,
+                "summary_digest": listed.digest,
+                "native_step": native_step,
+            })
+        })
+        .collect();
+    let mut report = json!({"schema_version": 1, "list": args.list, "closed": closed});
+    if let Some(error) = settled {
+        report["direct_writes"] = json!({"unknown": error});
     }
-    print_json(&json!({"schema_version": 1, "list": args.list, "closed": closed}))
-}
-
-/// A refused close's standard error as `gate record` quotes it: the close's own `Error: `
-/// prefix is dropped from the line that carries it, after any line printed before it, so
-/// the refusal says `Error:` once (#380).
-fn quoted_refusal(stderr: &str) -> String {
-    stderr
-        .trim()
-        .lines()
-        .map(|line| line.strip_prefix("Error: ").unwrap_or(line))
-        .collect::<Vec<_>>()
-        .join("\n")
+    print_json(&report)
 }
 
 #[cfg(test)]
@@ -1167,20 +1156,5 @@ mod tests {
         for id in ["", "0123456789AB", "0123456789a", "../etc/passw"] {
             assert!(!crate::stage::lowercase_hex(id, 12), "{id}");
         }
-    }
-
-    /// #380: the close's `Error: ` prefix is dropped wherever its line sits, so a line
-    /// printed before it, such as a `--redact` count, leaves one `Error:` in the refusal.
-    #[test]
-    fn a_quoted_refusal_says_error_once() {
-        assert_eq!(
-            super::quoted_refusal("Error: refused:leak: x\n"),
-            "refused:leak: x"
-        );
-        assert_eq!(
-            super::quoted_refusal("chough: redacted 1 value(s)\nError: refused:leak: x"),
-            "chough: redacted 1 value(s)\nrefused:leak: x"
-        );
-        assert_eq!(super::quoted_refusal("no prefix"), "no prefix");
     }
 }

@@ -1582,14 +1582,25 @@ with the relay, since such a gate closes through the ship.
 `chough gate record <list> --gates <n>[,<n>…] --decided-by <who> --words <words>
 --where <where> --recorded-by <agent> [--verdict pass|block] [--no-native]` is one reply
 for several listed gates. It closes each one as `chough checkpoint --close-gate` would,
-and each relay keeps the same words, its own `summary_digest` and the `list`. A named
-gate that drives a native step runs it as the decided human before any gate is closed.
-It closes all of them or none. Before writing anything, it refuses and names the
-recovery for:
+and each relay keeps the same words, its own `summary_digest` and the `list`. The
+command prepares every closure and checks the complete checkpoint against the Timeline
+and record bounds. It saves the decisions and Timeline entries together. A refused
+reply leaves every selected gate pending. If a group cannot fit, follow the capacity
+recovery before listing the gates and retrying.
+
+A group can run one native step. After checkpoint preflight, the native step runs as
+the decided human before any gate is closed. If SpecSync records a decision but Chough
+cannot save the checkpoint, its gates stay pending and the native decision remains in
+SpecSync. Check `specsync change status <id>` and the native record the refusal names
+before reconciling the gates. A retry invokes another native step only if SpecSync
+reports it as due. A different recording agent does not change this check.
+
+The command names the recovery for each of these refusals before writing any gate decision.
 
 - an unknown list (`refused:unknown-list`), a number not on it (`refused:not-listed`),
   a gate no longer open (`refused:gate-not-open`), or a summary that changed since it
   was listed (`refused:summary-changed`): run `chough gate list`;
+- the same listed number selected twice (`refused:duplicate-gate`). Name each gate once.
 - a gate of another open session (`refused:other-session`): `chough session use <key>`;
 - a gate whose change is verifying (`refused:verifying`): such a gate closes through
   the ship, which runs the review as the human and closes the gate after the native

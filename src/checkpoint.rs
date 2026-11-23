@@ -3,8 +3,8 @@
 //! names `chough migrate`.
 
 use crate::records::{
-    CHANGE_ID_LIMIT, ensure_text, local_path, native_json, print_json, read_bounded_record,
-    valid_change_id, valid_name, write_replace_bounded,
+    CHANGE_ID_LIMIT, NATIVE_RECORD_LIMIT, ensure_text, local_path, native_json, print_json,
+    read_bounded_record, valid_change_id, valid_name, write_replace_bounded,
 };
 use crate::records::{valid_criterion_id, valid_module_name, valid_reference_id};
 use crate::stage;
@@ -851,16 +851,12 @@ pub(super) fn save_checkpoint(root: &Path, session: &mut Checkpoint) -> Result<(
     remove_orphaned_session_temps(root)?;
     session.evidence_links = evidence_links(root, session);
     let (record, redacted) = render_counted(session)?;
-    write_replace_bounded(
+    publish_checkpoint(
         root,
         &crate::sessions::checkpoint_path(root)?,
-        &record.render(),
-        SESSION_LIMIT,
+        &record,
+        redacted,
     )?;
-    // REQ-records-006: the count, once the write has succeeded.
-    if crate::leaks::redacting() && redacted > 0 {
-        eprintln!("chough: redacted {redacted} value(s) in the session record (--redact)");
-    }
     // Under `--redact` the checkpoint then holds the values saved, so what a command
     // prints is what the session record says (REQ-records-006).
     if crate::leaks::redacting() {
@@ -868,6 +864,20 @@ pub(super) fn save_checkpoint(root: &Path, session: &mut Checkpoint) -> Result<(
     }
     session.source = Some(record);
     session.pending.clear();
+    Ok(())
+}
+
+/// Publish exactly the rendered session, in one atomic replace.
+fn publish_checkpoint(
+    root: &Path,
+    path: &str,
+    record: &crate::markdown::Record,
+    redacted: usize,
+) -> Result<()> {
+    write_replace_bounded(root, path, &record.render(), SESSION_LIMIT)?;
+    if crate::leaks::redacting() && redacted > 0 {
+        eprintln!("chough: redacted {redacted} value(s) in the session record (--redact)");
+    }
     Ok(())
 }
 
@@ -1304,6 +1314,185 @@ pub(super) fn run_native_step(root: &Path, native: &NativeStep) -> Result<serde_
     }))
 }
 
+/// Apply the native step's identity and reject a decision too large to persist.
+fn finish_relay(
+    gate: &str,
+    relay: &mut stage::RelayedBy,
+    native: Option<&NativeStep>,
+    native_text: Option<&str>,
+) -> Result<String> {
+    if let Some(step) = native {
+        let verb = match step.step {
+            crate::humans::Step::Approve { .. } => "approve",
+            crate::humans::Step::Review { .. } => "review",
+        };
+        relay.native = Some(format!("specsync change {verb} {}", step.change));
+        relay.actor = Some(step.human.specsync_actor.clone());
+    }
+    let decision = decision_text(gate, relay, native_text);
+    ensure!(
+        decision.len() <= stage::RELAY_TEXT_LIMIT,
+        "refused:relay-too-long: the decision for gate \"{gate}\" would be {} bytes, over the {}-byte checkpoint text bound, so nothing ran or was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{gate}\"` with the four values again.",
+        decision.len(),
+        stage::RELAY_TEXT_LIMIT
+    );
+    Ok(decision)
+}
+
+/// SpecSync distinguishes a current native decision from an older relay on a changed scope.
+/// Accept a new attempt only when it identifies the change and names the same native step as due.
+fn native_decision_is_due(root: &Path, native: &NativeStep, review: bool) -> bool {
+    let Some(status) = native_json(
+        root,
+        "specsync",
+        &["change", "status", &native.change, "--json"],
+    )
+    .value
+    else {
+        return false;
+    };
+    let Some(summary) = status.get("summary") else {
+        return false;
+    };
+    if summary["id"] != native.change.as_str() {
+        return false;
+    }
+    let (freshness, verb, actor) = if review {
+        ("scoped_review_current", "review", "reviewer")
+    } else {
+        ("approval_valid", "approve", "actor")
+    };
+    let command = format!("run `specsync change {verb} {} --{actor} ", native.change);
+    summary[freshness] == false
+        && summary["next_action"]
+            .as_str()
+            .is_some_and(|next| next.starts_with(&command))
+}
+
+/// A native decision can survive a failed checkpoint publication. Ask SpecSync whether a
+/// further decision is due without assuming a retry comes from the same recording agent.
+fn refuse_repeated_native_decision(root: &Path, native: &NativeStep) -> Result<()> {
+    let review = matches!(native.step, crate::humans::Step::Review { .. });
+    let paths: &[&str] = if review {
+        &["review-attempts.json", "review.json"]
+    } else {
+        &["approvals.json"]
+    };
+    for name in paths {
+        let path = format!(".specsync/changes/{}/{name}", native.change);
+        let guarded = crate::records::local_path(root, &path)?;
+        let unreadable =
+            || format!("could not read native decision history at {path}; no gate was closed");
+        let metadata = match fs::symlink_metadata(&guarded) {
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => continue,
+            other => other.with_context(unreadable)?,
+        };
+        ensure!(metadata.is_file(), "{}", unreadable());
+        let bytes = crate::records::read_native_record(&guarded, NATIVE_RECORD_LIMIT)
+            .with_context(unreadable)?
+            .with_context(unreadable)?;
+        let record: serde_json::Value = serde_json::from_slice(&bytes).with_context(|| {
+            format!("could not read native decision history at {path}; no gate was closed")
+        })?;
+        let already_recorded = match *name {
+            "review.json" => {
+                ensure!(record.is_object(), "{}", unreadable());
+                true
+            }
+            "review-attempts.json" => !record["reviews"]
+                .as_array()
+                .with_context(unreadable)?
+                .is_empty(),
+            _ => record["approvals"]
+                .as_array()
+                .with_context(unreadable)?
+                .iter()
+                .any(|approval| approval["gate"] == "definition"),
+        };
+        if already_recorded {
+            if native_decision_is_due(root, native, review) {
+                return Ok(());
+            }
+            bail!(
+                "refused:native-decision-already-recorded: {path} already contains a native decision, and SpecSync did not report another as due. All named gates are still pending. Run `specsync change status {}` and inspect {path} before reconciling the gates.",
+                native.change
+            );
+        }
+    }
+    Ok(())
+}
+
+/// Prepare all closes on the locked session read by `gate record`, and publish them together.
+pub(super) fn close_listed_gates(
+    root: &Path,
+    session: &mut Checkpoint,
+    relays: Vec<Relayed>,
+    verdict: Option<&str>,
+    no_native: bool,
+) -> Result<(Vec<serde_json::Value>, Option<String>)> {
+    use crate::humans::Drives;
+    let mut reports = Vec::with_capacity(relays.len());
+    let mut native_close = None;
+    let current_stage = session.stage.current.clone();
+    for (gate, mut relay, _) in relays {
+        guard_relay(&mut relay)?;
+        let meta = crate::session_md::gate(session, &gate);
+        let drives = meta.drives();
+        let verdict = verdict.filter(|_| drives != Drives::None);
+        let (native, native_text) =
+            native_step_for(root, session, &gate, &relay, verdict, no_native)?;
+        let decision = finish_relay(&gate, &mut relay, native.as_ref(), native_text.as_deref())?;
+        let closed = close_decision(drives, verdict, no_native, false);
+        session.awaiting_human.retain(|open| open != &gate);
+        push_unique(&mut session.decisions, vec![decision]);
+        if meta.holds == current_stage
+            && !session
+                .awaiting_human
+                .iter()
+                .any(|open| crate::session_md::gate(session, open).holds == current_stage)
+        {
+            session.next_action =
+                closed_gate_next_action(&gate, closed, session.native_change.as_deref());
+        }
+        stage::log_gate(
+            root,
+            session,
+            stage::GATE_CLOSED,
+            &current_stage,
+            &gate,
+            Some(relay),
+        )?;
+        if let Some(native) = native {
+            ensure!(
+                native_close.is_none(),
+                "more than one native step was prepared; no gate was closed"
+            );
+            native_close = Some((reports.len(), native));
+        }
+        reports.push(json!({"ran": null, "why": native_text.as_deref().unwrap_or(DRIVES_NONE)}));
+    }
+
+    // Resolve the exact session path and render including links and Timeline events before native
+    // work. The write below uses that render, with no second interpretation after the step.
+    let path = crate::sessions::checkpoint_path(root)?;
+    remove_orphaned_session_temps(root)?;
+    session.evidence_links = evidence_links(root, session);
+    let (prepared, redacted) = render_counted(session)?;
+    if let Some((index, native)) = native_close {
+        refuse_repeated_native_decision(root, &native)?;
+        reports[index] = run_native_step(root, &native)?;
+        publish_checkpoint(root, &path, &prepared, redacted).with_context(|| format!(
+            "the native step ran, but the grouped gate close could not be saved and all named gates are still pending. Run `specsync change status {}` before retrying", native.change
+        ))?;
+    } else {
+        publish_checkpoint(root, &path, &prepared, redacted)?;
+    }
+    let settled = crate::direct_writes::settle(root, session.native_change.as_deref())
+        .err()
+        .map(|error| error.to_string());
+    Ok((reports, settled))
+}
+
 /// The gate, relay and decision `--close-gate` records, checked before anything is
 /// read from SpecSync or written (REQ-cli-050). Every refusal saves nothing.
 fn relayed_decision(session: &Checkpoint, args: &CheckpointArgs) -> Result<Option<Relayed>> {
@@ -1670,24 +1859,7 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
                 args.no_native,
             )?,
         };
-        // REQ-history-010: the entry names the SpecSync command the close runs and the
-        // actor it runs as.
-        if let Some(step) = &native {
-            let verb = match step.step {
-                crate::humans::Step::Approve { .. } => "approve",
-                crate::humans::Step::Review { .. } => "review",
-            };
-            relay.native = Some(format!("specsync change {verb} {}", step.change));
-            relay.actor = Some(step.human.specsync_actor.clone());
-        }
-        *decision = decision_text(gate, relay, native_text.as_deref());
-        if decision.len() > stage::RELAY_TEXT_LIMIT {
-            bail!(
-                "refused:relay-too-long: the decision for gate \"{gate}\" would be {} bytes, over the {}-byte checkpoint text bound, so nothing ran or was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{gate}\"` with the four values again.",
-                decision.len(),
-                stage::RELAY_TEXT_LIMIT
-            );
-        }
+        *decision = finish_relay(gate, relay, native.as_ref(), native_text.as_deref())?;
     }
     // Fresh-eyes finding 12: what a close decided and the stage its gate holds, read
     // before the gate leaves the session, and whether this call gives its own next action.

@@ -1,0 +1,54 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795447635,
+      "digest": "1e7a3518e5cd9fb0880d9db9a4d3797168435907bb028705f1bf69ad6802828c",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-438\": \"I approve all\" (Implementation scope approval in the collaboration conversation, relayed by the lead agent). Relayed and recorded by codex-audit-delta at 2026-11-23T15:27:15Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-438",
+        "title": "Fix 438",
+        "description": "fix 438",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.atomic-grouped-gates.cases.toml",
+          "changelog.d/2026-11-23-fix-438.md",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "src/gates.rs",
+          "tests/gates.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-cli-061 already requires that a grouped gate record closes all selected gates or none. Restore that behavior and document the native boundary without changing the requirement.",
+        "acceptance_criteria": [
+          "A refused grouped reply leaves every named Chough gate pending and the persisted session and Timeline byte-identical. Exercise the 4096-entry Timeline and 1048576-byte session boundaries.",
+          "A selection spanning two sessions returns the documented other-session refusal and leaves both session files byte-identical.",
+          "A successful grouped reply closes each selected gate once with the exact words and the correct list and summary digest. Unselected gates stay open. A safe retry after a refusal can close the whole group.",
+          "For a valid group with one native-driving gate, check all local closures before running the native step. Capacity refusal runs no native step. Native refusal closes no Chough gate. A retry does not duplicate a completed native action.",
+          "Record earlier direct native writes in order before the grouped closes, settle them once after a successful save, and preserve the single-gate checkpoint behavior."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "Preserve REQ-cli-061, REQ-cli-040 and REQ-cli-060. Share the existing checkpoint validation and native pre-render checks. Keep the documented Timeline and record caps and one-session restriction. SpecSync owns approval and review evidence.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "I approve all",
+        "where": "Implementation scope approval in the collaboration conversation, relayed by the lead agent",
+        "recorded_by": "codex-audit-delta"
+      }
+    }
+  ],
+  "reopenings": []
+}

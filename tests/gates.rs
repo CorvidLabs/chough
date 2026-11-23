@@ -1333,7 +1333,21 @@ approve)
         printf '%s\n' 'synthetic approval refused' >&2
         exit 9
     fi
+    if test -e .stub-persist; then
+        printf '%s\n' '{"approvals":[{"gate":"definition","actor":"SYNTHETIC-actor","relayed_by":{"decided_by":"SYNTHETIC-actor","words":"close both","where":"a test","recorded_by":"SYNTHETIC-agent"}}]}' > .specsync/changes/g1/approvals.json
+    fi
+    if test -e .stub-fail-publish; then
+        mv .chough/local .chough/local-before-failure
+        ln -s local-before-failure .chough/local
+    fi
     printf '%s\n' 'synthetic approval accepted'
+    ;;
+status)
+    if test -e .stub-status-reapprove; then
+        printf '%s\n' '{"summary":{"id":"g1","approval_valid":false,"next_action":"run `specsync change approve g1 --actor <name>`"}}'
+    else
+        printf '{}\n'
+    fi
     ;;
 *) printf '{}\n' ;;
 esac
@@ -1383,4 +1397,139 @@ fn native_refusal_keeps_the_mixed_group_pending_and_a_safe_retry_closes_both() {
     assert_eq!(closed_relays(&fixture).len(), 2);
     assert!(fixture.fails(&args).contains("gate-not-open"));
     assert_eq!(fixture.read(".stub-approve-calls").lines().count(), 2);
+}
+
+#[test]
+fn retry_after_native_success_and_local_write_failure_does_not_repeat_the_native_step() {
+    let fixture = mixed_group_fixture();
+    fixture.write(".stub-persist", "");
+    fixture.write(".stub-fail-publish", "");
+    fixture.commit("simulate successful approval followed by a failed checkpoint publication");
+    let listed = list(&fixture);
+    let before = records(fixture.root());
+    let error = fixture.fails(&record(
+        listed["list"].as_str().unwrap(),
+        "1,2",
+        "close both",
+    ));
+    let local = fixture.root().join(".chough/local");
+    if fs::symlink_metadata(&local)
+        .unwrap()
+        .file_type()
+        .is_symlink()
+    {
+        fs::remove_file(&local).unwrap();
+        fs::rename(fixture.root().join(".chough/local-before-failure"), local).unwrap();
+    }
+    assert!(
+        error.contains("grouped gate close could not be saved"),
+        "{error}"
+    );
+    assert_eq!(records(fixture.root()), before);
+    assert_eq!(fixture.read(".stub-approve-calls").lines().count(), 1);
+    assert!(fixture.exists(&format!("{DIR}/approvals.json")));
+
+    fs::remove_file(fixture.root().join(".stub-fail-publish")).unwrap();
+    let listed = list(&fixture);
+    let error = fixture.fails(&record(
+        listed["list"].as_str().unwrap(),
+        "1,2",
+        "close both",
+    ));
+    assert!(
+        error.contains("native-decision-already-recorded"),
+        "{error}"
+    );
+    let mut handoff = record(listed["list"].as_str().unwrap(), "1,2", "close both");
+    *handoff.last_mut().unwrap() = "SYNTHETIC-next-agent";
+    let error = fixture.fails(&handoff);
+    assert!(
+        error.contains("native-decision-already-recorded"),
+        "{error}"
+    );
+    assert_eq!(records(fixture.root()), before);
+    assert_eq!(
+        session(&fixture)["awaiting_human"],
+        json!([GROUP_A, GROUP_B])
+    );
+    assert_eq!(fixture.read(".stub-approve-calls").lines().count(), 1);
+}
+
+#[test]
+fn grouped_close_records_prior_native_writes_once_and_before_either_close() {
+    let fixture = mixed_group_fixture();
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Establish baseline",
+        "--drives",
+        "none",
+    ]);
+    let mut establish = vec!["checkpoint", "--close-gate", "Establish baseline"];
+    establish.extend(relay("set the test baseline"));
+    fixture.ok(&establish);
+    fixture.write(".stub-persist", "");
+    fixture.write(&format!("{DIR}/approvals.json"), "{\"approvals\":[]}\n");
+    fixture.commit("record one direct native write before the mixed group");
+    let listed = list(&fixture);
+    let groups = record(listed["list"].as_str().unwrap(), "1,2", "close both");
+    fixture.ok(&groups);
+    let history = fixture.ok(&["history", "show"]);
+    let entries = history["entries"].as_array().unwrap();
+    let tail = &entries[entries.len() - 3..];
+    assert_eq!(tail[0]["kind"], "direct-native-write");
+    assert_eq!(tail[1]["reason"], GROUP_A);
+    assert_eq!(tail[2]["reason"], GROUP_B);
+    assert_eq!(tail[1]["relayed_by"]["actor"], "SYNTHETIC-actor");
+    assert!(tail[2]["relayed_by"]["actor"].is_null());
+    assert_eq!(
+        entries
+            .iter()
+            .filter(|entry| entry["kind"] == "direct-native-write")
+            .count(),
+        1
+    );
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Later gate",
+        "--drives",
+        "none",
+    ]);
+    let mut later = vec!["checkpoint", "--close-gate", "Later gate"];
+    later.extend(relay("close the next gate"));
+    fixture.ok(&later);
+    let history = fixture.ok(&["history", "show"]);
+    assert_eq!(
+        history["entries"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|entry| entry["kind"] == "direct-native-write")
+            .count(),
+        1
+    );
+}
+
+#[test]
+fn a_matching_historical_relay_does_not_block_a_new_scope_approval() {
+    let fixture = mixed_group_fixture();
+    fixture.write(".stub-status-reapprove", "");
+    fixture.write(
+        &format!("{DIR}/approvals.json"),
+        &json!({"approvals": [{
+            "gate": "definition", "actor": "SYNTHETIC-actor",
+            "relayed_by": {"decided_by": "SYNTHETIC-actor", "words": "close both", "where": "a test", "recorded_by": "SYNTHETIC-agent"}
+        }]})
+        .to_string(),
+    );
+    fixture.commit("revise the scope after the earlier approval");
+    let listed = list(&fixture);
+    fixture.ok(&record(
+        listed["list"].as_str().unwrap(),
+        "1,2",
+        "close both",
+    ));
+    assert_eq!(fixture.read(".stub-approve-calls").lines().count(), 1);
+    assert_eq!(closed_relays(&fixture).len(), 2);
 }

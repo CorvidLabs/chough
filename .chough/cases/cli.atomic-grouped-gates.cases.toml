@@ -1,0 +1,146 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-grouped-gates-timeline-bound"
+title = "A grouped reply at the Timeline cap leaves both gates pending"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/checkpoint.rs", "src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["A grouped reply at the Timeline cap leaves both gates pending"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_grouped_reply_is_atomic_at_the_real_timeline_cap"
+
+[[case]]
+id = "TC-cli-grouped-gates-session-bound"
+title = "A grouped reply at the session byte cap leaves both gates pending and can retry"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/checkpoint.rs", "src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["A grouped reply at the session byte cap leaves both gates pending and can retry"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_grouped_reply_is_atomic_at_the_real_session_byte_cap_and_can_retry"
+
+[[case]]
+id = "TC-cli-grouped-gates-two-sessions"
+title = "A group spanning sessions leaves both records unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/checkpoint.rs", "src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["A group spanning sessions leaves both records unchanged"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_group_spanning_two_sessions_leaves_both_records_pending"
+
+[[case]]
+id = "TC-cli-grouped-gates-native-preflight"
+title = "A mixed group preflights all closes before calling SpecSync"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/checkpoint.rs", "src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["A mixed group preflights all closes before calling SpecSync"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "mixed_group_checks_full_capacity_before_running_the_native_step"
+
+[[case]]
+id = "TC-cli-grouped-gates-native-refusal"
+title = "A native refusal changes no Chough gate and a safe retry closes both"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/checkpoint.rs", "src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["A native refusal changes no Chough gate and a safe retry closes both"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "native_refusal_keeps_the_mixed_group_pending_and_a_safe_retry_closes_both"
+
+[[case]]
+id = "TC-cli-grouped-gates-native-recovery"
+title = "An interrupted group never repeats a completed native decision after handoff"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/checkpoint.rs", "src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["An interrupted group never repeats a completed native decision after handoff"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "retry_after_native_success_and_local_write_failure_does_not_repeat_the_native_step"
+
+[[case]]
+id = "TC-cli-grouped-gates-revised-scope"
+title = "An earlier native approval does not prevent a newly due approval"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/checkpoint.rs", "src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["An earlier native approval does not prevent a newly due approval"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_matching_historical_relay_does_not_block_a_new_scope_approval"
+
+[[case]]
+id = "TC-cli-grouped-gates-direct-write-history"
+title = "A grouped close records earlier native writes once before both closes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-20"]
+requirements = ["REQ-cli-061", "REQ-cli-060"]
+paths = ["src/checkpoint.rs", "src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["A grouped close records earlier native writes once before both closes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "grouped_close_records_prior_native_writes_once_and_before_either_close"
