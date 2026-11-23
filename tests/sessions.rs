@@ -984,6 +984,11 @@ fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
         !stopped.status.success(),
         "the add was not stopped while writing: {stopped:?}"
     );
+    let stderr = String::from_utf8_lossy(&stopped.stderr);
+    assert!(
+        stderr.contains("cannot write"),
+        "the add did not refuse at the write: {stderr}"
+    );
     let entries = fixture.ok(&["inbox", "list"])["entries"].clone();
     let ids: Vec<&str> = entries
         .as_array()
@@ -1004,12 +1009,13 @@ fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
     )
     .unwrap()
     .filter(|entry| {
-        entry
+        let name = entry
             .as_ref()
             .unwrap()
             .file_name()
             .to_string_lossy()
-            .ends_with(".tmp")
+            .into_owned();
+        name.starts_with('.') && (name.ends_with(".tmp") || name.ends_with(".new"))
     })
     .count();
     assert_eq!(in_inbox, 0);
@@ -1017,7 +1023,7 @@ fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
     let temps: Vec<String> = fs::read_dir(&inbox)
         .unwrap()
         .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
-        .filter(|name| name.ends_with(".tmp"))
+        .filter(|name| name.starts_with('.') && (name.ends_with(".tmp") || name.ends_with(".new")))
         .collect();
     assert!(temps.is_empty(), "{temps:?} were left behind");
     fixture.commit("after the killed add");

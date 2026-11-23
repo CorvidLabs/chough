@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "fix-437",
+  "slug": "fix-437",
+  "title": "Fix 437",
+  "description": "fix 437",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "35828a1df3d308677a38b138e7aebe0e7b6770ef",
+  "created_at": 1795445074,
+  "updated_at": 1795445197,
+  "affected_specs": [
+    "history",
+    "records",
+    "cli"
+  ],
+  "affected_paths": [
+    "src/session_md.rs",
+    "src/direct_writes.rs",
+    "tests",
+    "changelog.d"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "The Timeline writer and entry text are brought in line with REQ-history-013, which already requires none when state.json is absent; no contract text changes",
+  "acceptance_criteria": [
+    "When a direct lifecycle write records a state of none (state.json absent), its Timeline entry shows before_state: none and after_state: none rather than omitting the lines, and the entry's text says state none, not unknown."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "none",
+    "public_contract": "no"
+  }
+}

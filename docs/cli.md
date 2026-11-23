@@ -428,12 +428,14 @@ no Chough command runs for the project. `CHOUGH_TRACE=1` adds a
 `chough-trace: checkpoint-lock waited_ms=<n>` line to stderr for each writer.
 
 A write of a record under `.chough/` goes to a temporary file in the Git-ignored
-`.chough/local/`, named `.<8 hex digits>.<name>.<pid>.tmp`, and is renamed over its
-record; an inbox add writes its entry there too and links it into place. A writer
-holding the lock removes a temp a killed writer left, just before it saves, and says so
-on stderr, for example `chough: removed .chough/local/<temp> (<bytes> bytes), left by a
-record write that was stopped before it saved; no record was changed by it`. A temp an
-older release left in a session folder or its inbox is removed the same way.
+`.chough/local/`, named `.<8 hex digits>.<name>.<pid>.tmp` or, for the shared
+whole-or-not-at-all writer, `.<name>.<pid>.<n>.new`, and is moved to its record's name
+without replacing anything; an inbox add writes its entry the same way. A writer
+holding the lock removes a temp a killed writer left, in either shape, just before it
+saves, and says so on stderr, for example `chough: removed .chough/local/<temp>
+(<bytes> bytes), left by a record write that was stopped before it saved; no record was
+changed by it`. A temp an older release left in a session folder or its inbox is
+removed the same way.
 The killed command's update was never saved. Other file names are left alone.
 
 The lock orders Chough's own writers only. A Git command that rewrites the worktree,

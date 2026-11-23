@@ -544,16 +544,31 @@ pub(super) fn migrated_readme() -> String {
     )
 }
 
-/// Whether `name` is a write temp: `.<name>.<pid>.tmp`.
+/// Whether `name` is a write temp: `.<name>.<pid>.tmp`, or the shared whole-or-not-at-all
+/// writer's `.<name>.<pid>.<n>.new`.
 fn is_write_temp(name: &str) -> bool {
-    name.strip_prefix('.')
-        .and_then(|rest| rest.strip_suffix(".tmp"))
-        .and_then(|rest| rest.rsplit_once('.'))
-        .is_some_and(|(stem, pid)| {
-            (stem.ends_with(".json") || stem.ends_with(".md"))
-                && !pid.is_empty()
-                && pid.bytes().all(|byte| byte.is_ascii_digit())
-        })
+    let Some(rest) = name.strip_prefix('.').and_then(|rest| {
+        rest.strip_suffix(".tmp")
+            .or_else(|| rest.strip_suffix(".new"))
+    }) else {
+        return false;
+    };
+    // `.<name>.<pid>.tmp` has one numeric tail; `.<name>.<pid>.<n>.new` has two, and
+    // its stem still ends in the record's suffix.
+    let numeric =
+        |value: &str| !value.is_empty() && value.bytes().all(|byte| byte.is_ascii_digit());
+    let Some((stem, pid)) = rest.rsplit_once('.') else {
+        return false;
+    };
+    if stem.ends_with(".json") || stem.ends_with(".md") {
+        return numeric(pid);
+    }
+    match stem.rsplit_once('.') {
+        Some((stem, counter)) => {
+            numeric(counter) && (stem.ends_with(".json") || stem.ends_with(".md")) && numeric(pid)
+        }
+        None => false,
+    }
 }
 
 /// Remove write temps that killed writers left in a session folder or its inbox, and
@@ -2029,6 +2044,21 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
+    /// #435 review: a write temp is `.<name>.<pid>.tmp` or the shared writer's
+    /// `.<name>.<pid>.<n>.new`; other dotted files are not temps.
+    #[test]
+    fn is_write_temp_matches_both_temp_shapes() {
+        assert!(super::is_write_temp(".INB-x.json.123.tmp"));
+        assert!(super::is_write_temp(".INB-x.json.123.0.new"));
+        assert!(super::is_write_temp(".session.md.45.7.new"));
+        assert!(!super::is_write_temp(".INB-x.json"));
+        assert!(!super::is_write_temp("INB-x.json.123.tmp"));
+        assert!(!super::is_write_temp(".INB-x.json.abc.tmp"));
+        assert!(!super::is_write_temp(".INB-x.json.123.abc.new"));
+        assert!(!super::is_write_temp(".notes.txt.123.new"));
+        assert!(!super::is_write_temp(".INB-x.json.tmp"));
+    }
+
     /// t38n's round-4 F11 (REQ-records-002): a fresh project's guide names no folder kept
     /// from Chough 0.5.x, and a migrated project's guide is the same with the
     /// `artifacts/` line before `local/`.
