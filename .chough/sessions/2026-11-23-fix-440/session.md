@@ -16,7 +16,9 @@ requirements: []
 cases: [TC-cli-advance-to-not-ahead-hint-names-reason]
 design: []
 files: []
-observations: [2026-11-23-tc-cli-advance-to-not-ahead-hint-names-reason]
+observations:
+  - 2026-11-23-tc-cli-advance-to-not-ahead-hint-names-reason
+  - 2026-11-23-tc-cli-advance-to-not-ahead-hint-names-reason-b397a6
 bugs: []
 blockers: []
 waiting_on_human:
@@ -43,6 +45,7 @@ Fix chough#440: the stage advance --to go-back hint must name --reason like ever
 ## What was verified
 
 - [Ran cargo test --locked --test advance_to -- --exact a_refused_step_refuses_the_whole_batch_with_nothing_recorded for TC-cli-advance-to-not-ahead-hint-names-reason: passed (exit 0).](evidence/2026-11-23-tc-cli-advance-to-not-ahead-hint-names-reason.md)
+- [Ran cargo test --locked --test advance_to -- --exact a_refused_step_refuses_the_whole_batch_with_nothing_recorded for TC-cli-advance-to-not-ahead-hint-names-reason: passed (exit 0).](evidence/2026-11-23-tc-cli-advance-to-not-ahead-hint-names-reason-b397a6.md)
 
 ## Open threads
 

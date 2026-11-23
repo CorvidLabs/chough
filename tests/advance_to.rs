@@ -197,11 +197,11 @@ fn a_refused_step_refuses_the_whole_batch_with_nothing_recorded() {
     for (target, says) in [
         (
             "plan",
-            "is not ahead of plan; `stage advance --to` only moves forward (use `chough stage back --reason",
+            "is not ahead of plan; `stage advance --to` only moves forward (use `chough stage back --to <stage> --reason \"<why>\"` or `chough stage reset --reason \"<why>\"`",
         ),
         (
             "intent",
-            "is not ahead of plan; `stage advance --to` only moves forward (use `chough stage back --reason",
+            "is not ahead of plan; `stage advance --to` only moves forward (use `chough stage back --to <stage> --reason \"<why>\"` or `chough stage reset --reason \"<why>\"`",
         ),
         ("bugs", "main stage"),
         ("release", "main stage"),
