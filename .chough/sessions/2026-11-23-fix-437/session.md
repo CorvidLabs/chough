@@ -5,7 +5,7 @@ aliases: [fix-437]
 objective: "Fix chough#437: a direct-write entry writes before_state and after_state as none when the state is absent, in the Timeline and its text"
 intent_scope: ""
 modules: []
-stage: intent
+stage: plan
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: [2026-11-23-tc-records-inbox-add-without-hard-links-8d250e]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Approve the scope of fix-437
-    holds: intent
-    drives: approve
-    opened: 2026-11-23T14:55:50Z
+waiting_on_human: []
 run_consents: []
-next: Read scoped intent and native status, then choose the next action within the authorized scope.
+next: Continue plan
 ---
 # Fix chough#437: a direct-write entry writes before_state and after_state as none when the state is absent, in the Timeline and its text
 
@@ -36,6 +32,8 @@ Fix chough#437: a direct-write entry writes before_state and after_state as none
 ## Where it stands
 
 ## Decisions and why
+
+- 0xLeif decided "Approve the scope of fix-437": "I approve" (pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch); recorded by pi-t14z; a relayed claim, not authenticated; ran specsync change approve fix-437 as 0xLeif
 
 ## What was verified
 
@@ -53,4 +51,35 @@ Fix chough#437: a direct-write entry writes before_state and after_state as none
   - revision: a067aa560974bb904dd07c18e56ded5c038fd77d
   - holds: intent
   - drives: approve
+  - by: unknown agent (hc t14z)
+- 2026-11-23T14:56:25Z · direct-native-write · intent → intent · fix-437's lifecycle records changed outside Chough: state.json changed; state stays draft ^t-cdc034
+  - native_change: fix-437
+  - revision: f64a87d77ce3e6075051119797060f9885db93b6
+  - direct_write:
+    - change: fix-437
+    - files:
+      - state.json: changed
+    - before_state: draft
+    - after_state: draft
+  - by: unknown agent (hc t14z)
+- 2026-11-23T14:56:25Z · gate-closed · intent → intent · Approve the scope of fix-437 ^t-f7a84f
+  - native_change: fix-437
+  - revision: f64a87d77ce3e6075051119797060f9885db93b6
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: I approve
+    - where: pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch
+    - recorded_by: pi-t14z
+    - summary_digest: c2c7464289420feb18e087b292f366f2a861900ac9fe922206bd001529848a12
+    - list: 30451888bc48
+    - native: specsync change approve fix-437
+    - actor: 0xLeif
+  - by: unknown agent (hc t14z)
+- 2026-11-23T14:56:27Z · advance · intent → design ·  ^t-9c87e6
+  - native_change: fix-437
+  - revision: f64a87d77ce3e6075051119797060f9885db93b6
+  - by: unknown agent (hc t14z)
+- 2026-11-23T14:56:27Z · advance · design → plan ·  ^t-ae5e7b
+  - native_change: fix-437
+  - revision: f64a87d77ce3e6075051119797060f9885db93b6
   - by: unknown agent (hc t14z)

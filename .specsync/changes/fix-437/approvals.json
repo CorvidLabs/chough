@@ -1,4 +1,50 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795445786,
+      "digest": "e3f421bd7391b9dee555266bb97c9139c58fea7ac736cce1dcc8266a00bcdad8",
+      "note": "Approved by 0xLeif at the Chough gate \"Approve the scope of fix-437\": \"I approve\" (pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch). Relayed and recorded by pi-t14z at 2026-11-23T14:56:25Z through chough gate record 30451888bc48; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-437",
+        "title": "Fix 437",
+        "description": "fix 437",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          "changelog.d",
+          "src/direct_writes.rs",
+          "src/session_md.rs",
+          "tests"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "The Timeline writer and entry text are brought in line with REQ-history-013, which already requires none when state.json is absent; no contract text changes",
+        "acceptance_criteria": [
+          "When a direct lifecycle write records a state of none (state.json absent), its Timeline entry shows before_state: none and after_state: none rather than omitting the lines, and the entry's text says state none, not unknown."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "I approve",
+        "where": "pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch",
+        "recorded_by": "pi-t14z"
+      }
+    }
+  ],
   "reopenings": []
 }

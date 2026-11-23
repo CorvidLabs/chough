@@ -1,6 +1,6 @@
 ---
 id: fix-437
-state: draft
+state: approved
 type: feature
 base_commit: 35828a1df3d308677a38b138e7aebe0e7b6770ef
 ---
