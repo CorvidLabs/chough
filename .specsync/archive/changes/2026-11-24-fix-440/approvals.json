@@ -42,6 +42,13 @@
         "where": "pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch",
         "recorded_by": "pi-t14z"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795530201,
+      "digest": "3530adef756ae09ce2b8d19e88f6d2c9293c39f73862f797427a000e87c428f1",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
