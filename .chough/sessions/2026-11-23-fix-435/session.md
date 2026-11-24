@@ -5,7 +5,7 @@ aliases: [fix-435]
 objective: "Fix chough#435: inbox add writes its entry without a hard link, whole or not at all, like records::write_new_bytes"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: [2026-11-23-tc-records-inbox-add-without-hard-links]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-435
-    holds: accept
-    drives: review
-    opened: 2026-11-23T14:42:18Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # Fix chough#435: inbox add writes its entry without a hard link, whole or not at all, like records::write_new_bytes
 
@@ -38,6 +34,7 @@ Fix chough#435: inbox add writes its entry without a hard link, whole or not at 
 ## Decisions and why
 
 - 0xLeif decided "Approve the scope of fix-435": "I approve" (pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch); recorded by pi-t14z; a relayed claim, not authenticated; ran specsync change approve fix-435 as 0xLeif
+- 0xLeif decided "Implementation review of fix-435": "Yes start merging those" (pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 14:15 UTC, his morning instruction 'Yes start merging those and talk to me if you need anything.. once we've merged and done any tag and releases.. then we will talk and dogfood' — review the six-change stack PR 448 and merge; relayed by pi-t14z, flagged as a relayed claim, not authenticated); recorded by pi-t14z; a relayed claim, not authenticated; ran specsync change review fix-435 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -107,4 +104,22 @@ Fix chough#435: inbox add writes its entry without a hard link, whole or not at 
   - revision: 91a38bf5fe28054bb1d65cf15634816fe14c50bd
   - holds: accept
   - drives: review
+  - by: unknown agent (hc t14z)
+- 2026-11-24T14:12:31Z · gate-closed · accept → accept · Implementation review of fix-435 ^t-98958c
+  - native_change: fix-435
+  - revision: 5318fd81a6549be6aaf579af952891671d3715e4
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes start merging those
+    - where: pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 14:15 UTC, his morning instruction 'Yes start merging those and talk to me if you need anything.. once we've merged and done any tag and releases.. then we will talk and dogfood' — review the six-change stack PR 448 and merge; relayed by pi-t14z, flagged as a relayed claim, not authenticated
+    - recorded_by: pi-t14z
+    - summary_digest: 550b5a812515d81b4f1f198a09f3b0041b3bedbfcc4bdceceac6330b3f74245b
+    - list: 5aa8e611ec48
+    - native: specsync change review fix-435
+    - actor: 0xLeif
+  - by: unknown agent (hc t14z)
+- 2026-11-24T14:12:32Z · advance · accept → done · native:archived ^t-f8d990
+  - native_change: fix-435
+  - gate: native:archived
+  - revision: 5318fd81a6549be6aaf579af952891671d3715e4
   - by: unknown agent (hc t14z)
