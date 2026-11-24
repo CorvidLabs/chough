@@ -1,0 +1,47 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795490249,
+      "digest": "2e3f02c961f7c88a08cf80ba59a648abc94f83d4536e3d90d566455fce64260c",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-436 (display name in decision text)\": \"I approve\" (pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 03:20 UTC, on his standing overnight approval of the six-fix stack (fix-436 is the sixth), relayed by pi-t14z after he confirmed the display-name-only scope in the one-at-a-time interview — flagged as a relayed claim, not authenticated). Relayed and recorded by pi-t14z at 2026-11-24T03:17:28Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-436",
+        "title": "fix-436",
+        "description": "Gate decisions show the configured display name instead of the raw --decided-by text",
+        "kind": "feature",
+        "affected_specs": [
+          "records"
+        ],
+        "affected_paths": [
+          "docs/cli.md",
+          "src",
+          "tests"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-records-008 already defines name as 'the display name records show'; this makes decision_text honor it. No contract or refusal semantics change",
+        "acceptance_criteria": [
+          "A gate close with an alias renders the configured display name in the decision text; an exact-name close is unchanged; the stored relay keeps the raw typed decided-by; tests pin both; full suite green"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "I approve",
+        "where": "pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 03:20 UTC, on his standing overnight approval of the six-fix stack (fix-436 is the sixth), relayed by pi-t14z after he confirmed the display-name-only scope in the one-at-a-time interview — flagged as a relayed claim, not authenticated",
+        "recorded_by": "pi-t14z"
+      }
+    }
+  ],
+  "reopenings": []
+}
