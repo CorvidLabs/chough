@@ -5,7 +5,7 @@ aliases: [fix-440]
 objective: "Fix chough#440: the stage advance --to go-back hint must name --reason like every other back/reset hint"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-23-tc-cli-advance-to-not-ahead-hint-names-reason-b397a6
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-440
-    holds: accept
-    drives: review
-    opened: 2026-11-23T14:15:52Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # Fix chough#440: the stage advance --to go-back hint must name --reason like every other back/reset hint
 
@@ -41,6 +37,7 @@ Fix chough#440: the stage advance --to go-back hint must name --reason like ever
 
 - 0xLeif decided "scope approval for fix-440: the stage advance --to go-back hint must name --reason like every other back/reset hint": "I approve" (pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch); recorded by pi-t14z; a relayed claim, not authenticated
 - 0xLeif decided "Approve the scope of fix-440": "I approve" (pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch); recorded by pi-t14z; a relayed claim, not authenticated; ran specsync change approve fix-440 as 0xLeif
+- 0xLeif decided "Implementation review of fix-440": "Yes start merging those" (pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 14:15 UTC, his morning instruction 'Yes start merging those and talk to me if you need anything..' — review the six-change stack PR 448 and merge; relayed by pi-t14z, flagged as a relayed claim, not authenticated); recorded by pi-t14z; a relayed claim, not authenticated; ran specsync change review fix-440 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -124,4 +121,34 @@ Fix chough#440: the stage advance --to go-back hint must name --reason like ever
   - revision: 6fd77b85ab3c24501f1f818e8b230d34335c067c
   - holds: accept
   - drives: review
+  - by: unknown agent (hc t14z)
+- 2026-11-24T14:24:28Z · direct-native-write · accept → accept · fix-440's lifecycle records changed outside Chough: state.json changed, verification.json changed, verification-attempts.json changed; state stays verifying ^t-e87c62
+  - native_change: fix-440
+  - revision: 67fbd8c00cacf6eb080452ac31cab93ad18308ef
+  - direct_write:
+    - change: fix-440
+    - files:
+      - state.json: changed
+      - verification.json: changed
+      - verification-attempts.json: changed
+    - before_state: verifying
+    - after_state: verifying
+  - by: unknown agent (hc t14z)
+- 2026-11-24T14:24:28Z · gate-closed · accept → accept · Implementation review of fix-440 ^t-c19e94
+  - native_change: fix-440
+  - revision: 67fbd8c00cacf6eb080452ac31cab93ad18308ef
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes start merging those
+    - where: pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 14:15 UTC, his morning instruction 'Yes start merging those and talk to me if you need anything..' — review the six-change stack PR 448 and merge; relayed by pi-t14z, flagged as a relayed claim, not authenticated
+    - recorded_by: pi-t14z
+    - summary_digest: c45c5061b4a0a24aad85f613d67f1d67e70d3db4ba46f30309c573d8a31b4dbb
+    - list: a3a66d3b9185
+    - native: specsync change review fix-440
+    - actor: 0xLeif
+  - by: unknown agent (hc t14z)
+- 2026-11-24T14:24:29Z · advance · accept → done · native:archived ^t-068e01
+  - native_change: fix-440
+  - gate: native:archived
+  - revision: 67fbd8c00cacf6eb080452ac31cab93ad18308ef
   - by: unknown agent (hc t14z)
