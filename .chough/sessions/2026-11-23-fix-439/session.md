@@ -19,8 +19,6 @@ files: []
 observations:
   - 2026-11-24-tc-cli-refusal-note-quotes-the-recorded-refusal
   - 2026-11-24-tc-cli-refusal-note-fallback-keeps-no-reason
-  - 2026-11-24-tc-records-gate-decision-renders-display-name
-  - 2026-11-24-tc-records-gate-decision-exact-name-unchanged
 bugs: []
 blockers: []
 waiting_on_human:

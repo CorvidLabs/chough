@@ -36,3 +36,15 @@ makes the rendered name the configured one.
   of what was typed); only the rendered decision text uses the display
   name.
 - docs/cli.md documents the decision format — update the wording.
+## REQ-cli-050 template tension (GLM second review, 2026-11-24)
+REQ-cli-050's decision template reads `<decided_by> decided "<gate>"…`,
+normatively, with `<decided_by>` defined as the flag value. This change
+renders the resolved display name there instead. Interpretation on
+record: REQ-records-008 defines `name` as "the display name records
+show" and the decision entry is a record; REQ-cli-050's acceptance
+criterion that the timeline entry carries the four relay values byte
+for byte still holds (the relay keeps the raw value). Two SHALLs
+conflict on the alias case; the GLM review recommends settling it with
+a small delta amending REQ-cli-050's template. Left flagged for the
+implementation review — a second spec change needs Leif's own
+authorization, not the orchestrator's.

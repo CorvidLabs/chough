@@ -16,7 +16,9 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-24-tc-records-gate-decision-renders-display-name-4618a1
+  - 2026-11-24-tc-records-gate-decision-exact-name-unchanged-171a84
 bugs: []
 blockers: []
 waiting_on_human:
@@ -40,6 +42,9 @@ fix-436-overnight
 - 0xLeif decided "Scope approval of fix-436 (display name in decision text)": "I approve" (pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 03:20 UTC, on his standing overnight approval of the six-fix stack (fix-436 is the sixth), relayed by pi-t14z after he confirmed the display-name-only scope in the one-at-a-time interview — flagged as a relayed claim, not authenticated); recorded by pi-t14z; a relayed claim, not authenticated; ran specsync change approve fix-436 as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test humans -- --exact an_alias_close_renders_the_configured_display_name_in_the_decision for TC-records-gate-decision-renders-display-name: passed (exit 0).](evidence/2026-11-24-tc-records-gate-decision-renders-display-name-4618a1.md)
+- [Ran cargo test --locked --test humans -- --exact an_exact_name_close_renders_the_display_name_unchanged for TC-records-gate-decision-exact-name-unchanged: passed (exit 0).](evidence/2026-11-24-tc-records-gate-decision-exact-name-unchanged-171a84.md)
 
 ## Open threads
 
