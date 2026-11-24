@@ -1,0 +1,108 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795478394,
+      "digest": "4801c5bd74bbd0cfb58dbbc91e40465eeb0371a1b930c305b390b3ef684656e5",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of leak-host-equals-user: REQ-records-006 gains one exception — a host label equal to the local user name (case-insensitive) does not count as a host-name leak as a path component, while the same name still counts in a URL, as <user>@<host> and as the host of an scp-style remote path; full delta in the change's deltas/records.md\": \"approve\" (pi chat, 2026-11-23, after the one-scope summary of the REQ-records-006 exception). Relayed and recorded by pi-t14g at 2026-11-23T23:59:52Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "a-host-label-equal-to-the-local-user-name-does-not-count-as-a-host-name-leak-as-a-plain-path-component-while-urls-user",
+        "title": "A host label equal to the local user name does not count as a host-name leak as a plain path component, while URLs, user@host and scp-style hosts keep matching (REQ-records-006)",
+        "description": "A host label equal to the local user name does not count as a host-name leak as a plain path component, while URLs, user@host and scp-style hosts keep matching (REQ-records-006)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "records"
+        ],
+        "affected_paths": [
+          "src/leaks.rs",
+          "tests/leaks.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough doctor on this Mac reports no host-name finding for a case path component equal to the user name; a record holding the same name in a URL, as <user>@<host> or as an scp-style host is still refused; cargo test passes with new leak tests for each of these."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "records": "6ddbb43d4845de08cfb5cf0216fed557e7d7729cb9d51d4991ca55711d5bd3ae"
+      },
+      "approved_delta_bases": {
+        "records: REQUIREMENT REQ-records-006": "d1bbd6a1905131338a7ffe4850d73735270d9161c7a8e9f02cb9497a9c33cf5c"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "approve",
+        "where": "pi chat, 2026-11-23, after the one-scope summary of the REQ-records-006 exception",
+        "recorded_by": "pi-t14g"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795484756,
+      "digest": "53059f01683514b07929f2c3270da434617e8f63383cfd6967dd7b6064c7c873",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope re-approval of leak-host-equals-user after send-back: affected_paths gains changelog.d/2026-11-23-leak-host-equals-user.md (the planned fragment, per repo convention); the requirement delta is unchanged\": \"Add it to scope (Recommended)\" (pi chat questionnaire, 2026-11-24, the changelog-scope question after the checker named the fragment). Relayed and recorded by pi-t14g at 2026-11-24T01:45:54Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "a-host-label-equal-to-the-local-user-name-does-not-count-as-a-host-name-leak-as-a-plain-path-component-while-urls-user",
+        "title": "A host label equal to the local user name does not count as a host-name leak as a plain path component, while URLs, user@host and scp-style hosts keep matching (REQ-records-006)",
+        "description": "A host label equal to the local user name does not count as a host-name leak as a plain path component, while URLs, user@host and scp-style hosts keep matching (REQ-records-006)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "records"
+        ],
+        "affected_paths": [
+          "changelog.d/2026-11-23-leak-host-equals-user.md",
+          "src/leaks.rs",
+          "tests/leaks.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough doctor on this Mac reports no host-name finding for a case path component equal to the user name; a record holding the same name in a URL, as <user>@<host> or as an scp-style host is still refused; cargo test passes with new leak tests for each of these."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "records": "6ddbb43d4845de08cfb5cf0216fed557e7d7729cb9d51d4991ca55711d5bd3ae"
+      },
+      "approved_delta_bases": {
+        "records: REQUIREMENT REQ-records-006": "d1bbd6a1905131338a7ffe4850d73735270d9161c7a8e9f02cb9497a9c33cf5c"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Add it to scope (Recommended)",
+        "where": "pi chat questionnaire, 2026-11-24, the changelog-scope question after the checker named the fragment",
+        "recorded_by": "pi-t14g"
+      }
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "a-host-label-equal-to-the-local-user-name-does-not-count-as-a-host-name-leak-as-a-plain-path-component-while-urls-user",
+      "actor": "pi-t14g",
+      "reason": "Re-scope: 0xLeif decided in the pi chat (2026-11-24) that the planned changelog fragment changelog.d/2026-11-23-leak-host-equals-user.md joins affected_paths, per this repository's convention for leak-rule changes; definition re-approval follows",
+      "timestamp": 1795484734,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
+    }
+  ]
+}

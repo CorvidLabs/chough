@@ -605,10 +605,20 @@ fn urls(value: &str) -> Vec<(usize, usize)> {
 /// `/` or `\` or before a `/`, inside a URL, or after `<user>@` (REQ-records-006). A `\`
 /// after the name is not a separator, since in TOML or JSON it escapes a quote. An scp-style
 /// remote path, `<host>:/<absolute path>`, names the host and the absolute path it names on
-/// it, so the host is in context there like it is in a path (REQ-records-006).
-fn names_a_host(bytes: &[u8], start: usize, end: usize, urls: &[(usize, usize)]) -> bool {
-    let in_path =
-        (start > 0 && matches!(bytes[start - 1], b'/' | b'\\')) || bytes.get(end) == Some(&b'/');
+/// it, so the host is in context there like it is in a path (REQ-records-006). With
+/// `count_path_component` false, the path-component context does not count: a host label
+/// equal to the local user name may be an ordinary folder the user-name rules do not count,
+/// while a URL, `<user>@<host>` and an scp-style host still name the host.
+fn names_a_host(
+    bytes: &[u8],
+    start: usize,
+    end: usize,
+    urls: &[(usize, usize)],
+    count_path_component: bool,
+) -> bool {
+    let in_path = count_path_component
+        && ((start > 0 && matches!(bytes[start - 1], b'/' | b'\\'))
+            || bytes.get(end) == Some(&b'/'));
     let at_host = start >= 2 && bytes[start - 1] == b'@' && name_byte(bytes[start - 2]);
     let in_url = urls.iter().any(|(from, to)| *from <= start && end <= *to);
     let scp = bytes.get(end) == Some(&b':')
@@ -625,6 +635,14 @@ fn names(local: &Local, value: &str, all: &mut Vec<Match>) {
     for host in &local.hosts {
         let needle = host.to_ascii_lowercase();
         let anywhere = host_anywhere(host);
+        // A label equal to the local user name, case-insensitive, may be an ordinary
+        // folder the user-name rules do not count, as a source directory; it does not
+        // count as a path component then (REQ-records-006), while a URL, `<user>@<host>`
+        // and the scp-style host still do.
+        let same_as_user = local
+            .users
+            .iter()
+            .any(|user| user.eq_ignore_ascii_case(host));
         // A dotted name, such as a fully qualified one, counts glued into a hyphenated
         // name too, as in `build-<host>-1` (#368); a single label might be one word of a
         // slug, so a hyphen still continues it.
@@ -634,7 +652,13 @@ fn names(local: &Local, value: &str, all: &mut Vec<Match>) {
             let end = start + needle.len();
             let before = start == 0 || !continues(bytes[start - 1]);
             let after = end == bytes.len() || !continues(bytes[end]);
-            if before && after && (anywhere || names_a_host(bytes, start, end, &urls)) {
+            let in_path_component = (start > 0 && matches!(bytes[start - 1], b'/' | b'\\'))
+                || bytes.get(end) == Some(&b'/');
+            if before
+                && after
+                && ((anywhere && !(same_as_user && in_path_component))
+                    || names_a_host(bytes, start, end, &urls, !same_as_user))
+            {
                 all.push(Match {
                     kind: Kind::HostName,
                     start,
@@ -1321,6 +1345,62 @@ mod tests {
         }
         let dotted = Local::new(None, Some("pebble.lan"));
         assert_eq!(kinds(&dotted, "a pebble"), Vec::<&str>::new());
+    }
+
+    /// REQ-records-006 (host label equal to the user name): a host label equal to the
+    /// local user name, case-insensitive, does not count as a host-name leak as a path
+    /// component, since the user-name rules do not count that folder; the same name
+    /// still counts in a URL, as `<user>@<host>` and as the host of an scp-style remote
+    /// path, and a different name is refused as before. Every name here is synthetic,
+    /// never this machine's.
+    #[test]
+    fn a_host_label_equal_to_the_user_name_is_not_a_leak_as_a_path_component() {
+        let local = Local::new(Some("pebble"), Some("pebble.local"));
+        let kinds = |local: &Local, value: &str| -> Vec<&'static str> {
+            find(local, value)
+                .iter()
+                .map(|found| found.kind.name())
+                .collect()
+        };
+
+        for plain in [
+            "sources in pebble/main.rs",
+            "paths = [\"Sources/pebble/main.swift\"]",
+            "a pebble in the shoe",
+        ] {
+            assert_eq!(kinds(&local, plain), Vec::<&str>::new(), "{plain:?}");
+            check(&local, "lessons", plain).unwrap();
+            assert!(
+                find_in_case_definition(&local, plain).is_empty(),
+                "{plain:?}"
+            );
+        }
+
+        for placed in [
+            "open https://pebble:8080/status",
+            "ssh bob@pebble",
+            "copy from pebble:/x/data",
+        ] {
+            assert_eq!(kinds(&local, placed), ["host-name"], "{placed:?}");
+            let error = check(&local, "lessons", placed).unwrap_err().to_string();
+            assert!(
+                error.starts_with("refused:leak: lessons holds host-name"),
+                "{error}"
+            );
+        }
+
+        // A host label that is not the user name is refused as a path component as before.
+        let other = Local::new(Some("pebble"), Some("brp"));
+        assert_eq!(kinds(&other, "sources in brp/main.rs"), ["host-name"]);
+
+        // The label only equals the user after another label, and a dot holds, so it
+        // still names the host, in a path component and anywhere.
+        assert_eq!(kinds(&local, "sources in pebble.local/main.rs"), ["host-name"]);
+
+        // The equality is case-insensitive, as in this machine's user and host.
+        let mixed = Local::new(Some("pebble"), Some("Pebble"));
+        assert_eq!(kinds(&mixed, "sources in Pebble/main.rs"), Vec::<&str>::new());
+        assert_eq!(kinds(&mixed, "open https://Pebble/status"), ["host-name"]);
     }
 
     /// REQ-records-006, TC-records-scp-style-host-path: a value holding an scp-style
