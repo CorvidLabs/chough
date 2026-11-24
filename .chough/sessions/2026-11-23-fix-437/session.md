@@ -5,7 +5,7 @@ aliases: [fix-437]
 objective: "Fix chough#437: a direct-write entry writes before_state and after_state as none when the state is absent, in the Timeline and its text"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -22,13 +22,9 @@ observations:
   - 2026-11-23-tc-cli-direct-write-absent-state-is-none-2a2c0d
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-437
-    holds: accept
-    drives: review
-    opened: 2026-11-23T15:29:24Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # Fix chough#437: a direct-write entry writes before_state and after_state as none when the state is absent, in the Timeline and its text
 
@@ -41,6 +37,7 @@ Fix chough#437: a direct-write entry writes before_state and after_state as none
 ## Decisions and why
 
 - 0xLeif decided "Approve the scope of fix-437": "I approve" (pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch); recorded by pi-t14z; a relayed claim, not authenticated; ran specsync change approve fix-437 as 0xLeif
+- 0xLeif decided "Implementation review of fix-437": "Yes start merging those" (pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 14:15 UTC, his morning instruction 'Yes start merging those and talk to me if you need anything..' — review the six-change stack PR 448 and merge; relayed by pi-t14z, flagged as a relayed claim, not authenticated); recorded by pi-t14z; a relayed claim, not authenticated; ran specsync change review fix-437 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -112,4 +109,34 @@ Fix chough#437: a direct-write entry writes before_state and after_state as none
   - revision: 4fbb7766ad13298491229d97ade73bf9515af354
   - holds: accept
   - drives: review
+  - by: unknown agent (hc t14z)
+- 2026-11-24T14:18:37Z · direct-native-write · accept → accept · fix-437's lifecycle records changed outside Chough: state.json changed, verification.json changed, verification-attempts.json changed; state stays verifying ^t-f7fbbe
+  - native_change: fix-437
+  - revision: a9395948ffd7485faddc5b6839acb99155e10d60
+  - direct_write:
+    - change: fix-437
+    - files:
+      - state.json: changed
+      - verification.json: changed
+      - verification-attempts.json: changed
+    - before_state: verifying
+    - after_state: verifying
+  - by: unknown agent (hc t14z)
+- 2026-11-24T14:18:37Z · gate-closed · accept → accept · Implementation review of fix-437 ^t-6b712b
+  - native_change: fix-437
+  - revision: a9395948ffd7485faddc5b6839acb99155e10d60
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes start merging those
+    - where: pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 14:15 UTC, his morning instruction 'Yes start merging those and talk to me if you need anything..' — review the six-change stack PR 448 and merge; relayed by pi-t14z, flagged as a relayed claim, not authenticated
+    - recorded_by: pi-t14z
+    - summary_digest: 61e6c776cf7782f08bdb758537739e88bd5a7056854434c3972e48bd6fe80384
+    - list: 54c96801433f
+    - native: specsync change review fix-437
+    - actor: 0xLeif
+  - by: unknown agent (hc t14z)
+- 2026-11-24T14:18:39Z · advance · accept → done · native:archived ^t-dbd7c9
+  - native_change: fix-437
+  - gate: native:archived
+  - revision: a9395948ffd7485faddc5b6839acb99155e10d60
   - by: unknown agent (hc t14z)
