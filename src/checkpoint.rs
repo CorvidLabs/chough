@@ -1977,8 +1977,10 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             // never follows a native write, runs here instead of the save's write.
             let (record, _redacted) = render_counted(&session)?;
             projected_record_bytes = Some(record.render().len());
-            // The dry run checks the close's native step and runs none of it.
-            if native.is_none() {
+            // The dry run checks the close's native step and runs none of it. A close
+            // whose step already ran (--native-ran) keeps the step that ran, so the
+            // projected decision matches what the real close would write.
+            if native.is_none() && args.native_ran.is_none() {
                 native_text = Some("no native step ran (--dry-run)".to_string());
             }
         } else {

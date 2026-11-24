@@ -1104,12 +1104,19 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
             crate::checkpoint::check_relay(&dry.awaiting_human, Some(&listed.gate), values)
                 .map_err(dry_relay_refusal)?;
         let (gate, relay, _decision) = relayed.expect("a close names its gate");
-        let (_native, native_text) = crate::checkpoint::native_step_for(
+        // The spawned close only receives --verdict when its gate drives a native step
+        // (close_command), so the dry run rehearses exactly that much of the reply.
+        let verdict = if drives(listed) != crate::humans::Drives::None {
+            args.verdict.as_deref()
+        } else {
+            None
+        };
+        let (native, native_text) = crate::checkpoint::native_step_for(
             root,
             &dry,
             &gate,
             &relay,
-            args.verdict.as_deref(),
+            verdict,
             args.no_native,
         )
         .map_err(|error| {
@@ -1126,6 +1133,17 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
                 named.join(",")
             )
         })?;
+        // REQ-history-010: the entry names the SpecSync command the close runs and the
+        // actor it runs as, as the real close sets them before it renders.
+        let mut relay = relay;
+        if let Some(step) = &native {
+            let verb = match step.step {
+                crate::humans::Step::Approve { .. } => "approve",
+                crate::humans::Step::Review { .. } => "review",
+            };
+            relay.native = Some(format!("specsync change {verb} {}", step.change));
+            relay.actor = Some(step.human.specsync_actor.clone());
+        }
         let decision = crate::checkpoint::decision_text(&gate, &relay, native_text.as_deref());
         if decision.len() > crate::stage::RELAY_TEXT_LIMIT {
             bail!(
@@ -1144,13 +1162,10 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
         )?;
         dry.awaiting_human.retain(|open| open != &listed.gate);
         dry.decisions.push(decision.clone());
-        let (record, _redacted) = crate::checkpoint::render_counted(&dry)?;
-        // The save a real close runs next settles the entry it queued, so the state the
-        // next named gate's dry run checks is the one the earlier closes left.
-        dry.source = Some(record);
-        dry.pending.clear();
-        dry.evidence_links = crate::checkpoint::evidence_links(root, &dry);
         let holds = crate::session_md::gate(&dry, &listed.gate).holds.clone();
+        // The real close sets the next action before its save renders (the decision's
+        // text is in the front matter), and the save refreshes the evidence links before
+        // it renders, so the dry run mirrors that order exactly.
         crate::checkpoint::apply_gate_close_next_action(
             &mut dry,
             &listed.gate,
@@ -1160,6 +1175,12 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
             args.no_native,
             false,
         );
+        dry.evidence_links = crate::checkpoint::evidence_links(root, &dry);
+        let (record, _redacted) = crate::checkpoint::render_counted(&dry)?;
+        // The save a real close runs next settles the entry it queued, so the state the
+        // next named gate's dry run checks is the one the earlier closes left.
+        dry.source = Some(record);
+        dry.pending.clear();
     }
     // The dry runs held the checkpoint writer lock for the rest of this process; release
     // it so the real closes below take it again before they read and save (REQ-cli-040).
