@@ -300,10 +300,15 @@ fn req_cli_039_criteria_clear_the_note_only_for_safe_verifying_readiness() {
             .iter()
             .find(|criterion| criterion.starts_with("With the change approved or implementing"))
             .unwrap_or_else(|| panic!("no AC2: {criteria:#?}"));
+        // The first clause is the refusal branch; the fallback clause carries the
+        // keeps-no-reason wording and the readiness `safe` clause stays in AC4.
         assert!(
-            ac2.split("; ")
-                .any(|clause| clause.contains("verifying") && clause.contains("readiness `safe`")),
-            "AC2 does not say readiness `safe` clears the note: {ac2}"
+            ac2.contains("quotes the refusal"),
+            "AC2 does not say the refusal is quoted: {ac2}"
+        );
+        assert!(
+            ac2.contains("keeps no reason"),
+            "AC2 does not keep the fallback wording: {ac2}"
         );
     }
 }
@@ -395,4 +400,28 @@ fn the_fallback_note_is_kept_when_no_refusal_is_recorded() {
     assert_eq!(check["note"].as_str(), Some(expected.as_str()), "{next:#}");
     let shown = text(&fixture);
     assert!(shown.contains(&expected), "{shown}");
+}
+
+#[cfg(unix)]
+#[test]
+fn a_failed_attempt_without_a_refusal_field_keeps_the_fallback_note() {
+    // A failed attempt that names no refusal is not a recorded refusal: the fallback
+    // wording stands (tests/native_check.rs covers the no-file case above).
+    let fixture = project("approved");
+    let mut attempt = attempt(
+        1_793_800_000,
+        "4100c2aa6afd940da7e986fb37da408ee76d6596",
+        &[("specsync check --spec cli", false, 1)],
+    );
+    if let Some(object) = attempt.as_object_mut() {
+        object.remove("refusal");
+    }
+    write_attempts(&fixture, &[attempt]);
+    let next = fixture.ok(&["next", "--json"]);
+    let check = &next["native_check"];
+    assert_eq!(check["not_passed_for_tree"], true, "{next:#}");
+    let expected = format!(
+        "The native check has not passed for this tree. SpecSync keeps no reason when it refuses before verifying (for example incomplete tasks or missing requirement evidence); run `specsync change check {CHANGE}` to see it."
+    );
+    assert_eq!(check["note"].as_str(), Some(expected.as_str()), "{next:#}");
 }
