@@ -14,6 +14,7 @@ Gate decisions show the configured display name instead of the raw --decided-by 
 ## Affected Canonical Specs
 
 - `records`
+- `cli`
 
 ## Acceptance Criteria
 

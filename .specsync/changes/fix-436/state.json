@@ -11,14 +11,20 @@
   "canonical_applied": true,
   "base_commit": "71a5c468a92d609113efbd5382317a18f1948e6e",
   "created_at": 1795490187,
-  "updated_at": 1795529614,
+  "updated_at": 1795529701,
   "affected_specs": [
-    "records"
+    "records",
+    "cli"
   ],
   "affected_paths": [
-    "src",
-    "tests",
-    "docs/cli.md"
+    "src/checkpoint.rs",
+    "src/gates.rs",
+    "src/change.rs",
+    "tests/humans.rs",
+    "tests/relay.rs",
+    "docs/cli.md",
+    ".chough/cases/records.fix-436.cases.toml",
+    ".chough/cases/cli.fix-439.cases.toml"
   ],
   "no_spec_change": true,
   "no_spec_change_rationale": "REQ-records-008 already defines name as 'the display name records show'; this makes decision_text honor it. No contract or refusal semantics change",
