@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-438",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "6ffcf5ac00fc43e82385390c8c35c747f950ce56",
+  "contract_digest": "3dffe93ef4669693c9aee077f6a21646549d768f1f3fa565bd3bc1351e8b0449",
+  "execution_digest": "c7212a0712135cec0558e1f908b4f9b725b4f7f36f623d0ebf19609201ebb304",
+  "workspace_digest": "a1957c9d2631efe710d4541ca4e3e174fd0ba7039c2e4d7724d83e2e0d56b828",
+  "timestamp": 1795529934,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Yes start merging those",
+    "where": "pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 14:15 UTC, his morning instruction 'Yes start merging those and talk to me if you need anything..' — review the six-change stack PR 448 and merge; relayed by pi-t14z, flagged as a relayed claim, not authenticated",
+    "recorded_by": "pi-t14z"
+  }
+}
