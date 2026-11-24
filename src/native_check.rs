@@ -58,9 +58,15 @@ pub(super) fn view(root: &Path, change: Option<&str>, summary: Option<&Value>) -
     let (not_passed, note) = match (state, readiness) {
         (Some("approved" | "implementing"), _) => (
             true,
-            Some(format!(
-                "The native check has not passed for this tree. SpecSync keeps no reason when it refuses before verifying (for example incomplete tasks or missing requirement evidence); {check} to see it."
-            )),
+            Some(if let Some(refusal) = latest_refusal(root, change) {
+                format!(
+                    "The native check has not passed for this tree. SpecSync refuses before verifying: {refusal}; {check} to see it."
+                )
+            } else {
+                format!(
+                    "The native check has not passed for this tree. SpecSync keeps no reason when it refuses before verifying (for example incomplete tasks or missing requirement evidence); {check} to see it."
+                )
+            }),
         ),
         (Some("verifying"), Some("safe")) => (false, None),
         (Some("verifying"), Some(_)) => {
@@ -138,6 +144,39 @@ fn latest(root: &Path, relative: &str) -> std::result::Result<Option<Value>, Str
                 .collect::<Vec<_>>(),
         },
     })))
+}
+
+/// The refusal the latest attempt recorded before verifying, if any. The attempts file is
+/// read only; a missing file, an unreadable or malformed record, an attempt that passed, or
+/// one that named no string refusal, all mean no refusal, so a late reader of an old record
+/// falls back to the plain note (#439).
+fn latest_refusal(root: &Path, change: &str) -> Option<String> {
+    let relative = format!(".specsync/changes/{change}/verification-attempts.json");
+    let path = local_path(root, &relative).ok()?;
+    let bytes = read_native_record(&path, NATIVE_RECORD_LIMIT).ok()??;
+    let record: Value = serde_json::from_slice(&bytes).ok()?;
+    let (_, attempt) = record
+        .get("attempts")?
+        .as_array()?
+        .iter()
+        .enumerate()
+        .max_by_key(|(index, attempt)| {
+            (
+                attempt
+                    .get("timestamp")
+                    .and_then(Value::as_u64)
+                    .unwrap_or(0),
+                *index,
+            )
+        })?;
+    if attempt.get("passed").and_then(Value::as_bool) != Some(false) {
+        return None;
+    }
+    attempt
+        .get("refusal")
+        .and_then(Value::as_str)
+        .filter(|refusal| !refusal.is_empty())
+        .map(str::to_string)
 }
 
 /// The text lines for the next view's `native_check`; none when it is `null`.

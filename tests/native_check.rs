@@ -35,6 +35,20 @@ fn attempt(timestamp: u64, commit: &str, commands: &[(&str, bool, i64)]) -> Valu
     })
 }
 
+/// A recorded refusal: the latest attempt failed before verifying with the given reason
+/// (#439).
+fn refused(timestamp: u64, commit: &str, refusal: &str) -> Value {
+    let mut attempt = attempt(
+        timestamp,
+        commit,
+        &[("specsync check --spec cli", false, 1)],
+    );
+    if let Some(object) = attempt.as_object_mut() {
+        object.insert("refusal".into(), json!(refusal));
+    }
+    attempt
+}
+
 fn write_attempts(fixture: &Fixture, attempts: &[Value]) {
     fixture.write(
         &format!(".specsync/changes/{CHANGE}/verification-attempts.json"),
@@ -329,4 +343,56 @@ fn a_failed_attempt_without_a_failing_command_says_so() {
         .find(|line| line.starts_with("Native check:"))
         .unwrap();
     assert!(line.ends_with("no failing command recorded"), "{line}");
+}
+
+/// A refusal SpecSync recorded before verifying is shown in the note, instead of the
+/// "SpecSync keeps no reason" fallback (#439).
+#[cfg(unix)]
+#[test]
+fn a_recorded_refusal_is_shown_in_the_not_passed_note() {
+    let fixture = project("implementing");
+    write_attempts(
+        &fixture,
+        &[refused(
+            1_793_800_000,
+            "4100c2aa6afd940da7e986fb37da408ee76d6596",
+            "the plan still has unchecked tasks",
+        )],
+    );
+    let next = fixture.ok(&["next", "--json"]);
+    let check = &next["native_check"];
+    assert_eq!(check["not_passed_for_tree"], true, "{next:#}");
+    let note = check["note"].as_str().unwrap_or_default();
+    assert!(
+        note.contains("the plan still has unchecked tasks"),
+        "{note}"
+    );
+    assert!(
+        note.contains(&format!("specsync change check {CHANGE}")),
+        "{note}"
+    );
+    assert!(!note.contains("keeps no reason"), "{note}");
+    let shown = text(&fixture);
+    assert!(
+        shown.contains("the plan still has unchecked tasks"),
+        "{shown}"
+    );
+    assert!(!shown.contains("keeps no reason"), "{shown}");
+}
+
+/// The fallback note stands when no refusal is recorded, so the pre-#439 wording is kept
+/// for a change whose attempts hold no refusal (#439).
+#[cfg(unix)]
+#[test]
+fn the_fallback_note_is_kept_when_no_refusal_is_recorded() {
+    let fixture = project("approved");
+    let next = fixture.ok(&["next", "--json"]);
+    let check = &next["native_check"];
+    assert_eq!(check["not_passed_for_tree"], true, "{next:#}");
+    let expected = format!(
+        "The native check has not passed for this tree. SpecSync keeps no reason when it refuses before verifying (for example incomplete tasks or missing requirement evidence); run `specsync change check {CHANGE}` to see it."
+    );
+    assert_eq!(check["note"].as_str(), Some(expected.as_str()), "{next:#}");
+    let shown = text(&fixture);
+    assert!(shown.contains(&expected), "{shown}");
 }
