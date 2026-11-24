@@ -1,0 +1,147 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795478701,
+      "digest": "ae3ffbe028af115e69ed6c0da495e2fa5b8df472db6e8a458853e1f8c646969f",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-439 (show refused-check reason)\": \"I approve\" (pi chat t14z (CorvidLabs orchestrator session), 2026-11-24 about 00:10 UTC, on his standing overnight approval of the six-fix stack (fix-439 is the fifth of six), relayed by pi-t14z — flagged as a relayed claim, not authenticated). Relayed and recorded by pi-t14z at 2026-11-24T00:04:58Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-439",
+        "title": "fix-439",
+        "description": "next and status show the refused-check reason recorded in verification-attempts.json instead of a note that keeps no reason",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "docs/cli.md",
+          "src",
+          "tests"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Presentation of existing recorded data only; no contract, requirement or refusal semantics change",
+        "acceptance_criteria": [
+          "next and status surface the refusal recorded in verification-attempts.json instead of the keeps-no-reason note, with the fallback note unchanged when no refusal is recorded, docs/cli.md updated, full suite green"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "I approve",
+        "where": "pi chat t14z (CorvidLabs orchestrator session), 2026-11-24 about 00:10 UTC, on his standing overnight approval of the six-fix stack (fix-439 is the fifth of six), relayed by pi-t14z — flagged as a relayed claim, not authenticated",
+        "recorded_by": "pi-t14z"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795494329,
+      "digest": "edb06ae49f23c36fc0f9785790ac2c276afb89df5246342fc0df1aa5eaf8d0cb",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-scope approval of fix-439: REQ-cli-039 delta (spec change)\": \"Yes\" (pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 04:25 UTC, answering 'add the REQ-cli-039 delta to fix-439?' after the GLM second review's block — flagged as a relayed claim, not authenticated). Relayed and recorded by pi-t14z at 2026-11-24T04:25:27Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-439",
+        "title": "fix-439",
+        "description": "next and status show the refused-check reason recorded in verification-attempts.json instead of a note that keeps no reason",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "docs/cli.md",
+          "src",
+          "tests"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "next and status surface the refusal recorded in verification-attempts.json instead of the keeps-no-reason note, with the fallback note unchanged when no refusal is recorded, REQ-cli-039 amended by delta to match, docs/cli.md updated, full suite green"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "6c2098d2a075cf0389a5236573602e4b9b25fa594289955cb84a93ae1138cabc"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-039": "a84acc22e4b0ec4f3b591bc46f2392b1647a18d7d0f92c63cb87a895221ddc0f"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes",
+        "where": "pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 04:25 UTC, answering 'add the REQ-cli-039 delta to fix-439?' after the GLM second review's block — flagged as a relayed claim, not authenticated",
+        "recorded_by": "pi-t14z"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795494331,
+      "digest": "edb06ae49f23c36fc0f9785790ac2c276afb89df5246342fc0df1aa5eaf8d0cb",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-439",
+        "title": "fix-439",
+        "description": "next and status show the refused-check reason recorded in verification-attempts.json instead of a note that keeps no reason",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "docs/cli.md",
+          "src",
+          "tests"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "next and status surface the refusal recorded in verification-attempts.json instead of the keeps-no-reason note, with the fallback note unchanged when no refusal is recorded, REQ-cli-039 amended by delta to match, docs/cli.md updated, full suite green"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "6c2098d2a075cf0389a5236573602e4b9b25fa594289955cb84a93ae1138cabc"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-039": "a84acc22e4b0ec4f3b591bc46f2392b1647a18d7d0f92c63cb87a895221ddc0f"
+      }
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "fix-439",
+      "actor": "0xLeif",
+      "reason": "Leif authorized (pi chat t14z, 2026-11-24, 'Yes') adding the REQ-cli-039 delta the GLM second review required: the rendered-note change alters what REQ-cli-039's SHALL says, so the change is a spec change (public_contract yes), not no-spec; sent back to draft to re-scope, record the delta, and re-approve",
+      "timestamp": 1795494235,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
+    }
+  ]
+}
