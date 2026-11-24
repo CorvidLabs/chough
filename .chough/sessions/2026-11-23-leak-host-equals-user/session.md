@@ -5,7 +5,7 @@ aliases: [leak-host-equals-user]
 objective: When a host label equals the local user name, as this Mac's 'Tob' for user 'tob', the host-name rule must not re-flag the plain folder the user-name rules deliberately let through; REQ-records-006 gains that exception
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: [2026-11-24-cargo-test-full-suite-1040-passed-0-failed-new-unit-test-a-ho]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: "Implementation review of leak-host-equals-user: REQ-records-006 exception (host label equal to the local user name does not count as a path component; URL, <user>@<host> and scp contexts still count), implemented in src/leaks.rs with the unit test; both model reviews pass, both checker runs clean after your confirmations, 1040/1040 tests, native check committed"
-    holds: accept
-    drives: review
-    opened: 2026-11-24T02:02:39Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # When a host label equals the local user name, as this Mac's 'Tob' for user 'tob', the host-name rule must not re-flag the plain folder the user-name rules deliberately let through; REQ-records-006 gains that exception
 
@@ -46,6 +42,7 @@ When a host label equals the local user name, as this Mac's 'Tob' for user 'tob'
 - 0xLeif decided "Scope re-approval of leak-host-equals-user after send-back: affected_paths gains changelog.d/2026-11-23-leak-host-equals-user.md (the planned fragment, per repo convention); the requirement delta is unchanged": "Add it to scope (Recommended)" (pi chat questionnaire, 2026-11-24, the changelog-scope question after the checker named the fragment); recorded by pi-t14g; a relayed claim, not authenticated; ran specsync change approve a-host-label-equal-to-the-local-user-name-does-not-count-as-a-host-name-leak-as-a-plain-path-component-while-urls-user as 0xLeif
 - Checker blocking findings resolved (2026-11-24): (1) 0xLeif confirmed in the pi chat questionnaire that the scope-approval words 'approve' were his, so the relay stands; (2) the planned changelog fragment now sits in affected_paths, re-approved by his decision 'Add it to scope' through a send-back and fresh approval, and the native check passed and committed the materialized spec plus verification evidence.
 - Disclosed before the implementation-review gate (2026-11-24, from checker note): the cargo-test evidence entry was misnamed with a wrong count (213) by the recording agent and renamed in place to its 1040 name before its first commit; REQ-records-003 says a name SHALL NOT change after creation, so this is a grey edge kept open here on purpose, and no 213 was ever committed. Also disclosed: testing.md names tests/leaks.rs while the new tests are unit tests in src/leaks.rs, and tasks.md was reworded after approval to match the approved delta, with the delta digest unchanged.
+- 0xLeif decided "Implementation review of leak-host-equals-user: REQ-records-006 exception (host label equal to the local user name does not count as a path component; URL, <user>@<host> and scp contexts still count), implemented in src/leaks.rs with the unit test; both model reviews pass, both checker runs clean after your confirmations, 1040/1040 tests, native check committed": "Ship?" (pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 03:10 UTC, answering the one-question-at-a-time gate prompt after the evidence summary (both model reviews pass, checker clean, 1040/1040 tests, native check committed); a relayed claim, not authenticated); recorded by pi-t14z; a relayed claim, not authenticated; ran specsync change review a-host-label-equal-to-the-local-user-name-does-not-count-as-a-host-name-leak-as-a-plain-path-component-while-urls-user as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -143,4 +140,22 @@ When a host label equals the local user name, as this Mac's 'Tob' for user 'tob'
   - native_change: a-host-label-equal-to-the-local-user-name-does-not-count-as-a-host-name-leak-as-a-plain-path-component-while-urls-user
   - gate: native:verifying
   - revision: 80791c9a6296773575af708c74af96f04a551ac3
+  - by: unknown agent (hc t14z)
+- 2026-11-24T03:10:27Z · gate-closed · accept → accept · Implementation review of leak-host-equals-user: REQ-records-006 exception (host label equal to the local user name does not count as a path component; URL, <user>@<host> and scp contexts still count), implemented in src/leaks.rs with the unit test; both model reviews pass, both checker runs clean after your confirmations, 1040/1040 tests, native check committed ^t-0dd6a8
+  - native_change: a-host-label-equal-to-the-local-user-name-does-not-count-as-a-host-name-leak-as-a-plain-path-component-while-urls-user
+  - revision: ce868896b7b3cdb2c392a6850aa7a95bccafa7f6
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Ship?
+    - where: pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 03:10 UTC, answering the one-question-at-a-time gate prompt after the evidence summary (both model reviews pass, checker clean, 1040/1040 tests, native check committed); a relayed claim, not authenticated
+    - recorded_by: pi-t14z
+    - summary_digest: f511e0b0bbc8b6a376cd7cebb93f1fffdf3048ec6bc7279e33e24d768d118c39
+    - list: c442ff6e16fc
+    - native: specsync change review a-host-label-equal-to-the-local-user-name-does-not-count-as-a-host-name-leak-as-a-plain-path-component-while-urls-user
+    - actor: 0xLeif
+  - by: unknown agent (hc t14z)
+- 2026-11-24T03:10:28Z · advance · accept → done · native:archived ^t-ed2bb9
+  - native_change: a-host-label-equal-to-the-local-user-name-does-not-count-as-a-host-name-leak-as-a-plain-path-component-while-urls-user
+  - gate: native:archived
+  - revision: ce868896b7b3cdb2c392a6850aa7a95bccafa7f6
   - by: unknown agent (hc t14z)
