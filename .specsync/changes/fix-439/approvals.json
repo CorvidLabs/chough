@@ -127,6 +127,52 @@
       "approved_delta_bases": {
         "cli: REQUIREMENT REQ-cli-039": "a84acc22e4b0ec4f3b591bc46f2392b1647a18d7d0f92c63cb87a895221ddc0f"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795530080,
+      "digest": "94e323253c9c8305e5eea3a90588d101ce871df830f5b242a82bf45be5672238",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-439",
+        "title": "fix-439",
+        "description": "next and status show the refused-check reason recorded in verification-attempts.json instead of a note that keeps no reason",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.fix-439.cases.toml",
+          "docs/cli.md",
+          "src/change.rs",
+          "src/checkpoint.rs",
+          "src/gates.rs",
+          "src/native_check.rs",
+          "tests/humans.rs",
+          "tests/native_check.rs",
+          "tests/relay.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "next and status surface the refusal recorded in verification-attempts.json instead of the keeps-no-reason note, with the fallback note unchanged when no refusal is recorded, REQ-cli-039 amended by delta to match, docs/cli.md updated, full suite green"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "6c2098d2a075cf0389a5236573602e4b9b25fa594289955cb84a93ae1138cabc"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-039": "a84acc22e4b0ec4f3b591bc46f2392b1647a18d7d0f92c63cb87a895221ddc0f"
+      }
     }
   ],
   "reopenings": [],
@@ -142,6 +188,31 @@
       "cancelled_approvals": 1,
       "cancelled_review_attempts": 0,
       "canonical_applied": false
+    },
+    {
+      "schema_version": 1,
+      "change_id": "fix-439",
+      "actor": "0xLeif",
+      "reason": "Finalize refuses the scope as misdeclared: affected_specs lacked records and history (whose owned sources the branch carries) and affected_paths named directories instead of files. Re-declaring exactly: affected_specs cli,records,history and the eight files finalize names; fix content unchanged (Leif's merge instruction, pi chat t14z, 2026-11-24)",
+      "timestamp": 1795530031,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 3,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true,
+      "applied_items": [
+        {
+          "module": "cli",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-cli-039",
+          "content": "Native check result in next. When the recorded native change has a workspace under `.specsync/changes/<id>/`, `chough next` (text and JSON) SHALL report the native check: the latest attempt SpecSync recorded in that workspace's `verification-attempts.json` by timestamp, with its time and commit, and when it failed, the failing commands with their exit codes, at most 3 with their total. When the native state `next` read is `approved` or `implementing`, `next` SHALL also say that the native check has not passed for the current tree and name `specsync change check <id>`; when the latest attempt records a refusal (`\"passed\": false` with a non-empty string `refusal`), the note SHALL quote that recorded refusal instead of a generic sentence, and when no refusal is recorded it SHALL say that SpecSync keeps no reason when it refuses before verifying. When that state is `verifying`, it SHALL use the same read's `handoff.readiness`: readiness `safe` means the last check matches the tree; any other readiness SHALL be reported as not passed for this tree with SpecSync's reason; and no readiness SHALL be reported as unknown, so a bare `verifying` state never clears the statement. A failed attempt that names no failing command SHALL say so. It SHALL read only that local file and the native state it already read, with no additional native read, and SHALL report an unreadable, oversized or malformed attempts record as unknown, never as no failure. Trace: LIFE-7, LIFE-3.\n\nAcceptance Criteria\n- After a failed attempt, `next` text and JSON show its time, commit, failing commands and exit codes; a later passing attempt replaces it.\n- With the change approved or implementing and a recorded refusal in the latest attempt, `next` quotes the refusal and names `specsync change check <id>`; with no recorded refusal it says the native check has not passed for this tree, that SpecSync keeps no reason for refusals, and names `specsync change check <id>`.\n- A malformed attempts file is reported as unknown, and `next` still makes one native status read.\n- A verifying change whose handoff readiness is not `safe` (the tree moved after the last check) is reported as not passed for this tree with SpecSync's reason; with readiness `safe` there is no note; with no readiness, freshness is reported as unknown.",
+          "previous_content": "Native check result in next. When the recorded native change has a workspace under `.specsync/changes/<id>/`, `chough next` (text and JSON) SHALL report the native check: the latest attempt SpecSync recorded in that workspace's `verification-attempts.json` by timestamp, with its time and commit, and when it failed, the failing commands with their exit codes, at most 3 with their total. When the native state `next` read is `approved` or `implementing`, `next` SHALL also say that the native check has not passed for the current tree, that SpecSync keeps no reason when it refuses before verifying, and name `specsync change check <id>`. When that state is `verifying`, it SHALL use the same read's `handoff.readiness`: readiness `safe` means the last check matches the tree; any other readiness SHALL be reported as not passed for this tree with SpecSync's reason; and no readiness SHALL be reported as unknown, so a bare `verifying` state never clears the statement. A failed attempt that names no failing command SHALL say so. It SHALL read only that local file and the native state it already read, with no additional native read, and SHALL report an unreadable, oversized or malformed attempts record as unknown, never as no failure. Trace: LIFE-7, LIFE-3.\n\nAcceptance Criteria\n- After a failed attempt, `next` text and JSON show its time, commit, failing commands and exit codes; a later passing attempt replaces it.\n- With the change approved or implementing, `next` says the native check has not passed for this tree, that SpecSync keeps no reason for refusals, and names `specsync change check <id>`; when verifying, it shows no note only with handoff readiness `safe`, and any other or missing readiness keeps a note, as the last criterion states.\n- A malformed attempts file is reported as unknown, and `next` still makes one native status read.\n- A verifying change whose handoff readiness is not `safe` (the tree moved after the last check) is reported as not passed for this tree with SpecSync's reason; with readiness `safe` there is no note; with no readiness, freshness is reported as unknown."
+        }
+      ],
+      "applied_modules": [
+        "cli"
+      ]
     }
   ]
 }

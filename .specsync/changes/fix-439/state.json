@@ -11,14 +11,20 @@
   "canonical_applied": true,
   "base_commit": "bdda89e40b5ff3086e3d571305f82215a120f8a5",
   "created_at": 1795478368,
-  "updated_at": 1795530023,
+  "updated_at": 1795530088,
   "affected_specs": [
     "cli"
   ],
   "affected_paths": [
-    "src",
-    "tests",
-    "docs/cli.md"
+    "docs/cli.md",
+    "src/change.rs",
+    "src/checkpoint.rs",
+    "src/gates.rs",
+    "src/native_check.rs",
+    "tests/humans.rs",
+    "tests/native_check.rs",
+    "tests/relay.rs",
+    ".chough/cases/cli.fix-439.cases.toml"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
