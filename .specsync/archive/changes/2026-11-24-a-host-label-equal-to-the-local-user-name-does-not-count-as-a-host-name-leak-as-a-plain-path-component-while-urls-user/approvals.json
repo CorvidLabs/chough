@@ -88,6 +88,13 @@
         "where": "pi chat questionnaire, 2026-11-24, the changelog-scope question after the checker named the fragment",
         "recorded_by": "pi-t14g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795489770,
+      "digest": "26c26f570c49e697af884f1e1ac42ab6a584760532ebf4abbcbd9a871d7feae8",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],

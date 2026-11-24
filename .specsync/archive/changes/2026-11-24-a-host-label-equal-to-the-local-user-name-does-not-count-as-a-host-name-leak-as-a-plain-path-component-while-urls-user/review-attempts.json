@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "a-host-label-equal-to-the-local-user-name-does-not-count-as-a-host-name-leak-as-a-plain-path-component-while-urls-user",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "80791c9a6296773575af708c74af96f04a551ac3",
+      "contract_digest": "53059f01683514b07929f2c3270da434617e8f63383cfd6967dd7b6064c7c873",
+      "execution_digest": "4c6338c0d32750d1f621f7705a2deef2bb25cc6059b3ae857c4bd6ff1dc6047f",
+      "workspace_digest": "aae78ac880ab375a0f887545ee6d6494c5f583762a2a33f6243fa41b643bdf01",
+      "timestamp": 1795489759,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Ship?",
+        "where": "pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 03:10 UTC, answering the one-question-at-a-time gate prompt after the evidence summary (both model reviews pass, checker clean, 1040/1040 tests, native check committed); a relayed claim, not authenticated",
+        "recorded_by": "pi-t14z"
+      }
+    }
+  ]
+}

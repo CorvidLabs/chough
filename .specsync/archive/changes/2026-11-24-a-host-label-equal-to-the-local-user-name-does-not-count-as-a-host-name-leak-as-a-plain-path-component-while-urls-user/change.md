@@ -1,6 +1,6 @@
 ---
 id: a-host-label-equal-to-the-local-user-name-does-not-count-as-a-host-name-leak-as-a-plain-path-component-while-urls-user
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 6e00b813a0d52be20a361b625cb96db03be171d6
 ---

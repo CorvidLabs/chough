@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "a-host-label-equal-to-the-local-user-name-does-not-count-as-a-host-name-leak-as-a-plain-path-component-while-urls-user",
+  "implementation_commit": "80791c9a6296773575af708c74af96f04a551ac3",
+  "implementation_tree": "af4d1873fffe88598dfa5949dce5061fdda4c6eb",
+  "contract_digest": "53059f01683514b07929f2c3270da434617e8f63383cfd6967dd7b6064c7c873",
+  "workspace_digest": "aae78ac880ab375a0f887545ee6d6494c5f583762a2a33f6243fa41b643bdf01",
+  "closing_digest": "26c26f570c49e697af884f1e1ac42ab6a584760532ebf4abbcbd9a871d7feae8",
+  "review_digest": "11120a9ed63a11ea06df306db977e6b1d8d9698311ed6687a08429628f6e6515",
+  "finalization_digest": "9e1ee3f57fac915cd4e7edf0a0585c5ab49ac19585fa63c81be057e9b18b1a71",
+  "timestamp": 1795489770
+}

@@ -1,0 +1,84 @@
+{
+  "timestamp": 1795484769,
+  "commit": "80791c9a6296773575af708c74af96f04a551ac3",
+  "contract_digest": "53059f01683514b07929f2c3270da434617e8f63383cfd6967dd7b6064c7c873",
+  "execution_digest": "4c6338c0d32750d1f621f7705a2deef2bb25cc6059b3ae857c4bd6ff1dc6047f",
+  "workspace_digest": "aae78ac880ab375a0f887545ee6d6494c5f583762a2a33f6243fa41b643bdf01",
+  "acceptance_input_digest": "ca95cac0f1380e162a6772db3ada69794960d308567bb2abdf53870676e25d29",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": "changelog.d/2026-11-23-leak-host-equals-user.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "86bfc33c24c413c725a54cb1d042b4691efdae7e658935eee364a1f982e8810e",
+        "entry_digest": "44241a2cc468f6bf94741df1255c7d9f8166292d7e4b58877d675406e9d5231e",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/records/history/a-host-label-equal-to-the-local-user-name-does-not-count-as-a-host-name-leak-as-a-plain-path-component-while-urls-user.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0f3fcce93998becf58c7fd4a069e051fc09b53a1394d12f2178b29fc3702d2f5",
+        "entry_digest": "71e978cac3edad6620652aa3f1be1cd3375d4ba01d5d8cf196afc5c06f0498a5",
+        "owners": [
+          "records"
+        ]
+      },
+      {
+        "path": "specs/records/records.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "aa386f41bbff9f477002fd7cd91ea56674a7f6a6145e5dafba306b6d3bc8cf99",
+        "entry_digest": "479a1eeb3f5a5401a72f51e1d4ddeb82c97594eb45fcd00ff11c2299c1e56c23",
+        "owners": [
+          "records"
+        ]
+      },
+      {
+        "path": "specs/records/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "9002a013760617aebee2887df44657e1cfc5b70eaee753c27d6a44bccc5354ff",
+        "entry_digest": "7a5eb35dad0ce4780eefe6571f35b0d7f97b8557f75a5c4095b6028a1ea9dec2",
+        "owners": [
+          "records"
+        ]
+      },
+      {
+        "path": "src/leaks.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "d2472dbb487fd77706c305edc28ce1e0ef76d03e685deb0e668fb8e61b76369d",
+        "entry_digest": "85faf9ce0a2270835c8f967416484d6034a7c82a7f271a46660eaa84f3a22b65",
+        "owners": [
+          "records"
+        ]
+      },
+      {
+        "path": "tests/leaks.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1259d22909eae12a57a5c6cae22fd9677c0ceea39e4c31918f1000c90a71d273",
+        "entry_digest": "2100a3226f1d54148e27a57ccd3d9e68287dd58cd8bc86ec699d008db2b559e4",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec records",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": [
+    "REQ-records-006"
+  ]
+}
