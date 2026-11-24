@@ -7,11 +7,11 @@
   "title": "Fix 437",
   "description": "fix 437",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "35828a1df3d308677a38b138e7aebe0e7b6770ef",
   "created_at": 1795445074,
-  "updated_at": 1795529829,
+  "updated_at": 1795529854,
   "affected_specs": [
     "history",
     "records",
