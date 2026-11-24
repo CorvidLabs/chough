@@ -301,7 +301,8 @@ fn req_cli_039_criteria_clear_the_note_only_for_safe_verifying_readiness() {
             .find(|criterion| criterion.starts_with("With the change approved or implementing"))
             .unwrap_or_else(|| panic!("no AC2: {criteria:#?}"));
         // The first clause is the refusal branch; the fallback clause carries the
-        // keeps-no-reason wording and the readiness `safe` clause stays in AC4.
+        // keeps-no-reason wording, and AC4 keeps the readiness `safe` clearing clause
+        // (D10 guard).
         assert!(
             ac2.contains("quotes the refusal"),
             "AC2 does not say the refusal is quoted: {ac2}"
@@ -309,6 +310,11 @@ fn req_cli_039_criteria_clear_the_note_only_for_safe_verifying_readiness() {
         assert!(
             ac2.contains("keeps no reason"),
             "AC2 does not keep the fallback wording: {ac2}"
+        );
+        let ac4 = criteria.get(3).unwrap_or_else(|| panic!("no AC4: {criteria:#?}"));
+        assert!(
+            ac4.contains("readiness `safe`"),
+            "AC4 does not say readiness `safe` clears the note: {ac4}"
         );
     }
 }
