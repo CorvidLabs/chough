@@ -1033,12 +1033,15 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
     ];
     let open: Vec<String> = checked.iter().map(|listed| listed.gate.clone()).collect();
     for listed in &checked {
-        crate::checkpoint::check_relay(&open, Some(&listed.gate), values).map_err(|_| {
-            anyhow::anyhow!(
-                "refused:relay-incomplete: one reply needs who decided, their words, where they said them and the recording agent, each non-blank and within the checkpoint text bound, so nothing was written.\nRun `chough gate record {} --gates {} --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
-                args.list,
-                args.gates
-            )
+        crate::checkpoint::check_relay(root, &open, Some(&listed.gate), values).map_err(|problem| {
+            match problem {
+                crate::checkpoint::RelayProblem::Identity(error) => error,
+                _ => anyhow::anyhow!(
+                    "refused:relay-incomplete: one reply needs who decided, their words, where they said them and the recording agent, each non-blank and within the checkpoint text bound, so nothing was written.\nRun `chough gate record {} --gates {} --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
+                    args.list,
+                    args.gates
+                ),
+            }
         })?;
     }
     // REQ-records-008: every reply names one configured human, whatever its gates
@@ -1101,7 +1104,7 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
             ("--recorded-by", args.recorded_by.as_deref()),
         ];
         let relayed =
-            crate::checkpoint::check_relay(&dry.awaiting_human, Some(&listed.gate), values)
+            crate::checkpoint::check_relay(root, &dry.awaiting_human, Some(&listed.gate), values)
                 .map_err(dry_relay_refusal)?;
         let (gate, relay, _decision) = relayed.expect("a close names its gate");
         // The spawned close only receives --verdict when its gate drives a native step
@@ -1111,7 +1114,7 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
         } else {
             None
         };
-        let (native, native_text) = crate::checkpoint::native_step_for(
+        let (native, native_text, native_human) = crate::checkpoint::native_step_for(
             root,
             &dry,
             &gate,
@@ -1144,7 +1147,15 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
             relay.native = Some(format!("specsync change {verb} {}", step.change));
             relay.actor = Some(step.human.specsync_actor.clone());
         }
-        let decision = crate::checkpoint::decision_text(&gate, &relay, native_text.as_deref());
+        let decision = crate::checkpoint::decision_text(
+            &gate,
+            &relay,
+            native_text.as_deref(),
+            native_human
+                .as_ref()
+                .map(|human| human.name.as_str())
+                .unwrap_or(&relay.decided_by),
+        );
         if decision.len() > crate::stage::RELAY_TEXT_LIMIT {
             bail!(
                 "refused:relay-too-long: the decision for gate \"{gate}\" would be {} bytes, over the {}-byte checkpoint text bound, so nothing ran or was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{gate}\"` with the four values again.",
@@ -1284,6 +1295,7 @@ fn dry_relay_refusal(problem: crate::checkpoint::RelayProblem) -> anyhow::Error 
                 "<gate>".to_string()
             }
         ),
+        RelayProblem::Identity(error) => error,
     }
 }
 

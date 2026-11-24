@@ -698,6 +698,10 @@ ran:
 <who> decided "<gate>": "<their words>" (<where>); recorded by <agent>; a relayed claim, not authenticated
 ```
 
+`<who>` is the decided human's configured display name, so a close through an alias
+renders the display name; the relay keeps the typed `--decided-by` value as its audit
+trail.
+
 The output carries `relayed_decision` with the gate, `relayed_by`, `provenance`: "a
 relayed claim, not authenticated: it records who is said to have decided, not proof
 that they did", and `native_step`, what ran or why nothing did: when nothing ran, `ran`
@@ -739,14 +743,14 @@ aliases = ["<another name they go by>"]
 specsync_actor = "<their SpecSync actor>"
 ```
 
-`name` is the display name SpecSync's approval note shows (Chough's own records keep
-the `--decided-by` text as given), `aliases` is optional, and `specsync_actor` is
-the actor SpecSync records. At every gate close, through `checkpoint --close-gate`,
-`gate record` or `change ship --close-gate`, whatever the gate drives and with or
-without `--no-native`, `--decided-by` must name exactly one configured human, by
-name or alias, ignoring case and surrounding space; otherwise the close is refused as
-`refused:human-identity-unknown` before anything runs, naming both files and the keys
-to add. Chough never guesses an identity and never falls back to an agent account. No
+`name` is the display name the decision text and SpecSync's approval note show (the
+relay keeps the `--decided-by` text as given, for its audit trail), `aliases` is
+optional, and `specsync_actor` is the actor SpecSync records. At every gate close,
+through `checkpoint --close-gate`, `gate record` or `change ship --close-gate`,
+whatever the gate drives and with or without `--no-native`, `--decided-by` must name
+exactly one configured human, by name or alias, ignoring case and surrounding space;
+otherwise the close is refused as `refused:human-identity-unknown` before anything
+runs, naming both files and the keys to add. Chough never guesses an identity and never falls back to an agent account. No
 name is built in: a project or a person configures who decides. The relay stays an
 unauthenticated claim (FLOW-16).
 

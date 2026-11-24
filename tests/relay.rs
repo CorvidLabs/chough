@@ -132,7 +132,7 @@ fn a_relayed_decision_closes_only_its_gate_and_keeps_the_four_values() {
     assert_eq!(last["relayed_by"], expected);
 
     // A fresh process hands the decision off, marked as a claim.
-    let decision = "SYNTHETIC-human decided \"Intent approval\": \"Approve intent + approach\" (orc tab, 2026-11-05 20:18 MST, relayed by orc t18); recorded by SYNTHETIC-agent ch-d7; a relayed claim, not authenticated";
+    let decision = "SYNTHETIC Human decided \"Intent approval\": \"Approve intent + approach\" (orc tab, 2026-11-05 20:18 MST, relayed by orc t18); recorded by SYNTHETIC-agent ch-d7; a relayed claim, not authenticated";
     assert_eq!(fixture.session()["decisions"], json!([decision]));
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(next["decisions"]["items"][0]["text"], decision);

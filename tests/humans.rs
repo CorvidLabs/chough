@@ -148,6 +148,46 @@ fn a_scope_gate_runs_the_approval_once_as_the_configured_human() {
     );
 }
 
+/// fix-436 (display name in the decision text): closing through an alias renders the
+/// configured display name, while the relay keeps the typed value as its audit trail.
+#[cfg(unix)]
+#[test]
+fn an_alias_close_renders_the_configured_display_name_in_the_decision() {
+    let fixture = project();
+    fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
+    let closed = fixture.ok(&args(&relay(SCOPE, "SYNTHETIC-human")));
+    let decision = decisions(&fixture).pop().unwrap();
+    assert!(
+        decision.starts_with(&format!(
+            "SYNTHETIC Person decided \"{SCOPE}\": \"yes, go\""
+        )),
+        "{decision}"
+    );
+    assert_eq!(
+        closed["relayed_decision"]["relayed_by"]["decided_by"],
+        "SYNTHETIC-human"
+    );
+}
+
+/// fix-436 (display name in the decision text): closing through the display name
+/// itself renders it unchanged.
+#[cfg(unix)]
+#[test]
+fn an_exact_name_close_renders_the_display_name_unchanged() {
+    let fixture = project();
+    fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
+    let _closed = fixture.ok(&args(&relay(SCOPE, "SYNTHETIC Person")));
+    let decision = decisions(&fixture).pop().unwrap();
+    assert!(
+        decision.starts_with(&format!(
+            "SYNTHETIC Person decided \"{SCOPE}\": \"yes, go\""
+        )),
+        "{decision}"
+    );
+}
+
 #[cfg(unix)]
 #[test]
 fn a_review_gate_needs_a_verdict_and_runs_the_review_with_it() {
