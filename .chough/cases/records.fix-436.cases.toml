@@ -1,0 +1,42 @@
+# fix-436: a relayed gate close renders the decided human's configured
+# display name; the stored relay keeps the raw --decided-by (REQ-records-008).
+profile = "chough-testing/1"
+module = "records"
+
+[[case]]
+id = "TC-records-gate-decision-renders-display-name"
+title = "a gate close through an alias renders the configured display name in the decision text while the stored relay keeps the typed decided-by"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-23"]
+requirements = ["REQ-records-008"]
+paths = ["src/checkpoint.rs", "src/gates.rs", "src/change.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::an_alias_close_renders_the_configured_display_name_in_the_decision passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "humans", "--", "--exact", "an_alias_close_renders_the_configured_display_name_in_the_decision"]
+expect_output = ["test an_alias_close_renders_the_configured_display_name_in_the_decision ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-records-gate-decision-exact-name-unchanged"
+title = "a gate close whose decided-by already equals the display name renders the same decision text as before"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-23"]
+requirements = ["REQ-records-008"]
+paths = ["src/checkpoint.rs", "src/gates.rs", "src/change.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::an_exact_name_close_renders_the_display_name_unchanged passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "humans", "--", "--exact", "an_exact_name_close_renders_the_display_name_unchanged"]
+expect_output = ["test an_exact_name_close_renders_the_display_name_unchanged ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600

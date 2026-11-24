@@ -5,7 +5,7 @@ aliases: [fix-436]
 objective: fix-436-overnight
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,13 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-436
+    holds: accept
+    drives: review
+    opened: 2026-11-24T04:47:06Z
 run_consents: []
-next: Continue test
+next: Continue accept
 ---
 # fix-436-overnight
 
@@ -78,4 +82,15 @@ fix-436-overnight
   - native_change: fix-436
   - gate: native:approved
   - revision: 71a5c468a92d609113efbd5382317a18f1948e6e
+  - by: unknown agent (hc t14z)
+- 2026-11-24T04:47:03Z · advance · test → accept · native:approved ^t-9ba897
+  - native_change: fix-436
+  - gate: native:approved
+  - revision: 8c8acfcab211a820125d7570d9acebb7386730bd
+  - by: unknown agent (hc t14z)
+- 2026-11-24T04:47:06Z · gate-opened · accept → accept · Implementation review of fix-436 ^t-17a90a
+  - native_change: fix-436
+  - revision: 8c8acfcab211a820125d7570d9acebb7386730bd
+  - holds: accept
+  - drives: review
   - by: unknown agent (hc t14z)

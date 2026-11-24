@@ -19,6 +19,8 @@ files: []
 observations:
   - 2026-11-24-tc-cli-refusal-note-quotes-the-recorded-refusal
   - 2026-11-24-tc-cli-refusal-note-fallback-keeps-no-reason
+  - 2026-11-24-tc-records-gate-decision-renders-display-name
+  - 2026-11-24-tc-records-gate-decision-exact-name-unchanged
 bugs: []
 blockers: []
 waiting_on_human:
@@ -46,6 +48,8 @@ fix-439-overnight
 
 - [Ran cargo test --locked --test native_check -- --exact a_recorded_refusal_is_shown_in_the_not_passed_note for TC-cli-refusal-note-quotes-the-recorded-refusal: passed (exit 0).](evidence/2026-11-24-tc-cli-refusal-note-quotes-the-recorded-refusal.md)
 - [Ran cargo test --locked --test native_check -- --exact the_fallback_note_is_kept_when_no_refusal_is_recorded for TC-cli-refusal-note-fallback-keeps-no-reason: passed (exit 0).](evidence/2026-11-24-tc-cli-refusal-note-fallback-keeps-no-reason.md)
+- [Ran cargo test --locked --test humans -- --exact an_alias_close_renders_the_configured_display_name_in_the_decision for TC-records-gate-decision-renders-display-name: passed (exit 0).](evidence/2026-11-24-tc-records-gate-decision-renders-display-name.md)
+- [Ran cargo test --locked --test humans -- --exact an_exact_name_close_renders_the_display_name_unchanged for TC-records-gate-decision-exact-name-unchanged: passed (exit 0).](evidence/2026-11-24-tc-records-gate-decision-exact-name-unchanged.md)
 
 ## Open threads
 
