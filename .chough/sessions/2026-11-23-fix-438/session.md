@@ -5,7 +5,7 @@ aliases: [fix-438]
 objective: "Fix chough#438: chough gate record closes all the named gates or none, as REQ-cli-061 requires"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-23-tc-cli-gate-record-all-or-none
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-438
-    holds: accept
-    drives: review
-    opened: 2026-11-23T18:08:58Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # Fix chough#438: chough gate record closes all the named gates or none, as REQ-cli-061 requires
 
@@ -40,6 +36,7 @@ Fix chough#438: chough gate record closes all the named gates or none, as REQ-cl
 ## Decisions and why
 
 - 0xLeif decided "Approve the scope of fix-438": "I approve" (pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch); recorded by pi-t14z; a relayed claim, not authenticated; ran specsync change approve fix-438 as 0xLeif
+- 0xLeif decided "Implementation review of fix-438": "Yes start merging those" (pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 14:15 UTC, his morning instruction 'Yes start merging those and talk to me if you need anything..' — review the six-change stack PR 448 and merge; relayed by pi-t14z, flagged as a relayed claim, not authenticated); recorded by pi-t14z; a relayed claim, not authenticated; ran specsync change review fix-438 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -110,4 +107,34 @@ Fix chough#438: chough gate record closes all the named gates or none, as REQ-cl
   - revision: 039363a822d1908c5e6c11609c4e4bb743757b8a
   - holds: accept
   - drives: review
+  - by: unknown agent (hc t14z)
+- 2026-11-24T14:20:11Z · direct-native-write · accept → accept · fix-438's lifecycle records changed outside Chough: state.json changed, verification.json changed, verification-attempts.json changed; state stays verifying ^t-3e4be0
+  - native_change: fix-438
+  - revision: abfa419898c92c2fffa9179f1b23e5ab4e57e9c8
+  - direct_write:
+    - change: fix-438
+    - files:
+      - state.json: changed
+      - verification.json: changed
+      - verification-attempts.json: changed
+    - before_state: verifying
+    - after_state: verifying
+  - by: unknown agent (hc t14z)
+- 2026-11-24T14:20:11Z · gate-closed · accept → accept · Implementation review of fix-438 ^t-a3aee6
+  - native_change: fix-438
+  - revision: abfa419898c92c2fffa9179f1b23e5ab4e57e9c8
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes start merging those
+    - where: pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 14:15 UTC, his morning instruction 'Yes start merging those and talk to me if you need anything..' — review the six-change stack PR 448 and merge; relayed by pi-t14z, flagged as a relayed claim, not authenticated
+    - recorded_by: pi-t14z
+    - summary_digest: 64cf9c518c08d951a34fcc0b0c64422f6286daf7d2eb69464454546e902c9a7b
+    - list: 312988eb1a5c
+    - native: specsync change review fix-438
+    - actor: 0xLeif
+  - by: unknown agent (hc t14z)
+- 2026-11-24T14:20:12Z · advance · accept → done · native:archived ^t-c07a21
+  - native_change: fix-438
+  - gate: native:archived
+  - revision: abfa419898c92c2fffa9179f1b23e5ab4e57e9c8
   - by: unknown agent (hc t14z)
