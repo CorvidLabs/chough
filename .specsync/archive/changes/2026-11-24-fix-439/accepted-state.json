@@ -7,11 +7,11 @@
   "title": "fix-439",
   "description": "next and status show the refused-check reason recorded in verification-attempts.json instead of a note that keeps no reason",
   "kind": "feature",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "bdda89e40b5ff3086e3d571305f82215a120f8a5",
   "created_at": 1795478368,
-  "updated_at": 1795530091,
+  "updated_at": 1795530108,
   "affected_specs": [
     "cli"
   ],

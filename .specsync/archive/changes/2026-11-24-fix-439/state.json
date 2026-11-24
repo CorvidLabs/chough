@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-439",
+  "slug": "fix-439",
+  "title": "fix-439",
+  "description": "next and status show the refused-check reason recorded in verification-attempts.json instead of a note that keeps no reason",
+  "kind": "feature",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "bdda89e40b5ff3086e3d571305f82215a120f8a5",
+  "created_at": 1795478368,
+  "updated_at": 1795530111,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "docs/cli.md",
+    "src/change.rs",
+    "src/checkpoint.rs",
+    "src/gates.rs",
+    "src/native_check.rs",
+    "tests/humans.rs",
+    "tests/native_check.rs",
+    "tests/relay.rs",
+    ".chough/cases/cli.fix-439.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "next and status surface the refusal recorded in verification-attempts.json instead of the keeps-no-reason note, with the fallback note unchanged when no refusal is recorded, REQ-cli-039 amended by delta to match, docs/cli.md updated, full suite green"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "none",
+    "public_contract": "yes"
+  }
+}
