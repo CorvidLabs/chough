@@ -117,3 +117,9 @@ digest does not match its approved projection"; `specsync change show`:
 approval_valid false), and `chough change check fix-441` refuses with the same
 digest error until a fresh fix-441 definition approval exists. Leif must
 approve the re-keyed change; then check, review and ship can run.
+
+Re-review requested from corvid-agent on 2026-11-25 (~15:47Z): the review-blocking
+annotations were reverted and re-expressed as adjacent approval-corrections.json
+files (archive shards 3/4 + 4/4 pass), the journal path redacted, all checks green.
+Leif is nudging the reviewer directly; this note moves the head so the push event
+re-triggers its review.
