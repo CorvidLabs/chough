@@ -1,6 +1,6 @@
 ---
 id: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
-state: verifying
+state: archived
 type: feature
 base_commit: 050e2c35b5f4f1f7c16d45e66ca697597803fb80
 ---

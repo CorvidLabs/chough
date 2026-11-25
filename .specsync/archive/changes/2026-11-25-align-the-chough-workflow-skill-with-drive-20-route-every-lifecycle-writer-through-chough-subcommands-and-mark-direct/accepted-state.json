@@ -7,11 +7,11 @@
   "title": "Align the chough-workflow skill with DRIVE-20: route every lifecycle writer through chough subcommands and mark direct specsync change invocation as a recorded direct-native-write violation",
   "description": "Align the chough-workflow skill with DRIVE-20: route every lifecycle writer through chough subcommands and mark direct specsync change invocation as a recorded direct-native-write violation",
   "kind": "feature",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "050e2c35b5f4f1f7c16d45e66ca697597803fb80",
   "created_at": 1795624483,
-  "updated_at": 1795630129,
+  "updated_at": 1795630169,
   "affected_specs": [
     "cli"
   ],

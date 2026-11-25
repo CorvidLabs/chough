@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct",
+  "implementation_commit": "fb0562045e8412aae2130e056dc90fbeb7ab5302",
+  "implementation_tree": "5a2445188015586719b7e135c23ee884e3e19672",
+  "contract_digest": "46248f858e46eea4ef46f73890245e8f20085de0200388ae8760cf85d4d97e32",
+  "workspace_digest": "7e9f707ea1404572d8ecc517e137e75186f7b54b3ff462f2fc837d021d30d72e",
+  "closing_digest": "326e7cc80f31dc10e9de1ca15adecf8ef8493db1669345ae0d6275e01d123b9b",
+  "review_digest": "3c8837ca062cdefe1294c6445e7d3cb1af4dbc541de9f77c0cf4cd194ef4441d",
+  "finalization_digest": "789ba5aa0ce525637a7d94d1ce56864b642446a37ea380b2a994c62ff94d8d2c",
+  "timestamp": 1795630169
+}
