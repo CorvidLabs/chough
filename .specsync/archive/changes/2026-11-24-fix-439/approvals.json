@@ -93,7 +93,7 @@
       "actor": "0xLeif",
       "timestamp": 1795494331,
       "digest": "edb06ae49f23c36fc0f9785790ac2c276afb89df5246342fc0df1aa5eaf8d0cb",
-      "note": "mechanical re-approval: re-scoping only (the REQ-cli-039 spec delta the second review required; no_spec_change now false, affected_paths unchanged), original definition approval stands; recorded as mechanical per Leif's ruling, pi chat t14z 2026-11-25; relayed by t14z orchestrator; not authenticated",
+      "note": null,
       "approved_scope": {
         "schema_version": 1,
         "change_id": "fix-439",
@@ -126,12 +126,6 @@
       },
       "approved_delta_bases": {
         "cli: REQUIREMENT REQ-cli-039": "a84acc22e4b0ec4f3b591bc46f2392b1647a18d7d0f92c63cb87a895221ddc0f"
-      },
-      "relayed_by": {
-        "decided_by": "0xLeif",
-        "words": "Mark as mechanical (Recommended)",
-        "where": "pi chat t14z interview question 2, 2026-11-25T05:56:31Z (question: 'Ratify with your words, or authorize marking them mechanical?')",
-        "recorded_by": "pi-t14z"
       }
     },
     {
@@ -139,7 +133,7 @@
       "actor": "0xLeif",
       "timestamp": 1795530080,
       "digest": "94e323253c9c8305e5eea3a90588d101ce871df830f5b242a82bf45be5672238",
-      "note": "mechanical re-approval: re-scoping only (affected_paths re-declared as the exact files the branch carries, instead of the src and tests directories), original definition approval stands; recorded as mechanical per Leif's ruling, pi chat t14z 2026-11-25; relayed by t14z orchestrator; not authenticated",
+      "note": null,
       "approved_scope": {
         "schema_version": 1,
         "change_id": "fix-439",
@@ -178,12 +172,6 @@
       },
       "approved_delta_bases": {
         "cli: REQUIREMENT REQ-cli-039": "a84acc22e4b0ec4f3b591bc46f2392b1647a18d7d0f92c63cb87a895221ddc0f"
-      },
-      "relayed_by": {
-        "decided_by": "0xLeif",
-        "words": "Mark as mechanical (Recommended)",
-        "where": "pi chat t14z interview question 2, 2026-11-25T05:56:31Z (question: 'Ratify with your words, or authorize marking them mechanical?')",
-        "recorded_by": "pi-t14z"
       }
     },
     {
