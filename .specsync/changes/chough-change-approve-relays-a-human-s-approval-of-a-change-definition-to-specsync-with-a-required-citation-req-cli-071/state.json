@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071",
   "slug": "chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071",
   "title": "Chough change approve relays a human's approval of a change definition to SpecSync with a required citation (REQ-cli-071, DRIVE-20)",
   "description": "chough change approve relays a human's approval of a change definition to SpecSync with a required citation (REQ-cli-071, DRIVE-20)",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "61479feb1e88a57bc45716ff4e42ce84fb2b463b",
   "created_at": 1795572577,
-  "updated_at": 1795575846,
+  "updated_at": 1795576102,
   "affected_specs": [
     "cli"
   ],

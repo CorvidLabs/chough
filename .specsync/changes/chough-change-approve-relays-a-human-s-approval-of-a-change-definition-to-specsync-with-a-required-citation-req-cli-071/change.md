@@ -1,6 +1,6 @@
 ---
 id: chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
-state: draft
+state: approved
 type: feature
 base_commit: 61479feb1e88a57bc45716ff4e42ce84fb2b463b
 ---
