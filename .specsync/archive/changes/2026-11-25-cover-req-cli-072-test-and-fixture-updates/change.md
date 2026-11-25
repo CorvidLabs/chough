@@ -1,6 +1,6 @@
 ---
 id: cover-req-cli-072-test-and-fixture-updates
-state: verifying
+state: archived
 type: bug_fix
 base_commit: 9d826c7c660b579ad7e83faf6fac6e31fb29062d
 ---
