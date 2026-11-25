@@ -47,7 +47,7 @@
       "actor": "0xLeif",
       "timestamp": 1795529693,
       "digest": "79ed99ed67b0c1fe6863a3d2a3730761eb3b4143c346fe531828313d53d75c4d",
-      "note": null,
+      "note": "mechanical re-approval: re-scoping only (affected_paths narrowed), original definition approval stands; recorded as mechanical per Leif's ruling, pi chat t14z 2026-11-25; relayed by t14z orchestrator; not authenticated",
       "approved_scope": {
         "schema_version": 1,
         "change_id": "fix-436",
@@ -82,7 +82,13 @@
         }
       },
       "approved_delta_digests": {},
-      "approved_delta_bases": {}
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Mark as mechanical (Recommended)",
+        "where": "pi chat t14z interview question 2, 2026-11-25T05:56:31Z (question: 'Ratify with your words, or authorize marking them mechanical?')",
+        "recorded_by": "pi-t14z"
+      }
     },
     {
       "gate": "finalization",
