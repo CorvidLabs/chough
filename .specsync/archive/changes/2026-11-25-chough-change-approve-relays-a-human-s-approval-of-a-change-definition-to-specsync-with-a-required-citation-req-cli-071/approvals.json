@@ -50,6 +50,13 @@
         "where": "pi chat t14z, 2026-11-25T03:07Z, orchestrator session (typo for 'I approve', intent unambiguous)",
         "recorded_by": "pi t14z orchestrator (GLM-5.3-Flash-oQ4e-mtp)"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795580044,
+      "digest": "5d79e57bfb3d57e8d25a8fb982e4d6d0540d53bf4c9caaace4573b441b22df2b",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

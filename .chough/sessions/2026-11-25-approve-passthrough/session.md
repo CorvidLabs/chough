@@ -5,7 +5,7 @@ aliases: [approve-passthrough]
 objective: chough change approve relays a human's approval of a change definition to SpecSync through chough, with a required citation, so no agent calls specsync change approve directly (DRIVE-20)
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -27,7 +27,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Implementation review of chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071\" closed (review pass); run `chough change ship chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071` to ship."
+next: Continue accept
 ---
 # chough change approve relays a human's approval of a change definition to SpecSync through chough, with a required citation, so no agent calls specsync change approve directly (DRIVE-20)
 
@@ -116,4 +116,14 @@ chough change approve relays a human's approval of a change definition to SpecSy
     - recorded_by: pi t14z orchestrator (GLM-5.3-Flash-oQ4e-mtp)
     - native: specsync change review chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
     - actor: 0xLeif
+  - by: unknown agent (hc t14z)
+- 2026-11-25T04:13:34Z · advance · build → test · native:verifying ^t-396df6
+  - native_change: chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
+  - gate: native:verifying
+  - revision: 84d0871f96a824d0c04c09744066bca77cfe5887
+  - by: unknown agent (hc t14z)
+- 2026-11-25T04:13:34Z · advance · test → accept · native:verifying ^t-943132
+  - native_change: chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
+  - gate: native:verifying
+  - revision: 84d0871f96a824d0c04c09744066bca77cfe5887
   - by: unknown agent (hc t14z)

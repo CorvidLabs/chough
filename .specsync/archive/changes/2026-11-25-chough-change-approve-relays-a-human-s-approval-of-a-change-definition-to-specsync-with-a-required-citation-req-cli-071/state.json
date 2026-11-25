@@ -7,11 +7,11 @@
   "title": "Chough change approve relays a human's approval of a change definition to SpecSync with a required citation (REQ-cli-071, DRIVE-20)",
   "description": "chough change approve relays a human's approval of a change definition to SpecSync with a required citation (REQ-cli-071, DRIVE-20)",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "61479feb1e88a57bc45716ff4e42ce84fb2b463b",
   "created_at": 1795572577,
-  "updated_at": 1795579967,
+  "updated_at": 1795580047,
   "affected_specs": [
     "cli"
   ],
