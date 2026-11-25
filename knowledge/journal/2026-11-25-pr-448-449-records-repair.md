@@ -73,7 +73,7 @@ approvals.
 
 ## Part B: PR 449 re-keyed as fix-441 and merged with PR 448
 
-In a throwaway clone (`/tmp/pr449-rekey`), branch
+In a throwaway clone (`<redacted:path>pr449-rekey`), branch
 `fix/441-grouped-gates-rekeyed` (from `fix/438-atomic-grouped-gates` tip
 c469d409), two commits:
 
