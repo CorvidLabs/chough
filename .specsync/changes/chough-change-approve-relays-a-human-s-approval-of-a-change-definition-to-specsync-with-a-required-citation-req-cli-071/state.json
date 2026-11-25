@@ -10,7 +10,7 @@
   "state": "draft",
   "base_commit": "61479feb1e88a57bc45716ff4e42ce84fb2b463b",
   "created_at": 1795572577,
-  "updated_at": 1795572635,
+  "updated_at": 1795575846,
   "affected_specs": [
     "cli"
   ],
@@ -21,8 +21,10 @@
     "docs/cli.md",
     "README.md",
     "specs/cli/requirements.md",
-    "changelog.d/2026-11-25-approve-passthrough.md",
-    ".chough/cases/cli.approve-passthrough.cases.toml"
+    "changelog.d/2026-11-25-approve-passthrough.toml",
+    ".chough/cases/cli.approve-passthrough.cases.toml",
+    ".gitattributes",
+    "changelog.d/2026-11-25-approve-passthrough.md"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
