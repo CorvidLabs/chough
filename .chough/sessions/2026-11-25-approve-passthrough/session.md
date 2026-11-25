@@ -19,7 +19,11 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
+    holds: build
+    drives: review
+    opened: 2026-11-25T04:11:59Z
 run_consents: []
 next: "Stop before the review gate. After review: at materialization (chough change check) add .chough/sessions/2026-11-25-approve-passthrough/agent/cli.approve-passthrough.cases.toml as .chough/cases/cli.approve-passthrough.cases.toml, run chough cases run, then open the review gate. The phantom affected_paths entry needs a human-authorized specsync change send-back or stays declared"
 ---
@@ -74,3 +78,9 @@ chough change approve relays a human's approval of a change definition to SpecSy
   - gate: native:approved
   - revision: 966c8888a1aa7583fc4faf4c0a535a81dc08d6d6
   - by: unknown agent (hc t17v)
+- 2026-11-25T04:11:59Z · gate-opened · build → build · Implementation review of chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071 ^t-4a6b0e
+  - native_change: chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
+  - revision: 576e98db9873213a8fb70cdc2bdadb8a89898d91
+  - holds: build
+  - drives: review
+  - by: unknown agent (hc t14z)
