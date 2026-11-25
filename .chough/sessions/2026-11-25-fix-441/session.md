@@ -1,7 +1,7 @@
 ---
 kind: session
-id: 2026-11-23-fix-438
-aliases: [fix-438]
+id: 2026-11-25-fix-441
+aliases: [fix-441]
 objective: Keep both human gates pending when a grouped decision fails
 intent_scope: FLOW
 modules: [cli]
@@ -9,7 +9,7 @@ stage: accept
 stage_status: active
 iteration: 1
 callers: []
-native_change: fix-438
+native_change: fix-441
 pr: ""
 criteria: [FLOW-20]
 requirements: [REQ-cli-061]
@@ -32,7 +32,7 @@ observations:
 bugs: []
 blockers: []
 waiting_on_human:
-  - gate: Implementation review of fix-438
+  - gate: Implementation review of fix-441
     holds: accept
     drives: review
     opened: 2026-11-23T15:36:44Z
@@ -55,7 +55,7 @@ Keep both human gates pending when a grouped decision fails
 ## Decisions and why
 
 - Confirmed maintainer interview intent: Human gates: if one of two decisions fails, both gates stay pending (#438)
-- 0xLeif decided "Scope approval of fix-438": "I approve all" (Implementation scope approval in the collaboration conversation, relayed by the lead agent); recorded by codex-audit-delta; a relayed claim, not authenticated; ran specsync change approve fix-438 as 0xLeif
+- 0xLeif decided "Scope approval of fix-441": "I approve all" (Implementation scope approval in the collaboration conversation, relayed by the lead agent); recorded by codex-audit-delta; a relayed claim, not authenticated; ran specsync change approve fix-441 as 0xLeif
 
 ## What was verified
 
@@ -85,40 +85,40 @@ Keep both human gates pending when a grouped decision fails
 - 2026-11-23T14:42:38Z · skip · design → plan · This restores documented CLI gate-record behavior without a visual design change. ^t-805ce5
   - revision: 0d5988f804155e7b3c285cace6cc0c52f540e035
   - by: unknown agent (hc t14v)
-- 2026-11-23T14:46:07Z · gate-opened · plan → plan · Scope approval of fix-438 ^t-09b7fb
-  - native_change: fix-438
+- 2026-11-23T14:46:07Z · gate-opened · plan → plan · Scope approval of fix-441 ^t-09b7fb
+  - native_change: fix-441
   - revision: 0d5988f804155e7b3c285cace6cc0c52f540e035
   - holds: plan
   - drives: approve
   - by: unknown agent (hc t14v)
-- 2026-11-23T15:27:15Z · gate-closed · plan → plan · Scope approval of fix-438 ^t-d94345
-  - native_change: fix-438
+- 2026-11-23T15:27:15Z · gate-closed · plan → plan · Scope approval of fix-441 ^t-d94345
+  - native_change: fix-441
   - revision: 0d5988f804155e7b3c285cace6cc0c52f540e035
   - relayed_by:
     - decided_by: 0xLeif
     - words: I approve all
     - where: Implementation scope approval in the collaboration conversation, relayed by the lead agent
     - recorded_by: codex-audit-delta
-    - native: specsync change approve fix-438
+    - native: specsync change approve fix-441
     - actor: 0xLeif
   - by: unknown agent (hc t14v)
 - 2026-11-23T15:27:16Z · advance · plan → build · native:approved ^t-952c55
-  - native_change: fix-438
+  - native_change: fix-441
   - gate: native:approved
   - revision: 0d5988f804155e7b3c285cace6cc0c52f540e035
   - by: unknown agent (hc t14v)
 - 2026-11-23T15:35:02Z · advance · build → test · native:approved ^t-88f9db
-  - native_change: fix-438
+  - native_change: fix-441
   - gate: native:approved
   - revision: b7fbb1c9d8e3c3d2c39513490920c5a37e5c093f
   - by: unknown agent (hc t14v)
 - 2026-11-23T15:36:44Z · advance · test → accept · native:approved ^t-a9478b
-  - native_change: fix-438
+  - native_change: fix-441
   - gate: native:approved
   - revision: b7fbb1c9d8e3c3d2c39513490920c5a37e5c093f
   - by: unknown agent (hc t14v)
-- 2026-11-23T15:36:44Z · gate-opened · accept → accept · Implementation review of fix-438 ^t-c83b28
-  - native_change: fix-438
+- 2026-11-23T15:36:44Z · gate-opened · accept → accept · Implementation review of fix-441 ^t-c83b28
+  - native_change: fix-441
   - revision: b7fbb1c9d8e3c3d2c39513490920c5a37e5c093f
   - holds: accept
   - drives: review

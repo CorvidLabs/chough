@@ -2,8 +2,8 @@
   "schema_version": 1,
   "workflow_version": 3,
   "workflow_origin_version": 2,
-  "id": "fix-438",
-  "slug": "fix-438",
+  "id": "fix-441",
+  "slug": "fix-441",
   "title": "Fix 438",
   "description": "fix 438",
   "kind": "bug_fix",
@@ -21,7 +21,7 @@
     "tests/gates.rs",
     ".chough/cases/cli.atomic-grouped-gates.cases.toml",
     "docs/cli.md",
-    "changelog.d/2026-11-23-fix-438.md"
+    "changelog.d/2026-11-25-fix-441.md"
   ],
   "no_spec_change": true,
   "no_spec_change_rationale": "REQ-cli-061 already requires that a grouped gate record closes all selected gates or none. Restore that behavior and document the native boundary without changing the requirement.",

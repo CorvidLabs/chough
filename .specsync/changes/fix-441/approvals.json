@@ -5,10 +5,10 @@
       "actor": "0xLeif",
       "timestamp": 1795447635,
       "digest": "1e7a3518e5cd9fb0880d9db9a4d3797168435907bb028705f1bf69ad6802828c",
-      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-438\": \"I approve all\" (Implementation scope approval in the collaboration conversation, relayed by the lead agent). Relayed and recorded by codex-audit-delta at 2026-11-23T15:27:15Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-441\": \"I approve all\" (Implementation scope approval in the collaboration conversation, relayed by the lead agent). Relayed and recorded by codex-audit-delta at 2026-11-23T15:27:15Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
       "approved_scope": {
         "schema_version": 1,
-        "change_id": "fix-438",
+        "change_id": "fix-441",
         "title": "Fix 438",
         "description": "fix 438",
         "kind": "bug_fix",
@@ -17,7 +17,7 @@
         ],
         "affected_paths": [
           ".chough/cases/cli.atomic-grouped-gates.cases.toml",
-          "changelog.d/2026-11-23-fix-438.md",
+          "changelog.d/2026-11-25-fix-441.md",
           "docs/cli.md",
           "src/checkpoint.rs",
           "src/gates.rs",
