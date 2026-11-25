@@ -1,0 +1,75 @@
+---
+kind: session
+id: 2026-11-25-the-chough-workflow-skill-routes-every-lifecycle-writer
+aliases: [the-chough-workflow-skill-routes-every-lifecycle-writer-through]
+objective: "The chough workflow skill routes every lifecycle writer through chough subcommands: direct specsync change invocation becomes a recorded violation with the chough-first order explicit"
+intent_scope: process
+modules: [workflow]
+stage: build
+stage_status: active
+iteration: 1
+callers: []
+native_change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+pr: ""
+criteria: [DRIVE-20]
+requirements: []
+cases: []
+design: []
+files: []
+observations: []
+bugs: []
+blockers: []
+waiting_on_human: []
+run_consents: []
+next: Continue build
+---
+# The chough workflow skill routes every lifecycle writer through chough subcommands: direct specsync change invocation becomes a recorded violation with the chough-first order explicit
+
+## Goal
+
+The chough workflow skill routes every lifecycle writer through chough subcommands: direct specsync change invocation becomes a recorded violation with the chough-first order explicit
+
+## Where it stands
+
+## Decisions and why
+
+- Align the chough-workflow skill with DRIVE-20: the skill routes every lifecycle writer through chough subcommands; direct specsync change invocation is a recorded violation. Reason: the skill's 'Run HI, SpecSync and Fledge yourself' wording invited the PR-38 mistake where the orchestrator drove specsync directly and the chough session trail could not finish done (source: Leif, pi chat t14z, 2026-11-25, choosing 'Fix the skill + rules')
+- leif decided "Approve the scope of align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct": "Approve scope (Recommended)" (pi chat t14z interview, 2026-11-25T16:45Z (question: Chough change REQ-cli-072 (skill routes all lifecycle writers through chough): approve scope?)); recorded by pi-t14z; a relayed claim, not authenticated; ran specsync change approve align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct as 0xLeif
+
+## What was verified
+
+## Open threads
+
+## Timeline
+
+- 2026-11-25T16:34:02Z · start · intent → intent · The chough workflow skill routes every lifecycle writer through chough subcommands: direct specsync change invocation becomes a recorded violation with the chough-first order explicit ^t-7ac95d
+  - revision: 050e2c35b5f4f1f7c16d45e66ca697597803fb80
+  - by: unknown agent (hc t14z)
+- 2026-11-25T16:34:21Z · advance · intent → design ·  ^t-1b5980
+  - revision: 050e2c35b5f4f1f7c16d45e66ca697597803fb80
+  - by: unknown agent (hc t14z)
+- 2026-11-25T16:34:41Z · advance · design → plan ·  ^t-27b16c
+  - revision: 050e2c35b5f4f1f7c16d45e66ca697597803fb80
+  - by: unknown agent (hc t14z)
+- 2026-11-25T16:36:47Z · gate-opened · plan → plan · Approve the scope of align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct ^t-de47ab
+  - native_change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+  - revision: 050e2c35b5f4f1f7c16d45e66ca697597803fb80
+  - holds: plan
+  - drives: approve
+  - by: unknown agent (hc t14z)
+- 2026-11-25T16:37:14Z · gate-closed · plan → plan · Approve the scope of align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct ^t-c96fc0
+  - native_change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+  - revision: 050e2c35b5f4f1f7c16d45e66ca697597803fb80
+  - relayed_by:
+    - decided_by: leif
+    - words: Approve scope (Recommended)
+    - where: pi chat t14z interview, 2026-11-25T16:45Z (question: Chough change REQ-cli-072 (skill routes all lifecycle writers through chough): approve scope?)
+    - recorded_by: pi-t14z
+    - native: specsync change approve align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+    - actor: 0xLeif
+  - by: unknown agent (hc t14z)
+- 2026-11-25T16:37:19Z · advance · plan → build · native:approved ^t-5d3b32
+  - native_change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+  - gate: native:approved
+  - revision: 050e2c35b5f4f1f7c16d45e66ca697597803fb80
+  - by: unknown agent (hc t14z)
