@@ -25,13 +25,9 @@ observations:
   - 2026-11-25-tc-cli-approve-passthrough-leak-checks
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
-    holds: build
-    drives: review
-    opened: 2026-11-25T04:11:59Z
+waiting_on_human: []
 run_consents: []
-next: "Stop before the review gate. After review: at materialization (chough change check) add .chough/sessions/2026-11-25-approve-passthrough/agent/cli.approve-passthrough.cases.toml as .chough/cases/cli.approve-passthrough.cases.toml, run chough cases run, then open the review gate. The phantom affected_paths entry needs a human-authorized specsync change send-back or stays declared"
+next: "Gate \"Implementation review of chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071\" closed (review pass); run `chough change ship chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071` to ship."
 ---
 # chough change approve relays a human's approval of a change definition to SpecSync through chough, with a required citation, so no agent calls specsync change approve directly (DRIVE-20)
 
@@ -46,6 +42,7 @@ chough change approve relays a human's approval of a change definition to SpecSy
 - Code, tests, docs and the changelog fragment are written and green before the scope approval, per the orchestrator's dispatch (quest q-14-1); the definition approval of this change stays Leif's and comes after the handoff.
 - leif decided "Scope approval of chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071": "I approvwe" (pi chat t14z, 2026-11-25T03:07Z, orchestrator session (typo for 'I approve', intent unambiguous)); recorded by pi t14z orchestrator (GLM-5.3-Flash-oQ4e-mtp); a relayed claim, not authenticated; ran specsync change approve chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071 as 0xLeif
 - Fix round for the q-14 pre-gate checker: reverted the out-of-scope .gitattributes line to origin/main's pinned bytes; approve now runs in the shared steps() table so the .chough/ invariance AC (REQ-cli-071) rests on a real test; the phantom affected_paths entry (changelog.d/2026-11-25-approve-passthrough.toml) cannot be removed while the change is approved — specsync refuses interview answers (expected draft), and send-back needs Leif's authorization
+- leif decided "Implementation review of chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071": "Approve the implementation review" (pi chat t14z, 2026-11-25T04:11Z, orchestrator session, interview question 2 (structured questionnaire answer), after both review verdicts (qwen38 pass t184, glm53 pass t185) and cosmetic round 576e98db were presented); recorded by pi t14z orchestrator (GLM-5.3-Flash-oQ4e-mtp); a relayed claim, not authenticated; ran specsync change review chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -96,4 +93,27 @@ chough change approve relays a human's approval of a change definition to SpecSy
   - revision: 576e98db9873213a8fb70cdc2bdadb8a89898d91
   - holds: build
   - drives: review
+  - by: unknown agent (hc t14z)
+- 2026-11-25T04:12:51Z · direct-native-write · build → build · chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071's lifecycle records changed outside Chough: state.json changed, verification.json changed, verification-attempts.json changed; state stays verifying ^t-dcc538
+  - native_change: chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
+  - revision: 86806b6529845d800b79c98c32cddd21b093ce74
+  - direct_write:
+    - change: chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
+    - files:
+      - state.json: changed
+      - verification.json: changed
+      - verification-attempts.json: changed
+    - before_state: verifying
+    - after_state: verifying
+  - by: unknown agent (hc t14z)
+- 2026-11-25T04:12:51Z · gate-closed · build → build · Implementation review of chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071 ^t-dc9f37
+  - native_change: chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
+  - revision: 86806b6529845d800b79c98c32cddd21b093ce74
+  - relayed_by:
+    - decided_by: leif
+    - words: Approve the implementation review
+    - where: pi chat t14z, 2026-11-25T04:11Z, orchestrator session, interview question 2 (structured questionnaire answer), after both review verdicts (qwen38 pass t184, glm53 pass t185) and cosmetic round 576e98db were presented
+    - recorded_by: pi t14z orchestrator (GLM-5.3-Flash-oQ4e-mtp)
+    - native: specsync change review chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
+    - actor: 0xLeif
   - by: unknown agent (hc t14z)
