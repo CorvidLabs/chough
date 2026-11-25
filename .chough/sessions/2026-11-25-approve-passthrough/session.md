@@ -16,7 +16,13 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-25-tc-cli-approve-passthrough-relay-note
+  - 2026-11-25-tc-cli-approve-passthrough-relay-note-2ec238
+  - 2026-11-25-tc-cli-approve-passthrough-version-default
+  - 2026-11-25-tc-cli-approve-passthrough-refuses-without-relay
+  - 2026-11-25-tc-cli-approve-passthrough-pass-through
+  - 2026-11-25-tc-cli-approve-passthrough-leak-checks
 bugs: []
 blockers: []
 waiting_on_human:
@@ -42,6 +48,13 @@ chough change approve relays a human's approval of a change definition to SpecSy
 - Fix round for the q-14 pre-gate checker: reverted the out-of-scope .gitattributes line to origin/main's pinned bytes; approve now runs in the shared steps() table so the .chough/ invariance AC (REQ-cli-071) rests on a real test; the phantom affected_paths entry (changelog.d/2026-11-25-approve-passthrough.toml) cannot be removed while the change is approved — specsync refuses interview answers (expected draft), and send-back needs Leif's authorization
 
 ## What was verified
+
+- [Ran cargo test --locked --test change -- --exact approve_runs_specsync_with_the_relay_in_the_note for TC-cli-approve-passthrough-relay-note: passed (exit 0, tests run 1).](evidence/2026-11-25-tc-cli-approve-passthrough-relay-note.md)
+- [Ran cargo test --locked --test change -- --exact approve_runs_specsync_with_the_relay_in_the_note for TC-cli-approve-passthrough-relay-note: passed (exit 0, tests run 1).](evidence/2026-11-25-tc-cli-approve-passthrough-relay-note-2ec238.md)
+- [Ran cargo test --locked --test change -- --exact approve_defaults_the_recorder_to_the_chough_version for TC-cli-approve-passthrough-version-default: passed (exit 0, tests run 1).](evidence/2026-11-25-tc-cli-approve-passthrough-version-default.md)
+- [Ran cargo test --locked --test change -- --exact approve_refuses_before_running_without_the_relay for TC-cli-approve-passthrough-refuses-without-relay: passed (exit 0, tests run 1).](evidence/2026-11-25-tc-cli-approve-passthrough-refuses-without-relay.md)
+- [Ran cargo test --locked --test change -- --exact approve_passes_specsync_output_and_exit_code_through for TC-cli-approve-passthrough-pass-through: passed (exit 0, tests run 1).](evidence/2026-11-25-tc-cli-approve-passthrough-pass-through.md)
+- [Ran cargo test --locked --test change -- --exact approve_refuses_a_leaking_argument_before_specsync_runs for TC-cli-approve-passthrough-leak-checks: passed (exit 0, tests run 1).](evidence/2026-11-25-tc-cli-approve-passthrough-leak-checks.md)
 
 ## Open threads
 
