@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "b1f96755d7205b67d029439edf3c1bbf2933203d",
+      "contract_digest": "46248f858e46eea4ef46f73890245e8f20085de0200388ae8760cf85d4d97e32",
+      "execution_digest": "eec2299bc15e06671449fbe872b9a9bffa710085d5b141a2b5dd8a7f3a493345",
+      "workspace_digest": "7e9f707ea1404572d8ecc517e137e75186f7b54b3ff462f2fc837d021d30d72e",
+      "timestamp": 1795630099,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "I approve",
+        "where": "pi chat t14z, 2026-11-25T17:20Z (Leif's own message in the orchestrator chat, after the review round and the fix commit)",
+        "recorded_by": "pi-t14z"
+      }
+    }
+  ]
+}
