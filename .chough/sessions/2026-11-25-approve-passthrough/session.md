@@ -5,7 +5,7 @@ aliases: [approve-passthrough]
 objective: chough change approve relays a human's approval of a change definition to SpecSync through chough, with a required citation, so no agent calls specsync change approve directly (DRIVE-20)
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -27,7 +27,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # chough change approve relays a human's approval of a change definition to SpecSync through chough, with a required citation, so no agent calls specsync change approve directly (DRIVE-20)
 
@@ -126,4 +126,20 @@ chough change approve relays a human's approval of a change definition to SpecSy
   - native_change: chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
   - gate: native:verifying
   - revision: 84d0871f96a824d0c04c09744066bca77cfe5887
+  - by: unknown agent (hc t14z)
+- 2026-11-25T04:15:06Z · direct-native-write · accept → accept · chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071's lifecycle records changed outside Chough: review.json changed, review-attempts.json changed; state stays verifying ^t-3f922e
+  - native_change: chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
+  - revision: a6cd794f5572613094c168ca625fbfe0e8ce85a3
+  - direct_write:
+    - change: chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
+    - files:
+      - review.json: changed
+      - review-attempts.json: changed
+    - before_state: verifying
+    - after_state: verifying
+  - by: unknown agent (hc t14z)
+- 2026-11-25T04:15:06Z · advance · accept → done · native:archived ^t-c1298a
+  - native_change: chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071
+  - gate: native:archived
+  - revision: a6cd794f5572613094c168ca625fbfe0e8ce85a3
   - by: unknown agent (hc t14z)
