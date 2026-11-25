@@ -2,9 +2,65 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>2026-11-22T02:17:00Z</updated>
+<updated>2026-11-25T05:56:47Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
+  <entry>
+<title>Leif rules on PR 448/449 blockers</title>
+<id>urn:chough:journal:2026-11-25-leif-rules-on-pr-448-449-blockers</id>
+<updated>2026-11-25T05:56:47Z</updated>
+<link href="2026-11-25-leif-rules-on-pr-448-449-blockers.md"/>
+<category term="intent"/>
+</entry>
+  <entry>
+<title>Leif confirms the six-fix provenance and authorizes merge-after-archive</title>
+<id>urn:chough:journal:2026-11-25-leif-confirms-the-six-fix-provenance-and-authorizes-merge</id>
+<updated>2026-11-25T03:36:44Z</updated>
+<link href="2026-11-25-leif-confirms-the-six-fix-provenance-and-authorizes-merge.md"/>
+<category term="intent"/>
+</entry>
+  <entry>
+<title>Fix chough#440: the stage advance --to go-back hint must name…</title>
+<id>urn:chough:journal:2026-11-24-fix-chough-440-the-stage-advance-to-go-back-hint-must-name</id>
+<updated>2026-11-24T14:24:29Z</updated>
+<link href="2026-11-24-fix-chough-440-the-stage-advance-to-go-back-hint-must-name.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>fix-439-overnight</title>
+<id>urn:chough:journal:2026-11-24-fix-439-overnight</id>
+<updated>2026-11-24T14:22:56Z</updated>
+<link href="2026-11-24-fix-439-overnight.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Fix chough#438: chough gate record closes all the named gates or none</title>
+<id>urn:chough:journal:2026-11-24-fix-chough-438-chough-gate-record-closes-all-the-named-gates</id>
+<updated>2026-11-24T14:20:12Z</updated>
+<link href="2026-11-24-fix-chough-438-chough-gate-record-closes-all-the-named-gates.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Fix chough#437: a direct-write entry writes before_state and…</title>
+<id>urn:chough:journal:2026-11-24-fix-chough-437-a-direct-write-entry-writes-before-state-and</id>
+<updated>2026-11-24T14:18:39Z</updated>
+<link href="2026-11-24-fix-chough-437-a-direct-write-entry-writes-before-state-and.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>fix-436-overnight</title>
+<id>urn:chough:journal:2026-11-24-fix-436-overnight</id>
+<updated>2026-11-24T14:16:26Z</updated>
+<link href="2026-11-24-fix-436-overnight.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Fix chough#435: inbox add writes its entry without a hard link</title>
+<id>urn:chough:journal:2026-11-24-fix-chough-435-inbox-add-writes-its-entry-without-a-hard-link</id>
+<updated>2026-11-24T14:12:32Z</updated>
+<link href="2026-11-24-fix-chough-435-inbox-add-writes-its-entry-without-a-hard-link.md"/>
+<category term="shipped"/>
+</entry>
   <entry>
 <title>The roadmap&apos;s delivered table has the 0.6.3 release row</title>
 <id>urn:chough:journal:2026-11-22-the-roadmap-s-delivered-table-has-the-0-6-3-release-row</id>
@@ -87,62 +143,6 @@
 <id>urn:chough:journal:2026-11-20-the-gate-summary-tells-the-truth-and-an-unattended-done-needs</id>
 <updated>2026-11-20T21:35:51Z</updated>
 <link href="2026-11-20-the-gate-summary-tells-the-truth-and-an-unattended-done-needs.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>A code fence that never closes hides no section</title>
-<id>urn:chough:journal:2026-11-20-a-code-fence-that-never-closes-hides-no-section</id>
-<updated>2026-11-20T19:34:47Z</updated>
-<link href="2026-11-20-a-code-fence-that-never-closes-hides-no-section.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>A new record is written whole or not at all</title>
-<id>urn:chough:journal:2026-11-20-a-new-record-is-written-whole-or-not-at-all</id>
-<updated>2026-11-20T18:58:07Z</updated>
-<link href="2026-11-20-a-new-record-is-written-whole-or-not-at-all.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>A closed standard output ends a command quietly with its own exit code</title>
-<id>urn:chough:journal:2026-11-20-a-closed-standard-output-ends-a-command-quietly-with-its-own</id>
-<updated>2026-11-20T17:34:18Z</updated>
-<link href="2026-11-20-a-closed-standard-output-ends-a-command-quietly-with-its-own.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>bug add records the session on the new bug and never writes the session</title>
-<id>urn:chough:journal:2026-11-20-bug-add-records-the-session-on-the-new-bug-and-never-writes</id>
-<updated>2026-11-20T17:04:27Z</updated>
-<link href="2026-11-20-bug-add-records-the-session-on-the-new-bug-and-never-writes.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Skill and create-new batch</title>
-<id>urn:chough:journal:2026-11-20-skill-and-create-new-batch</id>
-<updated>2026-11-20T15:33:35Z</updated>
-<link href="2026-11-20-skill-and-create-new-batch.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>change ready counts only a change&apos;s own work after a rebase</title>
-<id>urn:chough:journal:2026-11-20-change-ready-counts-only-a-change-s-own-work-after-a-rebase</id>
-<updated>2026-11-20T14:17:24Z</updated>
-<link href="2026-11-20-change-ready-counts-only-a-change-s-own-work-after-a-rebase.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Control and echo batch</title>
-<id>urn:chough:journal:2026-11-20-control-and-echo-batch</id>
-<updated>2026-11-20T07:33:43Z</updated>
-<link href="2026-11-20-control-and-echo-batch.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Migration refuses before it writes and leaves a working tree</title>
-<id>urn:chough:journal:2026-11-20-migration-refuses-before-it-writes-and-leaves-a-working-tree</id>
-<updated>2026-11-20T06:25:08Z</updated>
-<link href="2026-11-20-migration-refuses-before-it-writes-and-leaves-a-working-tree.md"/>
 <category term="shipped"/>
 </entry>
 </feed>

@@ -2523,7 +2523,7 @@ fn advance_to(
     })?;
     ensure!(
         end > start,
-        "{target} is not ahead of {from}; `stage advance --to` only moves forward (use `chough stage back` or `chough stage reset` to go back)"
+        "{target} is not ahead of {from}; `stage advance --to` only moves forward (use `chough stage back --to <stage> --reason \"<why>\"` or `chough stage reset --reason \"<why>\"` to go back)"
     );
     // Every stage the move leaves counts (REQ-cli-030).
     ensure_no_open_human_gate(session, "advance", &ORDER[start..end])?;

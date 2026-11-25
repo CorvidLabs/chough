@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-440",
+  "slug": "fix-440",
+  "title": "Fix 440",
+  "description": "fix 440",
+  "kind": "feature",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "0d5988f804155e7b3c285cace6cc0c52f540e035",
+  "created_at": 1795411047,
+  "updated_at": 1795530204,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/stage.rs",
+    "tests",
+    "changelog.d",
+    ".gitattributes"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "A refusal hint string only; no contract text changes (docs fix named by the 0.6.2 audit, docs/exercises/cold-start.md already requires --reason in hints)",
+  "acceptance_criteria": [
+    "When stage advance --to names a stage that is not ahead, the refusal's go-back hint names --reason."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "none",
+    "public_contract": "no"
+  }
+}

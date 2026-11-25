@@ -1,0 +1,110 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795490249,
+      "digest": "2e3f02c961f7c88a08cf80ba59a648abc94f83d4536e3d90d566455fce64260c",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-436 (display name in decision text)\": \"I approve\" (pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 03:20 UTC, on his standing overnight approval of the six-fix stack (fix-436 is the sixth), relayed by pi-t14z after he confirmed the display-name-only scope in the one-at-a-time interview — flagged as a relayed claim, not authenticated). Relayed and recorded by pi-t14z at 2026-11-24T03:17:28Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-436",
+        "title": "fix-436",
+        "description": "Gate decisions show the configured display name instead of the raw --decided-by text",
+        "kind": "feature",
+        "affected_specs": [
+          "records"
+        ],
+        "affected_paths": [
+          "docs/cli.md",
+          "src",
+          "tests"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-records-008 already defines name as 'the display name records show'; this makes decision_text honor it. No contract or refusal semantics change",
+        "acceptance_criteria": [
+          "A gate close with an alias renders the configured display name in the decision text; an exact-name close is unchanged; the stored relay keeps the raw typed decided-by; tests pin both; full suite green"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "I approve",
+        "where": "pi chat t14z (CorvidLabs coordination session), 2026-11-24 about 03:20 UTC, on his standing overnight approval of the six-fix stack (fix-436 is the sixth), relayed by pi-t14z after he confirmed the display-name-only scope in the one-at-a-time interview — flagged as a relayed claim, not authenticated",
+        "recorded_by": "pi-t14z"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795529693,
+      "digest": "79ed99ed67b0c1fe6863a3d2a3730761eb3b4143c346fe531828313d53d75c4d",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-436",
+        "title": "fix-436",
+        "description": "Gate decisions show the configured display name instead of the raw --decided-by text",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.fix-439.cases.toml",
+          ".chough/cases/records.fix-436.cases.toml",
+          "docs/cli.md",
+          "src/change.rs",
+          "src/checkpoint.rs",
+          "src/gates.rs",
+          "tests/humans.rs",
+          "tests/relay.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-records-008 already defines name as 'the display name records show'; this makes decision_text honor it. No contract or refusal semantics change",
+        "acceptance_criteria": [
+          "A gate close with an alias renders the configured display name in the decision text; an exact-name close is unchanged; the stored relay keeps the raw typed decided-by; tests pin both; full suite green"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795529721,
+      "digest": "704888f9786c264cabdea6c4dae66f8f1c409375a8111488952d17ed17d4b628",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "fix-436",
+      "actor": "0xLeif",
+      "reason": "Finalize refuses the scope as wider than the work: affected_paths declared the src and tests directories, but the change modifies only src/checkpoint.rs, src/gates.rs, src/change.rs, tests/humans.rs, tests/relay.rs, docs/cli.md. Narrowing affected_paths to exactly those; the fix content is unchanged (Leif's merge instruction, pi chat t14z, 2026-11-24)",
+      "timestamp": 1795529639,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true
+    }
+  ]
+}

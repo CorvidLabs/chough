@@ -1068,12 +1068,21 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
         ("--recorded-by", args.recorded_by.as_deref()),
     ];
     let relay = |listed: &Listed| -> Result<checkpoint::Relayed> {
-        let mut relayed = checkpoint::check_relay(&session.awaiting_human, Some(&listed.gate), values).map_err(|_| {
-            anyhow::anyhow!(
-                "refused:relay-incomplete: one reply needs who decided, their words, where they said them and the recording agent, each non-blank and within the checkpoint text bound, so nothing was written.\nRun `chough gate record {} --gates {} --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
-                args.list,
-                args.gates
-            )
+        let mut relayed = checkpoint::check_relay(
+            root,
+            &session.awaiting_human,
+            Some(&listed.gate),
+            values,
+        )
+        .map_err(|problem| {
+            match problem {
+                crate::checkpoint::RelayProblem::Identity(error) => error,
+                _ => anyhow::anyhow!(
+                    "refused:relay-incomplete: one reply needs who decided, their words, where they said them and the recording agent, each non-blank and within the checkpoint text bound, so nothing was written.\nRun `chough gate record {} --gates {} --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
+                    args.list,
+                    args.gates
+                ),
+            }
         })?.context("a listed gate has no relayed decision")?;
         relayed.1.summary_digest = Some(listed.digest.clone());
         relayed.1.list = Some(args.list.clone());
@@ -1085,6 +1094,8 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
         .collect::<Result<Vec<_>>>()?;
     // Keep the identity refusal ahead of the relay's leak checks. An unknown
     // person is described by what the rejected value holds, never by the value.
+    // REQ-records-008: every reply names one configured human, whatever its gates
+    // drive, before anything runs or is written.
     crate::humans::resolve(root, args.decided_by.as_deref().unwrap_or_default())?;
     // REQ-cli-061: at most one named gate may drive a native step, and it runs first,
     // as the decided human, before any gate is closed.
@@ -1126,6 +1137,12 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
     }
     prepared.sort_by_key(|(listed, _)| drives(listed) == crate::humans::Drives::None);
     let (checked, relays): (Vec<_>, Vec<_>) = prepared.into_iter().unzip();
+    // The grouped reply is all-or-none: close_listed_gates completes every named
+    // gate's checks (relay, identity, decision size, cumulative session-record bound,
+    // Timeline cap) before the native step runs and before the single atomic publish,
+    // so a refusal on any named gate saves nothing - a close refused over the session
+    // record bound refuses the whole reply instead of closing the gates named before
+    // it.
     let (reports, settled) = checkpoint::close_listed_gates(
         root,
         &mut session,

@@ -1,0 +1,57 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795443783,
+      "digest": "a5ee5a743c9f716fae8e1045635b736f83e0e15d57e7f26d77f6c9dbf0cb1c6b",
+      "note": "Approved by 0xLeif at the Chough gate \"Approve the scope of fix-435\": \"I approve\" (pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch). Relayed and recorded by pi-t14z at 2026-11-23T14:23:02Z through chough gate record 28c0511ccf55; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-435",
+        "title": "Fix 435",
+        "description": "fix 435",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          "changelog.d",
+          "src/records.rs",
+          "src/sessions.rs",
+          "tests/no_hard_links.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "publish_entry switches to the existing whole-or-not-at-all writer write_new_bytes (REQ-records-001, #313); no contract text changes",
+        "acceptance_criteria": [
+          "On a volume without hard links (exFAT), chough inbox add writes its entry whole or not at all and succeeds, as init, bug add and journal add do since #260 and #424; the ignored test tests/no_hard_links.rs covers it."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "I approve",
+        "where": "pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch",
+        "recorded_by": "pi-t14z"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795529491,
+      "digest": "19892c6e185453118ba0c4298b8cf84d0cb97cea78cc37fe70acc0dc1137630b",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

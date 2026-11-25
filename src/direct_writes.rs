@@ -113,7 +113,7 @@ pub(super) fn text(write: &DirectWrite) -> String {
         .map(|file| format!("{} {}", file.path, file.change))
         .collect::<Vec<_>>()
         .join(", ");
-    let state = |value: &Option<String>| value.as_deref().unwrap_or("unknown").to_string();
+    let state = |value: &Option<String>| value.as_deref().unwrap_or("none").to_string();
     let states = if write.before_state == write.after_state {
         format!("state stays {}", state(&write.after_state))
     } else {
@@ -332,5 +332,24 @@ mod tests {
         for unsafe_id in ["", "../x", "A", "a/b", "a.b"] {
             assert!(!safe(unsafe_id), "{unsafe_id}");
         }
+    }
+
+    /// fix-437: a direct write that records no state writes its states as `none`, so the
+    /// entry text says `state stays none`, not the absent state as `unknown`.
+    #[test]
+    fn a_direct_write_with_an_absent_state_says_state_stays_none() {
+        let found = text(&DirectWrite {
+            change: "d1".into(),
+            files: vec![WrittenFile {
+                path: "state.json".into(),
+                change: "changed".into(),
+            }],
+            before_state: None,
+            after_state: None,
+        });
+        assert_eq!(
+            found,
+            "d1's lifecycle records changed outside Chough: state.json changed; state stays none"
+        );
     }
 }

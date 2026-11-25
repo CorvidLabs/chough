@@ -428,12 +428,14 @@ no Chough command runs for the project. `CHOUGH_TRACE=1` adds a
 `chough-trace: checkpoint-lock waited_ms=<n>` line to stderr for each writer.
 
 A write of a record under `.chough/` goes to a temporary file in the Git-ignored
-`.chough/local/`, named `.<8 hex digits>.<name>.<pid>.tmp`, and is renamed over its
-record; an inbox add writes its entry there too and links it into place. A writer
-holding the lock removes a temp a killed writer left, just before it saves, and says so
-on stderr, for example `chough: removed .chough/local/<temp> (<bytes> bytes), left by a
-record write that was stopped before it saved; no record was changed by it`. A temp an
-older release left in a session folder or its inbox is removed the same way.
+`.chough/local/`, named `.<8 hex digits>.<name>.<pid>.tmp` or, for the shared
+whole-or-not-at-all writer, `.<name>.<pid>.<n>.new`, and is moved to its record's name
+without replacing anything; an inbox add writes its entry the same way. A writer
+holding the lock removes a temp a killed writer left, in either shape, just before it
+saves, and says so on stderr, for example `chough: removed .chough/local/<temp>
+(<bytes> bytes), left by a record write that was stopped before it saved; no record was
+changed by it`. A temp an older release left in a session folder or its inbox is
+removed the same way.
 The killed command's update was never saved. Other file names are left alone.
 
 The lock orders Chough's own writers only. A Git command that rewrites the worktree,
@@ -696,6 +698,10 @@ ran:
 <who> decided "<gate>": "<their words>" (<where>); recorded by <agent>; a relayed claim, not authenticated
 ```
 
+`<who>` is the decided human's configured display name, so a close through an alias
+renders the display name; the relay keeps the typed `--decided-by` value as its audit
+trail.
+
 The output carries `relayed_decision` with the gate, `relayed_by`, `provenance`: "a
 relayed claim, not authenticated: it records who is said to have decided, not proof
 that they did", and `native_step`, what ran or why nothing did: when nothing ran, `ran`
@@ -737,14 +743,14 @@ aliases = ["<another name they go by>"]
 specsync_actor = "<their SpecSync actor>"
 ```
 
-`name` is the display name SpecSync's approval note shows (Chough's own records keep
-the `--decided-by` text as given), `aliases` is optional, and `specsync_actor` is
-the actor SpecSync records. At every gate close, through `checkpoint --close-gate`,
-`gate record` or `change ship --close-gate`, whatever the gate drives and with or
-without `--no-native`, `--decided-by` must name exactly one configured human, by
-name or alias, ignoring case and surrounding space; otherwise the close is refused as
-`refused:human-identity-unknown` before anything runs, naming both files and the keys
-to add. Chough never guesses an identity and never falls back to an agent account. No
+`name` is the display name the decision text and SpecSync's approval note show (the
+relay keeps the `--decided-by` text as given, for its audit trail), `aliases` is
+optional, and `specsync_actor` is the actor SpecSync records. At every gate close,
+through `checkpoint --close-gate`, `gate record` or `change ship --close-gate`,
+whatever the gate drives and with or without `--no-native`, `--decided-by` must name
+exactly one configured human, by name or alias, ignoring case and surrounding space;
+otherwise the close is refused as `refused:human-identity-unknown` before anything
+runs, naming both files and the keys to add. Chough never guesses an identity and never falls back to an agent account. No
 name is built in: a project or a person configures who decides. The relay stays an
 unauthenticated claim (FLOW-16).
 
@@ -1764,7 +1770,7 @@ stage on that response, and shows:
 | `skill_outdated` | How many installed skill files are an earlier release's copy; while it is above 0 the text view shows the line ``Skill files are outdated: run `chough skill update` `` below the objective |
 | `skill_update` | Empty unless a skill folder was not inspected (doctor's `skill_uninspected`); then one `chough skill update --host <host>` for each installed copy that was inspected, which update exactly the copies doctor could inspect; plain `chough skill update` skips such a folder too and updates the rest (#403). The text view shows them on a line after the skill line |
 | `native` | `change`, `read` (the native section state), `state`, `approval_valid`, `correction_valid`, `terminal_evidence`, `next_action` and `approved_deltas` (`unchanged: <modules>`, `no semantic deltas (no_spec_change)`, `changed: ...`, `unverifiable: ...` or `not checked: <why>`; with SpecSync configured but SDD off, as `specsync init` leaves it, the reason is ``native SDD is disabled; run `specsync change adopt` to gate stages``, and the `ungated:sdd-disabled` gate detail says the same); unknown values are `null` |
-| `native_check` | For a recorded native change with a workspace under `.specsync/changes/`, otherwise `null`: `last_attempt` (the latest attempt in its `verification-attempts.json` by timestamp: `passed`, `at_unix_seconds`, a 12-character `commit` and `failed_commands` with at most 3 `command` and `exit_code` entries and their `total`, or `null`), `not_passed_for_tree` (native state `approved` or `implementing`, or `verifying` while SpecSync's `handoff.readiness` from the same read is not `safe`, which it reports when the tree moved after the last check; a `verifying` reply with no readiness gives an "unknown" note instead), `note` and `unknown` (why the record could not be read; never shown as no failure). Chough reads only an attempt's commands, so for a refusal before verifying, such as incomplete tasks or missing requirement evidence, the note names `specsync change check <id>` (#86); SpecSync 6.4.0 records such a refusal's reason in the attempt, which Chough does not show yet. It reads that one local file and no native command |
+| `native_check` | For a recorded native change with a workspace under `.specsync/changes/`, otherwise `null`: `last_attempt` (the latest attempt in its `verification-attempts.json` by timestamp: `passed`, `at_unix_seconds`, a 12-character `commit` and `failed_commands` with at most 3 `command` and `exit_code` entries and their `total`, or `null`), `not_passed_for_tree` (native state `approved` or `implementing`, or `verifying` while SpecSync's `handoff.readiness` from the same read is not `safe`, which it reports when the tree moved after the last check; a `verifying` reply with no readiness gives an "unknown" note instead), `note` and `unknown` (why the record could not be read; never shown as no failure). Chough reads only an attempt's commands, so for a refusal before verifying, such as incomplete tasks or missing requirement evidence, the note names `specsync change check <id>` (#86); SpecSync 6.4.0 records such a refusal's reason in the attempt, which Chough reads from `verification-attempts.json` and shows. It reads that one local file and no native command |
 | `direct_writes` | Pending direct lifecycle writes; see [Direct lifecycle writes](#direct-lifecycle-writes) |
 | `native_verification_warning` | A sentence when the native check runs none of the project's commands, judged from the change's effective commands in the status read, otherwise `null`; `status` carries the same key. See [Native verification that runs no project command](#native-verification-that-runs-no-project-command) |
 | `next_valid_action` | `action`, `reason` and, when one applies, `command`; `status` reports the same `action` as its `next_valid_action` |

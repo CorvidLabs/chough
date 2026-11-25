@@ -946,19 +946,20 @@ fn inbox_add_racing_an_archive_never_strands_its_entry() {
     assert!(stderr.contains("no open session alpha"), "{stderr}");
 }
 
-/// #99 review (REQ-history-009): an entry is published whole, so an `inbox add` killed
-/// while writing leaves no partial entry; the temp it left is ignored by Git and the
-/// next save removes it.
+/// #99 review (REQ-history-009): an entry is published whole, so an `inbox add` stopped
+/// while writing leaves no partial entry; the temp it wrote is removed and the next save
+/// has nothing to clean. The shared whole-or-not-at-once writer turns a file-size limit
+/// into the error the write returns, not a signal that kills the process mid-write, so a
+/// stopped add is refused and nothing is written (#435).
 #[cfg(unix)]
 #[test]
 fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
-    use std::os::unix::process::ExitStatusExt;
     let fixture = Fixture::new();
     sessions(&fixture);
     let kept = add_entry(&fixture, "beta", "decision", "Before the killed add");
     // One block of file size lets the writer lock record its process ID (REQ-cli-040),
     // and the entry, longer than that, is stopped while it is written.
-    let killed = std::process::Command::new("sh")
+    let stopped = std::process::Command::new("sh")
         .args(["-c", "ulimit -f 1; exec \"$@\"", "sh"])
         .arg(env!("CARGO_BIN_EXE_chough"))
         .arg("--root")
@@ -977,9 +978,16 @@ fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
         ])
         .output()
         .unwrap();
+    // The add is stopped while it is written, and the shared writer refuses it, writing
+    // nothing: no partial entry and no temporary left behind to clean.
     assert!(
-        killed.status.signal().is_some(),
-        "not stopped while writing: {killed:?}"
+        !stopped.status.success(),
+        "the add was not stopped while writing: {stopped:?}"
+    );
+    let stderr = String::from_utf8_lossy(&stopped.stderr);
+    assert!(
+        stderr.contains("cannot write"),
+        "the add did not refuse at the write: {stderr}"
     );
     let entries = fixture.ok(&["inbox", "list"])["entries"].clone();
     let ids: Vec<&str> = entries
@@ -1001,12 +1009,13 @@ fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
     )
     .unwrap()
     .filter(|entry| {
-        entry
+        let name = entry
             .as_ref()
             .unwrap()
             .file_name()
             .to_string_lossy()
-            .ends_with(".tmp")
+            .into_owned();
+        name.starts_with('.') && (name.ends_with(".tmp") || name.ends_with(".new"))
     })
     .count();
     assert_eq!(in_inbox, 0);
@@ -1014,23 +1023,12 @@ fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
     let temps: Vec<String> = fs::read_dir(&inbox)
         .unwrap()
         .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
-        .filter(|name| name.ends_with(".tmp"))
+        .filter(|name| name.starts_with('.') && (name.ends_with(".tmp") || name.ends_with(".new")))
         .collect();
-    assert_eq!(temps.len(), 1, "{temps:?}");
+    assert!(temps.is_empty(), "{temps:?} were left behind");
     fixture.commit("after the killed add");
-    let temp = format!(".chough/local/{}", temps[0]);
-    let ignored = std::process::Command::new("git")
-        .args(["check-ignore", "-q", "--no-index", &temp])
-        .current_dir(fixture.root())
-        .status()
-        .unwrap();
-    assert!(ignored.success(), "{temp} is not ignored by Git");
     fixture.ok(&["checkpoint", "--decision", "after the killed add"]);
-    assert!(
-        !inbox.join(&temps[0]).exists(),
-        "{} was left behind",
-        temps[0]
-    );
+    assert!(temps.is_empty());
     assert_eq!(fixture.ok(&["inbox", "list"])["entries"], entries);
 }
 
