@@ -1,6 +1,8 @@
 //! REQ-cli-057 (#171, DRIVE-20 slice 1): `chough change new`, `answer`, `check` and
 //! `status` run the matching SpecSync step and pass its output, refusals and exit code
-//! through unchanged. Unix only: the stand-in `specsync` is a shell script.
+//! through unchanged. `approve` relays a human decision on a definition with a required
+//! citation (REQ-cli-071) through the same steps and tests. Unix only: the stand-in
+//! `specsync` is a shell script.
 #![cfg(unix)]
 
 mod common;
@@ -83,7 +85,8 @@ fn dot_chough(root: &Path) -> BTreeMap<String, Vec<u8>> {
     files
 }
 
-/// The four steps with the arguments each must pass to SpecSync.
+/// Each plain step with the arguments it must pass to SpecSync, including the
+/// approve relay with its composed note (REQ-cli-071).
 fn steps() -> Vec<(Vec<&'static str>, Vec<&'static str>)> {
     vec![
         (
@@ -145,6 +148,30 @@ fn steps() -> Vec<(Vec<&'static str>, Vec<&'static str>)> {
             vec!["change", "status", "free-shipping", "--json"],
         ),
         (vec!["change", "status"], vec!["change", "status", "--json"]),
+        (
+            vec![
+                "change",
+                "approve",
+                "free-shipping",
+                "--actor",
+                "SYNTHETIC-human",
+                "--words",
+                "Yes, approved.",
+                "--where",
+                "pi chat SYNTHETIC-session, message 2",
+                "--recorded-by",
+                "probe t9",
+            ],
+            vec![
+                "change",
+                "approve",
+                "free-shipping",
+                "--actor",
+                "SYNTHETIC-human",
+                "--note",
+                "relayed=pi chat; decided-by=SYNTHETIC-human; words=Yes, approved.; where=pi chat SYNTHETIC-session, message 2; recorded-by=probe t9",
+            ],
+        ),
     ]
 }
 
@@ -196,6 +223,8 @@ fn specsync_output_and_exit_code_pass_through_byte_for_byte() {
 fn no_change_command_writes_a_tracked_file_under_dot_chough() {
     // REQ-cli-057 as modified by REQ-cli-060: no tracked file under `.chough/` changes,
     // and under `.chough/local/` a step writes only its change's direct-write baseline.
+    // approve runs through the same steps() table (REQ-cli-071), so its
+    // "a tracked file under .chough/ is unchanged" criterion rests on this test.
     let fixture = fixture();
     fixture.init();
     // A checkpoint save, as in any project past init: the writer's lock creates the
