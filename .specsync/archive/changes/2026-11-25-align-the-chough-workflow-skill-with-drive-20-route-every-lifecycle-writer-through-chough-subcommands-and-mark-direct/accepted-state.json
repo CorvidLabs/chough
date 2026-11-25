@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct",
+  "slug": "align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct",
+  "title": "Align the chough-workflow skill with DRIVE-20: route every lifecycle writer through chough subcommands and mark direct specsync change invocation as a recorded direct-native-write violation",
+  "description": "Align the chough-workflow skill with DRIVE-20: route every lifecycle writer through chough subcommands and mark direct specsync change invocation as a recorded direct-native-write violation",
+  "kind": "feature",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "050e2c35b5f4f1f7c16d45e66ca697597803fb80",
+  "created_at": 1795624483,
+  "updated_at": 1795630169,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "skills/chough-workflow/SKILL.md",
+    "skills/chough-workflow/references/lifecycle.md",
+    "skills/chough-workflow/references/plan.md",
+    "skills/chough-workflow/references/checkpoint.md",
+    "skills/chough-workflow/references/accept.md",
+    "skills/chough-workflow/references/stages.md",
+    "skills/chough-workflow/references/validate.md",
+    "skills/chough-workflow/references/testing.md",
+    "docs/AGENTS.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "The chough-workflow bundle routes every lifecycle writer through chough: the skill's Drive-the-workflow section states chough-first (chough change new/answer/check/approve/ship, chough stage, chough cases, chough evidence, chough gate) and names direct specsync change calls as recorded direct-native-write violations except for the steps chough does not wrap (review on standing authority, adopt, finalize, ship-status), each shown with its Timeline tracking; the SKILL.md line 'Run HI, SpecSync and Fledge yourself' becomes 'Run HI and Fledge yourself; chough drives SpecSync'; lifecycle.md and plan.md example commands use chough change forms; a repo check keeps the wrapper-only rule discoverable"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "DRIVE-20 (agents call only chough to move a change through SpecSync); DRIVE-21 (direct native writes are tracked as direct-native-write Timeline entries, never forbidden outright — the unwrapped steps remain legitimate); the no-em-dashes rule (DRIVE-7) for bundled skill templates; REQ-cli-057/059/061/067/071 name exactly which steps chough already wraps",
+    "public_contract": "yes"
+  }
+}

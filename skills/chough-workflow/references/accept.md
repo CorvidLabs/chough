@@ -78,6 +78,7 @@ does not answer the gate, does the agent record the review in its own name,
 If SpecSync refuses that actor, stop and report it; never retry as the human:
 
 ```sh
+# Unwrapped step (DRIVE-21): calling it directly records a direct-native-write entry.
 specsync change review <id> --reviewer "<agent>-<terminal>" --verdict pass
 ```
 
