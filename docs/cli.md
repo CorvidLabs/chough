@@ -1298,7 +1298,9 @@ an agent never needs a direct `specsync change approve` call. `--actor`, `--word
 `--where` are the relay: without them, or with one of them blank, or with a present but
 blank `--recorded-by`, it refuses as `refused:incomplete-relay`, naming the flag and
 the command to run again, before SpecSync runs. Without `--recorded-by`, the note names
-`chough <version>`, the running binary.
+`chough <version>`, the running binary. The fields are joined with `; `, and no value
+is escaped: one holding `;` or `=` is recorded verbatim, and the note is not
+machine-parsed.
 
 SpecSync writes a change's description, its `--rationale` and each answer into the
 change's committed records, so Chough checks them before SpecSync runs, as it checks any
