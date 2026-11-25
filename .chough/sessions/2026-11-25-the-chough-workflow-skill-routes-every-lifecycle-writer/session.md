@@ -5,7 +5,7 @@ aliases: [the-chough-workflow-skill-routes-every-lifecycle-writer-through]
 objective: "The chough workflow skill routes every lifecycle writer through chough subcommands: direct specsync change invocation becomes a recorded violation with the chough-first order explicit"
 intent_scope: process
 modules: [workflow]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: Continue accept
 ---
 # The chough workflow skill routes every lifecycle writer through chough subcommands: direct specsync change invocation becomes a recorded violation with the chough-first order explicit
 
@@ -72,4 +72,14 @@ The chough workflow skill routes every lifecycle writer through chough subcomman
   - native_change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
   - gate: native:approved
   - revision: 050e2c35b5f4f1f7c16d45e66ca697597803fb80
+  - by: unknown agent (hc t14z)
+- 2026-11-25T16:39:18Z · advance · build → test · native:verifying ^t-cf5bf4
+  - native_change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+  - gate: native:verifying
+  - revision: ab567c99a6d4fa2e8e74d296f5fcc957d4c47bd2
+  - by: unknown agent (hc t14z)
+- 2026-11-25T16:39:19Z · advance · test → accept · native:verifying ^t-92517f
+  - native_change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+  - gate: native:verifying
+  - revision: ab567c99a6d4fa2e8e74d296f5fcc957d4c47bd2
   - by: unknown agent (hc t14z)
