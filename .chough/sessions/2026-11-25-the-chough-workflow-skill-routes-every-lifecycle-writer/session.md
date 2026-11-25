@@ -5,7 +5,7 @@ aliases: [the-chough-workflow-skill-routes-every-lifecycle-writer-through]
 objective: "The chough workflow skill routes every lifecycle writer through chough subcommands: direct specsync change invocation becomes a recorded violation with the chough-first order explicit"
 intent_scope: process
 modules: [workflow]
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Implementation review of align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct\" closed (review pass); run `chough change ship align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct` to ship."
+next: Continue done
 ---
 # The chough workflow skill routes every lifecycle writer through chough subcommands: direct specsync change invocation becomes a recorded violation with the chough-first order explicit
 
@@ -113,4 +113,30 @@ The chough workflow skill routes every lifecycle writer through chough subcomman
     - recorded_by: pi-t14z
     - native: specsync change review align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
     - actor: 0xLeif
+  - by: unknown agent (hc t14z)
+- 2026-11-25T18:10:25Z · direct-native-write · accept → accept · align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct's lifecycle records changed outside Chough: approvals.json changed; state stays verifying ^t-b5274e
+  - native_change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+  - revision: b4fcdfd54f1c5bcd511254b25097518676fdf369
+  - direct_write:
+    - change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+    - files:
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: verifying
+  - by: unknown agent (hc t14z)
+- 2026-11-25T18:10:25Z · direct-native-write · accept → accept · align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct's lifecycle records changed outside Chough: review.json changed, review-attempts.json changed; state stays verifying ^t-5b8e93
+  - native_change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+  - revision: b4fcdfd54f1c5bcd511254b25097518676fdf369
+  - direct_write:
+    - change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+    - files:
+      - review.json: changed
+      - review-attempts.json: changed
+    - before_state: verifying
+    - after_state: verifying
+  - by: unknown agent (hc t14z)
+- 2026-11-25T18:10:25Z · advance · accept → done · native:archived ^t-2cd4bd
+  - native_change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+  - gate: native:archived
+  - revision: b4fcdfd54f1c5bcd511254b25097518676fdf369
   - by: unknown agent (hc t14z)
