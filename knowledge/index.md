@@ -24,6 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [Leif rules on PR 448/449 blockers](journal/2026-11-25-leif-rules-on-pr-448-449-blockers.md) (2026-11-25, intent)
 - [Leif confirms the six-fix provenance and authorizes merge-after-archive](journal/2026-11-25-leif-confirms-the-six-fix-provenance-and-authorizes-merge.md) (2026-11-25, intent)
 - [Fix chough#440: the stage advance --to go-back hint must name…](journal/2026-11-24-fix-chough-440-the-stage-advance-to-go-back-hint-must-name.md) (2026-11-24, shipped)
 - [fix-439-overnight](journal/2026-11-24-fix-439-overnight.md) (2026-11-24, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [Fix chough#435: inbox add writes its entry without a hard link](journal/2026-11-24-fix-chough-435-inbox-add-writes-its-entry-without-a-hard-link.md) (2026-11-24, shipped)
 - [The roadmap's delivered table has the 0.6.3 release row](journal/2026-11-22-the-roadmap-s-delivered-table-has-the-0-6-3-release-row.md) (2026-11-22, shipped)
 - [Prepare the Chough 0.6.3 release](journal/2026-11-22-prepare-the-chough-0-6-3-release.md) (2026-11-22, shipped)
-- [Write the agreed plan-stage execution split and test-stage grouping…](journal/2026-11-22-write-the-agreed-plan-stage-execution-split-and-test-stage.md) (2026-11-22, shipped)
 
 ## Where things live
 
