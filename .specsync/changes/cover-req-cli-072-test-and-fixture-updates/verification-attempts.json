@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1795631825,
+      "commit": "9d826c7c660b579ad7e83faf6fac6e31fb29062d",
+      "contract_digest": "",
+      "workspace_digest": "",
+      "passed": false,
+      "commands": [],
+      "requirement_ids": [],
+      "refusal": "tasks.md contains incomplete tasks: finish the 1 open task in `.specsync/changes/cover-req-cli-072-test-and-fixture-updates/tasks.md` (line 3: \"T1 Declare the three test/fixture paths and pass change check --commit\") and mark it `[x]`, then re-run `specsync change check cover-req-cli-072-test-and-fixture-updates --commit`"
+    },
+    {
+      "timestamp": 1795631833,
+      "commit": "9d826c7c660b579ad7e83faf6fac6e31fb29062d",
+      "contract_digest": "1f71781d0a7f8840f6a3913852b906cc8c89492941cfedb1944666ec137141ae",
+      "execution_digest": "3b1e6dd7c8d00a00407abc261212e4209faf3b4d7f034478101a7c2434d8e5db",
+      "workspace_digest": "a206bfdbe0bfdff3e21740a5d3e23347287c09d45f614a4dde60e80450c780e7",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    }
+  ]
+}

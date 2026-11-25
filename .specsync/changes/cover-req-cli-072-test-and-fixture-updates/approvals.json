@@ -1,0 +1,41 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "pi-t14z",
+      "timestamp": 1795631818,
+      "digest": "1f71781d0a7f8840f6a3913852b906cc8c89492941cfedb1944666ec137141ae",
+      "note": "Approved under Leif's standing authority for reviewer-directed repair on his own PRs (pi chat t14z, 2026-11-25: 'yes' to finishing the 451 fix round) and corvid-agent's blocking finding 1 naming this exact change; covered scope: records coverage for the three test/fixture paths on the REQ-cli-072 branch; limits: no skill content changes. Recorded by pi-t14z.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "cover-req-cli-072-test-and-fixture-updates",
+        "title": "Cover REQ-cli-072 test and fixture updates",
+        "description": "Cover REQ-cli-072 test and fixture updates",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "tests/docs.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "README lane-list test row and skill-release manifest/pin follow the REQ-cli-072 bundle edit",
+        "acceptance_criteria": [
+          "The archive audit covers tests/docs.rs, tests/fixtures/skill-releases/manifest.json and tests/skill_releases.rs; hosted Archive and verify lanes pass on the branch head; the skill-chough-first step runs in hosted CI."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "DRIVE-20: the coverage fix routes through chough; the paths were named by corvid-agent's review on PR 451.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
+  "reopenings": []
+}

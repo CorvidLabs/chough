@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "cover-req-cli-072-test-and-fixture-updates",
+  "slug": "cover-req-cli-072-test-and-fixture-updates",
+  "title": "Cover REQ-cli-072 test and fixture updates",
+  "description": "Cover REQ-cli-072 test and fixture updates",
+  "kind": "bug_fix",
+  "state": "verifying",
+  "canonical_applied": true,
+  "base_commit": "9d826c7c660b579ad7e83faf6fac6e31fb29062d",
+  "created_at": 1795631737,
+  "updated_at": 1795631834,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "tests/docs.rs",
+    "tests/fixtures/skill-releases/manifest.json",
+    "tests/skill_releases.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "README lane-list test row and skill-release manifest/pin follow the REQ-cli-072 bundle edit",
+  "acceptance_criteria": [
+    "The archive audit covers tests/docs.rs, tests/fixtures/skill-releases/manifest.json and tests/skill_releases.rs; hosted Archive and verify lanes pass on the branch head; the skill-chough-first step runs in hosted CI."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "DRIVE-20: the coverage fix routes through chough; the paths were named by corvid-agent's review on PR 451.",
+    "public_contract": "no"
+  }
+}
