@@ -1,4 +1,4 @@
-# 2026-11-25 — the chough-workflow skill routes every lifecycle writer through chough
+# 2026-11-25: the chough-workflow skill routes every lifecycle writer through chough
 
 REQ-cli-072: SKILL.md's "Run HI, SpecSync and Fledge yourself" line sent agents to
 specsync directly, which left chough session trails unable to reach done (PR tob#38

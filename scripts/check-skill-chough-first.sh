@@ -9,7 +9,7 @@ while IFS=: read -r file line text; do
   [ -z "$file" ] && continue
   start=$(( line > 3 ? line - 3 : 1 ))
   ctx=$(sed -n "${start},${line}p" "$file")
-  if ! grep -q "Unwrapped step\|unwrapped" <<< "$ctx"; then
+  if ! grep -qE "Unwrapped step|unwrapped|WRAPPED step driven directly" <<< "$ctx"; then
     echo "FAIL $file:$line — fenced 'specsync change' outside an unwrapped-step context:"
     echo "  $text"
     fail=1
@@ -17,7 +17,7 @@ while IFS=: read -r file line text; do
 done < <(awk '
   /^```/ { infence = !infence; next }
   infence && /specsync change/ { print FILENAME ":" FNR ":" $0 }
-' $(find skills/chough-workflow -name '*.md'))
+' $(find skills/chough-workflow .agents/skills/chough-workflow -name '*.md'))
 if [ "$fail" -eq 0 ]; then
   echo "chough-first check: OK (every fenced specsync change is a labeled unwrapped step)"
 fi

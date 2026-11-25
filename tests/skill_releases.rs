@@ -10,7 +10,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 use tempfile::TempDir;
 
-const MANIFEST_SHA256: &str = "c3da62a0ce41232fba980446c5685986288b88888dbb4f980109e1731ef7219c";
+const MANIFEST_SHA256: &str = "79f57eecfae1a03d8d8a52b99a8be346b562b649c412ead7653ba0609f33ae47";
 const PINNED_RELEASES: &[(&str, &str, &str)] = &[
     (
         "v0.1.0",

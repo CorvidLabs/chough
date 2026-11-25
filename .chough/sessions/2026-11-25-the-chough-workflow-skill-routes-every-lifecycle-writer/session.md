@@ -19,7 +19,11 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+    holds: accept
+    drives: review
+    opened: 2026-11-25T16:39:39Z
 run_consents: []
 next: Continue accept
 ---
@@ -82,4 +86,13 @@ The chough workflow skill routes every lifecycle writer through chough subcomman
   - native_change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
   - gate: native:verifying
   - revision: ab567c99a6d4fa2e8e74d296f5fcc957d4c47bd2
+  - by: unknown agent (hc t14z)
+- 2026-11-25T16:39:39Z · gate-opened · accept → accept · Implementation review of align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct ^t-4786fb
+  - native_change: align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct
+  - revision: ce544ec81e29d32c0a879c43427355603c962b48
+  - holds: accept
+  - drives: review
+  - by: unknown agent (hc t14z)
+- 2026-11-25T16:51:18Z · correction · accept → accept · Citation time corrected: the interview question was issued at ~2026-11-25T16:30Z and answered before the 16:37:14Z recording; the note's 16:45Z was written before the question was asked and overstated the delay. Leif's words and the question text are unchanged (reviewer L1). ^t-3a7eee
+  - corrects: ^t-c96fc0
   - by: unknown agent (hc t14z)

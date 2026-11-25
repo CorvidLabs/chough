@@ -1,8 +1,8 @@
 # Native lifecycle and evidence
 
 `chough change status <id>` (SpecSync's own status, passed through unchanged),
-`specsync change ship-status <id>` — an unwrapped step; an agent calling it directly
-records a `direct-native-write` Timeline entry (DRIVE-21) — and installed command
+`specsync change ship-status <id>` (an unwrapped step; an agent calling it directly
+records a `direct-native-write` Timeline entry, DRIVE-21) and installed command
 help are authoritative for
 the current state and recovery path. This reference follows SpecSync 6.4; do not
 hardcode it over another version's output.

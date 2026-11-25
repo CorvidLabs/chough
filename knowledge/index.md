@@ -24,6 +24,9 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [Scope deviation on REQ-cli-072 acknowledged](journal/2026-11-25-scope-deviation-on-req-cli-072-acknowledged.md) (2026-11-25, intent)
+- [chough change approve relays a human's approval of a change…](journal/2026-11-25-chough-change-approve-relays-a-human-s-approval-of-a-change.md) (2026-11-25, shipped)
+- [Leif accepts the phantom affected_path in the approve-passthrough change](journal/2026-11-25-leif-accepts-the-phantom-affected-path-in-the-approve.md) (2026-11-25, intent)
 - [The roadmap's delivered table has the 0.6.3 release row](journal/2026-11-22-the-roadmap-s-delivered-table-has-the-0-6-3-release-row.md) (2026-11-22, shipped)
 - [Prepare the Chough 0.6.3 release](journal/2026-11-22-prepare-the-chough-0-6-3-release.md) (2026-11-22, shipped)
 - [Write the agreed plan-stage execution split and test-stage grouping…](journal/2026-11-22-write-the-agreed-plan-stage-execution-split-and-test-stage.md) (2026-11-22, shipped)
@@ -31,9 +34,6 @@ Newest posts:
 - [Keep an applied stage label](journal/2026-11-21-keep-an-applied-stage-label.md) (2026-11-21, shipped)
 - [Stage labels skip forks and keep matches](journal/2026-11-21-stage-labels-skip-forks-and-keep-matches.md) (2026-11-21, shipped)
 - [Optional GitHub labels for the seven main stages](journal/2026-11-21-optional-github-labels-for-the-seven-main-stages.md) (2026-11-21, shipped)
-- [The documentation checked against Chough 0.6.2](journal/2026-11-21-the-documentation-checked-against-chough-0-6-2.md) (2026-11-21, shipped)
-- [Chough 0.6.2: release preparation](journal/2026-11-21-chough-0-6-2-release-preparation.md) (2026-11-21, shipped)
-- [Chough moves to SpecSync 6.4.0, and change ready asks its dry run](journal/2026-11-20-chough-moves-to-specsync-6-4-0-and-change-ready-asks-its-dry.md) (2026-11-20, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071](../.specsync/archive/changes/2026-11-25-chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071/lesson-bundle.md), Chough change approve relays a human's approval of a change definition to SpecSync with a required citation (REQ-cli-071, DRIVE-20)
 - [docs-0-6-3-release](../.specsync/archive/changes/2026-11-22-docs-0-6-3-release/lesson-bundle.md), Docs 0.6.3 release
 - [release-0-6-3](../.specsync/archive/changes/2026-11-22-release-0-6-3/lesson-bundle.md), Release 0.6.3
-- [plan-split](../.specsync/archive/changes/2026-11-22-plan-split/lesson-bundle.md), Plan split
 
 ## Snapshots and briefs
 

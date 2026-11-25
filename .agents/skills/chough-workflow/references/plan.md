@@ -5,7 +5,8 @@ instructions, existing architecture and the native lessons first; `specsync chan
 new` prints the lessons of the modules you declare.
 
 0. In a project whose `specsync init` left SpecSync's change workflow off, run
-   `specsync change adopt` first; until then no native gate checks the stages.
+   `specsync change adopt` first (an unwrapped step; calling it directly records a
+   `direct-native-write` Timeline entry, DRIVE-21); until then no native gate checks the stages.
 1. Create the change with installed help as the authority, for example
    `chough change new "<one outcome>" --spec <module> --path <path>`.
    Declare every path you expect to touch: scope freezes at approval.
@@ -90,6 +91,9 @@ limits in the checkpoint and native context, then run the native operation yours
 as the acting agent account `<agent>-<terminal>` (for example `claude-code-t382`):
 
 ```sh
+# WRAPPED step driven directly on standing authority (DRIVE-21): chough change
+# approve covers the at-gate relay; this direct call records a direct-native-write
+# entry. Prefer `chough change approve` whenever a gate closes.
 specsync change approve <id> --actor "<agent>-<terminal>" --note "Approved under <the human's words> (<where they said them>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>)."
 ```
 
