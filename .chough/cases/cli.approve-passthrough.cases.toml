@@ -1,0 +1,95 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# DRIVE-20: a relayed human approval of a change definition goes through chough
+# (REQ-cli-071).
+
+[[case]]
+id = "TC-cli-approve-passthrough-relay-note"
+title = "change approve runs specsync change approve with the relay fields in the note, in order"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-071"]
+paths = ["src/change.rs", "src/main.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::approve_runs_specsync_with_the_relay_in_the_note passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "approve_runs_specsync_with_the_relay_in_the_note"
+
+[[case]]
+id = "TC-cli-approve-passthrough-version-default"
+title = "without --recorded-by, the note names the running Chough version"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-071"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::approve_defaults_the_recorder_to_the_chough_version passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "approve_defaults_the_recorder_to_the_chough_version"
+
+[[case]]
+id = "TC-cli-approve-passthrough-refuses-without-relay"
+title = "a missing or blank relay field refuses before specsync runs, naming the flag"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-071"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::approve_refuses_before_running_without_the_relay passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "approve_refuses_before_running_without_the_relay"
+
+[[case]]
+id = "TC-cli-approve-passthrough-pass-through"
+title = "specsync's output, standard error and exit code pass through unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-071"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::approve_passes_specsync_output_and_exit_code_through passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "approve_passes_specsync_output_and_exit_code_through"
+
+[[case]]
+id = "TC-cli-approve-passthrough-leak-checks"
+title = "a leaking or control-laden argument refuses before specsync runs, and --redact redacts a leak"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-071"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::approve_refuses_a_leaking_argument_before_specsync_runs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "approve_refuses_a_leaking_argument_before_specsync_runs"

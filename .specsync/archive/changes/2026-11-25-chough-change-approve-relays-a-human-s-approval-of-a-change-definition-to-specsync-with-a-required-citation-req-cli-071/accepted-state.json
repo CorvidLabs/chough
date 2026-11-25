@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071",
+  "slug": "chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071",
+  "title": "Chough change approve relays a human's approval of a change definition to SpecSync with a required citation (REQ-cli-071, DRIVE-20)",
+  "description": "chough change approve relays a human's approval of a change definition to SpecSync with a required citation (REQ-cli-071, DRIVE-20)",
+  "kind": "feature",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "61479feb1e88a57bc45716ff4e42ce84fb2b463b",
+  "created_at": 1795572577,
+  "updated_at": 1795580044,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/change.rs",
+    "src/main.rs",
+    "tests/change.rs",
+    "docs/cli.md",
+    "README.md",
+    "specs/cli/requirements.md",
+    "changelog.d/2026-11-25-approve-passthrough.toml",
+    ".chough/cases/cli.approve-passthrough.cases.toml",
+    ".gitattributes",
+    "changelog.d/2026-11-25-approve-passthrough.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "chough change approve refuses before SpecSync runs without --actor, --words or --where, or with one of them blank. With all three, it runs specsync change approve <id> --actor <actor> --note <note>, where the note carries relayed=pi chat, decided-by, words, where and recorded-by joined by '; ', and --note appends its value; without --recorded-by the note names chough <version>. SpecSync's standard output, standard error and exit code pass through unchanged."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "specs/cli/cli.3md: write tasks.md without unchecked boxes, because change check refuses them; treat the delta as frozen once approved",
+    "public_contract": "yes"
+  }
+}

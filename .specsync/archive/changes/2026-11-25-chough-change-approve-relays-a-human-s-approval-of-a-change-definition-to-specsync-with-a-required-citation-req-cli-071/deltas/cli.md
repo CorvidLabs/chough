@@ -1,0 +1,16 @@
+## ADDED
+
+### REQUIREMENT REQ-cli-071
+
+Relayed approval of a change definition. `chough change approve <id> --actor <name> --words "<verbatim text>" --where "<citation>" [--recorded-by <agent>] [--note <extra>]` SHALL record a relayed human approval of the change definition by running `specsync change approve <id> --actor <name> --note "<note>"` in the `--root` directory, and SHALL pass SpecSync's standard output, standard error and exit code through unchanged, including its refusals and the recovery commands they name. The note SHALL carry, in this order, joined by `; `: `relayed=pi chat`, `decided-by=<name>`, `words=<verbatim text>`, `where=<citation>` and `recorded-by=<agent>`; a `--note` value SHALL be appended as `note=<extra>`. Without `--recorded-by`, the recorded-by field SHALL be `chough <version>`, the version of the running binary.
+
+The command SHALL refuse before SpecSync runs, with a non-zero exit and a message naming the missing or blank flag and the command to run again, when `--actor`, `--words` or `--where` is absent or blank, and when a present `--recorded-by` is blank: an approval without the approver, their words or the citation is not a relay. An id holding a credential, a personal value or a control character SHALL be refused as `refused:unshowable-argument` before SpecSync runs, naming the argument and what it holds and never the value, with or without `--redact` (REQ-cli-057). The actor and the composed note, which SpecSync writes into the change's approval record, SHALL be checked before SpecSync runs as any written value: a leak is refused naming the field and the kind, a control character is refused, under `--redact` too, and under `--redact` each match is replaced, with one line on standard error ahead of SpecSync's output saying how many (REQ-cli-057). The command SHALL write nothing under `.chough/` but the change's untracked direct-write baseline, as `change answer` and `change check` do (REQ-cli-060). Trace: DRIVE-20.
+
+Acceptance Criteria
+- Without `--actor`, `--words` or `--where`, or with one of them blank, or with a present but blank `--recorded-by`, the command exits non-zero, names the flag, names the command to run again and runs no `specsync`.
+- With the three required values, SpecSync runs exactly `specsync change approve <id> --actor <name> --note <note>`, with the note's fields in the order above and joined by `; `.
+- Without `--recorded-by`, the note's recorded-by field is `chough <version>`; with one, it is the value given.
+- A `--note` value is appended to the note as `note=<extra>`; without `--note`, the note holds no `note=` field.
+- SpecSync's standard output, standard error and exit code pass through unchanged, including its refusals.
+- An id holding a credential is refused as `refused:unshowable-argument` before SpecSync runs, with the value never shown, with or without `--redact`; an actor or note holding a local path, user or host name, email or credential is refused as a leak, and a control character in either is refused, under `--redact` too; under `--redact` a leak in either is replaced and the count is said on standard error.
+- A tracked file under `.chough/` is unchanged by the command, whatever SpecSync's exit code.

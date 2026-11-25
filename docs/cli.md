@@ -101,7 +101,7 @@ Chough prints its help with `--help` or `-h` on every command, and `chough -V` a
 | `session new\|use\|list\|close\|shelve`, `inbox add\|list\|fold` | Sessions in their own folders, setting aside an unreadable one, and the subagent inbox. Starting or switching work never touches another session. See [Sessions](#sessions). |
 | `doctor [--dry-run\|--fix] [--reason R] [--close KEY]... [--leaks]` | Finds and fixes the Chough debt that stops a fresh worktree from entering Chough. `--leaks` reports only the `leak` and `oversize` findings, changes nothing and exits 1 on any, for the verify lane's `leaks` step. See [Doctor](#doctor). |
 | `gate list\|record` | Numbers the open human gates, each with a one-screen summary and its digest, and records one relayed reply for listed gates only, with `--verdict` or `--no-native` for a gate that drives a native step. See [Gate lists](#gate-lists). |
-| `change new\|answer\|check\|status\|ready\|ship` | Runs SpecSync's change new, answer, check (with `--commit`) or status step in `--root` and passes its output, refusals and exit code through unchanged; `ready` lists everything still missing before approval and names each fix, writing nothing; `ship` checks first, runs the human's review when the gate drives one, ships, then closes the review gate with its relay and moves to done. See [SpecSync change steps](#specsync-change-steps). |
+| `change new\|answer\|check\|status\|ready\|approve\|ship` | Runs SpecSync's change new, answer, check (with `--commit`) or status step in `--root` and passes its output, refusals and exit code through unchanged; `ready` lists everything still missing before approval and names each fix, writing nothing; `approve` records a relayed human approval of the change definition, carrying who decided, their words, the citation and the recording agent in SpecSync's note, and refuses before SpecSync runs without them; `ship` checks first, runs the human's review when the gate drives one, ships, then closes the review gate with its relay and moves to done. See [SpecSync change steps](#specsync-change-steps). |
 
 ## Backfilled moves
 
@@ -1285,12 +1285,22 @@ through `chough` alone (REQ-cli-057, REQ-cli-059, DRIVE-20):
 | `chough change check <id>` | `specsync change check <id> --commit` |
 | `chough change check <id> --no-commit` | `specsync change check <id>` |
 | `chough change status [<id>]` | `specsync change status [<id>] --json` |
+| `chough change approve <id> --actor <name> --words <text> --where <citation> [--recorded-by <agent>] [--note <extra>]` | SpecSync's approve for the change, with the approver as its actor and the relay note as its note: `relayed=pi chat; decided-by=<name>; words=<text>; where=<citation>; recorded-by=<agent>` (without `--recorded-by`, `chough <version>`), and `--note` appended as `note=<extra>` |
 
 Each runs in the `--root` directory with the `specsync` on `PATH`, the one Chough's
 native reads use. SpecSync's standard output, standard error and exit code pass through
 byte for byte, including its refusals and the recovery commands they name. Chough adds
 nothing and writes nothing under `.chough/` but the untracked direct-write baseline,
-`.chough/local/native-writes/<id>.json`, of `new`, `answer` and `check`.
+`.chough/local/native-writes/<id>.json`, of `new`, `answer`, `check` and `approve`.
+
+`approve` records a relayed human approval of the change definition (REQ-cli-071), so
+an agent never needs a direct `specsync change approve` call. `--actor`, `--words` and
+`--where` are the relay: without them, or with one of them blank, or with a present but
+blank `--recorded-by`, it refuses as `refused:incomplete-relay`, naming the flag and
+the command to run again, before SpecSync runs. Without `--recorded-by`, the note names
+`chough <version>`, the running binary. The fields are joined with `; `, and no value
+is escaped: one holding `;` or `=` is recorded verbatim, and the note is not
+machine-parsed.
 
 SpecSync writes a change's description, its `--rationale` and each answer into the
 change's committed records, so Chough checks them before SpecSync runs, as it checks any
@@ -1304,7 +1314,7 @@ A control character is refused as `refused:control-character`, under `--redact` 
   `CHOUGH_NATIVE_TIMEOUT_SECONDS` sets 1 to 3600). Past the bound, SpecSync is stopped,
   nothing is recorded, and the refusal names the same command with a longer bound. An
   invalid bound is refused before SpecSync runs, naming the command with the default.
-- `new`, `answer` and `check` write, so the read bound never stops them. A hung write
+- `new`, `answer`, `check` and `approve` write, so the read bound never stops them. A hung write
   waits until you stop Chough. Stopping Chough with SIGINT, SIGTERM or SIGHUP stops
   SpecSync and its descendants (FLOW-14).
 - When `specsync` cannot be started, the step refuses with exit 1 and runs nothing,
