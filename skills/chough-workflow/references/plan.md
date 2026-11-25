@@ -90,6 +90,8 @@ limits in the checkpoint and native context, then run the native operation yours
 as the acting agent account `<agent>-<terminal>` (for example `claude-code-t382`):
 
 ```sh
+# Unwrapped step (DRIVE-21): chough change approve covers the at-gate relay; this
+# direct call on standing authority records a direct-native-write entry.
 specsync change approve <id> --actor "<agent>-<terminal>" --note "Approved under <the human's words> (<where they said them>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>)."
 ```
 

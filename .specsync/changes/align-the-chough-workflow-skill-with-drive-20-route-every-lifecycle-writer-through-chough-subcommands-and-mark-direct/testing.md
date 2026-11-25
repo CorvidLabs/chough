@@ -10,4 +10,4 @@
 
 | Requirement | Evidence |
 |---|---|
-| REQ-cli-072 | (to fill after implementation: check-script run output + grep walk) |
+| REQ-cli-072 | scripts/check-skill-chough-first.sh passes (OK on the changed bundle), verified to FAIL on a planted violation (testing.md fixture, exit 1, then reverted); SKILL.md Drive-the-workflow now states the chough-first order citing DRIVE-20; lifecycle.md/plan.md/accept.md fenced commands labeled unwrapped-step or swapped to chough forms; fledge lanes ci+verify gained the skill-chough-first step; docs/lifecycle.md states the rule. |

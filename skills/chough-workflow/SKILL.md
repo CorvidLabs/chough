@@ -14,8 +14,15 @@ second ledger, and never record a human decision that a human did not make.
 
 ## Drive the workflow
 
-Run HI, SpecSync and Fledge yourself. Native commands in references are agent
-instructions; give the human outcomes and PRs.
+Run HI and Fledge yourself; chough drives SpecSync (DRIVE-20). Move every change
+through chough: `chough change new` / `answer` / `ready` / `approve` / `check` /
+`ship`, `chough stage`, `chough cases`, `chough evidence`, `chough gate`. Calling
+`specsync change` directly for a step chough wraps is a violation; the stage move or
+gate close records it as a `direct-native-write` Timeline entry (DRIVE-21), and the
+session trail can then no longer reach done. The only unwrapped steps — `specsync
+change review` on standing authority, `adopt`, `finalize`, `ship-status` — are shown
+in their own contexts, each labeled with that tracking. Native commands in references
+are agent instructions; give the human outcomes and PRs.
 
 Use explicit prior or standing human authorization for a concrete scope. Record the
 agent actor, human source, scope and limits before native approval; do not ask again
@@ -33,7 +40,7 @@ See [lifecycle](references/lifecycle.md) for scope, provenance and ordering.
 2. Find the checkpoint: run `chough next --environment <env>`. Without the helper,
    read the active session's `session.md` (see
    [checkpoint.md](references/checkpoint.md)), `.chough/README.md`, open bugs in
-   `.chough/bugs/` and `specsync change status <native_change>`.
+   `.chough/bugs/` and `chough change status <native_change>`.
 3. Check what is still true: native state, evidence freshness, open blocking bugs,
    and open gates. A saved stage or next action is a suggestion; native status
    decides gates.

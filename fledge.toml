@@ -24,6 +24,9 @@ leaks = "cargo run --quiet --locked -- doctor --leaks"
 # `fledge run changelog -- --release 0.7.0 --date 2026-11-16` or `--release Unreleased`.
 changelog = "python3 tools/changelog.py"
 exercise = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" sh examples/feature-bug-loop.sh"
+# REQ-cli-072: the bundled skill routes every lifecycle writer through chough;
+# fenced `specsync change` commands outside the four labeled unwrapped contexts fail.
+skill-chough-first = "sh scripts/check-skill-chough-first.sh"
 # The host-matrix harness (REQ-cli-066): `fledge run host-matrix -- <host>` drives that
 # agent host through one scripted Chough cycle; the self-test runs the stand-in host,
 # with no model. Neither is in a lane; hosted CI runs the self-test on Ubuntu and macOS.
@@ -41,7 +44,7 @@ linux-verify = "sh tools/linux/verify.sh"
 toolchain = "sh tools/toolchain.sh"
 [lanes.ci]
 description = "Run full CI pipeline"
-steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "leaks", "exercise", "build"]
+steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "leaks", "skill-chough-first", "exercise", "build"]
 
 [lanes.check]
 description = "Quick quality check"
@@ -56,4 +59,4 @@ steps = ["fmt", "check", "intent", "spec", "audit"]
 
 [lanes.verify]
 description = "Product, structural, native lifecycle and case-definition verification"
-steps = ["toolchain", "fmt", "lint", "test", "intent", "spec", "audit", "cases", "leaks", "exercise", "build"]
+steps = ["toolchain", "fmt", "lint", "test", "intent", "spec", "audit", "cases", "leaks", "skill-chough-first", "exercise", "build"]

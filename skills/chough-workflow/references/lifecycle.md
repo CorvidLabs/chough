@@ -1,7 +1,9 @@
 # Native lifecycle and evidence
 
 `chough change status <id>` (SpecSync's own status, passed through unchanged),
-`specsync change ship-status <id>` and installed command help are authoritative for
+`specsync change ship-status <id>` — an unwrapped step; an agent calling it directly
+records a `direct-native-write` Timeline entry (DRIVE-21) — and installed command
+help are authoritative for
 the current state and recovery path. This reference follows SpecSync 6.4; do not
 hardcode it over another version's output.
 Match the SpecSync version used by lifecycle writers and CI.
@@ -131,6 +133,7 @@ does not answer the gate, does the agent record the review in its own name, quot
 that authority, before shipping:
 
 ```sh
+# Unwrapped step (DRIVE-21): calling it directly records a direct-native-write entry.
 specsync change review <id> --reviewer "<agent>-<terminal>" --verdict pass
 ```
 
