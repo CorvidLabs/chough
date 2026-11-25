@@ -1,15 +1,15 @@
 ---
 name: chough-workflow
-description: Carry a request or bug from human intent through design, one scope approval, focused testing, local bugs, human acceptance and optional release, with a checkpoint any agent can resume from. Use for Chough-guided development, not single-file edits.
+description: Carry a request or bug from human intent through design, one scope approval, focused testing, local bugs, human acceptance and optional release, with a checkpoint any agent can resume from. Use for Chough-guided development, not unrelated single-file edits.
 ---
 
 # Chough workflow
 
-You are the agent doing the work. Chough keeps what was wanted, what was checked and
-what comes next in project files, so another agent can continue later. HI owns
-human wording and criteria, SpecSync owns contracts, changes, approval, verification,
-review and archive, Fledge runs tasks. Never copy their state into a second ledger,
-and never record a decision no human made.
+You are the agent doing the work. Chough keeps what was wanted, checked and next in
+project files, so another agent can continue later. HI owns human wording and
+criteria, SpecSync owns contracts, changes, approval, verification, review and
+archive, Fledge runs tasks. Never copy their state into a second ledger, and never
+record a decision no human made.
 
 ## Drive the workflow
 
@@ -17,9 +17,9 @@ Run HI and Fledge yourself; chough drives SpecSync (DRIVE-20). Move every change
 through `chough change new` / `answer` / `ready` / `approve` / `check` / `ship`,
 `chough stage`, `chough cases`, `chough evidence`, `chough gate`. Direct `specsync
 change` for a wrapped step is a `direct-native-write` violation (DRIVE-21) that
-desyncs the trail; the unwrapped steps (`review` on standing authority, `adopt`,
-`finalize`, `ship-status`) are labeled where they appear. References are agent
-instructions; report outcomes to the human.
+desyncs the trail; unwrapped steps (`review`, `adopt`, `finalize`, `ship-status`)
+are labeled where they appear. References are agent instructions; report outcomes
+to the human.
 
 Use explicit prior or standing human authorization for a concrete scope. Record the
 agent actor, human source, scope and limits before native approval; do not ask again
@@ -38,8 +38,8 @@ See [lifecycle](references/lifecycle.md) for scope, provenance and ordering.
    read the active session's `session.md` (see
    [checkpoint.md](references/checkpoint.md)), `.chough/README.md`, open bugs in
    `.chough/bugs/` and `chough change status <native_change>`.
-3. Check what is still true: native state, evidence freshness, blocking bugs, open
-   gates. A saved stage is a suggestion; native status decides gates.
+3. Check what is still true: native state, evidence freshness, blocking bugs, gates.
+   A saved stage is a suggestion; native status decides gates.
 4. Before your first edit, state the handoff in your own message. Reading it in tool
    output is not the same as stating it. Say the goal; each recorded decision that
    binds the next task, with its reason, naming a rejected approach as rejected; the
@@ -82,9 +82,9 @@ Checkpointing is mandatory in every stage ([checkpoint.md](references/checkpoint
   `chough checkpoint --awaiting-human "<decision>"`.
 - Never put a local path, user or host name, email or credential in a record
   (`refused:leak`; `--redact` replaces it).
-- Evidence states what ran, where and on which inputs. A structural pass or actor
-  label is not behavioral proof or human approval.
-- Nothing is published or deployed as a side effect of finishing work.
+- Evidence states what ran, where and on which inputs. A structural pass, exit code,
+  actor label or agent review is not behavioral proof, human approval or deployment.
+- Nothing is published, released or deployed as a side effect of finishing work.
 - Chough's size bounds cover only its `.chough/` records and displays. Never edit HI intent or
   criteria, specs or SpecSync files to fit one; report a Chough bug.
 

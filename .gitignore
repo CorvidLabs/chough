@@ -3,3 +3,4 @@
 # spec-sync hash cache (regenerated locally)
 .specsync/hashes.json
 .specsync/change.lock
+.build/
