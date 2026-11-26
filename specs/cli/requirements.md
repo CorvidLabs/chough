@@ -775,3 +775,43 @@ Acceptance Criteria
 - When the seven labels already match the table, the workflow does not create them again. `--force` is used only when an existing label's color or description differs. `implement` and `verify` are deleted only when they exist.
 - A pull request that introduces an archived session at `done` and an open session at `intent` is labeled `chough-stage:intent`. A pull request whose only introduced session is an archived story at `done` is labeled `chough-stage:done`.
 
+### REQ-cli-071
+
+Relayed approval of a change definition. `chough change approve <id> --actor <name> --words "<verbatim text>" --where "<citation>" [--recorded-by <agent>] [--note <extra>]` SHALL record a relayed human approval of the change definition by running `specsync change approve <id> --actor <name> --note "<note>"` in the `--root` directory, and SHALL pass SpecSync's standard output, standard error and exit code through unchanged, including its refusals and the recovery commands they name. The note SHALL carry, in this order, joined by `; `: `relayed=pi chat`, `decided-by=<name>`, `words=<verbatim text>`, `where=<citation>` and `recorded-by=<agent>`; a `--note` value SHALL be appended as `note=<extra>`. Without `--recorded-by`, the recorded-by field SHALL be `chough <version>`, the version of the running binary.
+
+The command SHALL refuse before SpecSync runs, with a non-zero exit and a message naming the missing or blank flag and the command to run again, when `--actor`, `--words` or `--where` is absent or blank, and when a present `--recorded-by` is blank: an approval without the approver, their words or the citation is not a relay. An id holding a credential, a personal value or a control character SHALL be refused as `refused:unshowable-argument` before SpecSync runs, naming the argument and what it holds and never the value, with or without `--redact` (REQ-cli-057). The actor and the composed note, which SpecSync writes into the change's approval record, SHALL be checked before SpecSync runs as any written value: a leak is refused naming the field and the kind, a control character is refused, under `--redact` too, and under `--redact` each match is replaced, with one line on standard error ahead of SpecSync's output saying how many (REQ-cli-057). The command SHALL write nothing under `.chough/` but the change's untracked direct-write baseline, as `change answer` and `change check` do (REQ-cli-060). Trace: DRIVE-20.
+
+Acceptance Criteria
+- Without `--actor`, `--words` or `--where`, or with one of them blank, or with a present but blank `--recorded-by`, the command exits non-zero, names the flag, names the command to run again and runs no `specsync`.
+- With the three required values, SpecSync runs exactly `specsync change approve <id> --actor <name> --note <note>`, with the note's fields in the order above and joined by `; `.
+- Without `--recorded-by`, the note's recorded-by field is `chough <version>`; with one, it is the value given.
+- A `--note` value is appended to the note as `note=<extra>`; without `--note`, the note holds no `note=` field.
+- SpecSync's standard output, standard error and exit code pass through unchanged, including its refusals.
+- An id holding a credential is refused as `refused:unshowable-argument` before SpecSync runs, with the value never shown, with or without `--redact`; an actor or note holding a local path, user or host name, email or credential is refused as a leak, and a control character in either is refused, under `--redact` too; under `--redact` a leak in either is replaced and the count is said on standard error.
+- A tracked file under `.chough/` is unchanged by the command, whatever SpecSync's exit code.
+
+### REQ-cli-072
+
+Chough-first skill routing. The chough-workflow skill SHALL route every lifecycle
+writer through chough subcommands: the Drive-the-workflow section of SKILL.md SHALL
+state that agents drive changes with `chough change` (new, answer, ready, approve,
+check, ship), `chough stage`, `chough cases`, `chough evidence` and `chough gate`,
+and SHALL present direct `specsync change` invocation for a wrapped step as a
+violation recorded as a `direct-native-write` Timeline entry (DRIVE-21). The four
+steps chough does not wrap — `specsync change review` on standing authority,
+`adopt`, `finalize`, `ship-status` — SHALL be shown only in their unwrapped contexts,
+each labeled as recording a `direct-native-write` entry. SKILL.md SHALL replace the
+"Run HI, SpecSync and Fledge yourself" instruction with one that sends HI and Fledge
+to the agent and SpecSync to chough, citing DRIVE-20. Example command blocks in
+lifecycle.md and plan.md SHALL use the `chough change` forms. A repository check
+SHALL fail when a fenced code block in the bundled skill shows `specsync change`
+outside the four unwrapped contexts. Satisfies DRIVE-20.
+
+Acceptance Criteria:
+- A fresh reading of SKILL.md alone tells an agent to drive wrapped steps only through
+  chough and names DRIVE-20.
+- The check script passes on the changed bundle and fails when a fenced `specsync
+  change` command is added outside the four unwrapped contexts.
+- lifecycle.md and plan.md contain no unlabeled fenced `specsync change` command for a
+  wrapped step.
+

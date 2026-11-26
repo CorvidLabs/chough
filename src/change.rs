@@ -1,7 +1,10 @@
 //! SpecSync change steps through Chough (REQ-cli-057, DRIVE-20): `chough change new`,
 //! `answer`, `check` and `status` run the matching SpecSync step in the project root
 //! and pass its standard output, standard error and exit code through unchanged.
-//! Nothing under `.chough/` is read or written. `chough change ready` (REQ-cli-067)
+//! Nothing under `.chough/` is read or written. `chough change approve` (REQ-cli-071)
+//! does the same for the change definition approval, carrying the relay of the
+//! human's decision — who decided, their words, the citation and the recording
+//! agent — in SpecSync's note. `chough change ready` (REQ-cli-067)
 //! is not one of those steps: it prints its own report and writes nothing.
 //! `chough change ship` (REQ-cli-059)
 //! checks the session, its stage, its open gates and the review relay first, ships,
@@ -61,6 +64,10 @@ pub(super) enum ChangeCommand {
     Status { id: Option<String> },
     /// List everything still missing before approval, and name each fix (REQ-cli-067).
     Ready { id: String },
+    /// Record a relayed human approval of the change definition, with the approver,
+    /// their words and the citation, and pass SpecSync's output and exit code through
+    /// unchanged (REQ-cli-071).
+    Approve(ApproveArgs),
     /// Check first, run `specsync change ship <id>`, then close the review gate with its
     /// relay and move the session to done (REQ-cli-059).
     Ship(Box<ShipArgs>),
@@ -97,6 +104,28 @@ pub(super) struct ShipArgs {
     /// text summary (REQ-cli-059).
     #[arg(long)]
     json: bool,
+}
+
+/// `chough change approve` (REQ-cli-071): the change, the relay of the human's
+/// approval and its citation, and the agent recording it.
+#[derive(clap::Args)]
+pub(super) struct ApproveArgs {
+    id: String,
+    /// The person the approval records, as SpecSync's actor.
+    #[arg(long)]
+    actor: Option<String>,
+    /// The approver's exact words.
+    #[arg(long)]
+    words: Option<String>,
+    /// Where and when they said them, so the relay resolves against a real message.
+    #[arg(long = "where")]
+    place: Option<String>,
+    /// The agent recording the decision; `chough <version>` when omitted.
+    #[arg(long)]
+    recorded_by: Option<String>,
+    /// An extra note appended to the relay note.
+    #[arg(long)]
+    note: Option<String>,
 }
 
 /// The most lines the short summary after SpecSync's output takes (REQ-cli-059).
@@ -230,6 +259,7 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
             ("check", arguments, false)
         }
         ChangeCommand::Ship(args) => return ship(root, *args),
+        ChangeCommand::Approve(args) => return approve(root, args),
         ChangeCommand::Ready { id } => return crate::ready::run(root, &id),
         ChangeCommand::Status { id } => {
             let mut arguments = vec!["change".to_string(), "status".into()];
@@ -627,6 +657,100 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
         print_summary(&summary)?;
     }
     Ok(0)
+}
+
+/// `chough change approve` (REQ-cli-071): every check first, with nothing run or
+/// written; then the approval, whose output, refusals and exit code pass through
+/// unchanged, so a relayed human approval of the change definition never needs a
+/// direct `specsync change approve` call.
+fn approve(root: &Path, args: ApproveArgs) -> Result<i32> {
+    let ApproveArgs {
+        id,
+        actor,
+        words,
+        place,
+        recorded_by,
+        note,
+    } = args;
+    // REQ-cli-057 (G1, #367): an argument SpecSync would echo back is checked
+    // before it runs.
+    refuse_unshowable(&[("id", &id)])?;
+    let id_shown = crate::leaks::shown("id", &id);
+    // REQ-cli-071: an approval without the approver, their words or the citation
+    // is not a relay, so a missing or blank relay field refuses before anything
+    // runs, as ship's incomplete relay does.
+    let mut missing: Vec<&str> = ["--actor", "--words", "--where"]
+        .iter()
+        .zip([
+            actor.as_deref().unwrap_or_default(),
+            words.as_deref().unwrap_or_default(),
+            place.as_deref().unwrap_or_default(),
+        ])
+        .filter(|(_, value)| value.trim().is_empty())
+        .map(|(name, _)| *name)
+        .collect();
+    if recorded_by
+        .as_deref()
+        .is_some_and(|value| value.trim().is_empty())
+    {
+        missing.push("--recorded-by");
+    }
+    if !missing.is_empty() {
+        bail!(
+            "refused:incomplete-relay: the relay for {id_shown} needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing ran.\nRun `chough change approve {id_shown} --actor \"<name>\" --words \"<their words>\" --where \"<citation>\" [--recorded-by \"<agent>\"].",
+            missing.join(", "),
+            if missing.len() == 1 { "is" } else { "are" }
+        );
+    }
+    // REQ-cli-071: without --recorded-by, the note names the running binary.
+    let recorded_by =
+        recorded_by.unwrap_or_else(|| format!("chough {}", env!("CARGO_PKG_VERSION")));
+    // REQ-cli-071 (#412): SpecSync writes the actor and the note into the change's
+    // approval record, so they are checked as any written value is, before it runs.
+    let mut actor = actor.unwrap_or_default();
+    let words = words.unwrap_or_default();
+    let place = place.unwrap_or_default();
+    let mut redacted = guard_text("actor", &mut actor)?;
+    let mut note = relay_note(&actor, &words, &place, &recorded_by, note.as_deref());
+    redacted += guard_text("note", &mut note)?;
+    say_redacted(redacted);
+    // REQ-cli-060: a direct write before the approval stays pending for the next
+    // stage move.
+    let before = crate::direct_writes::before_step(root, &id);
+    let mut command = Command::new(SPECSYNC);
+    command
+        .args(["change", "approve", &id, "--actor", &actor, "--note", &note])
+        .current_dir(root);
+    let output =
+        records::run_owned(&mut command, None).map_err(|error| not_started("approve", &error))?;
+    if let Some(before) = before {
+        let _ = crate::direct_writes::after_step(root, before);
+    }
+    pass_through(&output.stdout, &output.stderr)?;
+    Ok(exit_code(output.status.code(), signal(&output.status)))
+}
+
+/// The note a relayed approval carries (REQ-cli-071): the relay's fields, in one
+/// note, in order, so SpecSync's approval record keeps who decided, their words,
+/// the citation and the recording agent together.
+fn relay_note(
+    actor: &str,
+    words: &str,
+    place: &str,
+    recorded_by: &str,
+    note: Option<&str>,
+) -> String {
+    let mut fields = vec![
+        "relayed=pi chat".to_string(),
+        format!("decided-by={actor}"),
+        format!("words={words}"),
+        format!("where={place}"),
+        format!("recorded-by={recorded_by}"),
+    ];
+    if let Some(note) = note.filter(|note| !note.is_empty()) {
+        fields.push(format!("note={note}"));
+    }
+    fields.join("; ")
 }
 
 /// The short summary's text, at most [`SUMMARY_LINES`] lines (REQ-cli-059). When

@@ -1,6 +1,8 @@
 //! REQ-cli-057 (#171, DRIVE-20 slice 1): `chough change new`, `answer`, `check` and
 //! `status` run the matching SpecSync step and pass its output, refusals and exit code
-//! through unchanged. Unix only: the stand-in `specsync` is a shell script.
+//! through unchanged. `approve` relays a human decision on a definition with a required
+//! citation (REQ-cli-071) through the same steps and tests. Unix only: the stand-in
+//! `specsync` is a shell script.
 #![cfg(unix)]
 
 mod common;
@@ -83,7 +85,8 @@ fn dot_chough(root: &Path) -> BTreeMap<String, Vec<u8>> {
     files
 }
 
-/// The four steps with the arguments each must pass to SpecSync.
+/// Each plain step with the arguments it must pass to SpecSync, including the
+/// approve relay with its composed note (REQ-cli-071).
 fn steps() -> Vec<(Vec<&'static str>, Vec<&'static str>)> {
     vec![
         (
@@ -145,6 +148,30 @@ fn steps() -> Vec<(Vec<&'static str>, Vec<&'static str>)> {
             vec!["change", "status", "free-shipping", "--json"],
         ),
         (vec!["change", "status"], vec!["change", "status", "--json"]),
+        (
+            vec![
+                "change",
+                "approve",
+                "free-shipping",
+                "--actor",
+                "SYNTHETIC-human",
+                "--words",
+                "Yes, approved.",
+                "--where",
+                "pi chat SYNTHETIC-session, message 2",
+                "--recorded-by",
+                "probe t9",
+            ],
+            vec![
+                "change",
+                "approve",
+                "free-shipping",
+                "--actor",
+                "SYNTHETIC-human",
+                "--note",
+                "relayed=pi chat; decided-by=SYNTHETIC-human; words=Yes, approved.; where=pi chat SYNTHETIC-session, message 2; recorded-by=probe t9",
+            ],
+        ),
     ]
 }
 
@@ -196,6 +223,8 @@ fn specsync_output_and_exit_code_pass_through_byte_for_byte() {
 fn no_change_command_writes_a_tracked_file_under_dot_chough() {
     // REQ-cli-057 as modified by REQ-cli-060: no tracked file under `.chough/` changes,
     // and under `.chough/local/` a step writes only its change's direct-write baseline.
+    // approve runs through the same steps() table (REQ-cli-071), so its
+    // "a tracked file under .chough/ is unchanged" criterion rests on this test.
     let fixture = fixture();
     fixture.init();
     // A checkpoint save, as in any project past init: the writer's lock creates the
@@ -2120,5 +2149,284 @@ fn change_ship_names_a_close_gate_value_by_what_it_holds() {
         assert!(!output.status.success(), "{said}");
         assert!(!said.contains("ghp_") && !said.contains('\u{1b}'), "{said}");
         assert!(said.contains("<gate holding"), "{said}");
+    }
+}
+
+/// REQ-cli-071 (DRIVE-20): `chough change approve` records a relayed human
+/// approval of the change definition by running SpecSync's approve with the
+/// relay's fields in its note, in order, joined by `; `; `--note` is appended,
+/// and the step runs in `--root`.
+#[test]
+fn approve_runs_specsync_with_the_relay_in_the_note() {
+    let fixture = fixture();
+    let output = run_env(
+        &fixture,
+        &[
+            "change",
+            "approve",
+            "free-shipping",
+            "--actor",
+            "SYNTHETIC-human",
+            "--words",
+            "Yes, approved.",
+            "--where",
+            "pi chat SYNTHETIC-session, message 2",
+            "--recorded-by",
+            "probe t9",
+            "--note",
+            "quest q-14-1",
+        ],
+        &[],
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        argv(&fixture),
+        vec![
+            "change",
+            "approve",
+            "free-shipping",
+            "--actor",
+            "SYNTHETIC-human",
+            "--note",
+            "relayed=pi chat; decided-by=SYNTHETIC-human; words=Yes, approved.; where=pi chat SYNTHETIC-session, message 2; recorded-by=probe t9; note=quest q-14-1"
+        ]
+    );
+    assert_eq!(
+        fixture.read(".stub-cwd").trim_end(),
+        canonical(fixture.root()),
+        "approve ran outside --root"
+    );
+}
+
+/// REQ-cli-071: without `--recorded-by`, the note names the running binary, and
+/// without `--note` the note holds no `note=` field.
+#[test]
+fn approve_defaults_the_recorder_to_the_chough_version() {
+    let fixture = fixture();
+    let output = run_env(
+        &fixture,
+        &[
+            "change",
+            "approve",
+            "free-shipping",
+            "--actor",
+            "SYNTHETIC-human",
+            "--words",
+            "Yes.",
+            "--where",
+            "pi chat SYNTHETIC-session, message 2",
+        ],
+        &[],
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let argv = argv(&fixture);
+    let note = argv.last().unwrap();
+    assert_eq!(
+        note,
+        &format!(
+            "relayed=pi chat; decided-by=SYNTHETIC-human; words=Yes.; where=pi chat SYNTHETIC-session, message 2; recorded-by=chough {}",
+            env!("CARGO_PKG_VERSION")
+        )
+    );
+    assert!(!note.contains("note="), "no --note given: {note}");
+}
+
+/// REQ-cli-071: an approval without the approver, their words or the citation is
+/// not a relay, so a missing or blank relay field, or a present but blank
+/// `--recorded-by`, refuses before SpecSync runs, naming the flag and the
+/// command to run again.
+#[test]
+fn approve_refuses_before_running_without_the_relay() {
+    let fixture = fixture();
+    let full = [
+        "change",
+        "approve",
+        "free-shipping",
+        "--actor",
+        "SYNTHETIC-human",
+        "--words",
+        "Yes.",
+        "--where",
+        "pi chat SYNTHETIC-session, message 2",
+    ];
+    // Every required flag absent at once, then each one at a time.
+    let mut cases: Vec<(Vec<&str>, &str)> = vec![(full[0..3].to_vec(), "--actor")];
+    for (position, named) in [(3usize, "--actor"), (5, "--words"), (7, "--where")] {
+        let mut args = full.to_vec();
+        args.remove(position);
+        args.remove(position);
+        cases.push((args, named));
+    }
+    // Each required value blank, and a present but blank recorder.
+    for (position, named) in [(4usize, "--actor"), (6, "--words"), (8, "--where")] {
+        let mut args = full.to_vec();
+        args[position] = "   ";
+        cases.push((args, named));
+    }
+    let mut args = full.to_vec();
+    args.extend(["--recorded-by", "  "]);
+    cases.push((args, "--recorded-by"));
+    for (args, named) in cases {
+        let _ = fs::remove_file(fixture.root().join(".stub-argv"));
+        let output = run_env(&fixture, &args, &[]);
+        let said = format!(
+            "{}{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(!output.status.success(), "{named}: {said}");
+        assert!(
+            said.contains("refused:incomplete-relay") && said.contains(named),
+            "{named}: {said}"
+        );
+        assert!(
+            said.contains("chough change approve"),
+            "{named} does not name the command to run again: {said}"
+        );
+        assert!(!fixture.exists(".stub-argv"), "{named}: SpecSync ran");
+    }
+}
+
+/// REQ-cli-071: SpecSync's standard output, standard error and exit code pass
+/// through unchanged, as for every change step.
+#[test]
+fn approve_passes_specsync_output_and_exit_code_through() {
+    let fixture = fixture();
+    // Bytes no text handling would keep as they are: no final newline, a CR, a NUL
+    // and invalid UTF-8.
+    let stdout: &[u8] = b"{\"summary\":{\"state\":\"approved\"}}\r\nsecond line\0\xff";
+    let stderr: &[u8] = b"Error: refused: the definition is not approved yet";
+    fs::write(fixture.root().join(".stub-out"), stdout).unwrap();
+    fs::write(fixture.root().join(".stub-err"), stderr).unwrap();
+    let relay = [
+        "change",
+        "approve",
+        "free-shipping",
+        "--actor",
+        "SYNTHETIC-human",
+        "--words",
+        "Yes.",
+        "--where",
+        "pi chat SYNTHETIC-session, message 2",
+    ];
+    for code in ["0", "1", "3"] {
+        fixture.write(".stub-exit", code);
+        let output = run_env(&fixture, &relay, &[]);
+        assert_eq!(output.stdout, stdout, "stdout, exit {code}");
+        assert_eq!(output.stderr, stderr, "stderr, exit {code}");
+        assert_eq!(
+            output.status.code(),
+            Some(code.parse().unwrap()),
+            "exit code {code}"
+        );
+    }
+}
+
+/// REQ-cli-071 (REQ-cli-057, G1, #367, #412): before SpecSync runs, an id holding
+/// a credential is refused as `refused:unshowable-argument`, and an actor or relay
+/// field holding a control character is refused, with the value never shown, with
+/// or without `--redact`; a leak in the actor or a relay field is refused naming
+/// the field and the kind, or, under `--redact`, replaced, with the count said on
+/// standard error ahead of SpecSync's output.
+#[test]
+fn approve_refuses_a_leaking_argument_before_specsync_runs() {
+    let fixture = fixture();
+    let token = concat!("x ghp_", "abcdefghij0123456789", "abcdefghij0123 y");
+    let escape = "fix-\u{1b}[31m";
+    fn case(extra: &[&'static str]) -> Vec<&'static str> {
+        let mut args = vec!["change", "approve", "free-shipping"];
+        args.extend_from_slice(extra);
+        args
+    }
+    // Each case: the arguments, the refusal it must reach without `--redact`, and
+    // whether `--redact` redacts instead of refusing. An id, checked with
+    // `refuse_unshowable`, and a control character are refused either way; a leak in
+    // a relay field that SpecSync writes is refused plain and redacted under --redact.
+    let cases: Vec<(Vec<&str>, &str, bool)> = vec![
+        (
+            vec!["change", "approve", token],
+            "refused:unshowable-argument",
+            false,
+        ),
+        (
+            case(&[
+                "--actor",
+                token,
+                "--words",
+                "Yes.",
+                "--where",
+                "pi chat SYNTHETIC-session, message 2",
+            ]),
+            "refused:leak",
+            true,
+        ),
+        (
+            case(&[
+                "--actor",
+                "SYNTHETIC-human",
+                "--words",
+                token,
+                "--where",
+                "pi chat SYNTHETIC-session, message 2",
+            ]),
+            "refused:leak",
+            true,
+        ),
+        (
+            case(&[
+                "--actor",
+                "SYNTHETIC-human",
+                "--words",
+                escape,
+                "--where",
+                "pi chat SYNTHETIC-session, message 2",
+            ]),
+            "refused:control-character",
+            false,
+        ),
+    ];
+    for (mut args, named, redacts) in cases {
+        for redact in [false, true] {
+            let _ = fs::remove_file(fixture.root().join(".stub-argv"));
+            if redact {
+                args.insert(0, "--redact");
+            }
+            let output = run_env(&fixture, &args, &[]);
+            if redact && redacts {
+                // The leak is replaced, SpecSync runs, and the count is said first.
+                let stderr = String::from_utf8_lossy(&output.stderr);
+                assert!(output.status.success(), "{named} --redact: {stderr}");
+                let passed = argv(&fixture).join("\n");
+                assert!(
+                    passed.contains("<redacted:") && !passed.contains("ghp_"),
+                    "{named} --redact: {passed}"
+                );
+                assert!(stderr.contains("redacted 1"), "{named} --redact: {stderr}");
+            } else {
+                let said = format!(
+                    "{}{}",
+                    String::from_utf8_lossy(&output.stdout),
+                    String::from_utf8_lossy(&output.stderr)
+                );
+                assert!(!output.status.success(), "{named}: {said}");
+                assert!(said.contains(named), "{named}: {said}");
+                assert!(
+                    !said.contains("ghp_") && !said.contains('\u{1b}'),
+                    "{named}: {said}"
+                );
+                assert!(!fixture.exists(".stub-argv"), "{named}: SpecSync ran");
+            }
+            if redact {
+                args.remove(0);
+            }
+        }
     }
 }

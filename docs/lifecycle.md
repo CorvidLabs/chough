@@ -50,6 +50,14 @@ only the untracked direct-write baseline `.chough/local/native-writes/<id>.json`
 `status` writes nothing. Only `ship` also closes the review gate and moves the session
 to done.
 
+**Chough-first (DRIVE-20, REQ-cli-072):** agents call only chough to move a change
+through SpecSync. Direct `specsync change` invocation for a wrapped step is a
+violation recorded as a `direct-native-write` Timeline entry (DRIVE-21); driven far
+enough it desyncs the session trail from native state, as in the PR tob#38 incident
+where the trail could not reach done. The bundled skill check
+(`scripts/check-skill-chough-first.sh`, fledge step `skill-chough-first`) keeps the
+workflow bundle honest.
+
 Human decisions sit at natural points, not at every step: the intent as a whole,
 the rendered design with its companion, one native scope approval, and the
 implementation review at acceptance. Agents synthesize review findings before

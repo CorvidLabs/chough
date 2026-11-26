@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071",
+  "implementation_commit": "84d0871f96a824d0c04c09744066bca77cfe5887",
+  "implementation_tree": "12cae85691aba039400beae0acf4c4cb4f8990c6",
+  "contract_digest": "5d7b1cc13a1072fb2a55cd031e1e1957a12768a3b64da61d53ab123afc2c1a00",
+  "workspace_digest": "464e03cc979c9c0fb8385ad415594bfef33720430de0393420f03154c89b69d3",
+  "closing_digest": "5d79e57bfb3d57e8d25a8fb982e4d6d0540d53bf4c9caaace4573b441b22df2b",
+  "review_digest": "e5330657ea2ddfe24a073a7e52f9b3cdce8fb9b780b02bc28428718afc82cfed",
+  "finalization_digest": "66bdedf3390b5f3546fff44e2e14eb34a9116b64a18ad34e3a1cc3fd0f7273eb",
+  "timestamp": 1795580044
+}

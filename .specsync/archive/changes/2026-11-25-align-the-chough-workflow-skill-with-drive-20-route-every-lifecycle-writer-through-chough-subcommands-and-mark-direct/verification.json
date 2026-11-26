@@ -1,0 +1,234 @@
+{
+  "timestamp": 1795630128,
+  "commit": "fb0562045e8412aae2130e056dc90fbeb7ab5302",
+  "contract_digest": "46248f858e46eea4ef46f73890245e8f20085de0200388ae8760cf85d4d97e32",
+  "execution_digest": "eec2299bc15e06671449fbe872b9a9bffa710085d5b141a2b5dd8a7f3a493345",
+  "workspace_digest": "7e9f707ea1404572d8ecc517e137e75186f7b54b3ff462f2fc837d021d30d72e",
+  "acceptance_input_digest": "2a7dc3aa87ff6dbeb4903f606877d5495f665607a75e23edd64fdfecc86eb671",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": "docs/AGENTS.md",
+        "kind": "missing",
+        "mode": 0,
+        "payload_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "entry_digest": "739b93a39674a8fb91cd6f0447cb66b3ebcf7c4326b37d415106b3ba32073509",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "skills/chough-workflow/SKILL.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "2b0dda03eb08ca6303d7240b5be296228309d26c20a6355414e7e43c59a3844a",
+        "entry_digest": "18302a319686525c97b28002aefd8f9f9391470a8aede4d729e6c8eea26b792e",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "skills/chough-workflow/references/accept.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "9a9b15511cdec529fd2c55f83b44098d4a0658aa1460a34e34bd4db5dda54ebe",
+        "entry_digest": "e5062094870bf449eaffefe53afc276187b3840777d37ed1f5e16e81e1e2f1a8",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "skills/chough-workflow/references/checkpoint.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "9bb532bfb2ffd1226d65a768e8cea9361fa302dbe19e124a17344714b86e8e76",
+        "entry_digest": "e853537235c360312063f30b96c9a9cfced1de21a69e7f04dacd60546c4fa948",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "skills/chough-workflow/references/lifecycle.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "08bd4d3a5e3e8782af56dad1d8f2ecf9eb38ab64dab4598813c90a9bfb6afa10",
+        "entry_digest": "5405b4bc7608c55e2d5cc8750e0265837f6291a60a91633eb04a4b30a5f351be",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "skills/chough-workflow/references/plan.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "87076147423c4d4d22b26e13cdbe66f28112b6065a3fbfdc5de573eb22c83008",
+        "entry_digest": "3f04c6c3c19b206149b566069df1972c8d06fc4e1310651b37e312e1f765f646",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "skills/chough-workflow/references/stages.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0ec77336b564de6b8c8a11600399bbdc7ca3678a2458363f6a6f31f8090b3382",
+        "entry_digest": "1449128a1f993d565e7359d7b0e246a20c73f396fbd49653981a144eeae47798",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "skills/chough-workflow/references/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "e0606a121532369b8fc82505d3170cdd1a3446439da03d6dcccad71dbc953c19",
+        "entry_digest": "2d347cb1a7b079515420cae8df302cdaef0344acce5c4f6243548ead3500c389",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "skills/chough-workflow/references/validate.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1fd485b0b4720f6016a84015df958e17a9edf5fb1ccaecb9c9d8b2ad7e784f45",
+        "entry_digest": "07ee62053cbf14692ceeb817aa9cb7034ddc2cd846156cfa712486224e444b0e",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.3md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "35c0238b3221ca8b600366541d910327bd81b6a85cde2f9278bf38af5ae99074",
+        "entry_digest": "0ed50b4fc722a134345453943f6afc0e00078c6006f0a4df0843db3e745a7cd3",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "da619f4d1bb26bdbe13f84d867011f3f383aa8fbd4d0161e7c1430d39837217b",
+        "entry_digest": "438e8c37c68f654de507765b81af294c0d0dfa246cab6fdee3da8416376bccf6",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8b46f365bff777029f5fdd15c4e1acbd5e21bc59020c42f5d7c3401641235588",
+        "entry_digest": "bdaff9b6032ceb643b10c08714e9b812e9d8ff9fa18b6f3317999e0afb112f0d",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5bd091fd0a63178389b4fa834323812516c1462aee2eb7c6a2e3c4268623c6a7",
+        "entry_digest": "79c24a12df12f178418cedf5e4117eccc8154490e544484b2e34def33c3ec9b6",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/align-the-chough-workflow-skill-with-drive-20-route-every-lifecycle-writer-through-chough-subcommands-and-mark-direct.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "632188c955b755db552e4673e2d9770af0247a0584e0cf97ab829b2dc5603818",
+        "entry_digest": "f71da1552651d939cceac93d409f5048588ae719d32082852978ebacd6bf4647",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ca0c4a8e25c2a353e0286e98ec6d11dd67246d05a395685e7f7f89f4c51f5416",
+        "entry_digest": "e116eff5c94df0cea9e6b958b495cdbdf3308a25ac50c431ee902750721c23df",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "97666bc2d32406eebde22c1fc9ce5352af8e22ad9c8662344091e7cb08ec6774",
+        "entry_digest": "a89e66fa145b2c174285d14de826a0046aa2dc047a909eeca7a1aba2d2e681b5",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "9844978e2d347d81a80568f48ec480f801c3c1a4ba7314535267697ced464bb9",
+        "entry_digest": "89e74a0d5459c1df34547e4c5d92263fd041d4e610ca595100e7cbfec84a6ad6",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c4460cf634bd6efb4b367086d41ab1c9d53843c91478b26200850d6c45912248",
+        "entry_digest": "f74cadc9c763c6b131c904047e64afa7f11d94822089460e9cabc27565305d8e",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1f873b5e3614ef39a2ff67d12a2dd527658e8c84d776462fefcd67981035039b",
+        "entry_digest": "07f2d43d2d1af4346a6f145d0ffb5ec10344f50682a7d6243c5a25862961978f",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "06f3a8c0850c62325383f36e79273eb2fd9d355ce4d83a543f3c306c43294c3d",
+        "entry_digest": "8f5dc063d921267ddba11b030ed5d923c31baaedd8368d9816a654c8bf950e56",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "483933ab74792a113e55a1b3bf4ab1bc2e36578229a52a89c5dbee82d5375eec",
+        "entry_digest": "8ff2dbf45ad083bbcbd7ab754fb4bf49d644ee8baea9f02dc8dd4f4c313ce848",
+        "owners": [
+          "cli"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec cli",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": [
+    "REQ-cli-072"
+  ]
+}

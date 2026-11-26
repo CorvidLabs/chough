@@ -47,7 +47,9 @@ saved label, decides what each move is allowed to do. The loop is:
 `chough next` tells the agent (or you) the focused next valid action; it is
 routing guidance, not an unattended runner. `chough change new/answer/check/status`
 pass SpecSync's output, refusals and exit code through unchanged and write nothing
-under `.chough/`; only `chough change ship` also closes the review gate and moves
+under `.chough/`; `chough change approve` does the same for a relayed human
+approval of the change definition, carrying the relay's fields in SpecSync's note;
+only `chough change ship` also closes the review gate and moves
 the session to done. `chough change ready <id>` lists everything still missing
 before approval, names each fix and writes nothing. What you always decide yourself: the intent, any visual
 design, scope when authority is missing, implementation acceptance, merge, and any
@@ -244,7 +246,7 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `session new/use/list/close/shelve`, `inbox add/list/fold` | One session folder per change or objective, archived as one story when it finishes; subagents report through a create-only inbox |
 | `doctor` | Find, and with `--fix` repair, the Chough debt that stops a fresh worktree from entering Chough; no flag or `--dry-run` only reports |
 | `gate list/record` | Number the open human gates, each with a one-screen summary and its digest, and record one relayed reply for listed gates only |
-| `change new/answer/check/status/ready/ship` | Run SpecSync's change new, answer, check (with `--commit`) and status steps, passing their output, refusals and exit code through unchanged; `ready` lists everything still missing before approval and names each fix, writing nothing; `ship` ships after the review, closes the review gate with its relay and moves to done |
+| `change new/answer/check/status/ready/approve/ship` | Run SpecSync's change new, answer, check (with `--commit`) and status steps, passing their output, refusals and exit code through unchanged; `ready` lists everything still missing before approval and names each fix, writing nothing; `approve` records a relayed human approval of the change definition with its relay fields in SpecSync's note; `ship` ships after the review, closes the review gate with its relay and moves to done |
 | `stage …` | Show, advance (one stage or `--to` several), skip, iterate, back, reset, pause, resume, enter and return, and backfill a move that already happened |
 | `history show` | Show the active session's Timeline, or the newest archived story's |
 | `correct` | Correct an earlier Timeline entry by appending a linked correction; history is never rewritten |
@@ -289,7 +291,7 @@ from 6.0.
 |---|---|
 | Hosted CI: Ubuntu, macOS | `cargo test` and a release build |
 | Hosted CI: Ubuntu, Rust 1.88.0 | `cargo test` with the minimum Rust version |
-| Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (tool versions against the CI pins, format, lint, tests, HI and SpecSync checks, change audit, case definitions, the leak scan, the feature and bug exercise, build); the native archive check and its fixtures |
+| Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (tool versions against the CI pins, format, lint, tests, HI and SpecSync checks, change audit, case definitions, the leak scan, the chough-first skill check, the feature and bug exercise, build); the native archive check and its fixtures |
 | Local: macOS arm64 | Development, the exercises and lifecycle records |
 
 On Windows, install Rust, Chough, HI, SpecSync and Fledge inside Ubuntu on WSL 2, and

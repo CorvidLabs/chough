@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "cover-req-cli-072-test-and-fixture-updates",
+  "implementation_commit": "7fc2dc223601661e15b0aff2247e54e4e645b699",
+  "implementation_tree": "49ccfa773851eea87c8023bc86057ad1dc03a0a6",
+  "contract_digest": "1f71781d0a7f8840f6a3913852b906cc8c89492941cfedb1944666ec137141ae",
+  "workspace_digest": "a206bfdbe0bfdff3e21740a5d3e23347287c09d45f614a4dde60e80450c780e7",
+  "closing_digest": "18c72a05543df281f8b81679d2ab41015d18f8a46959c12155b5d182b6c55da0",
+  "review_digest": "ddb829db15cfdab34485d77a846077372c8aa14646834a21f1e5fc13364bc265",
+  "finalization_digest": "cfeb07db89f0dc79fa6f44bac7948764e1db32cbb8fa927f4fdac2ee75fa7668",
+  "timestamp": 1795631866
+}

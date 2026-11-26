@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "84d0871f96a824d0c04c09744066bca77cfe5887",
+  "contract_digest": "5d7b1cc13a1072fb2a55cd031e1e1957a12768a3b64da61d53ab123afc2c1a00",
+  "execution_digest": "26bf05f7f80c7df29c20c0c50317928776728b3f561f1067735aa45d5f6ae4da",
+  "workspace_digest": "464e03cc979c9c0fb8385ad415594bfef33720430de0393420f03154c89b69d3",
+  "timestamp": 1795580030
+}

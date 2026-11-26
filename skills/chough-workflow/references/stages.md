@@ -51,7 +51,7 @@ Work only in your own checkout and branch; other branches are not inputs.
 | Side stage | `chough stage enter <side> --reason "<why>"`, then `chough stage return` | Sides: bugs, validate, librarian; the caller is restored |
 
 Going back to intent or plan after native approval means native reapproval if
-intent, contract, acceptance criteria or scope change. Follow `specsync change
+intent, contract, acceptance criteria or scope change. Follow `chough change
 status`; Chough never changes native state. Dependent design approval, test
 observations and evidence named in the refresh list must be redone by their owners.
 

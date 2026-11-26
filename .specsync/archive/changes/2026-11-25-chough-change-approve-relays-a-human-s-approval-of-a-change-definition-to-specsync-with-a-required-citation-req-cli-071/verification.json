@@ -1,0 +1,224 @@
+{
+  "timestamp": 1795579966,
+  "commit": "84d0871f96a824d0c04c09744066bca77cfe5887",
+  "contract_digest": "5d7b1cc13a1072fb2a55cd031e1e1957a12768a3b64da61d53ab123afc2c1a00",
+  "execution_digest": "26bf05f7f80c7df29c20c0c50317928776728b3f561f1067735aa45d5f6ae4da",
+  "workspace_digest": "464e03cc979c9c0fb8385ad415594bfef33720430de0393420f03154c89b69d3",
+  "acceptance_input_digest": "a8e076f93af526eec2268c75430c8d7d04c46b213ad39e33b941e8d47aef1d5e",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": ".chough/cases/cli.approve-passthrough.cases.toml",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b5f9abed7926142aa49177fff444017e159f1554afee0d25bd820ebe09c066d1",
+        "entry_digest": "21a6b58e8f1934a7d053bd20c3b3327835a20ce6a67b748fda5af142f84554aa",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": ".gitattributes",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "90880fd83c670e4096e367480be527035d215c76fd979a1a02c39157456cca9e",
+        "entry_digest": "b03c403ff7aa1cbeef566c0feb4c87b377e57631eb51b6ffaf65193e89481757",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "README.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "de6e6d0881fb86e382e26d5dd45324402d76cd8f156ef83bcc383e095b36c09e",
+        "entry_digest": "c6c011717c7d093abeb13f404c07307f4cd4c0d09f78c410776ec3af4658ac8e",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/2026-11-25-approve-passthrough.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8f983c760a7ac0559c711b1e643432785780f5e11dd4f3138e71e98acf6feabd",
+        "entry_digest": "a9bbe01d4fab8184d7ca6c3a200f7533ff86ee3f2ce718ebfd739ae908c3b218",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/2026-11-25-approve-passthrough.toml",
+        "kind": "missing",
+        "mode": 0,
+        "payload_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "entry_digest": "5dbb2682d374c909363e6ee94730699523c2bef493c87c304de12bca2133dda9",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "docs/cli.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "a8174b96a52c15a58754269d88ed1597ceae50b88ba66493b92bf4ff587ff9aa",
+        "entry_digest": "227bf94ff6821e278ba000af06bbbbfc0a5e4049671f037a84d4a54333f4c6fe",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.3md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "35c0238b3221ca8b600366541d910327bd81b6a85cde2f9278bf38af5ae99074",
+        "entry_digest": "0ed50b4fc722a134345453943f6afc0e00078c6006f0a4df0843db3e745a7cd3",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "da619f4d1bb26bdbe13f84d867011f3f383aa8fbd4d0161e7c1430d39837217b",
+        "entry_digest": "438e8c37c68f654de507765b81af294c0d0dfa246cab6fdee3da8416376bccf6",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8b46f365bff777029f5fdd15c4e1acbd5e21bc59020c42f5d7c3401641235588",
+        "entry_digest": "bdaff9b6032ceb643b10c08714e9b812e9d8ff9fa18b6f3317999e0afb112f0d",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/a-fork-pull-request-does-not-fail-the-label-job-a-symlinked-session-is-not-read-and-a-matching-stage-label-is-not.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5bd091fd0a63178389b4fa834323812516c1462aee2eb7c6a2e3c4268623c6a7",
+        "entry_digest": "79c24a12df12f178418cedf5e4117eccc8154490e544484b2e34def33c3ec9b6",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/an-open-session-sets-the-stage-label-when-archived-sessions-are-also-on-the-pull-request.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ca0c4a8e25c2a353e0286e98ec6d11dd67246d05a395685e7f7f89f4c51f5416",
+        "entry_digest": "e116eff5c94df0cea9e6b958b495cdbdf3308a25ac50c431ee902750721c23df",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "97666bc2d32406eebde22c1fc9ce5352af8e22ad9c8662344091e7cb08ec6774",
+        "entry_digest": "a89e66fa145b2c174285d14de826a0046aa2dc047a909eeca7a1aba2d2e681b5",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/optional-github-template-labels-a-pull-request-with-the-seven-main-chough-stages.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "9844978e2d347d81a80568f48ec480f801c3c1a4ba7314535267697ced464bb9",
+        "entry_digest": "89e74a0d5459c1df34547e4c5d92263fd041d4e610ca595100e7cbfec84a6ad6",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/history/specsync-6-4-0-change-ready-asks-the-approval-dry-run-and-spec-history-is-recorded-in-fragments.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c4460cf634bd6efb4b367086d41ab1c9d53843c91478b26200850d6c45912248",
+        "entry_digest": "f74cadc9c763c6b131c904047e64afa7f11d94822089460e9cabc27565305d8e",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "69cbcee57c3c9dee7d612f190fe03c66d36d0a97c20d91dcf7d34e804d3e1409",
+        "entry_digest": "03990c0b27eba1e2787c5394fe9e021d2303359ae66491dcf5a3ad1c7b74c9d2",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "06f3a8c0850c62325383f36e79273eb2fd9d355ce4d83a543f3c306c43294c3d",
+        "entry_digest": "8f5dc063d921267ddba11b030ed5d923c31baaedd8368d9816a654c8bf950e56",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "483933ab74792a113e55a1b3bf4ab1bc2e36578229a52a89c5dbee82d5375eec",
+        "entry_digest": "8ff2dbf45ad083bbcbd7ab754fb4bf49d644ee8baea9f02dc8dd4f4c313ce848",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/change.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "6596d9351da16371959628033a5ae18116d0027cb65dfa61bc36a4d92893b278",
+        "entry_digest": "787b47c92680faa0950381be25d7cb52a86b08f5b97614b024558ef2a0de6092",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/main.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "d51c13cfa678268a746e131a04b56a1018e593ff2b953d3d32e720dae0bc20dd",
+        "entry_digest": "d3875563ebdb013682c9e8b5b58f45edefe4eeb96fc63bcec1501c925092a797",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "tests/change.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b410b26683d0089fcda7de18fea603b8737e1a2441538d94ef3b98b6be07f5e6",
+        "entry_digest": "1219df2e2b4f98c23941c28e1ea25d9cbf3b9ff6b562b3572e0d0ec520cc8da6",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec cli",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": [
+    "REQ-cli-071"
+  ]
+}

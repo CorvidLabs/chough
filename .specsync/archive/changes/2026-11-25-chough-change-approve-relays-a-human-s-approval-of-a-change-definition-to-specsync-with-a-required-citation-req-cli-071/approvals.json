@@ -1,0 +1,63 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795576102,
+      "digest": "5d7b1cc13a1072fb2a55cd031e1e1957a12768a3b64da61d53ab123afc2c1a00",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071\": \"I approvwe\" (pi chat t14z, 2026-11-25T03:07Z, orchestrator session (typo for 'I approve', intent unambiguous)). Relayed and recorded by pi t14z orchestrator (GLM-5.3-Flash-oQ4e-mtp) at 2026-11-25T03:08:20Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071",
+        "title": "Chough change approve relays a human's approval of a change definition to SpecSync with a required citation (REQ-cli-071, DRIVE-20)",
+        "description": "chough change approve relays a human's approval of a change definition to SpecSync with a required citation (REQ-cli-071, DRIVE-20)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.approve-passthrough.cases.toml",
+          ".gitattributes",
+          "README.md",
+          "changelog.d/2026-11-25-approve-passthrough.md",
+          "changelog.d/2026-11-25-approve-passthrough.toml",
+          "docs/cli.md",
+          "specs/cli/requirements.md",
+          "src/change.rs",
+          "src/main.rs",
+          "tests/change.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough change approve refuses before SpecSync runs without --actor, --words or --where, or with one of them blank. With all three, it runs specsync change approve <id> --actor <actor> --note <note>, where the note carries relayed=pi chat, decided-by, words, where and recorded-by joined by '; ', and --note appends its value; without --recorded-by the note names chough <version>. SpecSync's standard output, standard error and exit code pass through unchanged."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "specs/cli/cli.3md: write tasks.md without unchecked boxes, because change check refuses them; treat the delta as frozen once approved",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "1a7040504d351b6eb92713ee856515bb0512df13654808c8b22bafe28217c4cb"
+      },
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "I approvwe",
+        "where": "pi chat t14z, 2026-11-25T03:07Z, orchestrator session (typo for 'I approve', intent unambiguous)",
+        "recorded_by": "pi t14z orchestrator (GLM-5.3-Flash-oQ4e-mtp)"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795580044,
+      "digest": "5d79e57bfb3d57e8d25a8fb982e4d6d0540d53bf4c9caaace4573b441b22df2b",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

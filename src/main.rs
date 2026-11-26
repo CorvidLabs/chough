@@ -205,6 +205,8 @@ enum Commands {
     },
     /// Run SpecSync's change new, answer, check (with --commit) and status steps and pass
     /// their output, refusals and exit code through unchanged (REQ-cli-057).
+    /// `approve` records a relayed human approval of the change definition, with the
+    /// relay's fields in SpecSync's note (REQ-cli-071).
     /// `ready` lists everything still missing before approval and writes nothing
     /// (REQ-cli-067).
     Change {

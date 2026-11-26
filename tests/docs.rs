@@ -582,6 +582,7 @@ fn readme_verify_lane_list_names_every_fledge_verify_step() {
         ("cases", "case definitions"),
         ("knowledge", "knowledge index"),
         ("leaks", "leak scan"),
+        ("skill-chough-first", "chough-first skill check"),
         ("exercise", "feature and bug exercise"),
         ("build", "build"),
     ];
