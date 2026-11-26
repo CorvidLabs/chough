@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "release-prep-0-6-4",
+  "reviewer": "leif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "fe8207e6e32c6999452c292bb3e0a4c710ee985d",
+  "contract_digest": "d8e58d7f5de78a3603c15ee1e195227eae56730205a62099bfc2f13d8ef5acaf",
+  "execution_digest": "4a10bad007e090fcd2bd5f2a1885a995b27a277f990ccc13a5e9b04ab86f473e",
+  "workspace_digest": "9022538cc6bb3a7aa5ef1515adb1b17f921d0e50ab6d98fa4040819833ab0d4b",
+  "timestamp": 1795735824,
+  "relayed_by": {
+    "decided_by": "leif",
+    "words": "Pass — record & ship",
+    "where": "pi chat t14z verdict interview, 2026-11-26 ~23:15 UTC (Leif's selection; relayed by pi-t14z)",
+    "recorded_by": "pi-t14z"
+  }
+}

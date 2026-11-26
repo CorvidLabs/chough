@@ -1,6 +1,6 @@
 ---
 id: release-prep-0-6-4
-state: verifying
+state: archived
 type: feature
 base_commit: 2577da8e23a07a308511a21d992c83419eac74e2
 ---
