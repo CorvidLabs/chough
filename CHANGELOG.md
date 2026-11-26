@@ -6,6 +6,40 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.6.4] - 2026-11-26
+
+- The chough-workflow skill routes every lifecycle writer through chough
+  (REQ-cli-072): SKILL.md's old "run HI, SpecSync and Fledge yourself" line
+  sent agents to specsync directly, which left chough session trails unable
+  to reach done; reference files now show the `chough change` forms with the
+  four unwrapped steps labeled as direct-native-write, and a CI check keeps
+  the bundle honest.
+- `chough change approve <id> --actor <name> --words "<their words>" --where
+  "<citation>" [--recorded-by <agent>] [--note <extra>]` records a relayed human
+  approval of a change definition through SpecSync, with the relay's fields —
+  `relayed=pi chat`, `decided-by`, `words`, `where` and `recorded-by`, defaulting
+  to the running Chough version — in SpecSync's note, and passes SpecSync's output,
+  refusals and exit code through unchanged (REQ-cli-071, DRIVE-20). Without the
+  approver, their words or the citation, or with one of them blank, it refuses
+  before SpecSync runs, so a relay without a citation has no path through Chough.
+- A relayed gate close's decision text now names the decided human's
+  configured display name (REQ-records-008), so a close through an
+  alias renders the display name; the stored relay keeps the raw
+  `--decided-by` value as its audit trail, fixing #436.
+- The `stage advance --to` not-ahead refusal now names `--reason` for
+  `chough stage back` and `chough stage reset`, fixing #440.
+- `chough next` now reads the refused-check reason SpecSync recorded in
+  `verification-attempts.json` and shows it, instead of a note that keeps no
+  reason, fixing #439.
+- `chough gate record` validates every named gate before closing any, so a refused
+  later close leaves no earlier gate closed, fixing #438.
+- Direct-write entries write their `before_state` and `after_state` as `none` when the
+  state is absent, in the Timeline entry and its text, fixing #437.
+- `chough inbox add` writes its entry whole or not at all without a hard
+  link, so it works on volumes without hard links such as exFAT, fixing #435.
+- The roadmap records the 0.6.3 release as published, including the clean install
+  of `chough` 0.6.3 on macOS arm64.
+
 ## [0.6.3] - 2026-11-22
 
 - The workflow skill now ships an optional plan-stage fork and the bounded
@@ -1506,6 +1540,7 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.6.4]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.4
 [0.6.3]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.3
 [0.6.2]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.2
 [0.6.1]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.1

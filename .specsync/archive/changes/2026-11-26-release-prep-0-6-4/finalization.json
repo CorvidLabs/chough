@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "release-prep-0-6-4",
+  "implementation_commit": "fe8207e6e32c6999452c292bb3e0a4c710ee985d",
+  "implementation_tree": "6bd704be0c3bda3a21493b845a865ed67a10cc86",
+  "contract_digest": "d8e58d7f5de78a3603c15ee1e195227eae56730205a62099bfc2f13d8ef5acaf",
+  "workspace_digest": "9022538cc6bb3a7aa5ef1515adb1b17f921d0e50ab6d98fa4040819833ab0d4b",
+  "closing_digest": "778476d0892d82785ca163d55dd74896c159a7fcea1a6d689b2b86df6a3a310d",
+  "review_digest": "f3be90496039e346d92b5dcf01c5acea667e62586bd77105eb0cd0458e049d85",
+  "finalization_digest": "0df11b472a82192be305129dc8111e87c41dc99e251cf18f4087b3a188a161e3",
+  "timestamp": 1795735836
+}

@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1795730740,
+      "commit": "2577da8e23a07a308511a21d992c83419eac74e2",
+      "contract_digest": "d8e58d7f5de78a3603c15ee1e195227eae56730205a62099bfc2f13d8ef5acaf",
+      "execution_digest": "4a10bad007e090fcd2bd5f2a1885a995b27a277f990ccc13a5e9b04ab86f473e",
+      "workspace_digest": "50d420cb0f5b20d2460ece5be3e0cbd24a0c849096b6855cb5ad51c73d1b818d",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1795730742,
+      "commit": "d0b9997aeb831dc536701b8fde733e5bbe529f05",
+      "contract_digest": "d8e58d7f5de78a3603c15ee1e195227eae56730205a62099bfc2f13d8ef5acaf",
+      "execution_digest": "4a10bad007e090fcd2bd5f2a1885a995b27a277f990ccc13a5e9b04ab86f473e",
+      "workspace_digest": "50d420cb0f5b20d2460ece5be3e0cbd24a0c849096b6855cb5ad51c73d1b818d",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1795731139,
+      "commit": "2fe439d15e5ef7f370a86d51703b476c541a22f6",
+      "contract_digest": "d8e58d7f5de78a3603c15ee1e195227eae56730205a62099bfc2f13d8ef5acaf",
+      "execution_digest": "4a10bad007e090fcd2bd5f2a1885a995b27a277f990ccc13a5e9b04ab86f473e",
+      "workspace_digest": "a21c68adc9c87b76ed8a626582523cb7076e0a4f0976727a55e3349cff4c8c2a",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1795731142,
+      "commit": "bb381409f868f74c4e56cf2905b637ac224f1353",
+      "contract_digest": "d8e58d7f5de78a3603c15ee1e195227eae56730205a62099bfc2f13d8ef5acaf",
+      "execution_digest": "4a10bad007e090fcd2bd5f2a1885a995b27a277f990ccc13a5e9b04ab86f473e",
+      "workspace_digest": "9022538cc6bb3a7aa5ef1515adb1b17f921d0e50ab6d98fa4040819833ab0d4b",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1795731142,
+      "commit": "fe8207e6e32c6999452c292bb3e0a4c710ee985d",
+      "contract_digest": "d8e58d7f5de78a3603c15ee1e195227eae56730205a62099bfc2f13d8ef5acaf",
+      "execution_digest": "4a10bad007e090fcd2bd5f2a1885a995b27a277f990ccc13a5e9b04ab86f473e",
+      "workspace_digest": "9022538cc6bb3a7aa5ef1515adb1b17f921d0e50ab6d98fa4040819833ab0d4b",
+      "acceptance_input_digest": "d09778e61ddef3066ec7cb88486857b54deea24367f628c3e72de52b49a1dd3f",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": "CHANGELOG.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1f7443961f58a1d4e00fb1afa6921708993a1e4f0df283aba07f329967476dca",
+            "entry_digest": "5c8b39040e9c5ccff1b2fd16cf6b03ee5d26025c3fbbeb7d0be18305f82057fe",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "Cargo.lock",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "6a8219a11e6695305d8031af30016c41b98dc264ae659721433d4d38e4cad1d9",
+            "entry_digest": "9688a1f61c9d72e1cdad48a11a88af80f71cf896eb02a70e620b0e1bf5bcc19f",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "Cargo.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "655f104f617c55e6f955e1637f3c577a32d034422588e94078adfdce1f0e6477",
+            "entry_digest": "c48ee19b45af3879c71ee2c5bf0c4cacfc31984a87479a5724de8e4acf4091f3",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d",
+            "kind": "non_file",
+            "mode": 0,
+            "payload_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "entry_digest": "6f56e328248bbc9dd161aeceecb04275f0a738de67e64ac9014a043d7415d0d3",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/index.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "390733363d1260a11f124e7779ee3fee3a8598b727fa58cfcac42fd45a6c2a25",
+            "entry_digest": "3f7c12066e92f9bd8c3a6143e7e0bb1671b2f05006eef91aa124fa9782a1ab25",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/feed.xml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ffdbcc8aee00e7884c417a304aea6355cf79c6a231ae6266ee1a9ba534b84137",
+            "entry_digest": "ea25508e85df53dd31508f5c3a5d00e867e58f60b9421405ef63a07015c54e6a",
+            "owners": [
+              "@exact:delivery"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    }
+  ]
+}

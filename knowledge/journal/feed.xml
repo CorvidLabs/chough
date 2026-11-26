@@ -2,9 +2,30 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>2026-11-25T05:56:47Z</updated>
+<updated>2026-11-25T18:38:55Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
+  <entry>
+<title>Describe the current objective before beginning work</title>
+<id>urn:chough:journal:2026-11-25-describe-the-current-objective-before-beginning-work</id>
+<updated>2026-11-25T18:38:55Z</updated>
+<link href="2026-11-25-describe-the-current-objective-before-beginning-work.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>The chough workflow skill routes every lifecycle writer through…</title>
+<id>urn:chough:journal:2026-11-25-the-chough-workflow-skill-routes-every-lifecycle-writer</id>
+<updated>2026-11-25T18:10:25Z</updated>
+<link href="2026-11-25-the-chough-workflow-skill-routes-every-lifecycle-writer.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Scope deviation on REQ-cli-072 acknowledged</title>
+<id>urn:chough:journal:2026-11-25-scope-deviation-on-req-cli-072-acknowledged</id>
+<updated>2026-11-25T16:50:50Z</updated>
+<link href="2026-11-25-scope-deviation-on-req-cli-072-acknowledged.md"/>
+<category term="intent"/>
+</entry>
   <entry>
 <title>Leif rules on PR 448/449 blockers</title>
 <id>urn:chough:journal:2026-11-25-leif-rules-on-pr-448-449-blockers</id>
@@ -13,11 +34,32 @@
 <category term="intent"/>
 </entry>
   <entry>
+<title>chough change approve relays a human&apos;s approval of a change…</title>
+<id>urn:chough:journal:2026-11-25-chough-change-approve-relays-a-human-s-approval-of-a-change</id>
+<updated>2026-11-25T04:15:07Z</updated>
+<link href="2026-11-25-chough-change-approve-relays-a-human-s-approval-of-a-change.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Leif accepts the phantom affected_path in the approve-passthrough change</title>
+<id>urn:chough:journal:2026-11-25-leif-accepts-the-phantom-affected-path-in-the-approve</id>
+<updated>2026-11-25T03:45:32Z</updated>
+<link href="2026-11-25-leif-accepts-the-phantom-affected-path-in-the-approve.md"/>
+<category term="intent"/>
+</entry>
+  <entry>
 <title>Leif confirms the six-fix provenance and authorizes merge-after-archive</title>
 <id>urn:chough:journal:2026-11-25-leif-confirms-the-six-fix-provenance-and-authorizes-merge</id>
 <updated>2026-11-25T03:36:44Z</updated>
 <link href="2026-11-25-leif-confirms-the-six-fix-provenance-and-authorizes-merge.md"/>
 <category term="intent"/>
+</entry>
+  <entry>
+<title>2026-11-25-pr-448-449-records-repair</title>
+<id>urn:chough:journal:2026-11-25-pr-448-449-records-repair</id>
+<updated>2026-11-25T00:00:00Z</updated>
+<link href="2026-11-25-pr-448-449-records-repair.md"/>
+<category term=""/>
 </entry>
   <entry>
 <title>Fix chough#440: the stage advance --to go-back hint must name…</title>
@@ -101,48 +143,6 @@
 <id>urn:chough:journal:2026-11-21-stage-labels-skip-forks-and-keep-matches</id>
 <updated>2026-11-21T17:48:24Z</updated>
 <link href="2026-11-21-stage-labels-skip-forks-and-keep-matches.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Optional GitHub labels for the seven main stages</title>
-<id>urn:chough:journal:2026-11-21-optional-github-labels-for-the-seven-main-stages</id>
-<updated>2026-11-21T17:04:00Z</updated>
-<link href="2026-11-21-optional-github-labels-for-the-seven-main-stages.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>The documentation checked against Chough 0.6.2</title>
-<id>urn:chough:journal:2026-11-21-the-documentation-checked-against-chough-0-6-2</id>
-<updated>2026-11-21T01:12:35Z</updated>
-<link href="2026-11-21-the-documentation-checked-against-chough-0-6-2.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Chough 0.6.2: release preparation</title>
-<id>urn:chough:journal:2026-11-21-chough-0-6-2-release-preparation</id>
-<updated>2026-11-21T00:16:56Z</updated>
-<link href="2026-11-21-chough-0-6-2-release-preparation.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Chough moves to SpecSync 6.4.0, and change ready asks its dry run</title>
-<id>urn:chough:journal:2026-11-20-chough-moves-to-specsync-6-4-0-and-change-ready-asks-its-dry</id>
-<updated>2026-11-20T23:45:13Z</updated>
-<link href="2026-11-20-chough-moves-to-specsync-6-4-0-and-change-ready-asks-its-dry.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>A change&apos;s description</title>
-<id>urn:chough:journal:2026-11-20-a-change-s-description</id>
-<updated>2026-11-20T22:44:55Z</updated>
-<link href="2026-11-20-a-change-s-description.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>The gate summary tells the truth, and an unattended done needs a reason</title>
-<id>urn:chough:journal:2026-11-20-the-gate-summary-tells-the-truth-and-an-unattended-done-needs</id>
-<updated>2026-11-20T21:35:51Z</updated>
-<link href="2026-11-20-the-gate-summary-tells-the-truth-and-an-unattended-done-needs.md"/>
 <category term="shipped"/>
 </entry>
 </feed>
