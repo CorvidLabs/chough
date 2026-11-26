@@ -544,16 +544,31 @@ pub(super) fn migrated_readme() -> String {
     )
 }
 
-/// Whether `name` is a write temp: `.<name>.<pid>.tmp`.
+/// Whether `name` is a write temp: `.<name>.<pid>.tmp`, or the shared whole-or-not-at-all
+/// writer's `.<name>.<pid>.<n>.new`.
 fn is_write_temp(name: &str) -> bool {
-    name.strip_prefix('.')
-        .and_then(|rest| rest.strip_suffix(".tmp"))
-        .and_then(|rest| rest.rsplit_once('.'))
-        .is_some_and(|(stem, pid)| {
-            (stem.ends_with(".json") || stem.ends_with(".md"))
-                && !pid.is_empty()
-                && pid.bytes().all(|byte| byte.is_ascii_digit())
-        })
+    let Some(rest) = name.strip_prefix('.').and_then(|rest| {
+        rest.strip_suffix(".tmp")
+            .or_else(|| rest.strip_suffix(".new"))
+    }) else {
+        return false;
+    };
+    // `.<name>.<pid>.tmp` has one numeric tail; `.<name>.<pid>.<n>.new` has two, and
+    // its stem still ends in the record's suffix.
+    let numeric =
+        |value: &str| !value.is_empty() && value.bytes().all(|byte| byte.is_ascii_digit());
+    let Some((stem, pid)) = rest.rsplit_once('.') else {
+        return false;
+    };
+    if stem.ends_with(".json") || stem.ends_with(".md") {
+        return numeric(pid);
+    }
+    match stem.rsplit_once('.') {
+        Some((stem, counter)) => {
+            numeric(counter) && (stem.ends_with(".json") || stem.ends_with(".md")) && numeric(pid)
+        }
+        None => false,
+    }
 }
 
 /// Remove write temps that killed writers left in a session folder or its inbox, and
@@ -601,37 +616,20 @@ pub(super) fn remove_orphaned_temps(root: &Path) -> Result<()> {
     Ok(())
 }
 
-/// Publish an inbox entry whole (#99 review): write it to `.<id>.json.<pid>.tmp` in the
-/// inbox directory, which Git ignores and no reader lists, then hard-link it to its
-/// name, which never replaces an existing file. An add stopped partway leaves at most
-/// that temp, never a partial `INB-*.json`, and the next checkpoint save removes it.
-/// Returns false when an entry of that name already exists.
+/// Publish an inbox entry whole (#99 review, #435): write it through the shared
+/// whole-or-not-at-all writer `records::write_new_bytes`, which writes the bytes to a
+/// temporary in `.chough/local/` and moves it to the entry's name without replacing
+/// anything, or creates the file at its name and removes it again on error; no hard link
+/// is taken, so the entry is written whole or not at all and the command works on volumes
+/// without hard links, such as exFAT. An add stopped partway leaves at most a temp, never
+/// a partial entry, and returns false when an entry of that name already exists.
 fn publish_entry(root: &Path, file: &str, content: &str) -> Result<bool> {
-    use std::io::Write as _;
     ensure!(
         content.len() as u64 <= INBOX_LIMIT,
         "managed file exceeds {INBOX_LIMIT} bytes: {file}"
     );
-    let path = local_path(root, file)?;
-    let parent = path.parent().context("inbox entry has no parent")?;
-    fs::create_dir_all(parent)?;
-    local_path(root, file)?;
-    let temporary = crate::records::temporary_for(root, file, &path)?;
-    let published = (|| -> std::io::Result<bool> {
-        let mut out = fs::OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .open(&temporary)?;
-        out.write_all(content.as_bytes())?;
-        out.sync_all()?;
-        match fs::hard_link(&temporary, &path) {
-            Ok(()) => Ok(true),
-            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => Ok(false),
-            Err(error) => Err(error),
-        }
-    })();
-    let _ = fs::remove_file(&temporary);
-    published.with_context(|| format!("writing {file}"))
+    crate::records::write_new_bytes(root, file, content.as_bytes())
+        .with_context(|| format!("writing {file}"))
 }
 
 pub(super) fn read_at(root: &Path, relative: &str) -> Result<Checkpoint> {
@@ -2046,6 +2044,21 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
+    /// #435 review: a write temp is `.<name>.<pid>.tmp` or the shared writer's
+    /// `.<name>.<pid>.<n>.new`; other dotted files are not temps.
+    #[test]
+    fn is_write_temp_matches_both_temp_shapes() {
+        assert!(super::is_write_temp(".INB-x.json.123.tmp"));
+        assert!(super::is_write_temp(".INB-x.json.123.0.new"));
+        assert!(super::is_write_temp(".session.md.45.7.new"));
+        assert!(!super::is_write_temp(".INB-x.json"));
+        assert!(!super::is_write_temp("INB-x.json.123.tmp"));
+        assert!(!super::is_write_temp(".INB-x.json.abc.tmp"));
+        assert!(!super::is_write_temp(".INB-x.json.123.abc.new"));
+        assert!(!super::is_write_temp(".notes.txt.123.new"));
+        assert!(!super::is_write_temp(".INB-x.json.tmp"));
+    }
+
     /// t38n's round-4 F11 (REQ-records-002): a fresh project's guide names no folder kept
     /// from Chough 0.5.x, and a migrated project's guide is the same with the
     /// `artifacts/` line before `local/`.

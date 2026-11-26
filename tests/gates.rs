@@ -226,6 +226,84 @@ fn sha256(text: &str) -> String {
     String::from_utf8(output.stdout).unwrap()[..64].to_string()
 }
 
+/// fix-438: a reply naming two gates whose second close would pass the session record's
+/// size bound refuses the whole reply, with nothing written and both gates still open.
+#[test]
+fn a_second_close_over_the_session_bound_refuses_the_whole_reply_with_nothing_written() {
+    let fixture = project(&["Gate A of g1", "Gate B of g1"]);
+    // Pad the session record into the window the size bound leaves: gate 1's close fits,
+    // the cumulative gate 2 close does not.
+    let file = fixture.session_file_of(KEY);
+    let text = fixture.read(&file);
+    let paragraph = format!("padding {}\n\n", "x".repeat(1_046_600));
+    let padded = text.replacen(
+        "## Decisions and why\n\n## What was verified",
+        &format!("## Decisions and why\n\n{paragraph}## What was verified"),
+        1,
+    );
+    assert_ne!(padded, text, "the pad marker was not found");
+    fixture.write(&file, &padded);
+    let listed = list(&fixture);
+    let list_id = listed["list"].as_str().unwrap().to_string();
+    let error = fixture.fails(&record(&list_id, "1,2", "yes"));
+    assert!(
+        error.contains("over its bound"),
+        "the refusal should be the session record bound: {error}"
+    );
+    assert_eq!(
+        fixture.checkpoint()["awaiting_human"],
+        serde_json::json!(["Gate A of g1", "Gate B of g1"]),
+        "both gates should still be open"
+    );
+}
+
+/// fix-438: a dry run of a gate close checks the close and reports the size it would
+/// write, without closing anything.
+#[test]
+fn a_dry_run_close_writes_nothing_and_reports_the_projected_size() {
+    let fixture = project(&["Gate A of g1", "Gate B of g1"]);
+    let before = records(fixture.root());
+    let report = fixture.ok(&[
+        "checkpoint",
+        "--close-gate",
+        "Gate A of g1",
+        "--decided-by",
+        "SYNTHETIC-human",
+        "--words",
+        "yes",
+        "--where",
+        "a test",
+        "--recorded-by",
+        "SYNTHETIC-agent",
+        "--dry-run",
+    ]);
+    assert_eq!(report["saved"], json!(false), "{report:#}");
+    assert_eq!(report["dry_run"], json!(true), "{report:#}");
+    assert!(
+        report["projected_record_bytes"].is_u64(),
+        "the dry run reports the size it would have written: {report:#}"
+    );
+    assert_eq!(
+        session(&fixture)["awaiting_human"],
+        serde_json::json!(["Gate A of g1", "Gate B of g1"]),
+        "a dry run closed nothing"
+    );
+    assert_eq!(records(fixture.root()), before, "a dry run wrote");
+}
+
+/// fix-438: a dry run of a gate close refuses a bad relay without writing anything.
+#[test]
+fn a_dry_run_close_refuses_a_bad_relay_without_writing() {
+    let fixture = project(&["Gate A of g1", "Gate B of g1"]);
+    let before = records(fixture.root());
+    let refused = fixture.fails(&["checkpoint", "--close-gate", "Gate A of g1", "--dry-run"]);
+    assert!(
+        refused.contains("refused:relay-incomplete"),
+        "the dry run should refuse the close it cannot relay: {refused}"
+    );
+    assert_eq!(records(fixture.root()), before, "a refused dry run wrote");
+}
+
 #[test]
 fn gate_list_shows_each_open_gate_with_a_one_screen_summary_and_its_digest() {
     let fixture = project(&[SCOPE]);

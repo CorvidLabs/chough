@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "change_id": "fix-436",
+  "corrections": [
+    {
+      "target": "definition approval ts 1795529693",
+      "kind": "mechanical-re-approval-marking",
+      "words": "Mark as mechanical (Recommended)",
+      "where": "pi chat t14z interview question 2, 2026-11-25T05:56:31Z (question: Ratify with your words, or authorize marking them mechanical?)",
+      "explanation": "mechanical re-approval: re-scoping only (affected_paths narrowed from the src/tests directories to the six files), original definition approval stands; recorded as mechanical per Leif's ruling, relayed by t14z orchestrator, not authenticated"
+    }
+  ]
+}

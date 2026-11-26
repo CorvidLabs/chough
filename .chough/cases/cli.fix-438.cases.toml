@@ -1,0 +1,23 @@
+# fix-438: chough gate record closes all the named gates or none
+# (REQ-cli-061).
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-gate-record-all-or-none"
+title = "a gate record reply whose later close would exceed the session record bound refuses with nothing written and every named gate still open"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "src/checkpoint.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::a_second_close_over_the_session_bound_refuses_the_whole_reply_with_nothing_written passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "gates", "--", "--exact", "a_second_close_over_the_session_bound_refuses_the_whole_reply_with_nothing_written"]
+expect_output = ["test a_second_close_over_the_session_bound_refuses_the_whole_reply_with_nothing_written ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600

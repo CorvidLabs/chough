@@ -1,0 +1,24 @@
+# fix-435: inbox add writes its entry whole or not at all without a hard
+# link, so it works on volumes without hard links such as exFAT
+# (REQ-records-001).
+profile = "chough-testing/1"
+module = "records"
+
+[[case]]
+id = "TC-records-inbox-add-without-hard-links"
+title = "on an exFAT volume, chough inbox add writes its entry whole and succeeds"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8"]
+requirements = ["REQ-records-001"]
+paths = ["src/sessions.rs", "tests/no_hard_links.rs"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+expected = ["tests/no_hard_links.rs::new_records_are_written_on_a_volume_without_hard_links passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "no_hard_links", "--", "--ignored", "--exact", "new_records_are_written_on_a_volume_without_hard_links"]
+expect_output = ["test new_records_are_written_on_a_volume_without_hard_links ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600

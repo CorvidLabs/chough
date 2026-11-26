@@ -1,0 +1,55 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795442638,
+      "digest": "da32dd93ea7a1d5650b0304c1fe82cdcdcb978ab40899ab20a248079437f2a50",
+      "note": "Approved by 0xLeif at the Chough gate \"Approve the scope of fix-440\": \"I approve\" (pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch). Relayed and recorded by pi-t14z at 2026-11-23T14:03:57Z through chough gate record 27771af38ae1; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-440",
+        "title": "Fix 440",
+        "description": "fix 440",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".gitattributes",
+          "changelog.d",
+          "src/stage.rs",
+          "tests"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "A refusal hint string only; no contract text changes (docs fix named by the 0.6.2 audit, docs/exercises/cold-start.md already requires --reason in hints)",
+        "acceptance_criteria": [
+          "When stage advance --to names a stage that is not ahead, the refusal's go-back hint names --reason."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "I approve",
+        "where": "pi chat t14z (CorvidLabs orchestrator session), 2026-11-23 about 03:45 UTC, after the one-screen stack summary for the six-change overnight branch",
+        "recorded_by": "pi-t14z"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795530201,
+      "digest": "3530adef756ae09ce2b8d19e88f6d2c9293c39f73862f797427a000e87c428f1",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

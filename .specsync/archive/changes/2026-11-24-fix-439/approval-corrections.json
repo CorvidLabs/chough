@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "change_id": "fix-439",
+  "corrections": [
+    {
+      "target": "definition approval ts 1795494331",
+      "kind": "mechanical-re-approval-marking",
+      "words": "Mark as mechanical (Recommended)",
+      "where": "pi chat t14z interview question 2, 2026-11-25T05:56:31Z (question: Ratify with your words, or authorize marking them mechanical?)",
+      "explanation": "mechanical re-approval: re-scoping only (the REQ-cli-039 spec delta the second review required; no_spec_change now false, affected_paths unchanged), original definition approval stands; relayed by t14z orchestrator, not authenticated"
+    },
+    {
+      "target": "definition approval ts 1795530080",
+      "kind": "mechanical-re-approval-marking",
+      "words": "Mark as mechanical (Recommended)",
+      "where": "pi chat t14z interview question 2, 2026-11-25T05:56:31Z (question: Ratify with your words, or authorize marking them mechanical?)",
+      "explanation": "mechanical re-approval: re-scoping only (affected_paths re-declared as the exact files the branch carries, instead of the src and tests directories), original definition approval stands; relayed by t14z orchestrator, not authenticated"
+    }
+  ]
+}

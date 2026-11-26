@@ -24,16 +24,16 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
-- [Scope deviation on REQ-cli-072 acknowledged](journal/2026-11-25-scope-deviation-on-req-cli-072-acknowledged.md) (2026-11-25, intent)
-- [chough change approve relays a human's approval of a change…](journal/2026-11-25-chough-change-approve-relays-a-human-s-approval-of-a-change.md) (2026-11-25, shipped)
-- [Leif accepts the phantom affected_path in the approve-passthrough change](journal/2026-11-25-leif-accepts-the-phantom-affected-path-in-the-approve.md) (2026-11-25, intent)
+- [Leif rules on PR 448/449 blockers](journal/2026-11-25-leif-rules-on-pr-448-449-blockers.md) (2026-11-25, intent)
+- [Leif confirms the six-fix provenance and authorizes merge-after-archive](journal/2026-11-25-leif-confirms-the-six-fix-provenance-and-authorizes-merge.md) (2026-11-25, intent)
+- [Fix chough#440: the stage advance --to go-back hint must name…](journal/2026-11-24-fix-chough-440-the-stage-advance-to-go-back-hint-must-name.md) (2026-11-24, shipped)
+- [fix-439-overnight](journal/2026-11-24-fix-439-overnight.md) (2026-11-24, shipped)
+- [Fix chough#438: chough gate record closes all the named gates or none](journal/2026-11-24-fix-chough-438-chough-gate-record-closes-all-the-named-gates.md) (2026-11-24, shipped)
+- [Fix chough#437: a direct-write entry writes before_state and…](journal/2026-11-24-fix-chough-437-a-direct-write-entry-writes-before-state-and.md) (2026-11-24, shipped)
+- [fix-436-overnight](journal/2026-11-24-fix-436-overnight.md) (2026-11-24, shipped)
+- [Fix chough#435: inbox add writes its entry without a hard link](journal/2026-11-24-fix-chough-435-inbox-add-writes-its-entry-without-a-hard-link.md) (2026-11-24, shipped)
 - [The roadmap's delivered table has the 0.6.3 release row](journal/2026-11-22-the-roadmap-s-delivered-table-has-the-0-6-3-release-row.md) (2026-11-22, shipped)
 - [Prepare the Chough 0.6.3 release](journal/2026-11-22-prepare-the-chough-0-6-3-release.md) (2026-11-22, shipped)
-- [Write the agreed plan-stage execution split and test-stage grouping…](journal/2026-11-22-write-the-agreed-plan-stage-execution-split-and-test-stage.md) (2026-11-22, shipped)
-- [An open session sets the stage label](journal/2026-11-21-an-open-session-sets-the-stage-label.md) (2026-11-21, shipped)
-- [Keep an applied stage label](journal/2026-11-21-keep-an-applied-stage-label.md) (2026-11-21, shipped)
-- [Stage labels skip forks and keep matches](journal/2026-11-21-stage-labels-skip-forks-and-keep-matches.md) (2026-11-21, shipped)
-- [Optional GitHub labels for the seven main stages](journal/2026-11-21-optional-github-labels-for-the-seven-main-stages.md) (2026-11-21, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
-- [chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071](../.specsync/archive/changes/2026-11-25-chough-change-approve-relays-a-human-s-approval-of-a-change-definition-to-specsync-with-a-required-citation-req-cli-071/lesson-bundle.md), Chough change approve relays a human's approval of a change definition to SpecSync with a required citation (REQ-cli-071, DRIVE-20)
-- [docs-0-6-3-release](../.specsync/archive/changes/2026-11-22-docs-0-6-3-release/lesson-bundle.md), Docs 0.6.3 release
-- [release-0-6-3](../.specsync/archive/changes/2026-11-22-release-0-6-3/lesson-bundle.md), Release 0.6.3
+- [fix-440](../.specsync/archive/changes/2026-11-24-fix-440/lesson-bundle.md), Fix 440
+- [fix-439](../.specsync/archive/changes/2026-11-24-fix-439/lesson-bundle.md), fix-439
+- [fix-438](../.specsync/archive/changes/2026-11-24-fix-438/lesson-bundle.md), Fix 438
 
 ## Snapshots and briefs
 

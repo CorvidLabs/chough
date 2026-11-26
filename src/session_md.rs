@@ -727,8 +727,16 @@ fn render_entry(transition: &Transition, native_change: Option<&str>, id: &str) 
                 written_part(&file.change, false)
             ));
         }
-        part(&mut out, "before_state", write.before_state.as_deref());
-        part(&mut out, "after_state", write.after_state.as_deref());
+        part(
+            &mut out,
+            "before_state",
+            Some(write.before_state.as_deref().unwrap_or("none")),
+        );
+        part(
+            &mut out,
+            "after_state",
+            Some(write.after_state.as_deref().unwrap_or("none")),
+        );
     }
     if let Some(holds) = &transition.holds {
         field(&mut out, "holds", holds);
@@ -1183,5 +1191,44 @@ mod tests {
             error.contains("chough session close 2026-11-11-alpha --reason"),
             "{error}"
         );
+    }
+
+    /// fix-437: a `direct-native-write` entry whose change has no state writes its states
+    /// as `none`, and reads back with them, so the lines are never left out and the entry
+    /// text says `state stays none`.
+    #[test]
+    fn a_direct_write_entry_with_an_absent_state_writes_none_and_reads_back() {
+        let mut session = session();
+        session.stage.current = "intent".into();
+        let mut transition = transition("direct-native-write", "intent", "intent", None);
+        transition.direct_write = Some(crate::stage::DirectWrite {
+            change: "fix-437".into(),
+            files: vec![crate::stage::WrittenFile {
+                path: "state.json".into(),
+                change: "changed".into(),
+            }],
+            before_state: None,
+            after_state: None,
+        });
+        session.pending = vec![transition];
+        let mut next_id = |_: usize, _: usize| -> Result<String> { Ok("t-aaaaaa".into()) };
+        let text = render_with(&session, 1_794_380_000, &mut next_id)
+            .unwrap()
+            .render();
+        assert!(
+            text.contains(
+                "- 2026-11-11T06:53:20Z · direct-native-write · intent → intent ·  ^t-aaaaaa\n"
+            ),
+            "{text}"
+        );
+        assert!(text.contains("    - before_state: none\n"), "{text}");
+        assert!(text.contains("    - after_state: none\n"), "{text}");
+        let read = super::read("s.md", &text).unwrap();
+        let entries = timeline(read.source.as_ref().unwrap()).unwrap();
+        assert_eq!(entries.len(), 1);
+        let write = entries[0].transition.direct_write.clone().unwrap();
+        assert_eq!(write.change, "fix-437");
+        assert_eq!(write.before_state.as_deref(), Some("none"));
+        assert_eq!(write.after_state.as_deref(), Some("none"));
     }
 }

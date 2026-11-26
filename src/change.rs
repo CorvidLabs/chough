@@ -430,7 +430,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
         ("--where", args.place.as_deref()),
         ("--recorded-by", args.recorded_by.as_deref()),
     ];
-    let mut relayed = crate::checkpoint::check_relay(&open, named, values).map_err(|problem| {
+    let mut relayed = crate::checkpoint::check_relay(root, &open, named, values).map_err(|problem| {
         use crate::checkpoint::RelayProblem;
         match problem {
             RelayProblem::WithoutGate(given) => anyhow::anyhow!(
@@ -461,6 +461,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
                     relay_command(&gate)
                 )
             }
+            RelayProblem::Identity(error) => error,
         }
     })?;
 
@@ -474,6 +475,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
     // and a refused review stops the ship.
     let mut native_ran = None;
     let mut reviewed: Option<(String, String)> = None;
+    let mut decided_human: Option<crate::humans::Human> = None;
     if let Some((gate, relay, _)) = relayed.as_mut() {
         crate::checkpoint::guard_relay(relay)?;
         let checkpoint = crate::checkpoint::read_checkpoint_unlocked(root)?;
@@ -481,6 +483,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
         // REQ-records-008: every close names one configured human, whatever the gate
         // drives, before SpecSync runs.
         let human = crate::humans::resolve(root, &relay.decided_by)?;
+        decided_human = Some(human.clone());
         if drives != crate::humans::Drives::None {
             native_ran = Some(if drives != crate::humans::Drives::Review {
                 format!(
@@ -540,7 +543,11 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
     let gate_closed = match &relayed {
         Some((gate, relay, _)) => format!(
             "Gate: \"{gate}\" closed with {}'s decision, recorded by {} as a relayed claim",
-            relay.decided_by, relay.recorded_by
+            decided_human
+                .as_ref()
+                .map(|human| human.name.as_str())
+                .unwrap_or(&relay.decided_by),
+            relay.recorded_by
         ),
         None => "Gate: none was named, so none closed".to_string(),
     };

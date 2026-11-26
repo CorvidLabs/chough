@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-436",
+  "slug": "fix-436",
+  "title": "fix-436",
+  "description": "Gate decisions show the configured display name instead of the raw --decided-by text",
+  "kind": "feature",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "71a5c468a92d609113efbd5382317a18f1948e6e",
+  "created_at": 1795490187,
+  "updated_at": 1795529721,
+  "affected_specs": [
+    "records",
+    "cli"
+  ],
+  "affected_paths": [
+    "src/checkpoint.rs",
+    "src/gates.rs",
+    "src/change.rs",
+    "tests/humans.rs",
+    "tests/relay.rs",
+    "docs/cli.md",
+    ".chough/cases/records.fix-436.cases.toml",
+    ".chough/cases/cli.fix-439.cases.toml"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-records-008 already defines name as 'the display name records show'; this makes decision_text honor it. No contract or refusal semantics change",
+  "acceptance_criteria": [
+    "A gate close with an alias renders the configured display name in the decision text; an exact-name close is unchanged; the stored relay keeps the raw typed decided-by; tests pin both; full suite green"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "none",
+    "public_contract": "no"
+  }
+}

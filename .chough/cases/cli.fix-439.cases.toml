@@ -1,0 +1,42 @@
+# fix-439: next/status surface the recorded refused-check reason
+# (REQ-cli-039, as amended by this change's delta).
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-refusal-note-quotes-the-recorded-refusal"
+title = "an approved or implementing change whose latest attempt records a refusal shows the refusal in the native-check note instead of the keeps-no-reason sentence"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-039"]
+paths = ["src/native_check.rs", "tests/native_check.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native_check.rs::a_recorded_refusal_is_shown_in_the_not_passed_note passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "native_check", "--", "--exact", "a_recorded_refusal_is_shown_in_the_not_passed_note"]
+expect_output = ["test a_recorded_refusal_is_shown_in_the_not_passed_note ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-refusal-note-fallback-keeps-no-reason"
+title = "with no recorded refusal (no attempts file, a passed attempt, or a failed attempt without a refusal field) the native-check note keeps the keeps-no-reason sentence"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-039"]
+paths = ["src/native_check.rs", "tests/native_check.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native_check.rs::the_fallback_note_is_kept_when_no_refusal_is_recorded passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "native_check", "--", "--exact", "the_fallback_note_is_kept_when_no_refusal_is_recorded"]
+expect_output = ["test the_fallback_note_is_kept_when_no_refusal_is_recorded ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600
