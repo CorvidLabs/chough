@@ -1540,6 +1540,7 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.6.4]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.4
 [0.6.3]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.3
 [0.6.2]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.2
 [0.6.1]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.1
